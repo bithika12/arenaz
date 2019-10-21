@@ -44,7 +44,6 @@ public class RedAppleSingleton<T> : MonoBehaviour where T : Component
         {
             Debug.Log(instanceName + " Instance Missing. Creating new Instance of " + instanceName + ".");
             instance = this as T;
-            //DontDestroyOnLoad(this.gameObject);
             Debug.Log(instanceName + " Instance created successfully!:).");
         }
         else if (Instance != this)

@@ -12,6 +12,8 @@ public class SceneManagement : RedAppleSingleton<SceneManagement>
     [SerializeField]
     private Image loaderImage;
     [SerializeField]
+    private GameObject splashObj;
+    [SerializeField]
     private Text loadingText;
     [SerializeField]
     private CanvasGroup mainCanvasGroup;
@@ -19,13 +21,24 @@ public class SceneManagement : RedAppleSingleton<SceneManagement>
 
     protected override void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
-        
+        DontDestroyOnLoad(this.gameObject);       
     }
     private void Start()
     {
-        SceneManager.sceneLoaded += OnOpenScene;
+        // LoadScene("LevelSelection");
+        StartCoroutine(LoadSceneAtStart());
+    }
+    IEnumerator LoadSceneAtStart()
+    {
+      //  Debug.Log("ghhhhhgh");
+        yield return new WaitForSeconds(1f);
+        Debug.Log("ghhhhhgh");
+        splashObj.SetActive(false);
         LoadScene("LevelSelection");
+    }
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnOpenScene;
     }
 
     void OnDisable()
