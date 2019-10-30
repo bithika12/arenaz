@@ -1,17 +1,17 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Events;
+using System.Collections;
 
 
-namespace ArenaZ.Screen
+namespace ArenaZ.ScreenManagement
 {
     /// <summary>
     /// In this class add default activity of each screens (like animation, show, hide etc)
     /// </summary>
     public class UIScreen : MonoBehaviour
     {
-        Animator animator;
-        private void Awake()
+        protected Animator animator;
+        protected virtual void Awake()
         {
             if (GetComponent<Animator>())
             {
@@ -43,14 +43,23 @@ namespace ArenaZ.Screen
             }
         }
 
-        public void PlayAnimation(string triggerName)
+        public void ShowGameObjWithAnim(string triggerName)
         {
-            animator.SetTrigger(triggerName);
+            Show();
+            animator.SetTrigger(triggerName);            
         }
 
-        public void StopAnimation(string triggerName)
+        public void HideGameObjWithAnim(string triggerName)
         {
-            animator.ResetTrigger(triggerName);
+            animator.SetTrigger(triggerName);
+            StartCoroutine(HideAfterAnimation());
+        }
+
+        IEnumerator HideAfterAnimation()
+        {
+            AnimationClip myReverseAnimClip = animator.runtimeAnimatorController.animationClips[0];
+            yield return new WaitForSeconds(myReverseAnimClip.length);
+            Hide();
         }
 
     }

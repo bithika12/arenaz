@@ -40,7 +40,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: 
+    path: SettingsOverlay
   m_FloatCurves:
   - curve:
       serializedVersion: 2
@@ -1324,9 +1324,9 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.25
-        value: -158
-        inSlope: 439.5
-        outSlope: 439.5
+        value: -344
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
@@ -1486,7 +1486,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 135068749
       attribute: 3
       script: {fileID: 0}
       typeID: 4
@@ -3076,9 +3076,9 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.25
-        value: -158
-        inSlope: 439.5
-        outSlope: 439.5
+        value: -344
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
@@ -3254,7 +3254,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: 
+    path: SettingsOverlay
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -3282,7 +3282,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: 
+    path: SettingsOverlay
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -3310,7 +3310,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: 
+    path: SettingsOverlay
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []

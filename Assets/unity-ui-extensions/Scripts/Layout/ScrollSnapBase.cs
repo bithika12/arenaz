@@ -299,7 +299,7 @@ namespace UnityEngine.UI.Extensions
         }
 
         //Function for switching screens with buttons
-        public void NextScreen()
+        public virtual void NextScreen()
         {
             if (_currentPage < _screens - 1 || _isInfinate)
             {
@@ -314,7 +314,7 @@ namespace UnityEngine.UI.Extensions
         }
 
         //Function for switching screens with buttons
-        public void PreviousScreen()
+        public virtual void PreviousScreen()
         {
             if (_currentPage > 0 || _isInfinate)
             {

@@ -2,8 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MailboxManager : RedAppleSingleton<MailboxManager>
+namespace ArenaZ.Mail
 {
-    public string previoslyTouchedMailID;
-    public GameObject previouslyTouchedMailShowButton;
+    public class MailboxManager : RedAppleSingleton<MailboxManager>
+    {
+        //Public Variables
+        public string previoslyTouchedGOMailID;
+        public GameObject previouslyTouchedMailShowButton;
+        public GameObject MailPopup;
+
+        //Private Variables
+    }
 }

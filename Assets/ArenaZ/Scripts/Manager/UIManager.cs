@@ -1,7 +1,8 @@
-﻿using ArenaZ.Screen ;
+﻿using ArenaZ.ScreenManagement ;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
 
 namespace ArenaZ.Manager
 {
@@ -11,21 +12,41 @@ namespace ArenaZ.Manager
     public class UIManager : RedAppleSingleton<UIManager>
     {
         //Public Variables
-        public Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
-        public List<string> deactivateUnusableUIOnStart;
-        public List<string> allPanels;
-
         //Private Variables
-        protected override void Awake()
-        {
-           // PlayerPrefs.SetInt("AlreadyLoggedIn", 0);
-        }
+        [SerializeField]
+        private List<string> deativateAllUI;
+        [SerializeField]
+        private List<string> allPanels;
+        private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
+        private Action invokeMandatoryThingsAtStart;
 
+        
         private void Start()
         {
-            LogInCheck();
-            AddAllUIScreensToDictionary();
-            DeactivateNonUsableUI(deactivateUnusableUIOnStart);
+            invokeMandatoryThingsAtStart?.Invoke();
+            Debug.Log(Screen.safeArea);
+        }
+
+        private void OnEnable()
+        {
+            invokeMandatoryThingsAtStart += LogInCheck;
+            invokeMandatoryThingsAtStart += AddAllUIScreensToDictionary;
+            invokeMandatoryThingsAtStart += DeactivateAllUI;
+            invokeMandatoryThingsAtStart += StartAnimations;
+        }
+
+        private void OnDisable()
+        {
+            invokeMandatoryThingsAtStart -= LogInCheck;
+            invokeMandatoryThingsAtStart -= AddAllUIScreensToDictionary;
+            invokeMandatoryThingsAtStart -= DeactivateAllUI;
+            invokeMandatoryThingsAtStart -= StartAnimations;
+        }
+
+        private void StartAnimations()
+        {
+            allPages["TopAndBottomBar"].ShowGameObjWithAnim("Straight");
+            allPages["AccountAccessDetails"].ShowGameObjWithAnim("Straight");
         }
 
         private void AddAllUIScreensToDictionary()
@@ -35,17 +56,20 @@ namespace ArenaZ.Manager
             {
                 allPages.Add(child.name, child);
             }
+
         }
-        public void DeactivateNonUsableUI(List<string> uiNames)
+
+        private void DeactivateAllUI()
         {
-            for (int i = 0; i < uiNames.Count; i++)
+            for (int i = 0; i < deativateAllUI.Count; i++)
             {
-                if(allPages.ContainsKey(uiNames[i]))
+                if(allPages.ContainsKey(deativateAllUI[i]))
                 {
-                    allPages[uiNames[i]].Hide();
+                    allPages[deativateAllUI[i]].Hide();
                 }
             }
         }
+
         public void DeactivateOtherPanels(string myPanel)
         {
             List<string> uiNames = allPanels;
@@ -62,18 +86,9 @@ namespace ArenaZ.Manager
         {
             if (PlayerPrefs.GetInt("AlreadyLoggedIn") == 1)
             {
-                deactivateUnusableUIOnStart.Add("AccountAccessDetails");
+                deativateAllUI.Add("AccountAccessDetails");
             }
         }
 
-        public void ShowScreen()
-        {
-            
-        }
-
-        public void ShowPopUp()
-        {
-
-        }
     }
 }
