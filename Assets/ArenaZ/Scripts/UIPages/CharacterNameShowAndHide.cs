@@ -2,29 +2,27 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI.Extensions;
+using ArenaZ.Manager;
 
 public class CharacterNameShowAndHide : MonoBehaviour
 {
-    private UIScreenChild[] names = new UIScreenChild[6];
+    private string[] names = { Page.Canines.ToString(),Page.Kepler.ToString(),Page.Cyborg.ToString(),Page.CyborgSecond.ToString(),Page.Human.ToString(),Page.Ebot.ToString(),Page.KeplerSecond.ToString() };
     [SerializeField]
     private HorizontalScrollSnap horizontalScrollSnap;
 
-   private void Start()
-   {
-        names = GetComponentsInChildren<UIScreenChild>();
-        HideRestCharacterNames();
-   }
-    private void HideRestCharacterNames()
+    private void Start()
     {
-        for (int i = 1; i < names.Length; i++)
-        {
-            names[i].HideGameObjWithAnim();
-        }
+        ShowFirstText();
     }
+
+    private void ShowFirstText()
+    {
+        UIManager.Instance.ShowScreen(Page.Canines.ToString(),Hide.none);
+    }
+
     public void PageChecker()
     {
-        names[horizontalScrollSnap.CurrentPage].ShowGameObjWithAnim();
-        names[horizontalScrollSnap._previousPage].HideGameObjWithAnim();
+        UIManager.Instance.ShowScreen(names[horizontalScrollSnap._currentPage],Hide.previous);
     }
 }   
    

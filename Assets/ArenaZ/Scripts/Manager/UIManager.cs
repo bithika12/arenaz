@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.IO;
+using System.Collections;
 
 namespace ArenaZ.Manager
 {
@@ -13,43 +13,47 @@ namespace ArenaZ.Manager
     {
         //Public Variables
         //Private Variables
-        [SerializeField]
-        private List<string> deativateAllUI;
-        [SerializeField]
-        private List<string> allPanels;
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
-
-        private string _openScreen;
-
+        private string _openScreen = string.Empty;
+        private string closeScreen = string.Empty;
         private void Start()
         {
-            Debug.Log(UnityEngine.Screen.safeArea);
-        }
-
-        private void OnEnable()
-        {
-            LogInCheck();
+            StartCoroutine(LogInCheck());
             StartAnimations();
         }
 
         private void StartAnimations()
         {
             allPages[Page.TopAndBottomBar.ToString()].ShowGameObjWithAnim();
-            allPages[Page.AccountAccessDetails.ToString()].ShowGameObjWithAnim();
         }
 
-        public void ShowScreen(string screenName)
+        public void ShowScreen(string screenName,Hide type)
         {
-            if (_openScreen.Equals(screenName))
+            if (_openScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            {
                 return;
-
+            }
             allPages[screenName].ShowGameObjWithAnim();
-            if (allPages.ContainsKey(_openScreen))
-                allPages[_openScreen].HideGameObjWithAnim();
+            if (allPages.ContainsKey(_openScreen) && type == Hide.previous)
+            {
+                allPages[_openScreen].SetActive(false);
+            }
             _openScreen = screenName;
+            closeScreen = string.Empty;
         }
 
-        private void AddAllUIScreensToDictionary()
+        public void HideScreen(string screenName)
+        {
+            if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            {
+                return;
+            }
+            allPages[screenName].HideGameObjWithAnim();
+            closeScreen = screenName;
+            _openScreen = string.Empty;
+        }
+
+        private bool AddAllUIScreensToDictionary()
         {
             allPages.Clear();
             foreach (UIScreen screen in FindObjectsOfType<UIScreen>())
@@ -57,6 +61,7 @@ namespace ArenaZ.Manager
                 allPages.Add(screen.name, screen);
             }
             DeactivateAllUI();
+            return true;
         }
 
         private void DeactivateAllUI()
@@ -67,25 +72,13 @@ namespace ArenaZ.Manager
             }
         }
 
-        public void DeactivateOtherPanels(string myPanel)
+        IEnumerator LogInCheck()
         {
-            List<string> uiNames = allPanels;
-            for (int i = 0; i < uiNames.Count; i++)
+            yield return new WaitUntil(()=> AddAllUIScreensToDictionary()==true);
+            if (PlayerPrefs.GetInt("AlreadyLoggedIn") == 0)
             {
-                if (allPages.ContainsKey(uiNames[i]) && myPanel!=uiNames[i])
-                {
-                    allPages[uiNames[i]].HideGameObjWithAnim();
-                }
-            }
-        }
-
-        private void LogInCheck()
-        {
-            if (PlayerPrefs.GetInt("AlreadyLoggedIn") == 1)
-            {
-                deativateAllUI.Add("AccountAccessDetails");
-            }
-            AddAllUIScreensToDictionary();
+                allPages[Page.AccountAccessDetails.ToString()].ShowGameObjWithAnim();
+            }            
         }
 
     }

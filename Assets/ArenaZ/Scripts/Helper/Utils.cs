@@ -7,6 +7,9 @@ public enum Page
 {
     CharacterSelection,
     AccountAccessDetails,
+    AcoountAccesOverlay,
+    RegistrationOverlay,
+    LogINOverlay,
     LevelSelection,
     Settings,
     LeaderBoard,
@@ -18,5 +21,17 @@ public enum Page
     DrawMatch,
     PlayerLoose,
     PlayerWin,
-    Shootingrange
+    Shootingrange,
+    Canines,
+    Kepler,
+    Cyborg,
+    CyborgSecond,
+    Human,
+    Ebot,
+    KeplerSecond
+}
+public enum Hide
+{
+    previous,
+    none
 }

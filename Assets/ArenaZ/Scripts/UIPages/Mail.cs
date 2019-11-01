@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using ArenaZ.Mail;
 using System;
+using ArenaZ.AccountAccess;
 
 public class Mail : MonoBehaviour
 {
