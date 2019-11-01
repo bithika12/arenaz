@@ -3,13 +3,16 @@ using UnityEngine;
 using System.Collections;
 
 
-namespace ArenaZ.ScreenManagement
+namespace ArenaZ.Screens
 {
     /// <summary>
     /// In this class add default activity of each screens (like animation, show, hide etc)
     /// </summary>
     public class UIScreen : MonoBehaviour
     {
+        private readonly string showTrigger = "Straight";
+        private readonly string hideTrigger = "Reverse";
+
         protected Animator animator;
         protected virtual void Awake()
         {
@@ -19,39 +22,32 @@ namespace ArenaZ.ScreenManagement
             }
         }
 
-        public void Show()
+        protected void Show()
         {
-            if (gameObject.activeSelf)
-            {
-                return;
-            }
-            else
-            {
-                gameObject.SetActive(true);
-            }
+            gameObject.SetActive(true);
         }
 
-        public void Hide()
+        protected void Hide()
         {
-            if (!gameObject.activeSelf)
-            {
-                return;
-            }
-            else
-            {
-                gameObject.SetActive(false);
-            }
+            gameObject.SetActive(false);
         }
 
-        public void ShowGameObjWithAnim(string triggerName)
+        public void ShowGameObjWithAnim()
         {
+            Debug.Log($"Showing Animation {name}");
             Show();
-            animator.SetTrigger(triggerName);            
+            if (animator != null)
+                animator.SetTrigger(showTrigger);            
         }
 
-        public void HideGameObjWithAnim(string triggerName)
+        public void HideGameObjWithAnim()
         {
-            animator.SetTrigger(triggerName);
+            if (animator == null)
+            {
+                Hide();
+                return;
+            }
+            animator.SetTrigger(hideTrigger);
             StartCoroutine(HideAfterAnimation());
         }
 

@@ -40,7 +40,7 @@ public class Mail : MonoBehaviour
 
     private void ShowMessagePopup()
     {
-        MailboxManager.Instance.MailPopup.GetComponent<UIScreenChild>().ShowGameObjWithAnim("Straight");  
+        MailboxManager.Instance.MailPopup.GetComponent<UIScreenChild>().ShowGameObjWithAnim();  
     }
 
     private void ClickToShowAndHideViewButton()

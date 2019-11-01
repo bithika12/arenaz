@@ -5,7 +5,7 @@ using UnityEngine.UI.Extensions;
 
 public class CharacterNameShowAndHide : MonoBehaviour
 {
-    UIScreenChild[] names = new UIScreenChild[6];
+    private UIScreenChild[] names = new UIScreenChild[6];
     [SerializeField]
     private HorizontalScrollSnap horizontalScrollSnap;
 
@@ -18,13 +18,13 @@ public class CharacterNameShowAndHide : MonoBehaviour
     {
         for (int i = 1; i < names.Length; i++)
         {
-            names[i].Hide();
+            names[i].HideGameObjWithAnim();
         }
     }
     public void PageChecker()
     {
-        names[horizontalScrollSnap.CurrentPage].Show();
-        names[horizontalScrollSnap._previousPage].Hide();
+        names[horizontalScrollSnap.CurrentPage].ShowGameObjWithAnim();
+        names[horizontalScrollSnap._previousPage].HideGameObjWithAnim();
     }
 }   
    

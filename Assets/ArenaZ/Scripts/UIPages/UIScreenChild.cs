@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using ArenaZ.ScreenManagement;
+using ArenaZ.Screens;
 
 public class UIScreenChild : UIScreen
 {

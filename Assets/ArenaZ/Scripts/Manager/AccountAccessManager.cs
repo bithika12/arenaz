@@ -11,7 +11,7 @@ namespace ArenaZ.AccountAccess
         // Start is called before the first frame update
         void Start()
         {
-            uiChild.ShowGameObjWithAnim("Straight");
+            uiChild.ShowGameObjWithAnim();
         }
     }
 }

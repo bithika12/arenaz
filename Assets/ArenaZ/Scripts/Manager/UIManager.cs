@@ -1,4 +1,4 @@
-﻿using ArenaZ.ScreenManagement ;
+﻿using ArenaZ.Screens;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -18,55 +18,52 @@ namespace ArenaZ.Manager
         [SerializeField]
         private List<string> allPanels;
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
-        private Action invokeMandatoryThingsAtStart;
 
-        
+        private string _openScreen;
+
         private void Start()
         {
-            invokeMandatoryThingsAtStart?.Invoke();
-            Debug.Log(Screen.safeArea);
+            Debug.Log(UnityEngine.Screen.safeArea);
         }
 
         private void OnEnable()
         {
-            invokeMandatoryThingsAtStart += LogInCheck;
-            invokeMandatoryThingsAtStart += AddAllUIScreensToDictionary;
-            invokeMandatoryThingsAtStart += DeactivateAllUI;
-            invokeMandatoryThingsAtStart += StartAnimations;
-        }
-
-        private void OnDisable()
-        {
-            invokeMandatoryThingsAtStart -= LogInCheck;
-            invokeMandatoryThingsAtStart -= AddAllUIScreensToDictionary;
-            invokeMandatoryThingsAtStart -= DeactivateAllUI;
-            invokeMandatoryThingsAtStart -= StartAnimations;
+            LogInCheck();
+            StartAnimations();
         }
 
         private void StartAnimations()
         {
-            allPages["TopAndBottomBar"].ShowGameObjWithAnim("Straight");
-            allPages["AccountAccessDetails"].ShowGameObjWithAnim("Straight");
+            allPages[Page.TopAndBottomBar.ToString()].ShowGameObjWithAnim();
+            allPages[Page.AccountAccessDetails.ToString()].ShowGameObjWithAnim();
+        }
+
+        public void ShowScreen(string screenName)
+        {
+            if (_openScreen.Equals(screenName))
+                return;
+
+            allPages[screenName].ShowGameObjWithAnim();
+            if (allPages.ContainsKey(_openScreen))
+                allPages[_openScreen].HideGameObjWithAnim();
+            _openScreen = screenName;
         }
 
         private void AddAllUIScreensToDictionary()
         {
             allPages.Clear();
-            foreach (UIScreen child in FindObjectsOfType<UIScreen>())
+            foreach (UIScreen screen in FindObjectsOfType<UIScreen>())
             {
-                allPages.Add(child.name, child);
+                allPages.Add(screen.name, screen);
             }
-
+            DeactivateAllUI();
         }
 
         private void DeactivateAllUI()
         {
-            for (int i = 0; i < deativateAllUI.Count; i++)
+            foreach(KeyValuePair<string, UIScreen> child in allPages)
             {
-                if(allPages.ContainsKey(deativateAllUI[i]))
-                {
-                    allPages[deativateAllUI[i]].Hide();
-                }
+                child.Value.gameObject.SetActive(false);
             }
         }
 
@@ -77,7 +74,7 @@ namespace ArenaZ.Manager
             {
                 if (allPages.ContainsKey(uiNames[i]) && myPanel!=uiNames[i])
                 {
-                    allPages[uiNames[i]].Hide();
+                    allPages[uiNames[i]].HideGameObjWithAnim();
                 }
             }
         }
@@ -88,6 +85,7 @@ namespace ArenaZ.Manager
             {
                 deativateAllUI.Add("AccountAccessDetails");
             }
+            AddAllUIScreensToDictionary();
         }
 
     }
