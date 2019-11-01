@@ -8,17 +8,19 @@ namespace ArenaZ.ShootingObject
 {
     public class Dart : MonoBehaviour
     {
-        public Rigidbody rb;
+        public Rigidbody dartRB;
+
+        private readonly float _screenMiddleOffset = 4.0f; // Y axis
 
         private void Start()
         {
-            rb = GetComponent<Rigidbody>();
+            dartRB = GetComponent<Rigidbody>();
         }
 
-        private Vector3 BallisticVelocity(Vector3 thisPosition, float angle)
+        private Vector3 BallisticVelocity(Vector3 hitPosition, float angle)
         {
-            rb.useGravity = true;
-            Vector3 direction = thisPosition - transform.position; // Need to change this transform position
+            dartRB.useGravity = true;
+            Vector3 direction = hitPosition - transform.position; // Need to change this transform position
             float height = direction.y;
             direction.y = 0;
             float dist = direction.magnitude;
@@ -32,14 +34,14 @@ namespace ArenaZ.ShootingObject
         public void MoveInCurvePath(Vector3 endPosition)
         {
             Vector3 middlePos = (transform.position + endPosition) / 2;
-            middlePos.y = middlePos.y + 4f;
+            middlePos.y = middlePos.y + _screenMiddleOffset;
             Vector3[] pos = { transform.position, middlePos, endPosition };
             transform.DOPath(pos, 0.5f, PathType.CatmullRom).SetEase(Ease.Linear).SetLookAt(1, Vector3.up);
         }
 
         public void MoveInProjectilePath(Vector3 endPosition, float angle)
         {
-            rb.velocity = BallisticVelocity(endPosition, angle);
+            dartRB.velocity = BallisticVelocity(endPosition, angle);
         }
     }
 }
