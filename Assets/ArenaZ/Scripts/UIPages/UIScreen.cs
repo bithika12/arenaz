@@ -34,7 +34,7 @@ namespace ArenaZ.Screens
 
         public void ShowGameObjWithAnim()
         {
-            Debug.Log($"Showing Animation {name}");
+           // Debug.Log($"Showing Animation {name}");
             Show();
             if (animator != null)
                 animator.SetTrigger(showTrigger);            

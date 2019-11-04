@@ -24,7 +24,7 @@ namespace ArenaZ.Manager
 
         private void StartAnimations()
         {
-            allPages[Page.TopAndBottomBar.ToString()].ShowGameObjWithAnim();
+            ShowScreen(Page.TopAndBottomBar.ToString(), Hide.none);
         }
 
         public void ShowScreen(string screenName,Hide type)
@@ -38,6 +38,7 @@ namespace ArenaZ.Manager
             {
                 allPages[_openScreen].SetActive(false);
             }
+            Debug.Log("Previous Screen Name:  " + _openScreen);
             _openScreen = screenName;
             closeScreen = string.Empty;
         }
@@ -77,7 +78,7 @@ namespace ArenaZ.Manager
             yield return new WaitUntil(()=> AddAllUIScreensToDictionary()==true);
             if (PlayerPrefs.GetInt("AlreadyLoggedIn") == 0)
             {
-                allPages[Page.AccountAccessDetails.ToString()].ShowGameObjWithAnim();
+                ShowScreen(Page.AccountAccessDetails.ToString(), Hide.none);
             }            
         }
 

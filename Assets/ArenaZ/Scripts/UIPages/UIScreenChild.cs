@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
-using ArenaZ.Screens;
 
-public class UIScreenChild : UIScreen
+namespace ArenaZ.Screens
 {
-    protected override void Awake()
+    public class UIScreenChild : UIScreen
     {
-       if(GetComponent<Animator>())
+        protected override void Awake()
         {
-            animator = GetComponent<Animator>();
+            if (GetComponent<Animator>())
+            {
+                animator = GetComponent<Animator>();
+            }
         }
     }
 }

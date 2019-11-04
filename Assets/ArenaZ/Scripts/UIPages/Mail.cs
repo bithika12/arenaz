@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Mail;
+using ArenaZ.Screens;
 using System;
 using ArenaZ.AccountAccess;
 

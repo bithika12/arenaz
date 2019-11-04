@@ -26,8 +26,10 @@ namespace ArenaZ.AccountAccess
         private Button forgotButton;
         [SerializeField]
         private Button loginButton;
+        [SerializeField]
+        private Button closeButton;
         //public Variables
-       
+
 
         private void Start()
         {
@@ -51,6 +53,7 @@ namespace ArenaZ.AccountAccess
             registerButton.onClick.AddListener(OpenRegisterPopUp);
             forgotButton.onClick.AddListener(CloseLogInPopUp);
             loginButton.onClick.AddListener(OpenCharacterUI);
+            closeButton.onClick.AddListener(CloseAccountAccessPopUp);
         }
 
         private void ReleaseButtonReferences()
@@ -61,10 +64,12 @@ namespace ArenaZ.AccountAccess
             registerButton.onClick.RemoveListener(OpenAccountAccessPopUp);
             forgotButton.onClick.RemoveListener(CloseLogInPopUp);
             loginButton.onClick.RemoveListener(OpenCharacterUI);
+            closeButton.onClick.RemoveListener(CloseAccountAccessPopUp);
         }
 
         private void OpenCharacterUI()
         {
+            UIManager.Instance.HideScreen(Page.AccountAccessDetails.ToString());
             UIManager.Instance.ShowScreen(Page.CharacterSelection.ToString(), Hide.previous);
         }
 

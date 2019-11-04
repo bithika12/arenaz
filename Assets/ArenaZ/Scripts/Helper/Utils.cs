@@ -28,10 +28,17 @@ public enum Page
     CyborgSecond,
     Human,
     Ebot,
-    KeplerSecond
+    KeplerSecond,
+    ComingSoonOverlay
 }
 public enum Hide
 {
     previous,
     none
+}
+
+public enum GameType
+{
+    normal,
+    training
 }
