@@ -16,6 +16,7 @@ namespace ArenaZ.Manager
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
         private string _openScreen = string.Empty;
         private string closeScreen = string.Empty;
+        private string characterName = string.Empty;
         private void Start()
         {
             StartCoroutine(LogInCheck());
@@ -34,13 +35,31 @@ namespace ArenaZ.Manager
                 return;
             }
             allPages[screenName].ShowGameObjWithAnim();
-            if (allPages.ContainsKey(_openScreen) && type == Hide.previous)
+            if (_openScreen.Contains(string.Empty) && type == Hide.previous)
+            {
+                _openScreen = screenName;
+            }
+            else if(allPages.ContainsKey(_openScreen) && type == Hide.previous)
             {
                 allPages[_openScreen].SetActive(false);
+                _openScreen = screenName;
             }
-            Debug.Log("Previous Screen Name:  " + _openScreen);
-            _openScreen = screenName;
+            Debug.Log("Previous Screen Name:  " + _openScreen);                             
             closeScreen = string.Empty;
+        }
+
+        public void ShowCharacterName(string name)
+        {
+            if (characterName.Equals(name) || !allPages.ContainsKey(name))
+            {
+                return;
+            }
+            allPages[name].ShowGameObjWithAnim();
+            if (allPages.ContainsKey(characterName))
+            {
+                allPages[characterName].SetActive(false);
+            }
+            characterName = name;
         }
 
         public void HideScreen(string screenName)

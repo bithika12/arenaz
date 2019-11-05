@@ -1,9 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ShootingRange : MonoBehaviour
+namespace ArenaZ.GameMode
 {
-    
+    public class ShootingRange : MonoBehaviour
+    {
+        [SerializeField] private Button shootingRangeBackButton,coin;
+    }
 }

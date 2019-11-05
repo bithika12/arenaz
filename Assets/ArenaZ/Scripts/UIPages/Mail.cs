@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using ArenaZ.Mail;
 using ArenaZ.Screens;
 using System;
-using ArenaZ.AccountAccess;
+using ArenaZ.Manager;
 
 public class Mail : MonoBehaviour
 {
@@ -42,7 +42,7 @@ public class Mail : MonoBehaviour
 
     private void ShowMessagePopup()
     {
-        MailboxManager.Instance.MailPopup.GetComponent<UIScreenChild>().ShowGameObjWithAnim();  
+        UIManager.Instance.ShowScreen(Page.MailPopUp.ToString(), Hide.none);
     }
 
     private void ClickToShowAndHideViewButton()

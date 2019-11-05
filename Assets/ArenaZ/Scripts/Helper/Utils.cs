@@ -1,8 +1,4 @@
-﻿public static class Utils
-{
-
-}
-
+﻿
 public enum Page
 {
     CharacterSelection,
@@ -15,6 +11,7 @@ public enum Page
     LeaderBoard,
     PlayerMatchHistory,
     Mailbox,
+    MailPopUp,
     InfoAndRulesForPlayer,
     TopAndBottomBar,
     PlayerMatch,
@@ -34,6 +31,13 @@ public enum Page
 public enum Hide
 {
     previous,
+    none
+}
+
+public enum Store
+{
+    characterName,
+    uiName,
     none
 }
 

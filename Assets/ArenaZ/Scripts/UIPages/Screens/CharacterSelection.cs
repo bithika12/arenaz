@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
 using UnityEngine.UI.Extensions;
+using ArenaZ.LevelSelection;
 
 [RequireComponent (typeof(UIScreen))]
 public class CharacterSelection : MonoBehaviour
@@ -52,19 +53,19 @@ public class CharacterSelection : MonoBehaviour
 
     private void ShowFirstText()
     {
-        UIManager.Instance.ShowScreen(Page.Canines.ToString(), Hide.none);
+        UIManager.Instance.ShowCharacterName(Page.Canines.ToString());
     }
 
     public void PageChecker(int pageNo)
     {
-        UIManager.Instance.ShowScreen(names[pageNo], Hide.previous);
+        UIManager.Instance.ShowCharacterName(names[pageNo]);
     }
 
     private void OnClickArena()
     {
         UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
         UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
-        UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(), Hide.none);
+        UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(),Hide.none);
         levelSelection.OnSelectionGameplayType(GameType.normal);
     }
 
@@ -72,7 +73,7 @@ public class CharacterSelection : MonoBehaviour
     {
         UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
         UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
-        UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(), Hide.none);
+        UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(),Hide.none);
         levelSelection.OnSelectionGameplayType(GameType.training);
     }
      
