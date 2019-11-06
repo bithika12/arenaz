@@ -1,0 +1,29 @@
+﻿{
+  "development": {
+    "username": "root",
+    "password": "",
+    "database": "database_test",
+    "host"    : "127.0.0.1",
+    "timezone": "00:00",
+    "dialect" : "mysql",
+    "dialectOptions": {
+        "charset": "utf8mb4_unicode_ci"
+    },
+    "datetime":"yyyy-MM-dd HH:mm:ss",
+    "logging":false
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "redapple2014",
+    "database": "sporco",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
