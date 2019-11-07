@@ -28,6 +28,29 @@ public enum Page
     KeplerSecond,
     ComingSoonOverlay
 }
+
+public enum ButtonType
+{
+    CloseImage,
+    GreenImageAccAccess,
+    GreenImageCharacter,
+    GreenImageMailBox,
+    GreenImageSettings,
+    GreenImageShootingRange,
+    GreenImageYouWinLoose,
+    YellowImagecharacter,
+    YellowImageDraw,
+    BackImage,
+    HistoryImage,
+    InfoAndRulesImage,
+    SettingsImage,
+    MailboxImage,
+    PlusImage,
+    RightArrow,
+    LeftArrow,
+    None
+}
+
 public enum Hide
 {
     previous,

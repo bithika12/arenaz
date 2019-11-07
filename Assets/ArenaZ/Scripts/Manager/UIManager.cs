@@ -17,6 +17,8 @@ namespace ArenaZ.Manager
         private string _openScreen = string.Empty;
         private string closeScreen = string.Empty;
         private string characterName = string.Empty;
+        [SerializeField]private ImageType[] allButtonImages = new ImageType[17];
+
         private void Start()
         {
             StartCoroutine(LogInCheck());
@@ -35,12 +37,14 @@ namespace ArenaZ.Manager
                 return;
             }
             allPages[screenName].ShowGameObjWithAnim();
-            if (_openScreen.Contains(string.Empty) && type == Hide.previous)
+            if (_openScreen==string.Empty && type == Hide.previous)
             {
                 _openScreen = screenName;
+                Debug.Log("EmptyString  "+_openScreen);
             }
             else if(allPages.ContainsKey(_openScreen) && type == Hide.previous)
             {
+                Debug.Log("PuttingString");
                 allPages[_openScreen].SetActive(false);
                 _openScreen = screenName;
             }
@@ -62,8 +66,21 @@ namespace ArenaZ.Manager
             characterName = name;
         }
 
+        public ImageType ButtonImageType(ButtonType type)
+        {
+            for (int i = 0; i < allButtonImages.Length; i++)
+            {
+                if(allButtonImages[i].buttonType == type)
+                {
+                    return allButtonImages[i];
+                }
+            }
+            return default;
+        }
+
         public void HideScreen(string screenName)
         {
+            Debug.Log("Hide Screen" + name);
             if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
             {
                 return;
@@ -102,4 +119,15 @@ namespace ArenaZ.Manager
         }
 
     }
+
+    [Serializable]
+    public struct ImageType
+    {
+        public ButtonType buttonType;
+        public Sprite normalSprite;
+        public Sprite pressedSprite;
+        public Sprite disabledSprite;
+        
+    }
+
 }
