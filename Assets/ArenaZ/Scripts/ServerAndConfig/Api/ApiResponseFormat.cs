@@ -1,4 +1,4 @@
-namespace ArenaZ.Api
+namespace RedApple.Api
 {
     public class ApiResponseFormat<T>
     {

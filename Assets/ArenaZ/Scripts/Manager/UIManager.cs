@@ -40,15 +40,12 @@ namespace ArenaZ.Manager
             if (_openScreen==string.Empty && type == Hide.previous)
             {
                 _openScreen = screenName;
-                Debug.Log("EmptyString  "+_openScreen);
             }
             else if(allPages.ContainsKey(_openScreen) && type == Hide.previous)
             {
-                Debug.Log("PuttingString");
                 allPages[_openScreen].SetActive(false);
                 _openScreen = screenName;
-            }
-            Debug.Log("Previous Screen Name:  " + _openScreen);                             
+            }                           
             closeScreen = string.Empty;
         }
 

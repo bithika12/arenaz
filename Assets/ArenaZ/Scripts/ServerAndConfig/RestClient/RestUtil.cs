@@ -6,10 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using RedApple.Api;
+using RedApple;
 
 namespace RedApple.Utils
 {
-    public class RestUtil<T> where T : new()
+    public class RestUtil
     {
         private const long HTTP_OK = 200;
         private const long HTTP_CREATED = 201;
@@ -31,9 +33,9 @@ namespace RedApple.Utils
             Start();
         }
 
-        public static RestUtil<T> Initialize(MonoBehaviour monoBehaviour)
+        public static RestUtil Initialize(MonoBehaviour monoBehaviour)
         {
-            return new RestUtil<T>(monoBehaviour);
+            return new RestUtil(monoBehaviour);
         }
 
         //public IEnumerator GetRaw(string url, RequestCompletedDelegate<byte[]> onCompletion, RequestErrorDelegate onError)
@@ -88,13 +90,19 @@ namespace RedApple.Utils
 
                 currentCall = callQueue.Dequeue();
                 currentCall.Request = currentCall.Builder.Build();
+                #if LOADING
+                ScreenManager.Instance.Loading = true;
+                #endif
                 #if DEBUG_REST_CALLS
-                Debug.LogFormat("Making call to: {0}", currentCall.Request.url);
+                Debug.LogFormat("Making {0} call to: {1}", currentCall.Request.method, currentCall.Request.url);
                 #endif
                 yield return currentCall.Request.SendWebRequest();
+                #if LOADING
+                ScreenManager.Instance.Loading = false;
+                #endif
 
 #if DEBUG_REST_CALLS
-                Debug.LogFormat("Call completed with status {0}", currentCall.Request.responseCode);
+                Debug.LogFormat("Call {0} completed with status {1}", currentCall.Request.url, currentCall.Request.responseCode);
 #endif
                 if (currentCall.Request.responseCode == HTTP_OK || currentCall.Request.responseCode == HTTP_CREATED)
                 {
@@ -112,20 +120,18 @@ namespace RedApple.Utils
                         Headers = currentCall.Request.GetResponseHeaders(),
                     };
 
-                    //OauthErrorResponse oauthResponse =
-                    //    JsonConvert.DeserializeObject<OauthErrorResponse>(currentCall.Request.downloadHandler.text);
-
-                    //if (!string.IsNullOrEmpty(oauthResponse.Error))
-                    //{
-                    //    restCallError.Error = oauthResponse.Error;
-                    //    restCallError.Description = oauthResponse.Description;
-                    //    restCallError.Response = null;
-                    //}
-                    //else
-                    //{
-                    //    restCallError.Response = JsonConvert.DeserializeObject<ApiErrorResponse>(currentCall.Request.downloadHandler.text);
-                    //    restCallError.Error = currentCall.Request.error;
-                    //}
+                    var oauthResponse = DataConverter.DeserializeObject<ApiResponseFormat<OauthErrorResponse>>(restCallError.Raw);
+                    if (oauthResponse.Data != null)
+                    {
+                        restCallError.Error = oauthResponse.Data.Error;
+                        restCallError.Description = oauthResponse.Data.ErrorDescription;
+                    }
+                    else
+                    {
+                        var deSerializedData = DataConverter.DeserializeObject<ApiResponseFormat<string>>(restCallError.Raw);
+                        restCallError.Error = deSerializedData.Status.ToString();
+                        restCallError.Description = deSerializedData.Message;
+                    }
 
                     currentCall.OnError(restCallError);
                 }
@@ -142,7 +148,6 @@ namespace RedApple.Utils
             public string Error;
             public string Description;
             public Dictionary<string, string> Headers;
-            public T Response;
         }
 
         private class Call

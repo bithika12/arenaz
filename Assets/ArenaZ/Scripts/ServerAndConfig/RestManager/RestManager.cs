@@ -1,13 +1,13 @@
 ﻿using System;
 using RedApple.Utils.Rest;
-using Newtonsoft.Json;
-using ArenaZ.Api;
+using RedApple.Api;
+using RedApple.Api.Data;
 using UnityEngine;
-using RestUtil = RedApple.Utils.RestUtil<ArenaZ.Api.ApiErrorResponse>;
-using CreateAccountResponse = ArenaZ.Api.ApiResponseFormat<ArenaZ.Api.CreateAccountResponse>;
-using RedApple.Utils;
+using RestUtil = RedApple.Utils.RestUtil;
+using RestError = RedApple.Utils.RestUtil.RestCallError;
+using UnityEngine.Networking;
 
-namespace ArenaZ.Manager
+namespace RedApple
 {
     public class RestManager : MonoBehaviour
     {
@@ -21,6 +21,7 @@ namespace ArenaZ.Manager
         private string userAccessToken;
         private string refreshToken;
 
+        private string clientAccessToken = "";
 
         public void Awake()
         {
@@ -30,77 +31,88 @@ namespace ArenaZ.Manager
                 return;
             }
 
-
             instance = this;
             DontDestroyOnLoad(gameObject);
 
             restUtil = RestUtil.Initialize(this);
         }
 
-        #region Authentication
+        #region UserProfile
 
-        public static void CreateAccount(string data, Action<CreateAccountResponse> onCompletion, Action<RestUtil.RestCallError> onError)
+        public static void UpdateUserProfile<T>(string name, string locaton, Action<T> onCompletion,
+            Action<RestError> onError)
         {
             var builder = new WebRequestBuilder()
-                .Url(getApiUrl(APIConstants.API_REGISTER))
-                .Verb(Verbs.POST)
-                .FormData(APIConstants.FIRST_NAME, "dummyData")
-                .FormData(APIConstants.LAST_NAME, "dummyData")
-                .FormData(APIConstants.EMAIL_ID, "dummyData")
-                .FormData(APIConstants.PASSWORD, "dummyData")
-                .FormData(APIConstants.CONFIRM_PASSWORD, "dummyData");
+                .Url(getApiUrl(Urls.PROFILE))
+                .Verb(Verbs.PUT)
+                .FormData(Attributes.NAME, name)
+                .FormData(Attributes.LOCATION, locaton);
 
-            //addClientAuthHeader(ref builder);
-
-            SendWebRequest<CreateAccountResponse>(builder, onCompletion, onError);
+            addUserAuthHeader(ref builder);
+            sendWebRequest(builder, onCompletion, onError);
         }
 
         #endregion
 
-        private static void SendWebRequest<T>(WebRequestBuilder builder, Action<T> onCompletion, Action<RestUtil<ApiErrorResponse>.RestCallError> onError)
+        public static void ProfileRegistration(string email_id, string name, string password, string confirmPassword, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
         {
-            instance.restUtil.Send(builder, handler =>
-            {
-                Debug.Log($"Response Data of {builder.url} :: {handler.text}");
-                var response = DataConverter.DeserializeObject<T>(handler.text);// JsonConvert.DeserializeObject<T>(handler.text);
-                if (onCompletion != null)
-                {
-                    onCompletion(response);
-                }
-            }, restError =>
-            {
-                interceptError(
-                 restError, () =>
-                 {
-                     if (onError != null)
-                         onError(restError);
-                 }, onError);
-            });
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+            .Url(getApiUrl(Urls.REGISTER))
+            .Verb(Verbs.POST)
+            .FormData(Attributes.EMAIL_ID, email_id)
+            .FormData(Attributes.NAME, name)
+            .FormData(Attributes.PASSWORD, password)
+            .FormData(Attributes.CONFIRM_PASSWORD, confirmPassword);
+
+            addUserAuthHeader(ref webRqstBuilder);
+            sendWebRequest(webRqstBuilder, onCompletionRegistration, restError);
         }
 
-        private static void interceptError(RestUtil.RestCallError error, Action onSuccess,
-            Action<RestUtil.RestCallError> defaultOnError)
+        public static void LoginProfile(string email_id,string name,string password,Action<UserLogin> onCompletionLogin,Action<RestError> restError)
         {
-            if ("invalid_grant".Equals(error.Error))
-            {
-                defaultOnError(new RestUtil.RestCallError() { Response = new ApiErrorResponse() { Message = error.Description } });
-            }
-            else
-            {
-                defaultOnError(error);
-            }
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.USER_LOGIN))
+                .Verb(Verbs.POST)
+                .FormData(Attributes.EMAIL_ID, email_id)
+                .FormData(Attributes.NAME, name)
+                .FormData(Attributes.PASSWORD, password);
+
+            addClientAuthHeader(ref webRqstBuilder);
+            sendWebRequest(webRqstBuilder, onCompletionLogin, restError);
+        }
+
+        private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
+        {
+            instance.restUtil.Send(builder, handler => { onCompletion?.Invoke(); },
+                restError => interceptError(restError, () => onError?.Invoke(restError), onError));
+        }
+
+        private static void sendWebRequest<T>(WebRequestBuilder builder, Action<T> onCompletion,
+            Action<RestError> onError = null)
+        {
+            instance.restUtil.Send(builder,
+                handler =>
+                {
+                    var response = DataConverter.DeserializeObject<ApiResponseFormat<T>>(handler.text);
+                    onCompletion?.Invoke(response.Data);
+                },
+                restError => interceptError(restError, () => onError?.Invoke(restError), onError));
+        }
+
+        private static void interceptError(RestError error, Action onSuccess,
+            Action<RestError> defaultOnError)
+        {
+             defaultOnError?.Invoke(error);
         }
 
         private static string getApiUrl(string path)
         {
-            return string.Format("{0}{1}", Config.Api.Host, path);
+            return $"{Config.Api.Host}{path}";
         }
 
-        private static string getApiUrlWithPath(string path, params string[] paths)
+        protected static string FormatApiUrl(string path, params object[] args)
         {
-            string additionalPath = string.Join("/", paths);
-            string finalPath = string.Format("{0}{1}{2}", path, "/", additionalPath);
-            return string.Format("{0}{1}", Config.Api.Host, finalPath);
+            return string.Format($"{Config.Api.Host}{path}", args);
         }
 
         private static void addSecurityHeaders(ref WebRequestBuilder builder)
@@ -112,6 +124,11 @@ namespace ArenaZ.Manager
         private static void addUserAuthHeader(ref WebRequestBuilder builder)
         {
             builder.Header("Authorization", string.Format("Bearer {0}", instance.userAccessToken));
+        }
+
+        private static void addClientAuthHeader(ref WebRequestBuilder builder)
+        {
+            builder.Header("Authorization", string.Format("Bearer {0}", instance.clientAccessToken));
         }
     }
 }

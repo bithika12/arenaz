@@ -6,6 +6,9 @@ using ArenaZ.Manager;
 using ArenaZ.Screens;
 using System;
 using UnityEngine.Events;
+using RedApple;
+using RedApple.Utils;
+using RedApple.Api.Data;
 
 namespace ArenaZ.AccountAccess
 {
@@ -47,10 +50,10 @@ namespace ArenaZ.AccountAccess
 
         private void GettingButtonReferences()
         {
-            preRegisterButton.onClick.AddListener(OpenRegisterPopUp);
+            preRegisterButton.onClick.AddListener(RegisterButtonClicked);
             preLoginButton.onClick.AddListener(OpenLogInPopUp);
             registersBackButton.onClick.AddListener(CloseRegisterPopUp);
-            registerButton.onClick.AddListener(OpenRegisterPopUp);
+            registerButton.onClick.AddListener(RegisterButtonClicked);
             forgotButton.onClick.AddListener(CloseLogInPopUp);
             loginButton.onClick.AddListener(OpenCharacterUI);
             closeButton.onClick.AddListener(CloseAccountAccessPopUp);
@@ -58,7 +61,7 @@ namespace ArenaZ.AccountAccess
 
         private void ReleaseButtonReferences()
         {
-            preRegisterButton.onClick.RemoveListener(OpenRegisterPopUp);
+            preRegisterButton.onClick.RemoveListener(RegisterButtonClicked);
             preLoginButton.onClick.RemoveListener(OpenLogInPopUp);
             registersBackButton.onClick.RemoveListener(CloseRegisterPopUp);
             registerButton.onClick.RemoveListener(OpenAccountAccessPopUp);
@@ -69,13 +72,30 @@ namespace ArenaZ.AccountAccess
 
         private void OpenCharacterUI()
         {
-            UIManager.Instance.HideScreen(Page.AccountAccessDetails.ToString());
-            UIManager.Instance.ShowScreen(Page.CharacterSelection.ToString(), Hide.previous);
+            //UIManager.Instance.HideScreen(Page.AccountAccessDetails.ToString());
+            //UIManager.Instance.ShowScreen(Page.CharacterSelection.ToString(), Hide.previous);
+            RestManager.LoginProfile("", "", "", OnCompleteRegistration, OnError);
         }
 
-        private void OpenRegisterPopUp()
+        private void OnCompleteRegistration(UserLogin loggedinProfile)
         {
-            UIManager.Instance.ShowScreen(Page.RegistrationOverlay.ToString(),Hide.none);
+            Debug.Log("Logged In Profile:  "+loggedinProfile.id);
+        }
+
+        private void RegisterButtonClicked()
+        {
+            //UIManager.Instance.ShowScreen(Page.RegistrationOverlay.ToString(),Hide.none);
+            RestManager.ProfileRegistration("", "", "", "", OnCompleteLogin, OnError);
+        }
+
+        private void OnError(RestUtil.RestCallError obj)
+        {
+            Debug.LogError(obj.Error);
+        }
+
+        private void OnCompleteLogin(CreateAccount registeredProfile)
+        {
+            Debug.Log("Registered:  "+registeredProfile.id);
         }
 
         private void CloseRegisterPopUp()

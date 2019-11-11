@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System.ComponentModel;
 
-namespace ArenaZ
+namespace RedApple
 {
     public static class DataConverter
     {
