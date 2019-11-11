@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "com.e7.notch-solution": "git://github.com/5argon/NotchSolution.git",
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.2d.tilemap": "1.0.0",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ext.nunit": "1.0.0",
     "com.unity.ide.rider": "1.1.0",
@@ -40,5 +43,11 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
+  },
+  "lock": {
+    "com.e7.notch-solution": {
+      "hash": "c19fd7fb325934bf2285fbd6b704724ad816e044",
+      "revision": "HEAD"
+    }
   }
 }
