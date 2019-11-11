@@ -8,23 +8,20 @@ auth.authChecker = function(req, res, next) {
     if(!req.header("access-token")){
        return res.send({"status":constants.PARAMMISSING_STATUS,"error":{},"message":"Access token missing !"});
     }
-    User.checkUserToken({"access_token":req.header("access-token")}).then(function (userauthdetails) {
-       if( userauthdetails.device_details[0].status == "active"){
-           if( userauthdetails.status == "active" ){            
+    User.checkUserToken({"accessToken":req.header("access-token")}).then(function (userAuthDetails) {
+       if( userAuthDetails.deviceDetails[0].status == "active"){
+           if( userAuthDetails.status == "active" ){            
                 res.userData ={
-                        _id              :   userauthdetails._id,
-                        name             :   (!userauthdetails.name)?"":userauthdetails.name,
-                        email            :   (!userauthdetails.email)?"":userauthdetails.email,
-                        avatar_id        :   (!userauthdetails.avatar_id)?"":userauthdetails.avatar_id,
-                        image            :   (!userauthdetails.image)?"":userauthdetails.image,
-                        score            :   (!userauthdetails.score)?0.0:userauthdetails.score,
-                        access_token     :   userauthdetails.device_details[0].access_token
+                        _id              :   userAuthDetails._id,
+                        userName         :   (!userAuthDetails.userName)?"":userAuthDetails.userName,
+                        email            :   (!userAuthDetails.email)?"":userAuthDetails.email,
+                        accessToken      :   userAuthDetails.deviceDetails[0].accessToken
                 };
                 next();
             }else{
                 return res.send({"status":constants.BLOCKED_BY_ADMIN,"error":{},"message":"You are blocked by admin!!"});
             }    
-        }else if(userauthdetails.device_details[0].status == "inactive"){
+        }else if(userAuthDetails.deviceDetails[0].status == "inactive"){
             return res.send({"status":constants.LOGIN_ANOTHER_DEVICE,"error":{},"message":"You have login another device!!"});
         }else{
             return res.send({"status":constants.INVALID_TOKEN,"error":{},"message":"Invalid auth token !!"});

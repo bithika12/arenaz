@@ -18,8 +18,8 @@ const password = require('../utils/PasswordManage');
 
 function checkUnique(reqObj){
     return function (callback) {
-       User.totalUser({email : reqObj.email}).then((totaluser) => {
-          if(totaluser == 0)
+       User.totalUser({email : reqObj.email}).then((totalUser) => {
+          if(totalUser == 0)
              callback (null,reqObj);
           else{
              callback (constants.UNIQUIE_EMAIL,null);
@@ -33,9 +33,9 @@ function checkUnique(reqObj){
 
 function getUserDetails(reqObj){
   return function(callback){
-    User.findDetails({email:reqObj.email}).then((userdetails)=>{
-       if(password._comparePasswordSync(reqObj.password, userdetails.password)){
-            callback (null,userdetails);
+    User.findDetails({email:reqObj.email}).then((userDetails)=>{
+       if(password.comparePasswordSync(reqObj.password, userDetails.password)){
+            callback (null,userDetails);
        }else{
             callback(err,null)
        }
@@ -47,8 +47,8 @@ function getUserDetails(reqObj){
 
 function checkRole(reqObj,callback){
     Role.details({ slug : reqObj.userType
-}).then((roledetails) => {
-        reqObj.role = roledetails._id
+}).then((roleDetails) => {
+        reqObj.role = roleDetails._id
         delete reqObj.userType
 ;
         callback (null,reqObj);
@@ -79,16 +79,16 @@ function createUpdateUser(reqObj){
 }
 
 // function genarateToken(reqObj,user,callback){
-//     jwtTokenManage.generateToken({_id: user._id,facebook_id: user.facebook_id ,name :user.name}).then((tokendetails) => {        // 
-//         callback (null, user,tokendetails);
+//     jwtTokenManage.generateToken({_id: user._id,facebook_id: user.facebook_id ,name :user.name}).then((tokenDetails) => {        // 
+//         callback (null, user,tokenDetails);
 //     }).catch(err => {
 //         callback (err,null);
 //     });
 // }
-
+  
 function updateToken(user,callback){
-   User.updateToken({_id :user._id},{}).then((tokendetails) => {
-      user.set('accessToken', tokendetails[0].accessToken)
+   User.updateToken({_id :user._id},{}).then((tokenDetails) => {
+      user.set('accessToken', tokenDetails[0].accessToken)
       callback (null,user);
     }).catch(err => {
         callback (err,null);
@@ -101,6 +101,18 @@ exports.registration= function(req,res){
     if(!req.body.email || !req.body.userName || !req.body.password  ){
          return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
+
+    if(validateInput.password(req.body.password) == false){
+        return res.send(response.error(constants.ERROR_STATUS,{},"Password format doesn't match"));
+    }
+    if(validateInput.email(req.body.email) == false){
+        return res.send(response.error(constants.ERROR_STATUS,{},"Email format doesn't match"));
+    }
+    if(validateInput.userName(req.body.userName) == false){
+        return res.send(response.error(constants.ERROR_STATUS,{},"Username format doesn't match"));
+   }
+
+
 
     var userObj  ={email: req.body.email,password: req.body.password, userName:req.body.userName, userType:"registered-game-user" }
     async.waterfall([
@@ -165,7 +177,7 @@ exports.socialLogin= function(req,res){
 
 
 exports.logout = function (req,res) {
-    User.removeToken({accessToken: req.header("access-token")}).then(function (result) {
+    User.removeToken({accessToken: req.header("access-token"), _id : res.userData._id}).then(function (result) {
     		if(result) {
     		    res.send({"status": constants.SUCCESS_STATUS, "result":{ }, "message": "Logout successfully"});
     		}else{

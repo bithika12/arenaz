@@ -116,14 +116,7 @@ User.listing = function(condObj){
 User.findDetails = function(condObj){
   console.log(" condObj",)
   return  new Promise((resolve,reject) => {
-        User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).
-                populate({
-            path: 'role',
-             match: { slug: condObj.role},
-            // Explicitly exclude `_id`, see http://bit.ly/2aEfTdB
-           // select: 'name -_id',
-            //options: { limit: 5 }
-          }).then(responses=> {
+        User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
               return resolve(responses);
         }).catch(err => {
               return reject(err);
@@ -169,7 +162,7 @@ User.updateDeviceToken  = function(condObj){
 
 User.updateToken  = function(condObj,updateObj){
     return  new Promise((resolve,reject) => {
-        var  deviceDetails = [{accessToken : uuidv4()/*updateObj.accessToken*/ , deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage._now(),updatedAt : timeManage._now()}];     
+        var  deviceDetails = [{accessToken : uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];     
         User.updateOne({ _id :condObj._id},{$push :{ "deviceDetails":deviceDetails}}).then(responses=> {
              return resolve(deviceDetails);      
         }).catch(err => { return reject(err); });
@@ -186,7 +179,7 @@ User.removeToken  = function(condObj){
         User.updateMany({ "deviceDetails.accessToken":condObj.accessToken},
                         {
                           $set : { onlineStatus :"0"},
-                          $pull: { deviceDetails: { $elemMatch: { accessToken: condObj.accessToken } } }
+                          $pull: { deviceDetails: { /*$elemMatch: { */accessToken: condObj.accessToken /*}*/ } }
                         },
                         { multi: true }).then(responses=> {
             return resolve(responses);            

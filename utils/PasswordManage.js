@@ -18,12 +18,12 @@ let comparePassword = (oldPassword, hashpassword, cb) => {
 }
 
 
-let _comparePasswordSync = (originalpassword,hashpasword ) => {
+let comparePasswordSync = (originalpassword,hashpasword ) => {
   return bcrypt.compareSync(originalpassword, hashpasword)
 }
 
 module.exports = {
   hashPassword          : hashPassword,
   comparePassword      : comparePassword,
-  _comparePasswordSync : _comparePasswordSync
+  comparePasswordSync : comparePasswordSync
 }
