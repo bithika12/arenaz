@@ -4,11 +4,10 @@ using UnityEngine.UI;
 using UnityEngine;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
-using System;
-using UnityEngine.Events;
 using RedApple;
 using RedApple.Utils;
 using RedApple.Api.Data;
+using TMPro;
 
 namespace ArenaZ.AccountAccess
 {
@@ -16,21 +15,33 @@ namespace ArenaZ.AccountAccess
     public class AccountAccessManager : MonoBehaviour
     {
         //Private Variables
-        [Header("Interactive Elements")]
-        [SerializeField]
-        private Button preRegisterButton;
-        [SerializeField]
-        private Button preLoginButton;
-        [SerializeField]
-        private Button registersBackButton;
-        [SerializeField]
-        private Button registerButton;
-        [SerializeField]
-        private Button forgotButton;
-        [SerializeField]
-        private Button loginButton;
-        [SerializeField]
-        private Button closeButton;
+        [Header("Buttons")]
+        [Space(5)]
+        [SerializeField] private Button firstRegisterButton;
+        [SerializeField] private Button firstLoginButton;
+        [SerializeField] private Button registersBackButton;
+        [SerializeField] private Button registerButton;
+        [SerializeField] private Button forgotButton;
+        [SerializeField] private Button loginButton;
+        [SerializeField] private Button closeButton;
+
+        [Header("Registration Input Fields")]
+        [Space(5)]
+        [SerializeField] private InputField regIf_userEmail;
+        [SerializeField] private InputField regIf_UserName;
+        [SerializeField] private InputField regIf_UserPassword;
+        [SerializeField] private InputField regIf_UserConfPassword;
+
+        [Header("LogIn Input Fields")]
+        [Space(5)]
+        [SerializeField] private InputField logInIf_userEmail;
+        [SerializeField] private InputField logInIf_password;
+
+        [Header("Text Mesh Pro")]
+        [Space(5)]
+        [SerializeField] private TextMeshProUGUI popUpText;
+        private const string SuccessFullyRegisterd = "User register successfully!!";
+        private const string SuccessFullyLoggedIn = "User login successfully!!";
         //public Variables
 
 
@@ -40,87 +51,120 @@ namespace ArenaZ.AccountAccess
         }
         private void OnEnable()
         {
-            OpenAccountAccessPopUp();
+            OnClickAccountAccessPanelOpen();
         }
 
         private void OnDestroy()
         {
             ReleaseButtonReferences();
         }
-
+        #region Button_References
         private void GettingButtonReferences()
         {
-            preRegisterButton.onClick.AddListener(RegisterButtonClicked);
-            preLoginButton.onClick.AddListener(OpenLogInPopUp);
-            registersBackButton.onClick.AddListener(CloseRegisterPopUp);
-            registerButton.onClick.AddListener(RegisterButtonClicked);
-            forgotButton.onClick.AddListener(CloseLogInPopUp);
-            loginButton.onClick.AddListener(OpenCharacterUI);
-            closeButton.onClick.AddListener(CloseAccountAccessPopUp);
+            firstRegisterButton.onClick.AddListener(OnClickFirstRegisterButton);
+            firstLoginButton.onClick.AddListener(OnClickFirstLoginButton);
+            registersBackButton.onClick.AddListener(OnClickRegisterPopUpClose);
+            registerButton.onClick.AddListener(OnClickUserRegistration);
+            forgotButton.onClick.AddListener(OnClickLoginPopUpClose);
+            loginButton.onClick.AddListener(OnClickUserLogin);
+            closeButton.onClick.AddListener(OnClickAccountAccessPanelClose);
         }
 
         private void ReleaseButtonReferences()
         {
-            preRegisterButton.onClick.RemoveListener(RegisterButtonClicked);
-            preLoginButton.onClick.RemoveListener(OpenLogInPopUp);
-            registersBackButton.onClick.RemoveListener(CloseRegisterPopUp);
-            registerButton.onClick.RemoveListener(OpenAccountAccessPopUp);
-            forgotButton.onClick.RemoveListener(CloseLogInPopUp);
-            loginButton.onClick.RemoveListener(OpenCharacterUI);
-            closeButton.onClick.RemoveListener(CloseAccountAccessPopUp);
+            firstRegisterButton.onClick.RemoveListener(OnClickFirstRegisterButton);
+            firstLoginButton.onClick.RemoveListener(OnClickFirstLoginButton);
+            registersBackButton.onClick.RemoveListener(OnClickRegisterPopUpClose);
+            registerButton.onClick.RemoveListener(OnClickUserRegistration);
+            forgotButton.onClick.RemoveListener(OnClickLoginPopUpClose);
+            loginButton.onClick.RemoveListener(OnClickUserLogin);
+            closeButton.onClick.RemoveListener(OnClickAccountAccessPanelClose);
+        }
+        #endregion
+
+        #region Registration_AND_Login
+
+        private void OnClickUserRegistration()
+        {
+            RestManager.UserRegistration(regIf_userEmail.text, regIf_UserName.text, regIf_UserPassword.text, regIf_UserConfPassword.text, OnCompleteRegistration, OnErrorRegistration);
+        }
+
+        private void OnCompleteRegistration(CreateAccount registeredProfile)
+        {
+            Debug.Log("Registered:  " + registeredProfile.UserId);
+            OnClickRegisterPopUpClose();
+            StartCoroutine(ShowAndHidePopUpText(SuccessFullyRegisterd));
+        }
+        private void OnErrorRegistration(RestUtil.RestCallError obj)
+        {
+            Debug.LogError(obj.Error);
+            StartCoroutine(ShowAndHidePopUpText(obj.Description));
+        }
+
+        private void OnClickUserLogin()
+        {
+            RestManager.LoginProfile(logInIf_userEmail.text, logInIf_password.text, OnCompleteLogin, OnErrorLogin);
+        }
+
+        private void OnCompleteLogin(UserLogin loggedinProfile)
+        {
+            Debug.Log("Logged In Profile:  " + loggedinProfile.UserId + regIf_userEmail.text);
+            StartCoroutine(ShowAndHidePopUpText(SuccessFullyLoggedIn));
+            OpenCharacterUI();
+        }
+
+        private void OnErrorLogin(RestUtil.RestCallError obj)
+        {
+            Debug.LogError(obj.Error);
+            StartCoroutine(ShowAndHidePopUpText(obj.Description));
+        }
+
+        #endregion
+
+        #region UI_Functionalities
+        private IEnumerator ShowAndHidePopUpText(string message)
+        {
+            popUpText.text = message;
+            UIManager.Instance.ShowScreen(Page.PopUpText.ToString(), Hide.none);
+            yield return new WaitForSeconds(.5f);
+            UIManager.Instance.HideScreen(Page.PopUpText.ToString());
         }
 
         private void OpenCharacterUI()
         {
-            //UIManager.Instance.HideScreen(Page.AccountAccessDetails.ToString());
-            //UIManager.Instance.ShowScreen(Page.CharacterSelection.ToString(), Hide.previous);
-            RestManager.LoginProfile("", "", "", OnCompleteRegistration, OnError);
+            UIManager.Instance.HideScreen(Page.AccountAccessDetails.ToString());
+            UIManager.Instance.ShowScreen(Page.CharacterSelection.ToString(), Hide.previous);
         }
 
-        private void OnCompleteRegistration(UserLogin loggedinProfile)
+        private void OnClickFirstRegisterButton()
         {
-            Debug.Log("Logged In Profile:  "+loggedinProfile.id);
+            UIManager.Instance.ShowScreen(Page.RegistrationOverlay.ToString(),Hide.none);
         }
 
-        private void RegisterButtonClicked()
+        private void OnClickFirstLoginButton()
         {
-            //UIManager.Instance.ShowScreen(Page.RegistrationOverlay.ToString(),Hide.none);
-            RestManager.ProfileRegistration("", "", "", "", OnCompleteLogin, OnError);
+            UIManager.Instance.ShowScreen(Page.LogINOverlay.ToString(), Hide.none);
         }
 
-        private void OnError(RestUtil.RestCallError obj)
-        {
-            Debug.LogError(obj.Error);
-        }
-
-        private void OnCompleteLogin(CreateAccount registeredProfile)
-        {
-            Debug.Log("Registered:  "+registeredProfile.id);
-        }
-
-        private void CloseRegisterPopUp()
+        private void OnClickRegisterPopUpClose()
         {
             UIManager.Instance.HideScreen(Page.RegistrationOverlay.ToString());
         }
-
-        private void OpenLogInPopUp()
-        {
-            UIManager.Instance.ShowScreen(Page.LogINOverlay.ToString(),Hide.none);
-        }
-
-        private void CloseLogInPopUp()
+        
+        private void OnClickLoginPopUpClose()
         {
             UIManager.Instance.HideScreen(Page.LogINOverlay.ToString());
         }
 
-        private void OpenAccountAccessPopUp()
+        private void OnClickAccountAccessPanelOpen()
         {
             UIManager.Instance.ShowScreen(Page.AcoountAccesOverlay.ToString(),Hide.none);
         }
 
-        private void CloseAccountAccessPopUp()
+        private void OnClickAccountAccessPanelClose()
         {
             UIManager.Instance.HideScreen(Page.AcoountAccesOverlay.ToString());
         }
+        #endregion
     }
 }

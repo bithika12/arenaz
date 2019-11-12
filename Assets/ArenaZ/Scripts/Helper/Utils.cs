@@ -26,7 +26,8 @@ public enum Page
     Human,
     Ebot,
     KeplerSecond,
-    ComingSoonOverlay
+    ComingSoonOverlay,
+    PopUpText,
 }
 
 public enum ButtonType

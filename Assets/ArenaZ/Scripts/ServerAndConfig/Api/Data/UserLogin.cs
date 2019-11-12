@@ -1,10 +1,16 @@
-﻿namespace RedApple.Api.Data
+﻿using Newtonsoft.Json;
+
+namespace RedApple.Api.Data
 {
     public class UserLogin
     {
-        public string id { get; set; }
-        public string userName { get; set; }
-        public string email { get; set; }
-        public string accessToken { get; set; }
+        [JsonProperty("userID")]
+        public string UserId { get; set; }
+        [JsonProperty("userName")]
+        public string UserName { get; set; }
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("accessToken")]
+        public string AccessToken { get; set; }
     }
 }

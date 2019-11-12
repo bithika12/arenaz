@@ -2,7 +2,7 @@
 {
     public static class Urls
     {
-        public const string REGISTER = "register";
+        public const string REGISTER = "registration";
         public const string USER_LOGIN = "login";
         public const string ACTIVATE_TOKEN = "activate";
         public const string CREATE_USER = "users";

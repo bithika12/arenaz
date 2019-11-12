@@ -54,11 +54,12 @@ namespace RedApple
 
         #endregion
 
-        public static void ProfileRegistration(string email_id, string name, string password, string confirmPassword, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
+        public static void UserRegistration(string email_id, string name, string password, string confirmPassword, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
             .Url(getApiUrl(Urls.REGISTER))
             .Verb(Verbs.POST)
+            .ContentType(ContentTypes.FORM)
             .FormData(Attributes.EMAIL_ID, email_id)
             .FormData(Attributes.NAME, name)
             .FormData(Attributes.PASSWORD, password)
@@ -68,13 +69,13 @@ namespace RedApple
             sendWebRequest(webRqstBuilder, onCompletionRegistration, restError);
         }
 
-        public static void LoginProfile(string email_id,string name,string password,Action<UserLogin> onCompletionLogin,Action<RestError> restError)
+        public static void LoginProfile(string email_id, string password, Action<UserLogin> onCompletionLogin, Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
                 .Url(getApiUrl(Urls.USER_LOGIN))
                 .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
                 .FormData(Attributes.EMAIL_ID, email_id)
-                .FormData(Attributes.NAME, name)
                 .FormData(Attributes.PASSWORD, password);
 
             addClientAuthHeader(ref webRqstBuilder);
@@ -94,7 +95,7 @@ namespace RedApple
                 handler =>
                 {
                     var response = DataConverter.DeserializeObject<ApiResponseFormat<T>>(handler.text);
-                    onCompletion?.Invoke(response.Data);
+                    onCompletion?.Invoke(response.Result);
                 },
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));
         }

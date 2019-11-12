@@ -18,7 +18,7 @@ namespace RedApple
             {
                 ContractResolver = _contractResolver,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
+                TypeNameHandling = TypeNameHandling.None,
                 StringEscapeHandling = StringEscapeHandling.EscapeHtml,
         };
 

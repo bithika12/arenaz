@@ -103,6 +103,7 @@ namespace RedApple.Utils
 
 #if DEBUG_REST_CALLS
                 Debug.LogFormat("Call {0} completed with status {1}", currentCall.Request.url, currentCall.Request.responseCode);
+                Debug.LogFormat("Called: {0}\nResponse: {1}", currentCall.Request.url, currentCall.Request.downloadHandler.text);
 #endif
                 if (currentCall.Request.responseCode == HTTP_OK || currentCall.Request.responseCode == HTTP_CREATED)
                 {
@@ -119,20 +120,9 @@ namespace RedApple.Utils
                         Code = currentCall.Request.responseCode,
                         Headers = currentCall.Request.GetResponseHeaders(),
                     };
-
-                    var oauthResponse = DataConverter.DeserializeObject<ApiResponseFormat<OauthErrorResponse>>(restCallError.Raw);
-                    if (oauthResponse.Data != null)
-                    {
-                        restCallError.Error = oauthResponse.Data.Error;
-                        restCallError.Description = oauthResponse.Data.ErrorDescription;
-                    }
-                    else
-                    {
-                        var deSerializedData = DataConverter.DeserializeObject<ApiResponseFormat<string>>(restCallError.Raw);
-                        restCallError.Error = deSerializedData.Status.ToString();
-                        restCallError.Description = deSerializedData.Message;
-                    }
-
+                    var deSerializedData = DataConverter.DeserializeObject<ApiResponseFormat<string>>(restCallError.Raw);
+                    restCallError.Error = deSerializedData.Status.ToString();
+                    restCallError.Description = deSerializedData.Message;
                     currentCall.OnError(restCallError);
                 }
                 currentCall.Request.Dispose();

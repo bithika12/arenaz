@@ -4,6 +4,6 @@ namespace RedApple.Api
     {
         public int Status;
         public string Message;
-        public T Data;
+        public T Result;
     }
 }
