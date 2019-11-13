@@ -99,17 +99,17 @@ function updateToken(user,callback){
 
 exports.registration= function(req,res){
     if(!req.body.email || !req.body.userName || !req.body.password  ){
-         return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+         return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
 
     if(validateInput.password(req.body.password) == false){
-        return res.send(response.error(constants.ERROR_STATUS,{},"Password format doesn't match"));
+        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Password format doesn't match"));
     }
     if(validateInput.email(req.body.email) == false){
-        return res.send(response.error(constants.ERROR_STATUS,{},"Email format doesn't match"));
+        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Email format doesn't match"));
     }
     if(validateInput.userName(req.body.userName) == false){
-        return res.send(response.error(constants.ERROR_STATUS,{},"Username format doesn't match"));
+        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Username format doesn't match"));
    }
 
 
@@ -122,12 +122,12 @@ exports.registration= function(req,res){
       ],
       function (err, result) {
           if(result){
-             res.send(response.generate(constants.SUCCESS_STATUS,{"_id" : result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.deviceDetails[0].accessToken}, 'User register successfully !!'));
+             res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId" : result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.deviceDetails[0].accessToken}, 'User register successfully !!'));
           }else{
             if( err == constants.UNIQUIE_EMAIL)
-               res.send(response.error(constants.UNIQUIE_EMAIL,{}," Email Already exist"));
+               res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL,{}," Email Already exist"));
             else 
-               res.send(response.error(constants.ERROR_STATUS,err,"Something went Wrong!!"));
+               res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS,err,"Something went Wrong!!"));
           }
       }
     );
@@ -135,7 +135,7 @@ exports.registration= function(req,res){
 
 exports.login= function(req,res){
     if(!req.body.email || !req.body.password  ){
-         return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+         return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
     var userObj  ={email: req.body.email,password: req.body.password}
     async.waterfall([
@@ -144,9 +144,9 @@ exports.login= function(req,res){
       ],
       function (err, result) {
           if(result){
-              res.send(response.generate(constants.SUCCESS_STATUS,{"_id":result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.get('accessToken')}, 'User login successfully !!'));
+              res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId":result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.get('accessToken')}, 'User login successfully !!'));
           }else{
-              res.send(response.error(constants.ERROR_STATUS,err,"Invalid password!!"));
+              res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS,err,"Invalid password!!"));
           }
     });
 }
@@ -154,7 +154,7 @@ exports.login= function(req,res){
 exports.socialLogin= function(req,res){
     var userObject ={};   
     if(!req.body.socialLoginType || !req.body.uniqueLoginId){
-         return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+         return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
 
     var userObject ={ socialLoginType : req.body.socialLoginType , uniqueLoginId : req.body.uniqueLoginId , userType:"registered-game-user" }; 
@@ -168,8 +168,8 @@ exports.socialLogin= function(req,res){
        updateToken
     ],function (err, result) {
           if(result){
-              res.send(response.generate(constants.SUCCESS_STATUS,{"_id" : result._id,"name":result.name,email:result.email,"score":result.score,"accessToken":result.get('accessToken')}, 'User login successfully !!'));
-          }else res.send(response.error(constants.ERROR_STATUS,{},"Something went Wrong!!"));
+              res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"_id" : result._id,"name":result.name,email:result.email,"score":result.score,"accessToken":result.get('accessToken')}, 'User login successfully !!'));
+          }else res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS,{},"Something went Wrong!!"));
           
       }
     );
@@ -179,12 +179,12 @@ exports.socialLogin= function(req,res){
 exports.logout = function (req,res) {
     User.removeToken({accessToken: req.header("access-token"), _id : res.userData._id}).then(function (result) {
     		if(result) {
-    		    res.send({"status": constants.SUCCESS_STATUS, "result":{ }, "message": "Logout successfully"});
+    		    res.status(constants.HTTP_OK_STATUS).send({"status": constants.SUCCESS_STATUS, "result":{ }, "message": "Logout successfully"});
     		}else{
-    		    res.send({"status": constants.ERROR_STATUS, "result": {}, "message": "Something went Wrong!!"});
+    		    res.status(constants.BAD_REQUEST_STATUS).send({"status": constants.ERROR_STATUS, "result": {}, "message": "Something went Wrong!!"});
     		}
    }).catch(err => {
-    	    res.send({"status":constants.ERROR_STATUS,"result":err,"message":"Something went Wrong!!"});
+    	    res.status(constants.BAD_REQUEST_STATUS).send({"status":constants.ERROR_STATUS,"result":err,"message":"Something went Wrong!!"});
    }); 
 };
 

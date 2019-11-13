@@ -64,4 +64,14 @@ module.exports = {
     /* NOtification options*/
 
 
+
+    /* HTTP RESPONSE*/
+    HTTP_OK_STATUS   : 200 ,
+    HTTP_CREATED_STATUS :200,
+    UNAUTHERIZED_HTTP_STATUS :401,
+    BAD_REQUEST_STATUS :400,
+
+
+
+
 };
