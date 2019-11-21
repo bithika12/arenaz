@@ -120,9 +120,17 @@ namespace RedApple.Utils
                         Code = currentCall.Request.responseCode,
                         Headers = currentCall.Request.GetResponseHeaders(),
                     };
-                    var deSerializedData = DataConverter.DeserializeObject<ApiResponseFormat<string>>(restCallError.Raw);
-                    restCallError.Error = deSerializedData.Status.ToString();
-                    restCallError.Description = deSerializedData.Message;
+                    var deSerializedData = DataConverter.DeserializeObject<ApiResponseFormat<object>>(restCallError.Raw);
+                    if (deSerializedData == null)
+                    {
+                        restCallError.Error = "No Internet Connection";
+                        restCallError.Description = "No Internet Connection";
+                    }
+                    else
+                    {
+                        restCallError.Error = deSerializedData.Status.ToString();
+                        restCallError.Description = deSerializedData.Message;
+                    }
                     currentCall.OnError(restCallError);
                 }
                 currentCall.Request.Dispose();

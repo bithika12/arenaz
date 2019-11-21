@@ -22,7 +22,7 @@ public class ButtonImageChanger : MonoBehaviour
         ChangeButtonSpriteWhenPressed();
     }
 
-    public void ChangeButtonSpriteWhenPressed()
+    private void ChangeButtonSpriteWhenPressed()
     {
         if (buttonImageType.pressedSprite)
         {

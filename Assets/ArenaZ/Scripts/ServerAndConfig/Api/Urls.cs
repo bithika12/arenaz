@@ -4,6 +4,8 @@
     {
         public const string REGISTER = "registration";
         public const string USER_LOGIN = "login";
+        public const string LOGOUT = "logout";
+        public const string JSON = "json";
         public const string ACTIVATE_TOKEN = "activate";
         public const string CREATE_USER = "users";
         public const string USERGROUP_ASSIGN = "users/assign";

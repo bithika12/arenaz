@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using TMPro;
 
 namespace ArenaZ.Screens
 {
@@ -9,6 +10,10 @@ namespace ArenaZ.Screens
             if (GetComponent<Animator>())
             {
                 animator = GetComponent<Animator>();
+            }
+            if (GetComponent<TextMeshProUGUI>())
+            {
+                txtMeshPro = GetComponent<TextMeshProUGUI>();
             }
         }
     }

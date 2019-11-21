@@ -1,8 +1,10 @@
 ﻿using ArenaZ.Screens;
+using ArenaZ.AccountAccess;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine.U2D;
 
 namespace ArenaZ.Manager
 {
@@ -17,17 +19,56 @@ namespace ArenaZ.Manager
         private string _openScreen = string.Empty;
         private string closeScreen = string.Empty;
         private string characterName = string.Empty;
+
+        [Header("SpriteAtlas")][Space(5)]
+        [SerializeField] private SpriteAtlas countryAtlas;
+
+        [Header("Button Images")][Space(5)]
         [SerializeField]private ImageType[] allButtonImages = new ImageType[17];
+
+        [Header("Profile Image")][Space(5)]
+        [SerializeField] private ProfileImageType[] smallProfilePic = new ProfileImageType[6];
+        [SerializeField] private ProfileImageType[] mediumProfilePic = new ProfileImageType[6];
 
         private void Start()
         {
             StartCoroutine(LogInCheck());
             StartAnimations();
         }
+        public Sprite GetCorrespondingCountrySprite()
+        {
+            return countryAtlas.GetSprite(AccountAccessManager.Instance.CountryId.ToLower());
+        }
+
+        public Sprite GetCorrespondingProfileSprite(string charName,ProfilePic type)
+        {
+            ProfileImageType[] pics;
+            if (type == ProfilePic.Small)
+            {
+                pics = smallProfilePic;
+            }
+            else
+            {
+                pics = mediumProfilePic;
+            }
+            for (int i = 0; i < pics.Length; i++)
+            {
+                if(pics[i].profileImageName == charName)
+                {
+                    return pics[i].sprite;
+                }
+            }
+            return null;
+        }
 
         private void StartAnimations()
         {
             ShowScreen(Page.TopAndBottomBar.ToString(), Hide.none);
+        }
+
+        public void ShowPopWithText(string screenName,string message,float duration)
+        {
+            StartCoroutine(allPages[screenName].ShowAndHidePopUpText(message, duration));
         }
 
         public void ShowScreen(string screenName,Hide type)
@@ -123,8 +164,13 @@ namespace ArenaZ.Manager
         public ButtonType buttonType;
         public Sprite normalSprite;
         public Sprite pressedSprite;
-        public Sprite disabledSprite;
-        
+        public Sprite disabledSprite;      
     }
 
+    [Serializable]
+    public struct ProfileImageType
+    {
+        public string profileImageName;
+        public Sprite sprite;
+    }
 }

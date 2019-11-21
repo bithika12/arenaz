@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Api:
     Host: http://52.66.82.72:3012/
+  ipApi:
+    ipHost: https://freegeoip.app/

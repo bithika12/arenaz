@@ -3,23 +3,34 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
 using UnityEngine.UI.Extensions;
-using ArenaZ.LevelSelection;
+using ArenaZ.LevelMangement;
+using ArenaZ.AccountAccess;
+using ArenaZ.GameMode;
 
 [RequireComponent (typeof(UIScreen))]
-public class CharacterSelection : MonoBehaviour
+public class CharacterSelection : RedAppleSingleton<CharacterSelection>
 {
+    //Private Fields
+    [Header("Buttons")]
+    [Space(5)]
     [SerializeField] private Button arenaButton;
     [SerializeField] private Button trainingButton;
     [SerializeField] private Button rankingButton;
-    [SerializeField] private LevelSelection levelSelection;
+
+    [Header("Text Fields")]
+    [Space(5)]
+    [SerializeField] private Text userName;
+
+    [Header("Scroll Snap")]
+    [Space(5)]
     [SerializeField] private HorizontalScrollSnap horizontalScrollSnap;
-    private string[] names = { Page.Canines.ToString(), Page.Kepler.ToString(), Page.Cyborg.ToString(), Page.CyborgSecond.ToString(), Page.Human.ToString(), Page.Ebot.ToString(), Page.KeplerSecond.ToString() };
+    private readonly string[] names = { Page.Canines.ToString(), Page.Kepler.ToString(), Page.Cyborg.ToString(), Page.CyborgSecond.ToString(), Page.Human.ToString(), Page.Ebot.ToString(), Page.KeplerSecond.ToString()};
+    //Public Fields
 
     private void Start()
     {
         GettingButtonReferences();
-        ShowFirstText();
-       
+        ShowFirstText();      
     }
 
     private void OnEnable()
@@ -36,7 +47,7 @@ public class CharacterSelection : MonoBehaviour
     {
         ReleaseButtonReferences();       
     }
-
+    #region Button_References
     private void GettingButtonReferences()
     {
         arenaButton.onClick.AddListener(OnClickArena);
@@ -50,7 +61,14 @@ public class CharacterSelection : MonoBehaviour
         trainingButton.onClick.RemoveListener(OnClickArena);
         rankingButton.onClick.RemoveListener(OnclickRanking);
     }
+    #endregion
 
+    public void SetUserName()
+    {
+        userName.text = AccountAccessManager.Instance.UserName;
+    }
+
+    #region UI_Functionalities
     private void ShowFirstText()
     {
         UIManager.Instance.ShowCharacterName(Page.Canines.ToString());
@@ -60,13 +78,17 @@ public class CharacterSelection : MonoBehaviour
     {
         UIManager.Instance.ShowCharacterName(names[pageNo]);
     }
-
+    
     private void OnClickArena()
     {
         UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
         UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
         UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(),Hide.none);
-        levelSelection.OnSelectionGameplayType(GameType.normal);
+        LevelSelection.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        ShootingRange.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        Settings.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        PlayerMatch.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        LevelSelection.Instance.OnSelectionGameplayType(GameType.normal);
     }
 
     private void OnClickTraining()
@@ -74,11 +96,16 @@ public class CharacterSelection : MonoBehaviour
         UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
         UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
         UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(),Hide.none);
-        levelSelection.OnSelectionGameplayType(GameType.training);
+        LevelSelection.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        ShootingRange.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        Settings.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        PlayerMatch.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        LevelSelection.Instance.OnSelectionGameplayType(GameType.training);
     }
      
     private void OnclickRanking()
     {
         UIManager.Instance.ShowScreen(Page.LeaderBoard.ToString(), Hide.none);
     }
+    #endregion
 }

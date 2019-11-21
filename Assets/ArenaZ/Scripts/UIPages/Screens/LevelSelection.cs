@@ -1,17 +1,32 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
+using ArenaZ.GameMode;
+using ArenaZ.AccountAccess;
 
-namespace ArenaZ.LevelSelection
+namespace ArenaZ.LevelMangement
 {
-    public class LevelSelection : MonoBehaviour
+    public class LevelSelection : RedAppleSingleton<LevelSelection>
     {
+        [Header("Buttons")]
+        [Space(5)]
         [SerializeField] private Button shootingRangeButton;
         [SerializeField] private Button speedRaceButton;
         [SerializeField] private Button bunkerDefenseButton;
         [SerializeField] private Button backButton;
         [SerializeField] private Button comingSoonCloseButton;
+
+        [Header("Text Fields")]
+        [Space(5)]
+        [SerializeField] private Text userName;
+
+        [Header("GameObjects")]
+        [Space(5)]
         [SerializeField] private GameObject comingSoonPopUp;
+
+        [Header("Buttons")]
+        [Space(5)]
+        [SerializeField] private Image profileImage;
         private GameType gamePlayType;
 
         private void Start()
@@ -23,7 +38,7 @@ namespace ArenaZ.LevelSelection
         {
             ReleaseButtonReferences();
         }
-
+        #region Button_References
         private void GettingButtonReferences()
         {
             shootingRangeButton.onClick.AddListener(OnClickShootingRange);
@@ -41,11 +56,24 @@ namespace ArenaZ.LevelSelection
             comingSoonCloseButton.onClick.RemoveListener(OnClickComingSoonClose);
             backButton.onClick.RemoveListener(OnClickBack);
         }
+        #endregion
 
         public void OnSelectionGameplayType(GameType gameType)
         {
             gamePlayType = gameType;
         }
+
+        public void SetProfileImage(string imageName)
+        {
+            profileImage.sprite = UIManager.Instance.GetCorrespondingProfileSprite(imageName,ProfilePic.Small);
+        }
+
+        public void SetUserName()
+        {
+            userName.text = AccountAccessManager.Instance.UserName;
+        }
+
+        #region UI_Functionalities
 
         private void OnClickShootingRange()
         {
@@ -75,5 +103,6 @@ namespace ArenaZ.LevelSelection
             UIManager.Instance.ShowScreen(Page.TopAndBottomBar.ToString(), Hide.none);
             UIManager.Instance.HideScreen(Page.LevelSelection.ToString());
         }
+        #endregion
     }
 }

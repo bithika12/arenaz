@@ -29,11 +29,15 @@ namespace RedApple
             public static string Host { get { return instance.configuration.Api.Host; } }
         }
 
+        public class IpApi
+        {
+            public static string IpHost { get { return instance.configuration.ipApi.ipHost; } }
+        }
+
         //public class Common
         //{
         //    public static string DefaultLoadingPromptText { get { return instance.configuration.Common.DefaultLoadingPromptText; } }
         //    public static string DefaultLocale { get { return instance.configuration.Common.DefaultLocale; } }
-
         //}
 
         //public class Photon

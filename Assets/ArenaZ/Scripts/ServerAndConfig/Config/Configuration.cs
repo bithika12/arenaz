@@ -7,6 +7,7 @@ namespace RedApple
     public class Configuration : ScriptableObject
     {
         public ApiConfiguration Api = new ApiConfiguration();
+        public IpApiConfiguration ipApi = new IpApiConfiguration();
         //public CommonConfiguration Common = new CommonConfiguration();
         //public PhotonConfiguration Photon = new PhotonConfiguration();
 
@@ -14,6 +15,12 @@ namespace RedApple
         public class ApiConfiguration
         {
             public string Host = "http://52.66.82.72:3012/";
+        }
+
+        [Serializable]
+        public class IpApiConfiguration
+        {
+            public string ipHost = "https://freegeoip.app/";
         }
 
         //[Serializable]

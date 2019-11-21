@@ -14,12 +14,10 @@ namespace RedApple
         private static RestManager instance;
 
         public static string AccessToken { set { instance.userAccessToken = value; } }
-        public static string RefreshToken { set { instance.refreshToken = value; } }
 
         private RestUtil restUtil;
 
         private string userAccessToken;
-        private string refreshToken;
 
         private string clientAccessToken = "";
 
@@ -53,7 +51,7 @@ namespace RedApple
         }
 
         #endregion
-
+        #region USER_LOGIN_REGISTRATION
         public static void UserRegistration(string email_id, string name, string password, string confirmPassword, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
@@ -77,9 +75,30 @@ namespace RedApple
                 .ContentType(ContentTypes.FORM)
                 .FormData(Attributes.EMAIL_ID, email_id)
                 .FormData(Attributes.PASSWORD, password);
-
-            addClientAuthHeader(ref webRqstBuilder);
+            
             sendWebRequest(webRqstBuilder, onCompletionLogin, restError);
+        }
+
+        public static void LogOutProfile(Action<UserLogin> OnCompleteLogOut,Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstbuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.LOGOUT))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM);
+
+            addUserAuthHeader(ref webRqstbuilder);
+            sendWebRequest(webRqstbuilder, OnCompleteLogOut, restError);
+        }
+        #endregion
+
+        public static void GetCountryDetails(Action<CountryDetails> OnCompleteteCountryDetailsFetch,Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getIpApiUrl(Urls.JSON))
+                .Verb(Verbs.GET)
+                .ContentType(ContentTypes.FORM);
+
+            sendWebRequestForCountryDetails(webRqstBuilder, OnCompleteteCountryDetailsFetch, restError);
         }
 
         private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
@@ -100,6 +119,18 @@ namespace RedApple
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));
         }
 
+        private static void sendWebRequestForCountryDetails(WebRequestBuilder builder, Action<CountryDetails> onCompletion,
+           Action<RestError> onError = null)
+        {
+            instance.restUtil.Send(builder,
+                handler =>
+                {
+                    var response = DataConverter.DeserializeObject<CountryDetails>(handler.text);
+                    onCompletion?.Invoke(response);
+                },
+                restError => interceptError(restError, () => onError?.Invoke(restError), onError));
+        }
+
         private static void interceptError(RestError error, Action onSuccess,
             Action<RestError> defaultOnError)
         {
@@ -109,6 +140,11 @@ namespace RedApple
         private static string getApiUrl(string path)
         {
             return $"{Config.Api.Host}{path}";
+        }
+
+        private static string getIpApiUrl(string path)
+        {
+            return $"{Config.IpApi.IpHost}{path}";
         }
 
         protected static string FormatApiUrl(string path, params object[] args)
@@ -124,12 +160,8 @@ namespace RedApple
 
         private static void addUserAuthHeader(ref WebRequestBuilder builder)
         {
-            builder.Header("Authorization", string.Format("Bearer {0}", instance.userAccessToken));
-        }
-
-        private static void addClientAuthHeader(ref WebRequestBuilder builder)
-        {
-            builder.Header("Authorization", string.Format("Bearer {0}", instance.clientAccessToken));
+            builder.Header("access-token", string.Format("Bearer {0}", instance.userAccessToken));
+            Debug.Log("User Access Token:  " + instance.userAccessToken);
         }
     }
 }

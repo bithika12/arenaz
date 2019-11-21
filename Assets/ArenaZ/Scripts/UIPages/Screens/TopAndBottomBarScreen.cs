@@ -22,7 +22,7 @@ namespace ArenaZ.Screens
         {
             ReleaseButtonReferences();
         }
-
+        #region Button_References
         private void GettingButtonReferences()
         {
             historyButton.onClick.AddListener(HistoryButtonClicked);
@@ -38,6 +38,7 @@ namespace ArenaZ.Screens
             settingButton.onClick.RemoveListener(SettingButtonClicked);
             infoButton.onClick.RemoveListener(InfoButtonClicked);
         }
+        #endregion
 
         private void InfoButtonClicked()
         {

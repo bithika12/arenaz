@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 
 namespace ArenaZ.Screens
@@ -14,11 +15,16 @@ namespace ArenaZ.Screens
         private readonly string hideTrigger = "Reverse";
 
         protected Animator animator;
+        protected TextMeshProUGUI txtMeshPro;
         protected virtual void Awake()
         {
             if (GetComponent<Animator>())
             {
                 animator = GetComponent<Animator>();
+            }
+            if(GetComponent<TextMeshProUGUI>())
+            {
+                txtMeshPro = GetComponent<TextMeshProUGUI>();
             }
         }
 
@@ -37,7 +43,9 @@ namespace ArenaZ.Screens
            // Debug.Log($"Showing Animation {name}");
             Show();
             if (animator != null)
-                animator.SetTrigger(showTrigger);            
+            {
+                animator.SetTrigger(showTrigger);
+            }
         }
 
         public void HideGameObjWithAnim()
@@ -51,11 +59,19 @@ namespace ArenaZ.Screens
             StartCoroutine(HideAfterAnimation());
         }
 
-        IEnumerator HideAfterAnimation()
+        private IEnumerator HideAfterAnimation()
         {
             AnimationClip myReverseAnimClip = animator.runtimeAnimatorController.animationClips[0];
             yield return new WaitForSeconds(myReverseAnimClip.length);
             Hide();
+        }
+
+        public IEnumerator ShowAndHidePopUpText(string message,float duration)
+        {
+            txtMeshPro.text = message;
+            ShowGameObjWithAnim();
+            yield return new WaitForSeconds(duration);
+            HideGameObjWithAnim();
         }
 
     }

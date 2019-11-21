@@ -27,7 +27,8 @@ public enum Page
     Ebot,
     KeplerSecond,
     ComingSoonOverlay,
-    PopUpText,
+    PopUpTextAccountAccess,
+    PopUpTextSettings
 }
 
 public enum ButtonType
@@ -69,4 +70,17 @@ public enum GameType
 {
     normal,
     training
+}
+
+public enum Checking
+{
+    Username,
+    EmailID,
+    Password
+}
+
+public enum ProfilePic
+{
+    Small,
+    Medium
 }

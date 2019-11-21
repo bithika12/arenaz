@@ -3,10 +3,11 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
 using UnityEngine.Audio;
-using System.Collections;
+using ArenaZ.AccountAccess;
+using TMPro;
 
 [RequireComponent(typeof(UIScreen))]
-public class Settings : MonoBehaviour
+public class Settings : RedAppleSingleton<Settings>
 {
     //Private Properties
     [Header("Audio Mixers")][Space(5)]
@@ -20,20 +21,32 @@ public class Settings : MonoBehaviour
     [SerializeField] private Sprite MuteSFXSprite;
     [SerializeField] private Image MusicImage;
     [SerializeField] private Image SFXImage;
+    [SerializeField] private Image countryButtonImage;
+    [SerializeField] private Image profileImage;
 
-    [Header("Floats")][Space(5)]
+    [Header("Text Fields")][Space(5)]
+    [SerializeField] private Text userName;
+
+    [Header("Data Types")][Space(5)]
     [SerializeField] private float MuteValue = -80.0f;
     [SerializeField] private float UnmuteValue = 0.0f;
-    private float animClipLenght;
 
     [Header("Toggles And Buttons")][Space(5)]
     [SerializeField] private Toggle MusicToggle;
     [SerializeField] private Toggle SFXToggle;
     [SerializeField] private Button closeButton;
+    [SerializeField] private Button supportButton;
+    [SerializeField] private Button logOutButton;
+    [SerializeField] private Button regionButton;
+    [SerializeField] private Button languageButton;
+    [SerializeField] private Button deleteAccountButton;
+    [SerializeField] private Button playerColor;
 
-    [Header("Booleans")][Space(5)]
-    [SerializeField] private bool IsMusicMute = false;
-    [SerializeField] private bool IsSFXMute = false;  
+    [Header("Text")][Space(5)]
+    [SerializeField] private Text countryButtonText;
+
+    private bool IsMusicMute = false;
+    private bool IsSFXMute = false;  
 
     //------------------------------------------------------------+
     private void Start()
@@ -54,6 +67,8 @@ public class Settings : MonoBehaviour
     {
         closeButton.onClick.AddListener(OnClickClose);
 
+        logOutButton.onClick.AddListener(LogoutUserProfile);
+
         MusicToggle.onValueChanged.AddListener(delegate
         {
             UpdateMusicValue(MusicToggle);
@@ -69,6 +84,8 @@ public class Settings : MonoBehaviour
     {
         closeButton.onClick.RemoveListener(OnClickClose);
 
+        logOutButton.onClick.RemoveListener(LogoutUserProfile);
+
         MusicToggle.onValueChanged.RemoveListener(delegate
         {
             UpdateMusicValue(MusicToggle);
@@ -81,11 +98,45 @@ public class Settings : MonoBehaviour
     }
     #endregion
 
-    private void OnClickClose()
+    private void LogoutUserProfile()
     {
-        UIManager.Instance.HideScreen(Page.Settings.ToString());
+        AccountAccessManager.Instance.OnClickLogout();
+
     }
 
+    public void SetCountrySpriteAndCountryNameOnButton()
+    {
+        if (!countryButtonImage.enabled)
+        {
+            countryButtonImage.enabled = true;
+        }
+        countryButtonImage.sprite = UIManager.Instance.GetCorrespondingCountrySprite();
+        countryButtonText.text = AccountAccessManager.Instance.CountryId;
+    }
+
+    public void SetProfileImage(string imageName)
+    { 
+        profileImage.sprite = UIManager.Instance.GetCorrespondingProfileSprite(imageName, ProfilePic.Small);
+    }
+
+    public void SetUserName()
+    {
+        userName.text = AccountAccessManager.Instance.UserName;
+    }
+
+    #region UI_Functionalities
+    public void OnClickClose()
+    {
+        UIManager.Instance.HideScreen(Page.Settings.ToString());
+        if(PlayerPrefs.GetInt("Logout")==0)
+        {
+            UIManager.Instance.ShowScreen(Page.AccountAccessDetails.ToString(), Hide.none);
+            UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
+            PlayerPrefs.SetInt("Logout", 1);
+        }
+    }
+    #endregion
+    #region Music_AND_SFX
     private void UpdateMusicValue(Toggle stateChange)
     {
         Debug.Log("MusicValue::" + stateChange.isOn);
@@ -167,5 +218,6 @@ public class Settings : MonoBehaviour
             SFXToggle.isOn = false;
         }
     }
+    #endregion
 
 }
