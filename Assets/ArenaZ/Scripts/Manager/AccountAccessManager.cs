@@ -7,7 +7,6 @@ using ArenaZ.Screens;
 using RedApple;
 using RedApple.Utils;
 using RedApple.Api.Data;
-using TMPro;
 using System.Text.RegularExpressions;
 using ArenaZ.LevelMangement;
 using ArenaZ.GameMode;
@@ -19,21 +18,26 @@ namespace ArenaZ.AccountAccess
     {
         #region Constants
         //Constants
-        private const string successFullyRegisterd = "User register successfully!!";
+        private const string successFullyRegisterd = "User registered successfully!!";
         private const string successFullyLoggedOut = "User Loggedout SuccessFully!!";
+        private const string emailAlreadyExists = "Email Already Exists";
         private const string noInternet = "Please Check Your Internet Connection!!";
         private const string successFullyLoggedIn = "User login successfully!!";
         private const string doesNotHaveNumber = "Must Contain One Number!!";
         private const string doesNotHaveChar = "Must Contain Characters";
-        private const string mailIsNotValid = "Is Not In A Proper Format Ex: abcd@abc.com";
+        private const string mailIsNotValid = "Is Not In A Proper Format Ex: abcd@a.com";
         private const string doesNotContainAtTheRate = "Must Contain @ Symbol";
         private const string doesNotHaveSpecialChar = "Must Contain One Special Character!!";
         private const string doesNotHaveUpperCaseChar = "MustContain One Upper Case Character!!";
         private const string doesNotHaveLowerCaseChar = "Must Contain One Lower Case Character!!";
-        private const string doesNotHaveMinEightChar = "Must Be 8 Characters!!";
+        private const string doesNotHaveMinEightChar = "Must contain 8 Characters!!";
         private const string containedSpace = "Doesn't Contain Any Space";
+        private const string passwordIsNull = "Password should be like - Ex : Abc@1234";
         private const string isNull = "Cannot Be Blank";
         private const string wrongConfPassword = "PassWord Doesn't Match!!";
+        private const string defaultUserName = "UserName";
+        private const string login = "Log In";
+        private const string logout = "Log Out";
         #endregion
         //Private Variables
         [Header("Buttons")]
@@ -63,16 +67,18 @@ namespace ArenaZ.AccountAccess
         [SerializeField] private int PopUpduration;
 
         private Checking checkingType;
-        private Coroutine displayMessageCoroutine;
         //public Variables
         public string CountryId { get; private set; }
         public string UserName { get; private set; }
+        public string LogInAndLogOutButtonName { get; private set; }
+        public Sprite CountrySprite { get; private set; }
 
 
-        private void Start()
+        protected void Start()
         {
             GetCountryDetailsOnStart();
-            GettingButtonReferences();           
+            GettingButtonReferences();
+            LogInAndLogOutButtonName = login;
         }
         private void OnEnable()
         {
@@ -92,7 +98,7 @@ namespace ArenaZ.AccountAccess
         {
             Debug.Log("The Country Code Is:     "+details.Country_code);
             CountryId = details.Country_code;
-            Settings.Instance.SetCountrySpriteAndCountryNameOnButton();
+            CountrySprite = UIManager.Instance.GetCorrespondingCountrySprite(details.Country_code.ToLower());
         }
         private void OnErrorCountryDetailsFetch(RestUtil.RestCallError obj)
         {
@@ -142,21 +148,6 @@ namespace ArenaZ.AccountAccess
 
         private void OnClickUserRegistration()
         {
-            RestManager.UserRegistration(regIf_userEmail.text, regIf_UserName.text, regIf_UserPassword.text, regIf_UserConfPassword.text, OnCompleteRegistration, OnErrorRegistration);
-            Debug.Log("Mail UserName password:   " + regIf_userEmail.text+ regIf_UserName.text+ regIf_UserPassword.text+ regIf_UserConfPassword.text);
-        }
-
-        private void OnCompleteRegistration(CreateAccount registeredProfile)
-        {
-            Debug.Log("Registered:  " + registeredProfile.UserId);
-            OnClickRegisterPopUpClose();
-            ClearRegInputFieldData();
-            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), successFullyRegisterd, PopUpduration);
-        }
-       
-        private void OnErrorRegistration(RestUtil.RestCallError obj)
-        {
-            Debug.LogError("Error On Registration: "+obj.Error);
             if (RegistrationFaultCheck(regIf_userEmail.text, Checking.EmailID) != null)
             {
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), RegistrationFaultCheck(regIf_userEmail.text, Checking.EmailID), PopUpduration);
@@ -172,40 +163,40 @@ namespace ArenaZ.AccountAccess
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), RegistrationFaultCheck(regIf_UserPassword.text, Checking.Password), PopUpduration);
                 return;
             }
-            if (string.IsNullOrWhiteSpace(regIf_UserConfPassword.text))
+            else  if (string.IsNullOrWhiteSpace(regIf_UserConfPassword.text))
             {
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), wrongConfPassword, PopUpduration);
+                return;
             }
             else if (regIf_UserPassword.text != regIf_UserConfPassword.text)
             {
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), wrongConfPassword, PopUpduration);
+                return;
             }
+            else if (regIf_UserPassword.text.Equals(regIf_UserConfPassword.text))
+            {
+                RestManager.UserRegistration(regIf_userEmail.text, regIf_UserName.text, regIf_UserPassword.text, OnCompleteRegistration, OnErrorRegistration);
+                Debug.Log("Mail UserName password:   " + regIf_userEmail.text + regIf_UserName.text + regIf_UserPassword.text + regIf_UserConfPassword.text);
+            }           
+        }
+
+        private void OnCompleteRegistration(CreateAccount registeredProfile)
+        {
+            Debug.Log("Registered:  " + registeredProfile.UserId);
+            OnClickRegisterPopUpClose();
+            ClearRegInputFieldData();
+            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), successFullyRegisterd, PopUpduration);
+        }
+       
+        private void OnErrorRegistration(RestUtil.RestCallError obj)
+        {
+            Debug.LogError("Error On Registration: "+obj.Description);
+            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), emailAlreadyExists, PopUpduration);
         }
 
        
         private void OnClickUserLogin()
         {
-            RestManager.LoginProfile(logInIf_userEmail.text, logInIf_password.text, OnCompleteLogin, OnErrorLogin);
-        }
-
-        private void OnCompleteLogin(UserLogin loggedinProfile)
-        {
-            Debug.Log("Logged In Profile:  " + loggedinProfile.UserId + regIf_userEmail.text);
-            UserName = loggedinProfile.UserName;
-            CharacterSelection.Instance.SetUserName();
-            LevelSelection.Instance.SetUserName();
-            Settings.Instance.SetUserName();
-            PlayerMatch.Instance.SetUserName();
-            ShootingRange.Instance.SetUserName();
-            PlayerPrefs.SetInt("Logout", 0);
-            ClearLoginInputFieldData();
-            OnClickLoginPopUpClose();
-            OpenCharacterUI();
-        }
-
-        private void OnErrorLogin(RestUtil.RestCallError restError)
-        {
-            Debug.LogError(restError.Description);
             if (LoginFaultCheck(logInIf_userEmail.text, Checking.EmailID) != null)
             {
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), LoginFaultCheck(logInIf_userEmail.text, Checking.EmailID), PopUpduration);
@@ -218,8 +209,26 @@ namespace ArenaZ.AccountAccess
             }
             else
             {
-                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), restError.Description, PopUpduration);
+                RestManager.LoginProfile(logInIf_userEmail.text, logInIf_password.text, OnCompleteLogin, OnErrorLogin);
             }
+        }
+
+        private void OnCompleteLogin(UserLogin loggedinProfile)
+        {
+            Debug.Log("Logged In Profile:  " + loggedinProfile.UserId + regIf_userEmail.text);
+            UserName = loggedinProfile.UserName;
+            LogInAndLogOutButtonName = logout;
+            UIManager.Instance.setUserName?.Invoke(UserName);
+            PlayerPrefs.SetInt("Logout", 0);
+            ClearLoginInputFieldData();
+            OnClickLoginPopUpClose();
+            OpenCharacterUI();
+        }
+
+        private void OnErrorLogin(RestUtil.RestCallError restError)
+        {
+            Debug.LogError(restError.Description);
+            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), restError.Description, PopUpduration);
         }
 
         private string RegistrationFaultCheck(string message,Checking type)
@@ -262,7 +271,7 @@ namespace ArenaZ.AccountAccess
 
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Checking.Password.ToString() + " " + isNull;
+                        return Checking.Password.ToString() + " " + passwordIsNull;
                     }
                     if (!checking.hasNumber.IsMatch(message))
                     {
@@ -283,6 +292,10 @@ namespace ArenaZ.AccountAccess
                     if (checking.hasSpace.IsMatch(message))
                     {
                         return Checking.Password.ToString() + " " + containedSpace;
+                    }
+                    if(!checking.hasMinimum8Chars.IsMatch(message))
+                    {
+                        return Checking.Password.ToString() + " " + doesNotHaveMinEightChar;
                     }
                     break;
                     default:
@@ -322,8 +335,10 @@ namespace ArenaZ.AccountAccess
         private void OnCompleteLogout(UserLogin obj)
         {
             Debug.Log("User Logged Out SuccessFully");
-            UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
-            Settings.Instance.OnClickClose();
+            LogInAndLogOutButtonName = login;
+           // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
+            UIManager.Instance.showProfilePic?.Invoke((CharacterSelection.Instance.names[0]));
+            UIManager.Instance.setUserName?.Invoke(defaultUserName);
         }
 
         private void OnErrorLogout(RestUtil.RestCallError obj)
@@ -338,17 +353,17 @@ namespace ArenaZ.AccountAccess
         private void OpenCharacterUI()
         {
             UIManager.Instance.HideScreen(Page.AccountAccessDetails.ToString());
-            UIManager.Instance.ShowScreen(Page.CharacterSelection.ToString(), Hide.none);
+            UIManager.Instance.ScreenShowAndHide(Page.CharacterSelection.ToString(), Hide.none);
         }
 
         private void OnClickFirstRegisterButton()
         {
-            UIManager.Instance.ShowScreen(Page.RegistrationOverlay.ToString(),Hide.none);
+            UIManager.Instance.ScreenShowAndHide(Page.RegistrationOverlay.ToString(),Hide.none);
         }
 
         private void OnClickFirstLoginButton()
         {
-            UIManager.Instance.ShowScreen(Page.LogINOverlay.ToString(), Hide.none);
+            UIManager.Instance.ScreenShowAndHide(Page.LogINOverlay.ToString(), Hide.none);
         }
 
         private void OnClickRegisterPopUpClose()
@@ -363,12 +378,12 @@ namespace ArenaZ.AccountAccess
 
         private void OnClickAccountAccessPanelOpen()
         {
-            UIManager.Instance.ShowScreen(Page.AcoountAccesOverlay.ToString(),Hide.none);
+            UIManager.Instance.ScreenShowAndHide(Page.AcoountAccesOverlay.ToString(),Hide.none);
         }
 
         private void OnClickAccountAccessPanelClose()
         {
-            UIManager.Instance.HideScreen(Page.AcoountAccesOverlay.ToString());
+            UIManager.Instance.HideScreen(Page.AccountAccessDetails.ToString());
         }
         #endregion
     }

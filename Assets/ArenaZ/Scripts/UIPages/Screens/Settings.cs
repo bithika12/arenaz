@@ -5,11 +5,14 @@ using ArenaZ.Screens;
 using UnityEngine.Audio;
 using ArenaZ.AccountAccess;
 using TMPro;
+using System.Collections;
 
 [RequireComponent(typeof(UIScreen))]
 public class Settings : RedAppleSingleton<Settings>
 {
     //Private Properties
+   
+
     [Header("Audio Mixers")][Space(5)]
     [SerializeField]private AudioMixer MusicAudioMixer;
     [SerializeField]private AudioMixer SFXAudioMixer;
@@ -45,29 +48,40 @@ public class Settings : RedAppleSingleton<Settings>
     [Header("Text")][Space(5)]
     [SerializeField] private Text countryButtonText;
 
+    [Header("Integer")][Space(5)]
+    [SerializeField] private int PopUpduration;
+
     private bool IsMusicMute = false;
-    private bool IsSFXMute = false;  
+    private bool IsSFXMute = false;
 
     //------------------------------------------------------------+
+    protected override void Awake()
+    {
+        UIManager.Instance.setUserName += SetUserName;
+        UIManager.Instance.showProfilePic += SetProfileImage;
+    }
+
     private void Start()
     {
         UpdateButtonsOnStart();
-    }
-    private void OnEnable()
-    {
         GettingButtonReferences();
+        //PlayerPrefs.SetInt("Logout", 1);
     }
-    private void OnDisable()
+
+    private void OnDestroy()
     {
         ReleaseButtonReferences();
+        UIManager.Instance.setUserName -= SetUserName;
+        UIManager.Instance.showProfilePic -= SetProfileImage;
     }
+
 
     #region Button_References
     private void GettingButtonReferences()
     {
         closeButton.onClick.AddListener(OnClickClose);
 
-        logOutButton.onClick.AddListener(LogoutUserProfile);
+        logOutButton.onClick.AddListener(OnClickLogInLogOut);
 
         MusicToggle.onValueChanged.AddListener(delegate
         {
@@ -84,7 +98,7 @@ public class Settings : RedAppleSingleton<Settings>
     {
         closeButton.onClick.RemoveListener(OnClickClose);
 
-        logOutButton.onClick.RemoveListener(LogoutUserProfile);
+        logOutButton.onClick.RemoveListener(OnClickLogInLogOut);
 
         MusicToggle.onValueChanged.RemoveListener(delegate
         {
@@ -98,10 +112,14 @@ public class Settings : RedAppleSingleton<Settings>
     }
     #endregion
 
+    public void LogInLogOutButtonNameSet()
+    {
+        logOutButton.transform.GetChild(0).GetComponent<Text>().text = AccountAccessManager.Instance.LogInAndLogOutButtonName;
+    }
+
     private void LogoutUserProfile()
     {
         AccountAccessManager.Instance.OnClickLogout();
-
     }
 
     public void SetCountrySpriteAndCountryNameOnButton()
@@ -110,7 +128,7 @@ public class Settings : RedAppleSingleton<Settings>
         {
             countryButtonImage.enabled = true;
         }
-        countryButtonImage.sprite = UIManager.Instance.GetCorrespondingCountrySprite();
+        countryButtonImage.sprite = AccountAccessManager.Instance.CountrySprite;
         countryButtonText.text = AccountAccessManager.Instance.CountryId;
     }
 
@@ -119,22 +137,47 @@ public class Settings : RedAppleSingleton<Settings>
         profileImage.sprite = UIManager.Instance.GetCorrespondingProfileSprite(imageName, ProfilePic.Small);
     }
 
-    public void SetUserName()
+    public void SetUserName(string userName)
     {
-        userName.text = AccountAccessManager.Instance.UserName;
+       this.userName.text = userName;
     }
 
     #region UI_Functionalities
     public void OnClickClose()
     {
         UIManager.Instance.HideScreen(Page.Settings.ToString());
-        if(PlayerPrefs.GetInt("Logout")==0)
-        {
-            UIManager.Instance.ShowScreen(Page.AccountAccessDetails.ToString(), Hide.none);
-            UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
-            PlayerPrefs.SetInt("Logout", 1);
-        }
     }
+
+    public void OnClickLogInLogOut()
+    {
+        if (PlayerPrefs.GetInt("Logout") == 0)
+        {
+            Debug.Log("Logged Out");
+            StartCoroutine(LogOut());
+        }
+        else
+        {
+            Debug.Log("Not Logged Out");
+            GoToLogIn();
+        }      
+    }
+
+    IEnumerator LogOut()
+    {
+        LogoutUserProfile();
+        yield return new WaitForSeconds(PopUpduration);
+        UIManager.Instance.ScreenShowAndHide(Page.AccountAccessDetails.ToString(), Hide.none);
+        UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
+        PlayerPrefs.SetInt("Logout", 1);
+        OnClickClose();
+    }
+
+    private void GoToLogIn()
+    {
+        OnClickClose();
+        UIManager.Instance.ScreenShowAndHide(Page.AccountAccessDetails.ToString(), Hide.none);
+    }
+
     #endregion
     #region Music_AND_SFX
     private void UpdateMusicValue(Toggle stateChange)

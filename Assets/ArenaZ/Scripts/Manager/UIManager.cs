@@ -13,7 +13,7 @@ namespace ArenaZ.Manager
     /// </summary>
     public class UIManager : RedAppleSingleton<UIManager>
     {
-        //Public Variables
+       
         //Private Variables
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
         private string _openScreen = string.Empty;
@@ -30,14 +30,18 @@ namespace ArenaZ.Manager
         [SerializeField] private ProfileImageType[] smallProfilePic = new ProfileImageType[6];
         [SerializeField] private ProfileImageType[] mediumProfilePic = new ProfileImageType[6];
 
+        //Public Variables
+        public Action<string> showProfilePic;
+        public Action<string> setUserName;
+
         private void Start()
         {
             StartCoroutine(LogInCheck());
             StartAnimations();
         }
-        public Sprite GetCorrespondingCountrySprite()
+        public Sprite GetCorrespondingCountrySprite(string spriteName)
         {
-            return countryAtlas.GetSprite(AccountAccessManager.Instance.CountryId.ToLower());
+            return countryAtlas.GetSprite(spriteName);
         }
 
         public Sprite GetCorrespondingProfileSprite(string charName,ProfilePic type)
@@ -63,7 +67,7 @@ namespace ArenaZ.Manager
 
         private void StartAnimations()
         {
-            ShowScreen(Page.TopAndBottomBar.ToString(), Hide.none);
+            ScreenShowAndHide(Page.TopAndBottomBar.ToString(), Hide.none);
         }
 
         public void ShowPopWithText(string screenName,string message,float duration)
@@ -71,10 +75,11 @@ namespace ArenaZ.Manager
             StartCoroutine(allPages[screenName].ShowAndHidePopUpText(message, duration));
         }
 
-        public void ShowScreen(string screenName,Hide type)
+        public void ScreenShowAndHide(string screenName,Hide type)
         {
-            if (_openScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            if (_openScreen.Equals(screenName) || !allPages.ContainsKey(screenName) || allPages[screenName].gameObject.activeInHierarchy)
             {
+                Debug.Log("Return When Showing");
                 return;
             }
             allPages[screenName].ShowGameObjWithAnim();
@@ -88,6 +93,15 @@ namespace ArenaZ.Manager
                 _openScreen = screenName;
             }                           
             closeScreen = string.Empty;
+        }
+
+        public void ScreenShow(string screenName)
+        {
+            if (_openScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            {
+                return;
+            }
+            allPages[screenName].ShowGameObjWithAnim();
         }
 
         public void ShowCharacterName(string name)
@@ -104,7 +118,38 @@ namespace ArenaZ.Manager
             characterName = name;
         }
 
-        public ImageType ButtonImageType(ButtonType type)
+        public void HideScreen(string screenName)
+        {
+            Debug.Log("Hide Screen" + name);
+            if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            {
+                return;
+            }
+            allPages[screenName].HideGameObjWithAnim();
+            closeScreen = screenName;
+            _openScreen = string.Empty;
+
+        }
+
+        public void DeactivateIfAlreadyActivated(string screenName)
+        {
+            if(allPages[screenName].gameObject.activeInHierarchy)
+            {
+                allPages[screenName].SetActive(false);
+            }
+        }
+
+        public void HideScreenChild(string screenName)
+        {
+            Debug.Log("Hide Screen" + name);
+            if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            {
+                return;
+            }
+            allPages[screenName].HideGameObjWithAnim();
+        }
+
+            public ImageType ButtonImageType(ButtonType type)
         {
             for (int i = 0; i < allButtonImages.Length; i++)
             {
@@ -116,17 +161,6 @@ namespace ArenaZ.Manager
             return default;
         }
 
-        public void HideScreen(string screenName)
-        {
-            Debug.Log("Hide Screen" + name);
-            if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
-            {
-                return;
-            }
-            allPages[screenName].HideGameObjWithAnim();
-            closeScreen = screenName;
-            _openScreen = string.Empty;
-        }
 
         private bool AddAllUIScreensToDictionary()
         {
@@ -149,10 +183,11 @@ namespace ArenaZ.Manager
 
         IEnumerator LogInCheck()
         {
-            yield return new WaitUntil(()=> AddAllUIScreensToDictionary()==true);
+            yield return new WaitUntil(()=> AddAllUIScreensToDictionary());
             if (PlayerPrefs.GetInt("AlreadyLoggedIn") == 0)
             {
-                ShowScreen(Page.AccountAccessDetails.ToString(), Hide.none);
+                ScreenShowAndHide(Page.AccountAccessDetails.ToString(), Hide.none);
+                PlayerPrefs.SetInt("Logout", 1);
             }            
         }
 

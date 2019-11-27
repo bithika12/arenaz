@@ -42,7 +42,7 @@ public class Mail : MonoBehaviour
 
     private void ShowMessagePopup()
     {
-        UIManager.Instance.ShowScreen(Page.MailPopUp.ToString(), Hide.none);
+        UIManager.Instance.ScreenShow(Page.MailPopUp.ToString());
     }
 
     private void ClickToShowAndHideViewButton()

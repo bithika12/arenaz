@@ -18,6 +18,12 @@ namespace ArenaZ.Mail
         [HideInInspector]
         public GameObject previouslyTouchedMailShowButton;
 
+        private void OnEnable()
+        {
+            UIManager.Instance.DeactivateIfAlreadyActivated(Page.MailPopUp.ToString());
+            previouslyTouchedMailShowButton.SetActive(false);
+        }
+
         private void Start()
         {
             GettingButtonReferences();
@@ -31,13 +37,13 @@ namespace ArenaZ.Mail
         private void GettingButtonReferences()
         {
             mailBoxCloseButton.onClick.AddListener(OnClickMailBoxClose);
-            mailPopUpCloseButton.onClick.AddListener(OnClickMailBoxClose);
+            mailPopUpCloseButton.onClick.AddListener(OnClickMailPopUpClose);
         }
 
         private void ReleaseButtonReferences()
         {
             mailBoxCloseButton.onClick.RemoveListener(OnClickMailBoxClose);
-            mailPopUpCloseButton.onClick.RemoveListener(OnClickMailBoxClose);
+            mailPopUpCloseButton.onClick.RemoveListener(OnClickMailPopUpClose);
         }
 
         private void OnClickMailBoxClose()
@@ -47,9 +53,7 @@ namespace ArenaZ.Mail
 
         private void OnClickMailPopUpClose()
         {
-            UIManager.Instance.HideScreen(Page.MailPopUp.ToString());
+            UIManager.Instance.HideScreenChild(Page.MailPopUp.ToString());
         }
-
-        //Private Variables
     }
 }

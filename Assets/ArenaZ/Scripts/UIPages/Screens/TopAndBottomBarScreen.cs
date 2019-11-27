@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
+using UnityEngine.EventSystems;
 
 namespace ArenaZ.Screens
 {
@@ -42,22 +43,25 @@ namespace ArenaZ.Screens
 
         private void InfoButtonClicked()
         {
-            UIManager.Instance.ShowScreen(Page.InfoAndRulesForPlayer.ToString(),Hide.previous);
+          //  if(EventSystem.current.)
+            UIManager.Instance.ScreenShowAndHide(Page.InfoAndRulesForPlayer.ToString(),Hide.previous);
         }
 
         private void SettingButtonClicked()
         {
-            UIManager.Instance.ShowScreen(Page.Settings.ToString(),Hide.previous);
+            UIManager.Instance.ScreenShowAndHide(Page.Settings.ToString(),Hide.previous);
+            Settings.Instance.SetCountrySpriteAndCountryNameOnButton();
+            Settings.Instance.LogInLogOutButtonNameSet();
         }
 
         private void MailButtonClicked()
         {
-            UIManager.Instance.ShowScreen(Page.Mailbox.ToString(),Hide.previous);
+            UIManager.Instance.ScreenShowAndHide(Page.Mailbox.ToString(),Hide.previous);
         }
 
         private void HistoryButtonClicked()
         {
-            UIManager.Instance.ShowScreen(Page.PlayerMatchHistory.ToString(),Hide.previous);
+            UIManager.Instance.ScreenShowAndHide(Page.PlayerMatchHistory.ToString(),Hide.previous);
         }
     }
 }

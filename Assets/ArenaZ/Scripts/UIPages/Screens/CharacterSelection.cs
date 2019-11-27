@@ -6,6 +6,7 @@ using UnityEngine.UI.Extensions;
 using ArenaZ.LevelMangement;
 using ArenaZ.AccountAccess;
 using ArenaZ.GameMode;
+using System;
 
 [RequireComponent (typeof(UIScreen))]
 public class CharacterSelection : RedAppleSingleton<CharacterSelection>
@@ -24,13 +25,19 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
     [Header("Scroll Snap")]
     [Space(5)]
     [SerializeField] private HorizontalScrollSnap horizontalScrollSnap;
-    private readonly string[] names = { Page.Canines.ToString(), Page.Kepler.ToString(), Page.Cyborg.ToString(), Page.CyborgSecond.ToString(), Page.Human.ToString(), Page.Ebot.ToString(), Page.KeplerSecond.ToString()};
+    public readonly string[] names = { Page.Canines.ToString(), Page.Kepler.ToString(), Page.Cyborg.ToString(), Page.CyborgSecond.ToString(), Page.Human.ToString(), Page.Ebot.ToString(), Page.KeplerSecond.ToString()};
     //Public Fields
+    
+
+    protected override void Awake()
+    {         
+        UIManager.Instance.setUserName += SetUserName;
+    }
 
     private void Start()
     {
         GettingButtonReferences();
-        ShowFirstText();      
+        ShowFirstText();
     }
 
     private void OnEnable()
@@ -45,7 +52,8 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
 
     private void OnDestroy()
     {
-        ReleaseButtonReferences();       
+        ReleaseButtonReferences();
+        UIManager.Instance.setUserName -= SetUserName;
     }
     #region Button_References
     private void GettingButtonReferences()
@@ -63,9 +71,9 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
     }
     #endregion
 
-    public void SetUserName()
+    public void SetUserName(string userName)
     {
-        userName.text = AccountAccessManager.Instance.UserName;
+        this.userName.text = userName;
     }
 
     #region UI_Functionalities
@@ -83,11 +91,8 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
     {
         UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
         UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
-        UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(),Hide.none);
-        LevelSelection.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
-        ShootingRange.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
-        Settings.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
-        PlayerMatch.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        UIManager.Instance.ScreenShowAndHide(Page.LevelSelection.ToString(),Hide.none);
+        UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
         LevelSelection.Instance.OnSelectionGameplayType(GameType.normal);
     }
 
@@ -95,17 +100,14 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
     {
         UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
         UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
-        UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(),Hide.none);
-        LevelSelection.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
-        ShootingRange.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
-        Settings.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
-        PlayerMatch.Instance.SetProfileImage(names[horizontalScrollSnap._currentPage]);
+        UIManager.Instance.ScreenShowAndHide(Page.LevelSelection.ToString(), Hide.none);
+        UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
         LevelSelection.Instance.OnSelectionGameplayType(GameType.training);
     }
      
     private void OnclickRanking()
     {
-        UIManager.Instance.ShowScreen(Page.LeaderBoard.ToString(), Hide.none);
+        UIManager.Instance.ScreenShowAndHide(Page.LeaderBoard.ToString(), Hide.none);
     }
     #endregion
 }

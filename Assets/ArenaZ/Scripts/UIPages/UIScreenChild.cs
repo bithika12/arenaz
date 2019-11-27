@@ -7,14 +7,7 @@ namespace ArenaZ.Screens
     {
         protected override void Awake()
         {
-            if (GetComponent<Animator>())
-            {
-                animator = GetComponent<Animator>();
-            }
-            if (GetComponent<TextMeshProUGUI>())
-            {
-                txtMeshPro = GetComponent<TextMeshProUGUI>();
-            }
+            base.Awake();
         }
     }
 }

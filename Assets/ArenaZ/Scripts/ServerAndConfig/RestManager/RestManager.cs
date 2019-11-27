@@ -52,7 +52,7 @@ namespace RedApple
 
         #endregion
         #region USER_LOGIN_REGISTRATION
-        public static void UserRegistration(string email_id, string name, string password, string confirmPassword, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
+        public static void UserRegistration(string email_id, string name, string password, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
             .Url(getApiUrl(Urls.REGISTER))
@@ -60,8 +60,7 @@ namespace RedApple
             .ContentType(ContentTypes.FORM)
             .FormData(Attributes.EMAIL_ID, email_id)
             .FormData(Attributes.NAME, name)
-            .FormData(Attributes.PASSWORD, password)
-            .FormData(Attributes.CONFIRM_PASSWORD, confirmPassword);
+            .FormData(Attributes.PASSWORD, password);
 
             addUserAuthHeader(ref webRqstBuilder);
             sendWebRequest(webRqstBuilder, onCompletionRegistration, restError);

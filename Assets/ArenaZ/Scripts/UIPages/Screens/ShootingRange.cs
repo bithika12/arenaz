@@ -26,6 +26,12 @@ namespace ArenaZ.GameMode
         [Space(5)]
         [SerializeField] private Text userName;
 
+        protected override void Awake()
+        {
+            UIManager.Instance.setUserName += SetUserName;
+            UIManager.Instance.showProfilePic += SetProfileImage;
+        }
+
         private void Start()
         {
             GettingButtonReferences();
@@ -34,6 +40,8 @@ namespace ArenaZ.GameMode
         private void OnDestroy()
         {
             ReleaseButtonReferences();
+            UIManager.Instance.setUserName -= SetUserName;
+            UIManager.Instance.showProfilePic -= SetProfileImage;          
         }
 
         #region ButtonReferences
@@ -63,20 +71,20 @@ namespace ArenaZ.GameMode
             profileImage.sprite = UIManager.Instance.GetCorrespondingProfileSprite(imageName, ProfilePic.Medium);
         }
 
-        public void SetUserName()
+        public void SetUserName(string userName)
         {
-            userName.text = AccountAccessManager.Instance.UserName;
+            this.userName.text = userName;
         }
 
         private void OnClickShootingRangeBack()
         {
-            UIManager.Instance.ShowScreen(Page.LevelSelection.ToString(), Hide.none);
+            UIManager.Instance.ScreenShowAndHide(Page.LevelSelection.ToString(), Hide.none);
             UIManager.Instance.HideScreen(Page.Shootingrange.ToString());
         }
 
         private void OnClickStartGameWithCoinValue()
         {
-            UIManager.Instance.ShowScreen(Page.PlayerMatch.ToString(), Hide.none);
+            UIManager.Instance.ScreenShowAndHide(Page.PlayerMatch.ToString(), Hide.none);
         }
     }
 }
