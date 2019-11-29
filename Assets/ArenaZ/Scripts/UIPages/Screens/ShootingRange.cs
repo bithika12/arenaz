@@ -6,7 +6,6 @@ using ArenaZ.AccountAccess;
 
 namespace ArenaZ.GameMode
 {
-    [RequireComponent(typeof(UIScreen))]
     public class ShootingRange : RedAppleSingleton<ShootingRange>
     {
         [Header("Buttons")]
@@ -26,22 +25,16 @@ namespace ArenaZ.GameMode
         [Space(5)]
         [SerializeField] private Text userName;
 
-        protected override void Awake()
+        private void Start()
         {
+            GettingButtonReferences();
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
         }
 
-        private void Start()
-        {
-            GettingButtonReferences();
-        }
-
         private void OnDestroy()
         {
-            ReleaseButtonReferences();
-            UIManager.Instance.setUserName -= SetUserName;
-            UIManager.Instance.showProfilePic -= SetProfileImage;          
+            ReleaseButtonReferences();        
         }
 
         #region ButtonReferences
@@ -68,7 +61,7 @@ namespace ArenaZ.GameMode
 
         public void SetProfileImage(string imageName)
         {
-            profileImage.sprite = UIManager.Instance.GetCorrespondingProfileSprite(imageName, ProfilePic.Medium);
+            profileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Medium);
         }
 
         public void SetUserName(string userName)
@@ -78,13 +71,13 @@ namespace ArenaZ.GameMode
 
         private void OnClickShootingRangeBack()
         {
-            UIManager.Instance.ScreenShowAndHide(Page.LevelSelection.ToString(), Hide.none);
-            UIManager.Instance.HideScreen(Page.Shootingrange.ToString());
+            UIManager.Instance.ScreenShow(Page.LevelSelectionPanel.ToString(), Hide.none);
+            UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
         }
 
         private void OnClickStartGameWithCoinValue()
         {
-            UIManager.Instance.ScreenShowAndHide(Page.PlayerMatch.ToString(), Hide.none);
+            UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
         }
     }
 }

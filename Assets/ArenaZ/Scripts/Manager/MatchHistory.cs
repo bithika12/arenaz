@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
 
-[RequireComponent(typeof(UIScreen))]
 public class MatchHistory : MonoBehaviour
 {
     [SerializeField] private Button closeButton;
@@ -30,6 +29,6 @@ public class MatchHistory : MonoBehaviour
 
     private void OnClickClose()
     {
-        UIManager.Instance.HideScreen(Page.PlayerMatchHistory.ToString());
+        UIManager.Instance.HideScreen(Page.PlayerMatchHistoryPanel.ToString());
     }
 }

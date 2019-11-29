@@ -5,7 +5,6 @@ using ArenaZ.Screens;
 
 namespace ArenaZ.Mail
 {
-    [RequireComponent(typeof(UIScreen))]
     public class MailboxManager : RedAppleSingleton<MailboxManager>
     {
         //Private Variables
@@ -18,12 +17,6 @@ namespace ArenaZ.Mail
         [HideInInspector]
         public GameObject previouslyTouchedMailShowButton;
 
-        private void OnEnable()
-        {
-            UIManager.Instance.DeactivateIfAlreadyActivated(Page.MailPopUp.ToString());
-            previouslyTouchedMailShowButton.SetActive(false);
-        }
-
         private void Start()
         {
             GettingButtonReferences();
@@ -32,6 +25,15 @@ namespace ArenaZ.Mail
         private void OnDestroy()
         {
             ReleaseButtonReferences();
+        }
+
+        public void DeactivateScreenIfActivated()
+        {
+            if (previouslyTouchedMailShowButton)
+            {
+                UIManager.Instance.HideScreenImmediately(Page.MailPopUp.ToString());               
+                previouslyTouchedMailShowButton.SetActive(false);
+            }
         }
 
         private void GettingButtonReferences()
@@ -48,12 +50,12 @@ namespace ArenaZ.Mail
 
         private void OnClickMailBoxClose()
         {
-            UIManager.Instance.HideScreen(Page.Mailbox.ToString());
+            UIManager.Instance.HideScreen(Page.MailboxPanel.ToString());
         }
 
         private void OnClickMailPopUpClose()
         {
-            UIManager.Instance.HideScreenChild(Page.MailPopUp.ToString());
+            UIManager.Instance.HideScreenNormalWithAnim(Page.MailPopUp.ToString());
         }
     }
 }

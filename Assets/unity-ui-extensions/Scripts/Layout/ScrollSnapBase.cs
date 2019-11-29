@@ -437,11 +437,14 @@ namespace UnityEngine.UI.Extensions
             {
                 if (PrevButton)
                 {
+                   // Debug.Log(targetScreen>0);
+                    
                     PrevButton.GetComponent<Button>().interactable = targetScreen > 0;
                 }
 
                 if (NextButton)
                 {
+                   // Debug.Log(targetScreen < _screensContainer.transform.childCount - 1);
                     NextButton.GetComponent<Button>().interactable = targetScreen < _screensContainer.transform.childCount - 1;
                 }
             }

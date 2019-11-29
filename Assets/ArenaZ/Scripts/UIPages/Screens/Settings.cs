@@ -3,11 +3,12 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
 using UnityEngine.Audio;
-using ArenaZ.AccountAccess;
-using TMPro;
 using System.Collections;
+using RedApple;
+using RedApple.Utils;
+using RedApple.Api.Data;
+using System;
 
-[RequireComponent(typeof(UIScreen))]
 public class Settings : RedAppleSingleton<Settings>
 {
     //Private Properties
@@ -48,31 +49,29 @@ public class Settings : RedAppleSingleton<Settings>
     [Header("Text")][Space(5)]
     [SerializeField] private Text countryButtonText;
 
-    [Header("Integer")][Space(5)]
-    [SerializeField] private int PopUpduration;
+    [Header("Integer and Floating Point")][Space(5)]
+    [SerializeField] private float LogOutPopUpCloseduration;
 
     private bool IsMusicMute = false;
     private bool IsSFXMute = false;
 
-    //------------------------------------------------------------+
-    protected override void Awake()
-    {
-        UIManager.Instance.setUserName += SetUserName;
-        UIManager.Instance.showProfilePic += SetProfileImage;
-    }
+    private Sprite countrySprite;
 
+    public Action inputFieldclear;
+
+    //------------------------------------------------------------+
     private void Start()
     {
         UpdateButtonsOnStart();
         GettingButtonReferences();
-        //PlayerPrefs.SetInt("Logout", 1);
+        GetCountryDetailsOnStart();
+        UIManager.Instance.setUserName += SetUserName;
+        UIManager.Instance.showProfilePic += SetProfileImage;
     }
 
     private void OnDestroy()
     {
-        ReleaseButtonReferences();
-        UIManager.Instance.setUserName -= SetUserName;
-        UIManager.Instance.showProfilePic -= SetProfileImage;
+        ReleaseButtonReferences();      
     }
 
 
@@ -112,29 +111,54 @@ public class Settings : RedAppleSingleton<Settings>
     }
     #endregion
 
-    public void LogInLogOutButtonNameSet()
+    private void GetCountryDetailsOnStart()
     {
-        logOutButton.transform.GetChild(0).GetComponent<Text>().text = AccountAccessManager.Instance.LogInAndLogOutButtonName;
+        RestManager.GetCountryDetails(OnCompletionOfCountryDetailsFetch, OnErrorCountryDetailsFetch);
     }
 
-    private void LogoutUserProfile()
+    private void OnCompletionOfCountryDetailsFetch(CountryData details)
     {
-        AccountAccessManager.Instance.OnClickLogout();
-    }
-
-    public void SetCountrySpriteAndCountryNameOnButton()
-    {
+        Debug.Log("The Country Code Is:     " + details.Country_code);
         if (!countryButtonImage.enabled)
         {
             countryButtonImage.enabled = true;
         }
-        countryButtonImage.sprite = AccountAccessManager.Instance.CountrySprite;
-        countryButtonText.text = AccountAccessManager.Instance.CountryId;
+        countryButtonImage.sprite = UIManager.Instance.GetCorrespondingCountrySprite(details.Country_code.ToLower());
+        countryButtonText.text = details.Country_code;
+    }
+
+    private void OnErrorCountryDetailsFetch(RestUtil.RestCallError obj)
+    {
+        UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), Constants.noInternet, LogOutPopUpCloseduration);
+    }
+
+    public void LogInLogOutButtonNameSet(string buttonName)
+    {
+        logOutButton.transform.GetChild(0).GetComponent<Text>().text = buttonName;
+    }   
+
+    public void OnClickLogout()
+    {
+        RestManager.LogOutProfile(OnCompleteLogout, OnErrorLogout);
+    }
+
+    private void OnCompleteLogout(UserLogin obj)
+    {
+        LogInLogOutButtonNameSet(Constants.login);
+        UIManager.Instance.showProfilePic?.Invoke((Page.Canines.ToString()));
+        UIManager.Instance.setUserName?.Invoke(Constants.defaultUserName);
+        TopAndBottomBarScreen.Instance.count = 0;
+        // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
+    }
+
+    private void OnErrorLogout(RestUtil.RestCallError obj)
+    {
+        Debug.Log(obj.Description);
     }
 
     public void SetProfileImage(string imageName)
     { 
-        profileImage.sprite = UIManager.Instance.GetCorrespondingProfileSprite(imageName, ProfilePic.Small);
+        profileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Small);
     }
 
     public void SetUserName(string userName)
@@ -145,7 +169,7 @@ public class Settings : RedAppleSingleton<Settings>
     #region UI_Functionalities
     public void OnClickClose()
     {
-        UIManager.Instance.HideScreen(Page.Settings.ToString());
+        UIManager.Instance.HideScreen(Page.SettingsPanel.ToString());
     }
 
     public void OnClickLogInLogOut()
@@ -164,10 +188,10 @@ public class Settings : RedAppleSingleton<Settings>
 
     IEnumerator LogOut()
     {
-        LogoutUserProfile();
-        yield return new WaitForSeconds(PopUpduration);
-        UIManager.Instance.ScreenShowAndHide(Page.AccountAccessDetails.ToString(), Hide.none);
-        UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
+        OnClickLogout();
+        yield return new WaitForSeconds(LogOutPopUpCloseduration);
+        UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
+        UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
         PlayerPrefs.SetInt("Logout", 1);
         OnClickClose();
     }
@@ -175,7 +199,8 @@ public class Settings : RedAppleSingleton<Settings>
     private void GoToLogIn()
     {
         OnClickClose();
-        UIManager.Instance.ScreenShowAndHide(Page.AccountAccessDetails.ToString(), Hide.none);
+        UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
+        inputFieldclear?.Invoke();
     }
 
     #endregion

@@ -21,6 +21,7 @@ public class Mail : MonoBehaviour
     }
     private void OnEnable()
     {
+        MailboxManager.Instance.DeactivateScreenIfActivated();
         myButton.onClick.AddListener(ClickToShowAndHideViewButton);
         showButton.onClick.AddListener(ShowMessagePopup);
     }
@@ -42,7 +43,7 @@ public class Mail : MonoBehaviour
 
     private void ShowMessagePopup()
     {
-        UIManager.Instance.ScreenShow(Page.MailPopUp.ToString());
+        UIManager.Instance.ScreenShowNormal(Page.MailPopUp.ToString());
     }
 
     private void ClickToShowAndHideViewButton()

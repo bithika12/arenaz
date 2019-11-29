@@ -29,22 +29,16 @@ namespace ArenaZ.LevelMangement
         [SerializeField] private Image profileImage;
         private GameType gamePlayType;
 
-        protected override void Awake()
+        private void Start()
         {
+            GettingButtonReferences();
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
         }
 
-        private void Start()
-        {
-            GettingButtonReferences();
-        }
-
         private void OnDestroy()
         {
-            ReleaseButtonReferences();
-            UIManager.Instance.setUserName -= SetUserName;
-            UIManager.Instance.showProfilePic -= SetProfileImage;
+            ReleaseButtonReferences();           
         }
         #region Button_References
         private void GettingButtonReferences()
@@ -73,7 +67,7 @@ namespace ArenaZ.LevelMangement
 
         public void SetProfileImage(string imageName)
         {
-            profileImage.sprite = UIManager.Instance.GetCorrespondingProfileSprite(imageName,ProfilePic.Small);
+            profileImage.sprite = UIManager.Instance.GetProfile(imageName,ProfilePicType.Small);
         }
 
         public void SetUserName(string userName)
@@ -87,17 +81,17 @@ namespace ArenaZ.LevelMangement
         {
             if (gamePlayType == GameType.normal)
             {
-                UIManager.Instance.ScreenShowAndHide(Page.Shootingrange.ToString(), Hide.none);
+                UIManager.Instance.ScreenShow(Page.ShootingrangePanel.ToString(), Hide.none);
             }
             else
             {
-                UIManager.Instance.ScreenShowAndHide(Page.Shootingrange.ToString(), Hide.none);
+                UIManager.Instance.ScreenShow(Page.ShootingrangePanel.ToString(), Hide.none);
             }
         }
 
         private void OnClickSpeedRaceAndBunkerDef()
         {
-            UIManager.Instance.ScreenShowAndHide(Page.ComingSoonOverlay.ToString(), Hide.none);
+            UIManager.Instance.ScreenShow(Page.ComingSoonOverlay.ToString(), Hide.none);
         }
 
         private void OnClickComingSoonClose()
@@ -107,9 +101,9 @@ namespace ArenaZ.LevelMangement
 
         private void OnClickBack()
         {
-            UIManager.Instance.ScreenShowAndHide(Page.CharacterSelection.ToString(), Hide.none);
-            UIManager.Instance.ScreenShowAndHide(Page.TopAndBottomBar.ToString(), Hide.none);
-            UIManager.Instance.HideScreen(Page.LevelSelection.ToString());
+            UIManager.Instance.ScreenShow(Page.CharacterSelectionPanel.ToString(), Hide.none);
+            UIManager.Instance.ScreenShow(Page.TopAndBottomBarPanel.ToString(), Hide.none);
+            UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
         }
         #endregion
     }

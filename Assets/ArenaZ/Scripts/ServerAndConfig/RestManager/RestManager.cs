@@ -90,7 +90,7 @@ namespace RedApple
         }
         #endregion
 
-        public static void GetCountryDetails(Action<CountryDetails> OnCompleteteCountryDetailsFetch,Action<RestError> restError)
+        public static void GetCountryDetails(Action<CountryData> OnCompleteteCountryDetailsFetch,Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
                 .Url(getIpApiUrl(Urls.JSON))
@@ -118,13 +118,13 @@ namespace RedApple
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));
         }
 
-        private static void sendWebRequestForCountryDetails(WebRequestBuilder builder, Action<CountryDetails> onCompletion,
+        private static void sendWebRequestForCountryDetails(WebRequestBuilder builder, Action<CountryData> onCompletion,
            Action<RestError> onError = null)
         {
             instance.restUtil.Send(builder,
                 handler =>
                 {
-                    var response = DataConverter.DeserializeObject<CountryDetails>(handler.text);
+                    var response = DataConverter.DeserializeObject<CountryData>(handler.text);
                     onCompletion?.Invoke(response);
                 },
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));

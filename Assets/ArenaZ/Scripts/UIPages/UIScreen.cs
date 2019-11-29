@@ -10,10 +10,7 @@ namespace ArenaZ.Screens
     /// In this class add default activity of each screens (like animation, show, hide etc)
     /// </summary>
     public class UIScreen : MonoBehaviour
-    {
-        private readonly string showTrigger = "Straight";
-        private readonly string hideTrigger = "Reverse";
-
+    {     
         protected Animator animator;
         protected TextMeshProUGUI txtMeshPro;
         protected virtual void Awake()
@@ -28,23 +25,22 @@ namespace ArenaZ.Screens
             }
         }
 
-        protected void Show()
+        public void Show()
         {
             gameObject.SetActive(true);
         }
 
-        protected void Hide()
+        public void Hide()
         {
             gameObject.SetActive(false);
         }
 
         public void ShowGameObjWithAnim()
         {
-           // Debug.Log($"Showing Animation {name}");
             Show();
             if (animator != null)
             {
-                animator.SetTrigger(showTrigger);
+                animator.SetTrigger(Constants.showTrigger);
             }
         }
 
@@ -55,7 +51,7 @@ namespace ArenaZ.Screens
                 Hide();
                 return;
             }
-            animator.SetTrigger(hideTrigger);
+            animator.SetTrigger(Constants.hideTrigger);
             StartCoroutine(HideAfterAnimation());
         }
 

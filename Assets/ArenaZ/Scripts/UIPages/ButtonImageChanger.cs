@@ -7,7 +7,7 @@ public class ButtonImageChanger : MonoBehaviour
 {
     private Button myButton;
     private SpriteState myButtonSpriteState;
-    private ImageType buttonImageType;
+    private ButtonImage buttonImageType;
     public ButtonType myButtonType;
 
     private void Awake()
@@ -27,6 +27,11 @@ public class ButtonImageChanger : MonoBehaviour
         if (buttonImageType.pressedSprite)
         {
             myButtonSpriteState.pressedSprite = buttonImageType.pressedSprite;
+            myButton.spriteState = myButtonSpriteState;
+        }
+        if(buttonImageType.disabledSprite)
+        {
+            myButtonSpriteState.disabledSprite = buttonImageType.disabledSprite;
             myButton.spriteState = myButtonSpriteState;
         }
     }

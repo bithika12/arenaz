@@ -2,7 +2,7 @@
 
 namespace RedApple.Api.Data
 {
-    public class CountryDetails
+    public class CountryData
     {
         [JsonProperty("ip")]
         public string Ip { get; set; }

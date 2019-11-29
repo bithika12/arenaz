@@ -5,7 +5,6 @@ using ArenaZ.Screens;
 
 namespace ArenaZ.InfoAndRules
 {
-    [RequireComponent(typeof(UIScreen))]
     public class InfoAndRules : MonoBehaviour
     {
         [SerializeField] private Button closeButton;
@@ -32,7 +31,7 @@ namespace ArenaZ.InfoAndRules
 
         private void OnClickClose()
         {
-            UIManager.Instance.HideScreen(Page.InfoAndRulesForPlayer.ToString());
+            UIManager.Instance.HideScreen(Page.InfoAndRulesForPlayerPanel.ToString());
         }
     }
 }

@@ -8,7 +8,6 @@ using ArenaZ.AccountAccess;
 using ArenaZ.GameMode;
 using System;
 
-[RequireComponent (typeof(UIScreen))]
 public class CharacterSelection : RedAppleSingleton<CharacterSelection>
 {
     //Private Fields
@@ -28,32 +27,17 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
     public readonly string[] names = { Page.Canines.ToString(), Page.Kepler.ToString(), Page.Cyborg.ToString(), Page.CyborgSecond.ToString(), Page.Human.ToString(), Page.Ebot.ToString(), Page.KeplerSecond.ToString()};
     //Public Fields
     
-
-    protected override void Awake()
-    {         
-        UIManager.Instance.setUserName += SetUserName;
-    }
-
     private void Start()
     {
         GettingButtonReferences();
         ShowFirstText();
-    }
-
-    private void OnEnable()
-    {
         horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(PageChecker);
+        UIManager.Instance.setUserName += SetUserName;
     }
-
-    private void OnDisable()
-    {
-        horizontalScrollSnap.OnSelectionPageChangedEvent.RemoveListener(PageChecker);
-    }
-
+    //horizontalScrollSnap.OnSelectionPageChangedEvent.RemoveListener(PageChecker);
     private void OnDestroy()
     {
         ReleaseButtonReferences();
-        UIManager.Instance.setUserName -= SetUserName;
     }
     #region Button_References
     private void GettingButtonReferences()
@@ -77,6 +61,16 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
     }
 
     #region UI_Functionalities
+    public void ResetCharacterScroller(string userName)
+    {       
+        horizontalScrollSnap.ChangePage(PlayerPrefs.GetInt(userName,0));
+    }
+
+    public void SetProfilePicOnClick()
+    {
+        UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
+    }
+
     private void ShowFirstText()
     {
         UIManager.Instance.ShowCharacterName(Page.Canines.ToString());
@@ -89,25 +83,27 @@ public class CharacterSelection : RedAppleSingleton<CharacterSelection>
     
     private void OnClickArena()
     {
-        UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
-        UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
-        UIManager.Instance.ScreenShowAndHide(Page.LevelSelection.ToString(),Hide.none);
+        UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
+        UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
+        UIManager.Instance.ScreenShow(Page.LevelSelectionPanel.ToString(),Hide.none);
         UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
         LevelSelection.Instance.OnSelectionGameplayType(GameType.normal);
+        PlayerPrefs.SetInt(User.userName, horizontalScrollSnap._currentPage);
     }
 
     private void OnClickTraining()
     {
-        UIManager.Instance.HideScreen(Page.CharacterSelection.ToString());
-        UIManager.Instance.HideScreen(Page.TopAndBottomBar.ToString());
-        UIManager.Instance.ScreenShowAndHide(Page.LevelSelection.ToString(), Hide.none);
+        UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
+        UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
+        UIManager.Instance.ScreenShow(Page.LevelSelectionPanel.ToString(), Hide.none);
         UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
         LevelSelection.Instance.OnSelectionGameplayType(GameType.training);
+        PlayerPrefs.SetInt(User.userName, horizontalScrollSnap._currentPage);
     }
      
-    private void OnclickRanking()
+    public void OnclickRanking()
     {
-        UIManager.Instance.ScreenShowAndHide(Page.LeaderBoard.ToString(), Hide.none);
+        UIManager.Instance.ScreenShow(Page.LeaderBoardPanel.ToString(), Hide.none);
     }
     #endregion
 }
