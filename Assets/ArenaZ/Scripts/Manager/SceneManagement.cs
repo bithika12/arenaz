@@ -19,10 +19,6 @@ public class SceneManagement : RedAppleSingleton<SceneManagement>
     private CanvasGroup mainCanvasGroup;
     string loadingString;
 
-    protected override void Awake()
-    {
-        DontDestroyOnLoad(this.gameObject);       
-    }
     private void Start()
     {
         // LoadScene("LevelSelection");

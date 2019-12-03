@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
-using ArenaZ.Screens;
-using ArenaZ.AccountAccess;
 
 namespace ArenaZ.GameMode
 {
@@ -78,6 +76,7 @@ namespace ArenaZ.GameMode
         private void OnClickStartGameWithCoinValue()
         {
             UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
+            PlayerMatch.Instance.LoadScene();
         }
     }
 }

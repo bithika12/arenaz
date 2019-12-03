@@ -2,6 +2,7 @@
 using ArenaZ.Behaviour;
 using ArenaZ.ShootingObject;
 using UnityEngine;
+using System.Collections;
 
 namespace ArenaZ.Manager
 {
@@ -9,7 +10,7 @@ namespace ArenaZ.Manager
     public class GameManager : RedAppleSingleton<GameManager>
     {
         // Private Variables
-        [SerializeField] private bool projectileMovement;
+        [SerializeField] private bool projectileMove;       
         private TouchBehaviour touchBehaviour;
         private Dart currentDart;
 
@@ -17,25 +18,27 @@ namespace ArenaZ.Manager
 
         private void Start()
         {
+            currentDart = GameObject.FindGameObjectWithTag("Player").GetComponent<Dart>();
             touchBehaviour = GetComponent<TouchBehaviour>();
             touchBehaviour.OnDartMove += DartMove;
             touchBehaviour.OnDartThrow += DartThrow;
         }
 
-        private void DartMove(Vector3 dartPostion) {
-            currentDart.transform.position = dartPostion;
+        private void DartMove(Vector3 dartPosition)
+        {
+            currentDart.transform.position = dartPosition;
         }
 
         private void DartThrow(Vector3 hitPoint, float angle)
         {
-            if (!projectileMovement)
+            if (!projectileMove)
             {
-                currentDart.MoveInCurvePath(hitPoint);
+                currentDart.TweenthroughPoints(hitPoint);
             }
             else
             {
-                currentDart.MoveInProjectilePath(hitPoint, angle);
+                currentDart.MoveInProjectilePathWithPhysics(hitPoint, angle);
             }
-        }
+        }       
     }
 }

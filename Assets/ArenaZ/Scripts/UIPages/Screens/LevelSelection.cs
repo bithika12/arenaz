@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
-using ArenaZ.GameMode;
-using ArenaZ.AccountAccess;
 
 namespace ArenaZ.LevelMangement
 {

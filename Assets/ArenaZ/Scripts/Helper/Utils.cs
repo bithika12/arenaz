@@ -109,5 +109,4 @@ public static class Constants
     public const string defaultUserName = "UserName";
     public const string showTrigger = "Straight";
     public const string hideTrigger = "Reverse";
-
 }

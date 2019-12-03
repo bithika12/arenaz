@@ -1,16 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using ArenaZ.ShootingObject.Interface;
+﻿using UnityEngine;
 using DG.Tweening;
+using System.Collections;
 
 namespace ArenaZ.ShootingObject
 {
     public class Dart : MonoBehaviour
     {
-        public Rigidbody dartRB;
+        private Rigidbody dartRB;
 
-        private readonly float _screenMiddleOffset = 4.0f; // Y axis
+        private readonly int pointsNum = 10;
+
+        private float time = 0;
+
+        private Vector3[] points = new Vector3[10];
+
+        private readonly float _screenMiddleOffset = 5.0f; // Y axis
 
         private void Start()
         {
@@ -19,6 +23,7 @@ namespace ArenaZ.ShootingObject
 
         private Vector3 BallisticVelocity(Vector3 hitPosition, float angle)
         {
+            Debug.Log("Moving in projectile path");
             dartRB.useGravity = true;
             Vector3 direction = hitPosition - transform.position; // Need to change this transform position
             float height = direction.y;
@@ -31,17 +36,37 @@ namespace ArenaZ.ShootingObject
             return vel * direction.normalized;
         }
 
-        public void MoveInCurvePath(Vector3 endPosition)
+        private void AddPointsToArray(Vector3 point)
         {
-            Vector3 middlePos = (transform.position + endPosition) / 2;
-            middlePos.y = middlePos.y + _screenMiddleOffset;
-            Vector3[] pos = { transform.position, middlePos, endPosition };
-            transform.DOPath(pos, 0.5f, PathType.CatmullRom).SetEase(Ease.Linear).SetLookAt(1, Vector3.up);
+            for (int i = 1; i < pointsNum + 1; i++)
+            {
+                time = i / (float)pointsNum;               
+                points[i - 1] = CalculateQuadraticBeizerCurve(time, point);
+            }
         }
 
-        public void MoveInProjectilePath(Vector3 endPosition, float angle)
+        public void TweenthroughPoints(Vector3 endPosition)
+        {
+            AddPointsToArray(endPosition);
+            transform.DOPath(points, .6f, PathType.CatmullRom).SetEase(Ease.Linear).SetLookAt(1, Vector3.forward);
+        }
+
+        private Vector3 CalculateQuadraticBeizerCurve(float time,Vector3 pointThree)
+        {
+            Vector3 pointTwo = (transform.position + pointThree) / 2;
+            pointTwo.y += _screenMiddleOffset;
+            // B(t) =i (1 - t)2P0 + 2(1 - t)tP1 + t2P2 , 0 < t < 1
+            float initialV = 1 - time;
+            float squareOfTime = time * time;
+            float squareOfInitialV = initialV * initialV;
+            Vector3 calculation = (squareOfInitialV * transform.position) + (2 * initialV * time * pointTwo) + (squareOfTime * pointThree);
+            return calculation;
+        }
+      
+        public void MoveInProjectilePathWithPhysics(Vector3 endPosition, float angle)
         {
             dartRB.velocity = BallisticVelocity(endPosition, angle);
         }
+
     }
 }
