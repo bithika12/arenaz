@@ -5,6 +5,7 @@ var authetication= require("../middleware/Auth");
 //var io;
 /* TIME  ZONE SET*/
 process.env.TZ = 'Asia/Kolkata' ;
+const appRoot = require('app-root-path');
 
 
 /* GET home page. */
@@ -22,12 +23,19 @@ router.get('/', function(req, res, next) {
   var profileController = require('../controllers/ProfileController');
   var resetPasswordController = require('../controllers/ResetPasswordController');
   var adminController = require('../controllers/AdminController');
+  let forgotPasswordController=require('../controllers/ForgotPasswordController');
+  const forgotPassword = require(appRoot + '/controllers/ForgotPasswordController');
 
-  /**  LOGIN ROUTING **/
+
+/**  LOGIN ROUTING **/
   router.post('/registration',userController.registration);
   //router.post('/socal-login',userController.socialLogin);
   router.post('/login',userController.login);
   router.post('/logout',authetication.authChecker,userController.logout);
+
+  //forgot password
+router.post('/forgot/password',forgotPassword.forgotPassword);
+
 
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD

@@ -12,6 +12,7 @@ const response  = require('../utils/ResponseManeger');
 //const jwtTokenManage   = require('../utils/JwtTokenManage');
 
 const password = require('../utils/PasswordManage');
+const Joi = require('joi');
 
 /* Async function*/
 
@@ -29,6 +30,42 @@ function checkUnique(reqObj){
        });
     }
 }
+/*
+ * This function is used for check email or username already exists or not
+ * @params--object
+ * output--object
+ */
+
+function checkUniqueEmailUserName(reqObj){
+    return function (callback) {
+        User.totalUser({email : reqObj.email}).then((totalUser) => {
+            if(totalUser == 0) {
+
+                User.totalUser({userName : reqObj.userName}).then((totalUserList) => {
+                    if(totalUserList == 0)
+                        callback (null,reqObj);
+                    else{
+                        callback (constants.UNIQUIE_USERNAME,null);
+                    }
+                }).catch(userNameUniqueErr => {
+                    callback (userNameUniqueErr,null);
+                });
+
+            }
+            else{
+                callback (constants.UNIQUIE_EMAIL,null);
+            }
+        }).catch(emailUniqueErr => {
+            callback (emailUniqueErr,null);
+        });
+    }
+}
+
+function checkUniqueUserName(reqObj,callback){
+    callback(null, reqObj);
+}
+
+
 
 
 function getUserDetails(reqObj){
@@ -67,7 +104,6 @@ function createUser(reqObj,callback){
 }
 
 
-
 function createUpdateUser(reqObj){
     return function (callback) {
        User.createUpdateUser(reqObj,{}).then((user) => {
@@ -96,59 +132,133 @@ function updateToken(user,callback){
 
 }
 
+/*
+   * This function is used for user registration
+   * @params
+ */
+exports.registration= function(req,res) {
 
-exports.registration= function(req,res){
-    if(!req.body.email || !req.body.userName || !req.body.password  ){
-         return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    let schema = Joi.object().keys({
+        email: Joi.string().max(254).trim().required(),
+        userName: Joi.string().min(3).trim().required(),
+        password: Joi.string().max(8).regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).trim().required()
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = {
+            status: constants.VALIDATION_ERROR,
+            result: result.error.name,
+            message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+        };
+        return res.send(data);
+    }
+    else {
+    if (!req.body.email || !req.body.userName || !req.body.password) {
+        //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+        return res.send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
     }
 
-    if(validateInput.password(req.body.password) == false){
+    /*if(validateInput.password(req.body.password) == false){
         return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Password format doesn't match"));
+    }*/
+    if (validateInput.email(req.body.email) == false) {
+        //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Email format doesn't match"));
+        return res.send(response.error(constants.ERROR_STATUS, {}, "Invalid Email address. Please try again."));
     }
-    if(validateInput.email(req.body.email) == false){
-        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Email format doesn't match"));
+    /* if(validateInput.userName(req.body.userName) == false){
+         return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Username format doesn't match"));
+    }*/
+
+
+    var userObj = {
+        email: req.body.email,
+        password: req.body.password,
+        userName: req.body.userName,
+        userType: "registered-game-user"
     }
-    if(validateInput.userName(req.body.userName) == false){
-        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Username format doesn't match"));
-   }
-
-
-
-    var userObj  ={email: req.body.email,password: req.body.password, userName:req.body.userName, userType:"registered-game-user" }
     async.waterfall([
-         checkUnique(userObj),
-         //checkRole,
-         createUser
-      ],
-      function (err, result) {
-          if(result){
-             res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId" : result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.deviceDetails[0].accessToken}, 'User register successfully !!'));
-          }else{
-            if( err == constants.UNIQUIE_EMAIL)
-               res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL,{}," Email Already exist"));
-            else 
-               res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS,err,"Something went Wrong!!"));
-          }
-      }
+            //checkUnique(userObj),
+            checkUniqueEmailUserName(userObj),
+            //checkRole,
+            createUser
+        ],
+        function (err, result) {
+            if (result) {
+                //res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId" : result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.deviceDetails[0].accessToken}, 'User register successfully !!'));
+                res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
+                    "userId": result._id,
+                    "userName": result.userName,
+                    email: result.email,
+                    score: result.score,
+                    "accessToken": result.deviceDetails[0].accessToken
+                }, 'You have successfully registered. You will be logged in.'));
+            } else {
+                if (err == constants.UNIQUIE_EMAIL)
+                    //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL,{}," Email Already exist"));
+                    //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL, {}, "Email address entered already exists. Please use forgot password to login."));
+                    res.send(response.error(constants.UNIQUIE_EMAIL, {}, "Email address entered already exists. Please use forgot password to login."));
+                 else if(err == constants.UNIQUIE_USERNAME)
+                    //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_USERNAME, {}, "The username you entered already exists. Please re-enter a new one."));
+                    res.send(response.error(constants.UNIQUIE_USERNAME, {}, "The username you entered already exists. Please re-enter a new one."));
+                else
+                    //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
+                    res.send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
+            }
+        }
     );
 }
+}
 
-exports.login= function(req,res){
-    if(!req.body.email || !req.body.password  ){
-         return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
-    }
-    var userObj  ={email: req.body.email,password: req.body.password}
-    async.waterfall([
-         getUserDetails(userObj),
-         updateToken
-      ],
-      function (err, result) {
-          if(result){
-              res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId":result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.get('accessToken')}, 'User login successfully !!'));
-          }else{
-              res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS,err,"Invalid password!!"));
-          }
+/*
+ * This function is used for user login
+ * @params---email,password
+ */
+exports.login= function(req,res) {
+   /*
+     * Joi is used for validation
+    */
+    let schema = Joi.object().keys({
+        email: Joi.string().max(254).trim().required(),
+        password: Joi.string().trim().required()
     });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = { status: 422, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
+        return res.send(data);
+    }
+    else{
+
+    if (!req.body.email || !req.body.password) {
+        //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+        return res.send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and password you entered is incorrect. Please try again."));
+    }
+    var userObj = {email: req.body.email, password: req.body.password}
+    async.waterfall([
+            getUserDetails(userObj),
+            updateToken
+        ],
+        function (err, result) {
+            if (result) {
+                res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
+                    "userId": result._id,
+                    "userName": result.userName,
+                    email: result.email,
+                    score: result.score,
+                    "accessToken": result.get('accessToken')
+                }, 'User login successfully !!'));
+            } else {
+                //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Invalid password!!"));
+                res.send(response.error(constants.ERROR_STATUS, err, "The email address and password you entered is incorrect. Please try again."));
+
+            }
+        });
+}
 }
 
 exports.socialLogin= function(req,res){

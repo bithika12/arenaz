@@ -31,12 +31,7 @@ User.countUser = function(condObj){
   });
 }
 
-
-
 //CREATE
-
-
-
 User.createUser = function(reqObj){
       return new Promise((resolve,reject)=>{
       reqObj.password  =  password.hashPassword(reqObj.password);
@@ -98,10 +93,6 @@ User.updateUserDetails =function(condObj,updateObj){
 }
 
 
-
-
-
-
 User.listing = function(condObj){
   return  new Promise((resolve,reject) => {
         User.find(condObj,{id: 1,name: 1,total_kill : 1}).limit(20).sort({ total_kill: -1 }).then(responses=> {
@@ -125,12 +116,6 @@ User.findDetails = function(condObj){
 }
 
 
-
-
-
-
-
-
 /*******   CHECK USER TOKEN   *******/
 
 User.checkUserToken = function(condObj){
@@ -144,7 +129,6 @@ User.checkUserToken = function(condObj){
         });
     });
 }
-
 
 
 /**UPDATE DEVICE **/
@@ -169,10 +153,7 @@ User.updateToken  = function(condObj,updateObj){
     });
 }
 
-
-
 /* USER LOGOUT */
-
 
 User.removeToken  = function(condObj){
   return  new Promise((resolve,reject) => {
@@ -189,8 +170,6 @@ User.removeToken  = function(condObj){
     });
 }
 
-
-
 //RESET PASSWORD
 
   User.updateResetToken  = function(condObj,updateObj){
@@ -203,10 +182,6 @@ User.removeToken  = function(condObj){
         }).catch(err => { return reject(err); });   
     });
   }
-
-
-
-
 User.checkValidOtp = function(reqObj){
     return  new Promise((resolve,reject) => {
         var condObj = {resetOtp: {$elemMatch: { token:reqObj.token,status:"active" }}}
@@ -222,8 +197,6 @@ User.checkValidOtp = function(reqObj){
         });
     });
 }
-
-
 User.resetPassword = function(condObj,updateObj){
     return  new Promise((resolve,reject) => {
         console.log(" condObj :",condObj)
@@ -235,6 +208,34 @@ User.resetPassword = function(condObj,updateObj){
         });
     });
 }
+
+/*
+  * This function is used for fetch email with username
+  * If email not found it throws error
+  * @params -reqObj
+  * output---object
+ */
+ User.findUser   =   function(reqObj){
+     return  new Promise((resolve,reject) => {
+         User.findOne(reqObj,function(err,responses){
+             if (err) { return reject(err) }
+             else {
+                 if (responses){
+                     if (!responses.email) {
+                         reject({status: constants.NOT_FOUND_ERR, message: 'No data found'});
+                     } else {
+                         resolve(responses);
+                     }
+              }
+                 else{
+                     reject({status: constants.NOT_FOUND_ERR, message: 'No data found'});
+                 }
+
+             }
+         });
+         console.log(reqObj);
+     });
+ };
 
 module.exports= User;
 

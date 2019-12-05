@@ -37,6 +37,7 @@ module.exports = {
     INVALID_OTP                 : "5",
     INVALID_AUTHERIZATION       : "5",
     INVALID_TOKEN               : "10",
+    UNIQUIE_USERNAME            : "11",
     /* Node mailer*/    
     TRANSPORTER                 : transporter,
     /* Link */
@@ -70,6 +71,10 @@ module.exports = {
     HTTP_CREATED_STATUS :200,
     UNAUTHERIZED_HTTP_STATUS :401,
     BAD_REQUEST_STATUS :400,
+    VALIDATION_ERROR :422,
+    NOT_FOUND_ERR : 403,
+    DB_ERROR :201,
+    API_ERROR :203
 
 
 
