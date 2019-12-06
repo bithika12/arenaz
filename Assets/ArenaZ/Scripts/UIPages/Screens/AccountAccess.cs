@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
+using System.Collections;
+using ArenaZ.SettingsManagement;
 
 namespace ArenaZ.Screens
 {
@@ -12,6 +14,10 @@ namespace ArenaZ.Screens
         [SerializeField] private Button firstRegisterButton;
         [SerializeField] private Button firstLoginButton;
         [SerializeField] private Button closeButton;
+
+        [Header("Integers And Floating Points")]
+        [Space(5)]
+        [SerializeField] private int delayToOpenCharacterUI;
 
         private void Start()
         {
@@ -41,6 +47,33 @@ namespace ArenaZ.Screens
 
         #region UI_Functionalities
 
+        public void TasksAfterLogin(string userName,AccountAccessType type)
+        {
+            StartCoroutine(DoTasksAfterLogin(userName,type));
+        }
+
+        private IEnumerator DoTasksAfterLogin(string userName,AccountAccessType accessType)
+        {
+            float delay = 0f;
+            if (accessType == AccountAccessType.Registration)
+            {
+                delay = delayToOpenCharacterUI;
+            }
+            else
+            {
+                delay = 0;
+            }
+            yield return new WaitForSeconds(delay);
+            UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(),true);
+            User.userName = userName;
+            Settings.Instance.LogInLogOutButtonNameSet(Constants.logout);
+            PlayerPrefs.SetInt("Logout", 0);
+            OpenCharacterUI();
+            UIManager.Instance.setUserName?.Invoke(userName);
+            CharacterSelection.Instance.ResetCharacterScroller(userName);
+        }
+
+
         private void OnClickFirstRegisterButton()
         {
             UIManager.Instance.ScreenShow(Page.RegistrationOverlay.ToString(), Hide.none);
@@ -59,6 +92,12 @@ namespace ArenaZ.Screens
         private void OnClickAccountAccessPanelClose()
         {
             UIManager.Instance.HideScreen(Page.AccountAccessDetailsPanel.ToString());
+        }
+
+        private void OpenCharacterUI()
+        {
+            UIManager.Instance.HideScreen(Page.AccountAccessDetailsPanel.ToString());
+            UIManager.Instance.ScreenShow(Page.CharacterSelectionPanel.ToString(), Hide.none);
         }
         #endregion
     }

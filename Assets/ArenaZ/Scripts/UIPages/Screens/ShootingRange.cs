@@ -76,7 +76,7 @@ namespace ArenaZ.GameMode
         private void OnClickStartGameWithCoinValue()
         {
             UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
-            PlayerMatch.Instance.LoadScene();
+           // PlayerMatch.Instance.LoadScene();
         }
     }
 }

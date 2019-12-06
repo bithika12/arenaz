@@ -22,6 +22,11 @@ namespace ArenaZ.Mail
             GettingButtonReferences();
         }
 
+        private void OnEnable()
+        {
+            DeactivateScreenIfActivated();
+        }
+
         private void OnDestroy()
         {
             ReleaseButtonReferences();

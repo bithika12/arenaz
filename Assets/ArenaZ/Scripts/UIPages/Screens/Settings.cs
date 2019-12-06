@@ -35,6 +35,7 @@ namespace ArenaZ.SettingsManagement
         [Header("Text Fields")]
         [Space(5)]
         [SerializeField] private Text userName;
+        [SerializeField] private Text countryButtonText;
 
         [Header("Data Types")]
         [Space(5)]
@@ -52,12 +53,6 @@ namespace ArenaZ.SettingsManagement
         [SerializeField] private Button languageButton;
         [SerializeField] private Button deleteAccountButton;
         [SerializeField] private Button playerColor;
-        [SerializeField] private Button facebookLoginButton;
-        [SerializeField] private Button googleLoginButton;
-
-        [Header("Text")]
-        [Space(5)]
-        [SerializeField] private Text countryButtonText;
 
         [Header("Integer and Floating Point")]
         [Space(5)]
@@ -65,7 +60,7 @@ namespace ArenaZ.SettingsManagement
 
         private bool IsMusicMute = false;
         private bool IsSFXMute = false;
-        private FacebookLogin facebookLogin;
+      //  private FacebookLogin facebookLogin;
 
         private Sprite countrySprite;
 
@@ -74,12 +69,13 @@ namespace ArenaZ.SettingsManagement
         //------------------------------------------------------------+
         private void Start()
         {
-            facebookLogin = GetComponent<FacebookLogin>();
+           // facebookLogin = GetComponent<FacebookLogin>();
             UpdateButtonsOnStart();
             GettingButtonReferences();
             GetCountryDetailsOnStart();
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
+            UIManager.Instance.ScreenShowNormal(Page.LoggedInText.ToString());
         }
 
         private void OnDestroy()
@@ -91,8 +87,6 @@ namespace ArenaZ.SettingsManagement
         private void GettingButtonReferences()
         {
             closeButton.onClick.AddListener(OnClickClose);
-
-            facebookLoginButton.onClick.AddListener(OnClickFacebookLogin);
 
             logOutButton.onClick.AddListener(OnClickLogInLogOut);
 
@@ -111,8 +105,6 @@ namespace ArenaZ.SettingsManagement
         {
             closeButton.onClick.RemoveListener(OnClickClose);
 
-            facebookLoginButton.onClick.RemoveListener(OnClickFacebookLogin);
-
             logOutButton.onClick.RemoveListener(OnClickLogInLogOut);
 
             MusicToggle.onValueChanged.RemoveListener(delegate
@@ -126,12 +118,6 @@ namespace ArenaZ.SettingsManagement
             });
         }
         #endregion
-
-
-        private void OnClickFacebookLogin()
-        {
-            facebookLogin.Login();
-        }
 
         private void GetCountryDetailsOnStart()
         {
@@ -159,13 +145,9 @@ namespace ArenaZ.SettingsManagement
             logOutButton.transform.GetChild(0).GetComponent<Text>().text = buttonName;
         }
 
-        public void OnClickLogout()
+        private void TasksAfterLogout()
         {
-            RestManager.LogOutProfile(OnCompleteLogout, OnErrorLogout);
-        }
-
-        private void OnCompleteLogout(UserLogin obj)
-        {
+            UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(), false);
             LogInLogOutButtonNameSet(Constants.login);
             UIManager.Instance.showProfilePic?.Invoke((Page.Canines.ToString()));
             UIManager.Instance.setUserName?.Invoke(Constants.defaultUserName);
@@ -173,33 +155,28 @@ namespace ArenaZ.SettingsManagement
             // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
         }
 
-        private void OnErrorLogout(RestUtil.RestCallError obj)
-        {
-            Debug.Log(obj.Description);
-        }
-
-        public void SetProfileImage(string imageName)
+        private void SetProfileImage(string imageName)
         {
             profileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Small);
         }
 
-        public void SetUserName(string userName)
+        private void SetUserName(string userName)
         {
             this.userName.text = userName;
         }
 
         #region UI_Functionalities
-        public void OnClickClose()
+        private void OnClickClose()
         {
             UIManager.Instance.HideScreen(Page.SettingsPanel.ToString());
         }
 
-        public void OnClickLogInLogOut()
+        private void OnClickLogInLogOut()
         {
             if (PlayerPrefs.GetInt("Logout") == 0)
             {
                 Debug.Log("Logged Out");
-                StartCoroutine(LogOut());
+                UIManager.Instance.ScreenShowNormal(Page.LogOutAlertOverlay.ToString());
             }
             else
             {
@@ -208,10 +185,9 @@ namespace ArenaZ.SettingsManagement
             }
         }
 
-        IEnumerator LogOut()
+        public void AfterCompleteLogout()
         {
-            OnClickLogout();
-            yield return new WaitForSeconds(LogOutPopUpCloseduration);
+            TasksAfterLogout();
             UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
             PlayerPrefs.SetInt("Logout", 1);

@@ -14,7 +14,7 @@
         public const string USER_ACCESS_TOKEN = "login";
         public const string CLIENT_ACCESS_TOKEN = "login/client";
         public const string REFRESH_TOKEN = "login/client";
-        public const string FORGOT_PASSWORD = "password/request";
+        public const string FORGOT_PASSWORD = "forgot/password";
         public const string TEAM = "teams";
         public const string MODIFY_TEAM = "/teams/{0}";
         public const string LIST_TEAMS = "/teams/joined/{0}/{1}/{2}/{3}";

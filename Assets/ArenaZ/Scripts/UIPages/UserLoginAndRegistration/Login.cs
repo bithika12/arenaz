@@ -6,15 +6,17 @@ using UnityEngine.UI;
 using RedApple.Utils;
 using ArenaZ.SettingsManagement;
 using ArenaZ.Screens;
+using ArenaZ.RegistrationUser;
 
-namespace ArenaZ.Login
+namespace ArenaZ.LoginUser
 {
     public class Login : MonoBehaviour
     {
         [Header("Buttons")]
         [Space(5)]
-        [SerializeField] private Button forgotButton;
+        [SerializeField] private Button loginForgotButton;
         [SerializeField] private Button loginButton;
+        [SerializeField] private Button loginBackButton;
 
         [Header("Input Fields")]
         [Space(5)]
@@ -27,28 +29,33 @@ namespace ArenaZ.Login
 
         RegularExpression regExp = new RegularExpression();
 
+        private void Start()
+        {
+            Settings.Instance.inputFieldclear += ClearLoginInputFieldData;
+        }
+
         private void OnEnable()
         {
-            GettingButtonReferences();
-            Settings.Instance.inputFieldclear += ClearLoginInputFieldData;
+            GettingButtonReferences();           
         }
 
         private void OnDisable()
         {
             ReleaseButtonReferences();
-            Settings.Instance.inputFieldclear -= ClearLoginInputFieldData;
         }
 
         #region Button_References
         private void GettingButtonReferences()
         {
-            forgotButton.onClick.AddListener(OnClickLoginPopUpClose);
+            loginBackButton.onClick.AddListener(OnClickLoginPopUpClose);
+            loginForgotButton.onClick.AddListener(OnClickForgotPasswordPopUpShow);
             loginButton.onClick.AddListener(OnClickUserLogin);
         }
 
         private void ReleaseButtonReferences()
         {
-            forgotButton.onClick.RemoveListener(OnClickLoginPopUpClose);
+            loginBackButton.onClick.RemoveListener(OnClickLoginPopUpClose);
+            loginForgotButton.onClick.RemoveListener(OnClickForgotPasswordPopUpShow);
             loginButton.onClick.RemoveListener(OnClickUserLogin);
         }
         #endregion
@@ -78,18 +85,13 @@ namespace ArenaZ.Login
             }
         }
 
-        private void OnCompleteLogin(UserLogin loggedinProfile)
+        private void OnCompleteLogin(RedApple.Api.Data.UserLogin loggedinProfile)
         {
-            User.userName = loggedinProfile.UserName;
-            Settings.Instance.LogInLogOutButtonNameSet(Constants.logout);
-            PlayerPrefs.SetInt("Logout", 0);
-            ClearLoginInputFieldData();
+            AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName,AccountAccessType.Login);
             OnClickLoginPopUpClose();
-            OpenCharacterUI();
-            UIManager.Instance.setUserName?.Invoke(loggedinProfile.UserName);
-            CharacterSelection.Instance.ResetCharacterScroller(loggedinProfile.UserName);
         }
 
+       
         private void OnErrorLogin(RestUtil.RestCallError restError)
         {
             Debug.LogError(restError.Description);
@@ -104,30 +106,30 @@ namespace ArenaZ.Login
                 case Checking.EmailID:
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Checking.EmailID.ToString() + " " + Constants.isNull;
+                        return Constants.loginEmailPasswordBlank;
                     }
                     break;
 
                 case Checking.Password:
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.isNull;
+                        return Constants.loginEmailPasswordBlank;
                     }
                     break;
             }
             return null;
         }
 
-        private void OpenCharacterUI()
-        {
-            UIManager.Instance.HideScreen(Page.AccountAccessDetailsPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.CharacterSelectionPanel.ToString(), Hide.none);
-        }
-
         private void OnClickLoginPopUpClose()
         {
             ClearLoginInputFieldData();
             UIManager.Instance.HideScreen(Page.LogINOverlay.ToString());
+        }
+
+        private void OnClickForgotPasswordPopUpShow()
+        {
+            UIManager.Instance.HideScreenImmediately(Page.LogINOverlay.ToString());
+            UIManager.Instance.ScreenShowNormal(Page.ForgotPasswordOverlay.ToString());
         }
     }
 }

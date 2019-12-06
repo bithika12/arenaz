@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using TMPro;
 
@@ -68,6 +67,12 @@ namespace ArenaZ.Screens
             ShowGameObjWithAnim();
             yield return new WaitForSeconds(duration);
             HideGameObjWithAnim();
+        }
+
+        public void EnableDisableComponent<T>(bool value)
+        {
+            UnityEngine.Behaviour component  = GetComponent<T>() as UnityEngine.Behaviour;
+            component.enabled = value;
         }
 
     }

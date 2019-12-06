@@ -87,25 +87,25 @@ namespace ArenaZ.Behaviour
         {
             endTouchTime += Time.deltaTime;
             LastTouchPos = GetWorldPosFromMousePos(InputPosition);
-            // Debug.Log("Mouse Last Touch Position:  " + mouseLastTouchPos);
+             Debug.Log("Mouse Last Touch Position:  " + LastTouchPos);
             float distance = Vector3.Distance(LastTouchPos, FirstTouchPos);
-           // Debug.Log("Last Mouse Final Position of Y:  " + FinalPositionOfY(mouseLastTouchPos.y));
-           // Debug.Log("First Mouse Final Position of Y:  " + FinalPositionOfY(mouseFirstTouchPos.y));
+           Debug.Log("Last Mouse Final Position of Y:  " + FinalPositionOfY(LastTouchPos.y));
+            Debug.Log("First Mouse Final Position of Y:  " + FinalPositionOfY(LastTouchPos.y));
             if (FinalPositionOfY(LastTouchPos.y) - FinalPositionOfY(FirstTouchPos.y) > 0)
             {
-               // Debug.Log("StartTouchTime: " + startTouchTime + "  EndTouchTime: " + endTouchTime + "  Distance: " + distance + "  ReleaseDelay: " + releaseDelay);
-              //  Debug.Log("Substraction of start and end: " + (startTouchTime - endTouchTime) + "Vagfol of touch delay: " + distance / releaseDelay);
+                Debug.Log("StartTouchTime: " + startTouchTime + "  EndTouchTime: " + endTouchTime + "  Distance: " + distance + "  ReleaseDelay: " + releaseDelay);
+                Debug.Log("Substraction of start and end: " + (startTouchTime - endTouchTime) + "Vagfol of touch delay: " + distance / releaseDelay);
                 if ((startTouchTime - endTouchTime) < distance / releaseDelay)
                 {
-                   // Debug.Log("Ya im successfully entered in if condition");
+                    Debug.Log("Ya im successfully entered in if condition");
                     RaycastHit hit;
                     Ray ray = Camera.main.ScreenPointToRay(InputPosition);
                     if (Physics.Raycast(ray, out hit, Mathf.Infinity, objectMask))
                     {
-                       // Debug.Log("Gameobject er nam holo vai: " + hit.transform.name);
+                        Debug.Log("Gameobject er nam holo vai: " + hit.transform.name);
                         if (hit.transform.tag == "DartBoard")
                         {
-                          //  Debug.Log("Hit Object:  " + hit.transform.gameObject.name);
+                            Debug.Log("Hit Object:  " + hit.transform.gameObject.name);
                             var shootAngle = 45; // This angle should change
                             OnDartThrow?.Invoke( hit.point, shootAngle);
                         }
@@ -129,7 +129,7 @@ namespace ArenaZ.Behaviour
 
         private float YmaxPos()
         {
-           // Debug.Log("Camera Pixelrect Values:  "+Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelRect.yMax, 10)).y);
+            Debug.Log("Camera Pixelrect Values:  "+Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelRect.yMax, 10)).y);
             return Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelRect.yMax, 10)).y;            
         }
 

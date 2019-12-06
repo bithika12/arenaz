@@ -78,7 +78,7 @@ namespace RedApple
             sendWebRequest(webRqstBuilder, onCompletionLogin, restError);
         }
 
-        public static void LogOutProfile(Action<UserLogin> OnCompleteLogOut,Action<RestError> restError)
+        public static void LogOutProfile(Action OnCompleteLogOut,Action<RestError> restError)
         {
             WebRequestBuilder webRqstbuilder = new WebRequestBuilder()
                 .Url(getApiUrl(Urls.LOGOUT))
@@ -87,6 +87,18 @@ namespace RedApple
 
             addUserAuthHeader(ref webRqstbuilder);
             sendWebRequest(webRqstbuilder, OnCompleteLogOut, restError);
+        }
+
+        public static void ForgotPassword(bool isEmail, string emailOrUserName, Action OnCompleteForgotPassword, Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstbuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FORGOT_PASSWORD))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(isEmail ? Attributes.EMAIL_ID : Attributes.USER_NAME, emailOrUserName);
+
+            addUserAuthHeader(ref webRqstbuilder);
+            sendWebRequest(webRqstbuilder, OnCompleteForgotPassword, restError);
         }
         #endregion
 

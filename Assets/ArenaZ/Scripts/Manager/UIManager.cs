@@ -139,13 +139,15 @@ namespace ArenaZ.Manager
 
         public void HideScreenImmediately(string screenName)
         {
-            if (allPages.ContainsKey(screenName))
+            if (allPages.ContainsKey(screenName) && allPages[screenName].gameObject.activeInHierarchy)
             {
-                if (allPages[screenName].gameObject.activeInHierarchy)
-                {
-                    allPages[screenName].Hide();
-                }
+                allPages[screenName].Hide();
             }
+        }
+
+        public void SetComponent<T>(string screenName, bool value)
+        {
+            allPages[screenName].EnableDisableComponent<T>(value);
         }
 
         public ButtonImage ButtonImageType(ButtonType type)

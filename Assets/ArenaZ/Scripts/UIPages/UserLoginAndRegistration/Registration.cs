@@ -5,9 +5,10 @@ using RedApple.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.SettingsManagement;
+using ArenaZ.Screens;
 
 
-namespace ArenaZ.Registration
+namespace ArenaZ.RegistrationUser
 {
     public class Registration : MonoBehaviour
     {
@@ -27,6 +28,8 @@ namespace ArenaZ.Registration
         [Space(5)]
         private float PopUpduration;
         RegularExpression checking = new RegularExpression();
+
+        //Public Variables
 
         private void OnEnable()
         {
@@ -98,16 +101,16 @@ namespace ArenaZ.Registration
 
         private void OnCompleteRegistration(CreateAccount registeredProfile)
         {
-            Debug.Log("Registered:  " + registeredProfile.UserId);
-            OnClickRegisterPopUpClose();
-            ClearRegInputFieldData();
+            Debug.Log("Registered:  " + registeredProfile.UserName);
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.successFullyRegisterd, PopUpduration);
+            OnClickRegisterPopUpClose();
+            AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName,AccountAccessType.Registration);
         }
 
         private void OnErrorRegistration(RestUtil.RestCallError obj)
         {
             Debug.LogError("Error On Registration: " + obj.Description);
-            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.emailAlreadyExists, PopUpduration);
+            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), obj.Description, PopUpduration);
         }
 
         private string GetMessageWhenFaultCheckOnRegistration(string message, Checking type)
@@ -118,30 +121,26 @@ namespace ArenaZ.Registration
 
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Checking.Username.ToString() + " " + Constants.isNull;
-                    }
-                    if (!checking.hasNumber.IsMatch(message))
-                    {
-                        return Checking.Username.ToString() + " " + Constants.doesNotHaveNumber;
-                    }
-                    if (!checking.hasCapAndSmall.IsMatch(message))
-                    {
-                        return Checking.Username.ToString() + " " + Constants.doesNotHaveChar;
+                        return  Constants.userNameBlank;
                     }
                     if (checking.hasSpace.IsMatch(message))
                     {
-                        return Checking.Username.ToString() + " " + Constants.containedSpace;
+                        return Constants.userNameContainedSpace;
+                    }
+                    if(!checking.hasMinimum3Chars.IsMatch(message))
+                    {
+                        return Constants.doesNotHaveMinThreeChar;
                     }
                     break;
                 case Checking.EmailID:
 
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Checking.EmailID.ToString() + " " + Constants.isNull;
+                        return Constants.mailIsNotValid;
                     }
                     if (!checking.emailFormat.IsMatch(message))
                     {
-                        return Checking.EmailID.ToString() + " " + Constants.mailIsNotValid;
+                        return Constants.mailIsNotValid;
                     }
                     break;
 
@@ -149,31 +148,32 @@ namespace ArenaZ.Registration
 
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.passwordIsNull;
+                        return Constants.passwordIsNotValid;
                     }
                     if (!checking.hasNumber.IsMatch(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.doesNotHaveNumber;
+                        return Constants.doesNotHaveNumber;
                     }
                     if (!checking.hasUpperChar.IsMatch(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.doesNotHaveUpperCaseChar;
+                        return Constants.doesNotHaveUpperCaseChar;
                     }
                     if (!checking.hasLowerChar.IsMatch(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.doesNotHaveLowerCaseChar;
+                        return Constants.doesNotHaveLowerCaseChar;
                     }
                     if (!checking.hasspecialCharacter.IsMatch(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.doesNotHaveSpecialChar;
+                        return Constants.doesNotHaveSpecialChar;
                     }
                     if (checking.hasSpace.IsMatch(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.containedSpace;
+                        return Constants.passwordContainedSpace;
                     }
                     if (!checking.hasMinimum8Chars.IsMatch(message))
                     {
-                        return Checking.Password.ToString() + " " + Constants.doesNotHaveMinEightChar;
+                        Debug.Log("Does Not Contain 8 Char");
+                        return Constants.doesNotHaveMinEightChar;
                     }
                     break;
                 default:

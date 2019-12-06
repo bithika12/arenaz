@@ -52,6 +52,7 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.HideScreenImmediately(Page.LeaderBoardPanel.ToString());
             UIManager.Instance.ScreenShow(Page.SettingsPanel.ToString(), Hide.previous);
+            UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
             if (count < 1)
             {
                 if (PlayerPrefs.GetInt(User.userName) != 0)
@@ -66,6 +67,7 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.ScreenShow(Page.MailboxPanel.ToString(),Hide.previous);
             UIManager.Instance.HideScreenImmediately(Page.LeaderBoardPanel.ToString());
+            MailboxManager.Instance.DeactivateScreenIfActivated();
         }
 
         private void HistoryButtonClicked()
