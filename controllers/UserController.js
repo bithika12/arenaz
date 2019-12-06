@@ -141,7 +141,7 @@ exports.registration= function(req,res) {
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
         userName: Joi.string().min(3).trim().required(),
-        password: Joi.string().max(8).regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).trim().required()
+        password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).trim().required()
     });
     const {body} = req;
     let result = Joi.validate(body, schema);
