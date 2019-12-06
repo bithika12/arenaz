@@ -35,7 +35,7 @@ exports.forgotPassword= function(req,res) {
     const valid = error == null;
     if (!valid) {
         let data = { status: constants.VALIDATION_ERROR, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
-        return res.send(data);
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
     }
     else{
         let pass=randomstring.generate(7);
@@ -52,10 +52,10 @@ exports.forgotPassword= function(req,res) {
 
                 })
                 .then(resp=>{
-                    res.send({status:constants.SUCCESS_STATUS,message:"Your login credentials have been emailed to you."})
+                    res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Your login credentials have been emailed to you."})
                 })
                 .catch(err=>{
-                    res.send(err);
+                    res.status(constants.API_ERROR).send(err);
                 });
         }
         else{
@@ -71,10 +71,10 @@ exports.forgotPassword= function(req,res) {
                     );
                 })
                 .then(resp=>{
-                    res.send({status:constants.HTTP_OK_STATUS,message:"Your login credentials have been emailed to you."})
+                    res.status(constants.HTTP_OK_STATUS).send({status:constants.HTTP_OK_STATUS,message:"Your login credentials have been emailed to you."})
                 })
                 .catch(err=>{
-                    res.send(err);
+                    res.status(constants.API_ERROR).send(err);
                 });
         }
     }

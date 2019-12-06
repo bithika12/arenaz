@@ -153,12 +153,12 @@ exports.registration= function(req,res) {
             result: result.error.name,
             message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
         };
-        return res.send(data);
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
     }
     else {
     if (!req.body.email || !req.body.userName || !req.body.password) {
         //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
-        return res.send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
     }
 
     /*if(validateInput.password(req.body.password) == false){
@@ -166,7 +166,7 @@ exports.registration= function(req,res) {
     }*/
     if (validateInput.email(req.body.email) == false) {
         //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Email format doesn't match"));
-        return res.send(response.error(constants.ERROR_STATUS, {}, "Invalid Email address. Please try again."));
+        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS, {}, "Invalid Email address. Please try again."));
     }
     /* if(validateInput.userName(req.body.userName) == false){
          return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS,{},"Username format doesn't match"));
@@ -199,13 +199,13 @@ exports.registration= function(req,res) {
                 if (err == constants.UNIQUIE_EMAIL)
                     //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL,{}," Email Already exist"));
                     //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL, {}, "Email address entered already exists. Please use forgot password to login."));
-                    res.send(response.error(constants.UNIQUIE_EMAIL, {}, "Email address entered already exists. Please use forgot password to login."));
+                    res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL, {}, "Email address entered already exists. Please use forgot password to login."));
                  else if(err == constants.UNIQUIE_USERNAME)
                     //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_USERNAME, {}, "The username you entered already exists. Please re-enter a new one."));
-                    res.send(response.error(constants.UNIQUIE_USERNAME, {}, "The username you entered already exists. Please re-enter a new one."));
+                    res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_USERNAME, {}, "The username you entered already exists. Please re-enter a new one."));
                 else
                     //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
-                    res.send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
+                    res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
             }
         }
     );
@@ -230,13 +230,13 @@ exports.login= function(req,res) {
     const valid = error == null;
     if (!valid) {
         let data = { status: 422, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
-        return res.send(data);
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
     }
     else{
 
     if (!req.body.email || !req.body.password) {
         //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
-        return res.send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and password you entered is incorrect. Please try again."));
+        return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and password you entered is incorrect. Please try again."));
     }
     var userObj = {email: req.body.email, password: req.body.password}
     async.waterfall([
@@ -254,7 +254,7 @@ exports.login= function(req,res) {
                 }, 'User login successfully !!'));
             } else {
                 //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Invalid password!!"));
-                res.send(response.error(constants.ERROR_STATUS, err, "The email address and password you entered is incorrect. Please try again."));
+                res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "The email address and password you entered is incorrect. Please try again."));
 
             }
         });
