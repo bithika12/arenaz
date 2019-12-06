@@ -58,7 +58,7 @@ exports.forgotPassword= function(req,res) {
                     res.status(constants.API_ERROR).send(err);
                 });
         }
-        else{
+        else if(!req.body.userName){
 
             callEmailChkByEmail(req.body.email)
                 .then(emailResponse => {
@@ -76,6 +76,30 @@ exports.forgotPassword= function(req,res) {
                 .catch(err=>{
                     res.status(constants.API_ERROR).send(err);
                 });
+        }
+        else{
+
+            callEmailChkByUserName(req.body.userName)
+                .then(userResponse => {
+                    return callEmailChkByEmail(req.body.email
+                    );
+                })
+                .then(emailResponse => {
+                    let hashPassword  =  password.hashPassword(pass);
+                    return callEmailUpdatePassword(emailResponse,hashPassword
+                    );
+                })
+                .then(resp=>{
+                    return callEmailSend(resp,pass
+                    );
+                })
+                .then(resp=>{
+                    res.status(constants.HTTP_OK_STATUS).send({status:constants.HTTP_OK_STATUS,message:"Your login credentials have been emailed to you."})
+                })
+                .catch(err=>{
+                    res.status(constants.API_ERROR).send(err);
+                });
+
         }
     }
 }
