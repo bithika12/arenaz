@@ -2,8 +2,9 @@
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using System.Collections;
+using RedApple;
 
-public class PlayerMatch : RedAppleSingleton<PlayerMatch>
+public class PlayerMatch : Singleton<PlayerMatch>
 {
     [SerializeField] private Image profileImage;
     [SerializeField] private Text userName;

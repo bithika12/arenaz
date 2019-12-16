@@ -31,8 +31,10 @@ public enum Page
     KeplerSecond,
     ComingSoonOverlay,
     PopUpTextAccountAccess,
-    PopUpTextSettings
+    PopUpTextSettings,
 }
+
+
 
 public enum ButtonType
 {
@@ -94,7 +96,20 @@ public enum ProfilePicType
     Medium
 }
 
-public static class Constants
+public static class User
+{
+    public static string userName;
+    public static string userId;
+    public static string email;
+    public static string accessToken;
+}
+
+public static class ConstantInteger
+{
+    public const int totalDartPointsForProjectileMove = 10;
+}
+
+public static class ConstantStrings
 {
     public const string successFullyRegisterd = "You Have Successfully Registered. You Will Be Logged In.";
     public const string successFullyLoggedOut = "User Loggedout SuccessFully!";

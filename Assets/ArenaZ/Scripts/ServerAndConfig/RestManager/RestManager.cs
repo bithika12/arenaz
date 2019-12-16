@@ -5,15 +5,13 @@ using RedApple.Api.Data;
 using UnityEngine;
 using RestUtil = RedApple.Utils.RestUtil;
 using RestError = RedApple.Utils.RestUtil.RestCallError;
-using UnityEngine.Networking;
 
 namespace RedApple
 {
-    public class RestManager : MonoBehaviour
+    public class RestManager : Singleton<RestManager>
     {
-        private static RestManager instance;
 
-        public static string AccessToken { set { instance.userAccessToken = value; } }
+        public static string AccessToken { set { Instance.userAccessToken = value; } }
 
         private RestUtil restUtil;
 
@@ -21,17 +19,8 @@ namespace RedApple
 
         private string clientAccessToken = "";
 
-        public void Awake()
-        {
-            if (instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-
+        protected override void Awake()
+        {      
             restUtil = RestUtil.Initialize(this);
         }
 
@@ -95,7 +84,7 @@ namespace RedApple
                 .Url(getApiUrl(Urls.FORGOT_PASSWORD))
                 .Verb(Verbs.POST)
                 .ContentType(ContentTypes.FORM)
-                .FormData(isEmail ? Attributes.EMAIL_ID : Attributes.USER_NAME, emailOrUserName);
+                .FormData(isEmail ? Attributes.EMAIL_ID : Attributes.NAME, emailOrUserName);
 
             addUserAuthHeader(ref webRqstbuilder);
             sendWebRequest(webRqstbuilder, OnCompleteForgotPassword, restError);
@@ -114,14 +103,14 @@ namespace RedApple
 
         private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
         {
-            instance.restUtil.Send(builder, handler => { onCompletion?.Invoke(); },
+            Instance.restUtil.Send(builder, handler => { onCompletion?.Invoke(); },
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));
         }
 
         private static void sendWebRequest<T>(WebRequestBuilder builder, Action<T> onCompletion,
             Action<RestError> onError = null)
         {
-            instance.restUtil.Send(builder,
+            Instance.restUtil.Send(builder,
                 handler =>
                 {
                     var response = DataConverter.DeserializeObject<ApiResponseFormat<T>>(handler.text);
@@ -133,7 +122,7 @@ namespace RedApple
         private static void sendWebRequestForCountryDetails(WebRequestBuilder builder, Action<CountryData> onCompletion,
            Action<RestError> onError = null)
         {
-            instance.restUtil.Send(builder,
+            Instance.restUtil.Send(builder,
                 handler =>
                 {
                     var response = DataConverter.DeserializeObject<CountryData>(handler.text);
@@ -171,8 +160,8 @@ namespace RedApple
 
         private static void addUserAuthHeader(ref WebRequestBuilder builder)
         {
-            builder.Header("access-token", string.Format("Bearer {0}", instance.userAccessToken));
-            Debug.Log("User Access Token:  " + instance.userAccessToken);
+            builder.Header("access-token", string.Format("Bearer {0}", Instance.userAccessToken));
+            Debug.Log("User Access Token:  " + Instance.userAccessToken);
         }
     }
 }

@@ -85,13 +85,22 @@ namespace ArenaZ.LoginUser
             }
         }
 
-        private void OnCompleteLogin(RedApple.Api.Data.UserLogin loggedinProfile)
+        private void OnCompleteLogin(UserLogin loggedinProfile)
         {
+            storeUserData(loggedinProfile);
             AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName,AccountAccessType.Login);
             OnClickLoginPopUpClose();
         }
 
-       
+
+        private void storeUserData(UserLogin userLogin)
+        {
+            User.userName = userLogin.UserName;
+            User.userId = userLogin.UserId;
+            User.email = userLogin.Email;
+            User.accessToken = userLogin.AccessToken;
+        }
+
         private void OnErrorLogin(RestUtil.RestCallError restError)
         {
             Debug.LogError(restError.Description);
@@ -100,20 +109,19 @@ namespace ArenaZ.LoginUser
 
         private string GetMessageWhenFaultCheckOnLogin(string message, Checking type)
         {
-
             switch (type)
             {
                 case Checking.EmailID:
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Constants.loginEmailPasswordBlank;
+                        return ConstantStrings.loginEmailPasswordBlank;
                     }
                     break;
 
                 case Checking.Password:
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Constants.loginEmailPasswordBlank;
+                        return ConstantStrings.loginEmailPasswordBlank;
                     }
                     break;
             }

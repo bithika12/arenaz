@@ -39,7 +39,7 @@ namespace ArenaZ.Screens
             Show();
             if (animator != null)
             {
-                animator.SetTrigger(Constants.showTrigger);
+                animator.SetTrigger(ConstantStrings.showTrigger);
             }
         }
 
@@ -50,7 +50,7 @@ namespace ArenaZ.Screens
                 Hide();
                 return;
             }
-            animator.SetTrigger(Constants.hideTrigger);
+            animator.SetTrigger(ConstantStrings.hideTrigger);
             StartCoroutine(HideAfterAnimation());
         }
 

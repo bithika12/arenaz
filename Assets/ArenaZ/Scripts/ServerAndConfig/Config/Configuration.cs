@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RedApple
@@ -8,9 +9,8 @@ namespace RedApple
     {
         public ApiConfiguration Api = new ApiConfiguration();
         public IpApiConfiguration ipApi = new IpApiConfiguration();
-        //public CommonConfiguration Common = new CommonConfiguration();
-        //public PhotonConfiguration Photon = new PhotonConfiguration();
-
+        public SocketConfiguration socketConfig = new SocketConfiguration();
+        
         [Serializable]
         public class ApiConfiguration
         {
@@ -23,18 +23,11 @@ namespace RedApple
             public string ipHost = "https://freegeoip.app/";
         }
 
-        //[Serializable]
-        //public class CommonConfiguration
-        //{
-        //    public string DefaultLocale = "en-US";
-        //    public string DefaultLoadingPromptText = "loading_prompt";
-        //}
-
-        //[Serializable]
-        //public class PhotonConfiguration
-        //{
-        //    public string Address = "188.117.216.243";
-        //    public int Port = 15055;
-        //}
+        [Serializable]
+        public class SocketConfiguration
+        {
+            public string socketHost = "http://192.168.2.73:3012/";
+            public List<string> SocketListenEvents = new List<string>();
+        }
     }
 }

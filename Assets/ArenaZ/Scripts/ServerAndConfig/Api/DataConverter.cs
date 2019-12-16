@@ -20,7 +20,7 @@ namespace RedApple
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.None,
                 StringEscapeHandling = StringEscapeHandling.EscapeHtml,
-        };
+            };
 
         private static bool _customConvertersAdded = false;
 

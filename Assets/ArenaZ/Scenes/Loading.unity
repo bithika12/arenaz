@@ -887,7 +887,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f623a1b62c0561f4581e32da068675fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPersistent: 1
+  IsPersistent: 1
   loaderImage: {fileID: 767792848}
   splashObj: {fileID: 162608593}
   loadingText: {fileID: 2030415835}

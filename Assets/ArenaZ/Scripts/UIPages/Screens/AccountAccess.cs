@@ -3,10 +3,11 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using System.Collections;
 using ArenaZ.SettingsManagement;
+using RedApple;
 
 namespace ArenaZ.Screens
 {
-    public class AccountAccess : RedAppleSingleton<AccountAccess>
+    public class AccountAccess : Singleton<AccountAccess>
     {
         //Private Variables
         [Header("Buttons")]
@@ -48,8 +49,8 @@ namespace ArenaZ.Screens
         #region UI_Functionalities
 
         public void TasksAfterLogin(string userName,AccountAccessType type)
-        {
-            StartCoroutine(DoTasksAfterLogin(userName,type));
+        { 
+             StartCoroutine(DoTasksAfterLogin(userName,type));
         }
 
         private IEnumerator DoTasksAfterLogin(string userName,AccountAccessType accessType)
@@ -65,12 +66,12 @@ namespace ArenaZ.Screens
             }
             yield return new WaitForSeconds(delay);
             UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(),true);
-            User.userName = userName;
-            Settings.Instance.LogInLogOutButtonNameSet(Constants.logout);
+            Settings.Instance.LogInLogOutButtonNameSet(ConstantStrings.logout);
             PlayerPrefs.SetInt("Logout", 0);
             OpenCharacterUI();
             UIManager.Instance.setUserName?.Invoke(userName);
             CharacterSelection.Instance.ResetCharacterScroller(userName);
+            SocketManager.Instance.AddUser();
         }
 
 
@@ -102,3 +103,20 @@ namespace ArenaZ.Screens
         #endregion
     }
 }
+
+
+
+#region Unused
+//Type userdataType = UserData.GetType();
+//if (userdataType.Equals(typeof(UserLogin)))
+//{
+//    storeUserData(typeof(UserLogin));
+//}
+//else
+//{
+
+//}
+
+//MethodInfo dsfg = userdataType.GetProperty("UserId").GetMethod;
+//Debug.Log(dsfg);
+#endregion

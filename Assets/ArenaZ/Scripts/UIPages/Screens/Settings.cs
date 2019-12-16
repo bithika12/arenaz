@@ -2,16 +2,13 @@
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using UnityEngine.Audio;
-using System.Collections;
 using RedApple;
-using RedApple.Utils;
-using RedApple.Api.Data;
 using System;
 using ArenaZ.Screens;
 
 namespace ArenaZ.SettingsManagement
 {
-    public class Settings : RedAppleSingleton<Settings>
+    public class Settings : Singleton<Settings>
     {
         //Private Properties
 
@@ -29,13 +26,11 @@ namespace ArenaZ.SettingsManagement
         [SerializeField] private Sprite MuteSFXSprite;
         [SerializeField] private Image MusicImage;
         [SerializeField] private Image SFXImage;
-        [SerializeField] private Image countryButtonImage;
         [SerializeField] private Image profileImage;
 
         [Header("Text Fields")]
         [Space(5)]
         [SerializeField] private Text userName;
-        [SerializeField] private Text countryButtonText;
 
         [Header("Data Types")]
         [Space(5)]
@@ -49,7 +44,6 @@ namespace ArenaZ.SettingsManagement
         [SerializeField] private Button closeButton;
         [SerializeField] private Button supportButton;
         [SerializeField] private Button logOutButton;
-        [SerializeField] private Button regionButton;
         [SerializeField] private Button languageButton;
         [SerializeField] private Button deleteAccountButton;
         [SerializeField] private Button playerColor;
@@ -72,7 +66,7 @@ namespace ArenaZ.SettingsManagement
            // facebookLogin = GetComponent<FacebookLogin>();
             UpdateButtonsOnStart();
             GettingButtonReferences();
-            GetCountryDetailsOnStart();
+
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
             UIManager.Instance.ScreenShowNormal(Page.LoggedInText.ToString());
@@ -119,27 +113,6 @@ namespace ArenaZ.SettingsManagement
         }
         #endregion
 
-        private void GetCountryDetailsOnStart()
-        {
-            RestManager.GetCountryDetails(OnCompletionOfCountryDetailsFetch, OnErrorCountryDetailsFetch);
-        }
-
-        private void OnCompletionOfCountryDetailsFetch(CountryData details)
-        {
-            Debug.Log("The Country Code Is:     " + details.Country_code);
-            if (!countryButtonImage.enabled)
-            {
-                countryButtonImage.enabled = true;
-            }
-            countryButtonImage.sprite = UIManager.Instance.GetCorrespondingCountrySprite(details.Country_code.ToLower());
-            countryButtonText.text = details.Country_code;
-        }
-
-        private void OnErrorCountryDetailsFetch(RestUtil.RestCallError obj)
-        {
-            UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), Constants.noInternet, LogOutPopUpCloseduration);
-        }
-
         public void LogInLogOutButtonNameSet(string buttonName)
         {
             logOutButton.transform.GetChild(0).GetComponent<Text>().text = buttonName;
@@ -148,9 +121,9 @@ namespace ArenaZ.SettingsManagement
         private void TasksAfterLogout()
         {
             UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(), false);
-            LogInLogOutButtonNameSet(Constants.login);
+            LogInLogOutButtonNameSet(ConstantStrings.login);
             UIManager.Instance.showProfilePic?.Invoke((Page.Canines.ToString()));
-            UIManager.Instance.setUserName?.Invoke(Constants.defaultUserName);
+            UIManager.Instance.setUserName?.Invoke(ConstantStrings.defaultUserName);
             TopAndBottomBarScreen.Instance.count = 0;
             // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
         }

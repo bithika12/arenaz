@@ -84,12 +84,12 @@ namespace ArenaZ.RegistrationUser
             }
             else if (string.IsNullOrWhiteSpace(regIf_UserConfPassword.text))
             {
-                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.wrongConfPassword, PopUpduration);
+                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongConfPassword, PopUpduration);
                 return;
             }
             else if (regIf_UserPassword.text != regIf_UserConfPassword.text)
             {
-                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.wrongConfPassword, PopUpduration);
+                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongConfPassword, PopUpduration);
                 return;
             }
             else if (regIf_UserPassword.text.Equals(regIf_UserConfPassword.text))
@@ -102,9 +102,18 @@ namespace ArenaZ.RegistrationUser
         private void OnCompleteRegistration(CreateAccount registeredProfile)
         {
             Debug.Log("Registered:  " + registeredProfile.UserName);
-            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.successFullyRegisterd, PopUpduration);
+            storeUserData(registeredProfile);
+            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.successFullyRegisterd, PopUpduration);
             OnClickRegisterPopUpClose();
             AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName,AccountAccessType.Registration);
+        }
+
+        private void storeUserData(CreateAccount userDetails)
+        {
+            User.userName = userDetails.UserName;
+            User.userId = userDetails.UserId;
+            User.email = userDetails.Email;
+            User.accessToken = userDetails.AccessToken;
         }
 
         private void OnErrorRegistration(RestUtil.RestCallError obj)
@@ -121,26 +130,26 @@ namespace ArenaZ.RegistrationUser
 
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return  Constants.userNameBlank;
+                        return  ConstantStrings.userNameBlank;
                     }
                     if (checking.hasSpace.IsMatch(message))
                     {
-                        return Constants.userNameContainedSpace;
+                        return ConstantStrings.userNameContainedSpace;
                     }
                     if(!checking.hasMinimum3Chars.IsMatch(message))
                     {
-                        return Constants.doesNotHaveMinThreeChar;
+                        return ConstantStrings.doesNotHaveMinThreeChar;
                     }
                     break;
                 case Checking.EmailID:
 
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Constants.mailIsNotValid;
+                        return ConstantStrings.mailIsNotValid;
                     }
                     if (!checking.emailFormat.IsMatch(message))
                     {
-                        return Constants.mailIsNotValid;
+                        return ConstantStrings.mailIsNotValid;
                     }
                     break;
 
@@ -148,32 +157,32 @@ namespace ArenaZ.RegistrationUser
 
                     if (string.IsNullOrWhiteSpace(message))
                     {
-                        return Constants.passwordIsNotValid;
+                        return ConstantStrings.passwordIsNotValid;
                     }
                     if (!checking.hasNumber.IsMatch(message))
                     {
-                        return Constants.doesNotHaveNumber;
+                        return ConstantStrings.doesNotHaveNumber;
                     }
                     if (!checking.hasUpperChar.IsMatch(message))
                     {
-                        return Constants.doesNotHaveUpperCaseChar;
+                        return ConstantStrings.doesNotHaveUpperCaseChar;
                     }
                     if (!checking.hasLowerChar.IsMatch(message))
                     {
-                        return Constants.doesNotHaveLowerCaseChar;
+                        return ConstantStrings.doesNotHaveLowerCaseChar;
                     }
                     if (!checking.hasspecialCharacter.IsMatch(message))
                     {
-                        return Constants.doesNotHaveSpecialChar;
+                        return ConstantStrings.doesNotHaveSpecialChar;
                     }
                     if (checking.hasSpace.IsMatch(message))
                     {
-                        return Constants.passwordContainedSpace;
+                        return ConstantStrings.passwordContainedSpace;
                     }
                     if (!checking.hasMinimum8Chars.IsMatch(message))
                     {
                         Debug.Log("Does Not Contain 8 Char");
-                        return Constants.doesNotHaveMinEightChar;
+                        return ConstantStrings.doesNotHaveMinEightChar;
                     }
                     break;
                 default:

@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Mail;
-using ArenaZ.LeaderBoard;
+using RedApple;
 
 namespace ArenaZ.Screens
 {
-    public class TopAndBottomBarScreen : RedAppleSingleton<TopAndBottomBarScreen>
+    public class TopAndBottomBarScreen : Singleton<TopAndBottomBarScreen>
     {
         [Header("Interactive Elements")]
         [SerializeField] private Button historyButton;

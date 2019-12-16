@@ -2,10 +2,11 @@
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
+using RedApple;
 
 namespace ArenaZ.Mail
 {
-    public class MailboxManager : RedAppleSingleton<MailboxManager>
+    public class MailboxManager : Singleton<MailboxManager>
     {
         //Private Variables
         [SerializeField] private GameObject MailPopup;

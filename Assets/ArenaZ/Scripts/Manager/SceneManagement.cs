@@ -1,13 +1,11 @@
-﻿using System;
+﻿using RedApple;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class SceneManagement : RedAppleSingleton<SceneManagement>
+public class SceneManagement : Singleton<SceneManagement>
 {
     [SerializeField]
     private Image loaderImage;

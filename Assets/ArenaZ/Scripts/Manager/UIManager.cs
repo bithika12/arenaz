@@ -4,13 +4,14 @@ using UnityEngine;
 using System;
 using System.Collections;
 using UnityEngine.U2D;
+using RedApple;
 
 namespace ArenaZ.Manager
 {
     /// <summary>
     /// Add this class to the Main Canvas from where all the ui screens will be accesible
     /// </summary>
-    public class UIManager : RedAppleSingleton<UIManager>
+    public class UIManager : Singleton<UIManager>
     {
        
         //Private Variables

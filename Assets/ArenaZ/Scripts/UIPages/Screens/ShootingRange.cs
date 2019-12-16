@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
+using RedApple;
 
 namespace ArenaZ.GameMode
 {
-    public class ShootingRange : RedAppleSingleton<ShootingRange>
+    public class ShootingRange : Singleton<ShootingRange>
     {
         [Header("Buttons")]
         [Space(5)]
@@ -76,7 +77,8 @@ namespace ArenaZ.GameMode
         private void OnClickStartGameWithCoinValue()
         {
             UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
-           // PlayerMatch.Instance.LoadScene();
+            SocketManager.Instance.GameRequest();
+            PlayerMatch.Instance.LoadScene();
         }
     }
 }

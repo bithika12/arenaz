@@ -57,7 +57,7 @@ public class ForgotPassword : MonoBehaviour
         if (string.IsNullOrWhiteSpace(forgotPass_userEmail.text) && string.IsNullOrWhiteSpace(forgotPass_userName.text))
         {
             Debug.Log("Dutoi Null");
-            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.wrongEmailAndUsername, PopUpduration);
+            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongEmailAndUsername, PopUpduration);
             return;
         }
         else if(!regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
@@ -66,11 +66,11 @@ public class ForgotPassword : MonoBehaviour
             if (string.IsNullOrWhiteSpace(forgotPass_userName.text))
             {
                 Debug.Log("String is null");
-                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.wrongEmailAndUsername, PopUpduration);
+                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongEmailAndUsername, PopUpduration);
             }
             else
             {
-                RestManager.ForgotPassword(true, forgotPass_userName.text, OnCompleteForgotPassword, OnErrorForgotPassword);
+                RestManager.ForgotPassword(false, forgotPass_userName.text, OnCompleteForgotPassword, OnErrorForgotPassword);
             }
         }
         else if(regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
@@ -82,7 +82,7 @@ public class ForgotPassword : MonoBehaviour
 
     private void OnCompleteForgotPassword()
     {
-        UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), Constants.rightEmailAndUserName, PopUpduration);
+        UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.rightEmailAndUserName, PopUpduration);
         OnClickForgotPasswordPopUpClose();
        // UIManager.Instance.ScreenShowNormal(Page.LogINOverlay.ToString());
     }

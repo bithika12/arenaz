@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
+using RedApple;
 
 namespace ArenaZ.LevelMangement
 {
-    public class LevelSelection : RedAppleSingleton<LevelSelection>
+    public class LevelSelection : Singleton<LevelSelection>
     {
         [Header("Buttons")]
         [Space(5)]

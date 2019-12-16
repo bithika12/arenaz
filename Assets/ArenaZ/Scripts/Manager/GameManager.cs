@@ -1,13 +1,12 @@
-﻿using System;
-using ArenaZ.Behaviour;
+﻿using ArenaZ.Behaviour;
 using ArenaZ.ShootingObject;
 using UnityEngine;
-using System.Collections;
+using RedApple;
 
 namespace ArenaZ.Manager
 {
     [RequireComponent(typeof(TouchBehaviour))]
-    public class GameManager : RedAppleSingleton<GameManager>
+    public class GameManager : Singleton<GameManager>
     {
         // Private Variables
         [SerializeField] private bool projectileMove;       

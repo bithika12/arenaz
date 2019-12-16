@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace RedApple
 {
-    public class Config : MonoBehaviour
+    public class Config : Singleton<Config>
     {
-        private static Config instance;
 
         #region Serialized Fields
 #pragma warning disable 649
@@ -12,26 +12,27 @@ namespace RedApple
         private Configuration configuration;
 #pragma warning restore
         #endregion
-
-        public void Awake()
-        {
-            if (instance != null)
-            {
-                Destroy(this);
-                return;
-            }
-
-            instance = this;
-        }
-
+        
         public class Api
         {
-            public static string Host { get { return instance.configuration.Api.Host; } }
+            public static string Host
+            {
+                get
+                {
+                    return Instance.configuration.Api.Host;
+                }
+            }
         }
 
         public class IpApi
         {
-            public static string IpHost { get { return instance.configuration.ipApi.ipHost; } }
+            public static string IpHost { get { return Instance.configuration.ipApi.ipHost; } }
+        }
+
+        public class SocketConfig
+        {
+            public static string Host { get { return Instance.configuration.socketConfig.socketHost; } }
+            public static List<string> SocketListenEvents { get { return Instance.configuration.socketConfig.SocketListenEvents; } }
         }
 
         //public class Common

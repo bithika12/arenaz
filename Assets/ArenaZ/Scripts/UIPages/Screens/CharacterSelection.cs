@@ -3,10 +3,11 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using UnityEngine.UI.Extensions;
 using ArenaZ.LevelMangement;
+using RedApple;
 
 namespace ArenaZ.Screens
 {
-    public class CharacterSelection : RedAppleSingleton<CharacterSelection>
+    public class CharacterSelection : Singleton<CharacterSelection>
     {
         //Private Fields
         [Header("Buttons")]

@@ -8,15 +8,13 @@ namespace ArenaZ.ShootingObject
     {
         private Rigidbody dartRB;
 
-        private readonly int pointsNum = 10;
-
         private float time = 0;
 
-        private Vector3[] points = new Vector3[10];
+        private Vector3[] points = new Vector3[ConstantInteger.totalDartPointsForProjectileMove];
 
-        private readonly float _screenMiddleOffset = 5.0f; // Y axis
+        private readonly float _screenMiddleOffset = 4.5f; // Y axis
 
-        private void Start()
+        private void Awake()
         {
             dartRB = GetComponent<Rigidbody>();
         }
@@ -38,6 +36,7 @@ namespace ArenaZ.ShootingObject
 
         private void AddPointsToArray(Vector3 point)
         {
+            int pointsNum = points.Length;
             for (int i = 1; i < pointsNum + 1; i++)
             {
                 time = i / (float)pointsNum;               

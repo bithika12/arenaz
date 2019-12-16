@@ -2,10 +2,11 @@
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
+using RedApple;
 
 namespace ArenaZ.LeaderBoard
 {
-    public class Leaderboard : RedAppleSingleton<Leaderboard>
+    public class Leaderboard : Singleton<Leaderboard>
     {
         [SerializeField] private Button leaderBoardBackButton;
 
