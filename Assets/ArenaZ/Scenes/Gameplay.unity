@@ -771,7 +771,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   touchDelay: 0.2
-  releaseDelay: 5.53
+  releaseDelay: 5.32
   objectMask:
     serializedVersion: 2
     m_Bits: 517

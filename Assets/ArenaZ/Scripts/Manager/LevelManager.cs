@@ -1,5 +1,7 @@
 ﻿using System;
 using RedApple;
+using UnityEngine;
+using RedApple.Api.Data;
 
 namespace ArenaZ.Manager
 {
@@ -9,15 +11,16 @@ namespace ArenaZ.Manager
 
         // Public Variables
 
-
-        private void Awake()
+        private void Start()
         {
-            SocketListener.Listen("LevelUpdate", onListen);
+            SocketListener.Listen("gameStart", OnGameStart);
         }
 
-        private void onListen(string data)
+        private void OnGameStart(string data)
         {
-            UnityEngine.Debug.Log(data);
+            Debug.Log($"Game Start : {data}");
+            var gameRqstData = DataConverter.DeserializeObject<GamePlayDataFormat<GameRequest>>(data);
+            Debug.Log("Room Name: " + gameRqstData.result.roomName);
         }
     }
 }

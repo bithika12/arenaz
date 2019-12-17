@@ -330,6 +330,7 @@ namespace socket.io {
                     }
 
                     var data = pkt.body.Substring(seperateIndex + seperatorLen, pkt.body.Length - seperateIndex - seperatorLen - 1);
+                    Debug.Log($"Event Name {eventName} {data} : {_handlers[eventName]}");
                     _handlers[eventName](eventName, data);
                     break;
 

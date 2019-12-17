@@ -26,8 +26,6 @@ namespace RedApple
 
         private static void onListen(string eventName, string data)
         {
-            UnityEngine.Debug.Log("eventName:  " + eventName);
-            UnityEngine.Debug.Log("Data:  " + data);
             if (m_LitenerDatas.ContainsKey(eventName))
             {
                 m_LitenerDatas[eventName].ForEach(callback => callback?.Invoke(data));

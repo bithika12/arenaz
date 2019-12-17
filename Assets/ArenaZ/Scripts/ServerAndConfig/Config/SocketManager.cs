@@ -51,8 +51,8 @@ namespace RedApple
         private void OnConnected()
         {
             Debug.LogWarning("SocketConnected : " + socket);
-            AddEvents();
             SocketListener.ActivateListener();
+            AddEvents();
         }
 
         private void OnReConnected(int val)
@@ -78,15 +78,8 @@ namespace RedApple
         private void AddEvents()
         {
             Debug.Log("Add Events");
-            socket.On("gameStart", onGameStart);
-            //Config.SocketConfig.SocketListenEvents.ForEach(evt => socket.On(evt, onListen));
-            //Config.SocketConfig.SocketListenEvents.ForEach(evt => Debug.Log("Events Name:  "+evt));
-        }
-
-        private void onGameStart(string evtName, string value)
-        {
-            Debug.Log($"Event Name {evtName} {value}");
-        }
+            Config.SocketConfig.SocketListenEvents.ForEach(evt => socket.On(evt, onListen));
+        }  
     }
 }
 

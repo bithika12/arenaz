@@ -15,10 +15,14 @@ namespace ArenaZ.Manager
 
         // Public Variables
 
-        private void Start()
+        protected override void Awake()
         {
             currentDart = GameObject.FindGameObjectWithTag("Player").GetComponent<Dart>();
             touchBehaviour = GetComponent<TouchBehaviour>();
+        }
+
+        private void Start()
+        {           
             touchBehaviour.OnDartMove += DartMove;
             touchBehaviour.OnDartThrow += DartThrow;
         }

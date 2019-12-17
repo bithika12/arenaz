@@ -10,20 +10,21 @@ namespace ArenaZ.Behaviour
         //Public Fields
         [SerializeField]
         [Range(0.1f, 1.0f)]
-        private float touchDelay;
+        private float touchDelay = 0.2f;
         [SerializeField]
         [Range(5.0f, 10.0f)]
-        private float releaseDelay;
+        private float releaseDelay = 5.5f;
         [SerializeField]
         LayerMask objectMask = 5;
         // Private Fields
         private RaycastHit hit;
-        private float startTouchTime;
-        private float endTouchTime;
-        private Vector3 FirstTouchPos;
-        private Vector3 LastTouchPos;
+        private float startTouchTime, endTouchTime;
+        private Vector3 FirstTouchPos, LastTouchPos;
         private Vector3 initialDartPosition = new Vector3(-5,0,0);
+        private Vector3[] positions = new Vector3[4];
         private bool isDartSelected = false;
+        private int counter = -1;
+        private Vector3 lowestValue = Vector3.zero;
 
         public Action<Vector3> OnDartMove;
         public Action<Vector3, float> OnDartThrow;
@@ -71,17 +72,52 @@ namespace ArenaZ.Behaviour
             {
                 if (hit.transform.gameObject.tag == "Player")
                 {
+                    Debug.Log("Hit Player");
                     isDartSelected = true;
-                    FirstTouchPos = GetWorldPosFromMousePos(inputPosition);
-                   // Debug.Log("Mouse First Touch Pos:   " + FirstTouchPos);
+                    lowestValue = GetWorldPosFromMousePos(inputPosition);
                     OnDartMove?.Invoke(FirstTouchPos);
                 }
             }
             if (isDartSelected)
             {
                 Vector3 nextPosition = GetWorldPosFromMousePos(inputPosition);
+                FirstTouchPos = firstPositionOfY(GetWorldPosFromMousePos(inputPosition));
+               // Debug.Log("First Touch Position: " + FirstTouchPos);
                 OnDartMove?.Invoke(nextPosition);
             }
+        }
+
+        private Vector3 firstPositionOfY(Vector3 position)
+        {
+            Vector3 tempValue = Vector3.zero;
+            counter++;
+            positions[counter] = position;            
+           // Debug.Log("Counter Value:  " + counter);
+            if (counter == 0)
+            {
+                lowestValue = positions[counter];
+            }
+            else if(counter > 0)
+            { 
+                if (screenpositionOfY(positions[counter].y) < screenpositionOfY(positions[counter-1].y))
+                {
+                    tempValue = positions[counter];
+                }
+                else
+                {
+                    tempValue = positions[counter];
+                }
+                if(screenpositionOfY(tempValue.y) < screenpositionOfY(lowestValue.y))
+                {
+                    lowestValue = tempValue;
+                }
+            }
+            if(counter==3)
+            {
+                counter = 0;
+                positions[0] = positions[3];
+            }
+            return lowestValue;
         }
 
         private void DartShoot(Vector3 InputPosition)
@@ -90,12 +126,13 @@ namespace ArenaZ.Behaviour
             LastTouchPos = GetWorldPosFromMousePos(InputPosition);
              Debug.Log("Mouse Last Touch Position:  " + LastTouchPos); 
             //Dart Only Move In Upward Direction
-            if (FinalPositionOfY(LastTouchPos.y) - FinalPositionOfY(FirstTouchPos.y) > 0)
+            if (screenpositionOfY(LastTouchPos.y) - screenpositionOfY(FirstTouchPos.y) > 3f)
             {
                 float distance = Vector3.Distance(LastTouchPos, FirstTouchPos);
                 endTouchTime = Time.deltaTime;
-                 Debug.Log("Last Mouse Final Position of Y:  " + FinalPositionOfY(LastTouchPos.y));
-                 Debug.Log("StartTouchTime: " + startTouchTime + "  EndTouchTime: " + endTouchTime + "  Distance: " + distance + "  ReleaseDelay: " + releaseDelay);
+                Debug.Log("Last Mouse Final Position of Y:  " + screenpositionOfY(LastTouchPos.y));
+                Debug.Log("first Mouse Final Position of Y:  " + screenpositionOfY(FirstTouchPos.y));
+                Debug.Log("StartTouchTime: " + startTouchTime + "  EndTouchTime: " + endTouchTime + "  Distance: " + distance + "Touch delay: "+touchDelay + "  ReleaseDelay: " + releaseDelay);
                  Debug.Log("Substraction of start and end: " + (startTouchTime - endTouchTime) + "Vagfol of touch delay: " + distance / releaseDelay);
                 if ((startTouchTime - endTouchTime) < distance / releaseDelay)
                 {
@@ -106,8 +143,8 @@ namespace ArenaZ.Behaviour
                        // Debug.Log("Gameobject er nam holo vai: " + hit.transform.name);
                         if (hit.transform.tag == "DartBoard")
                         {
-                          //  Debug.Log("Hit Object:  " + hit.transform.gameObject.name);
-                            var shootAngle = 45; // This angle should change
+                           //Debug.Log("Hit Object:  " + hit.transform.gameObject.name);
+                            float shootAngle = 45; // This angle should change
                             OnDartThrow?.Invoke( hit.point, shootAngle);
                         }
                     }
@@ -123,15 +160,11 @@ namespace ArenaZ.Behaviour
             return Camera.main.ScreenToWorldPoint(position);
         }
 
-        private float FinalPositionOfY(float position)
+        private float screenpositionOfY(float position)
         {
-            return YmaxPos() + position;
-        }
-
-        private float YmaxPos()
-        {
-           // Debug.Log("Camera Pixelrect Values:  "+Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelRect.yMax, 10)).y);
-            return Camera.main.ScreenToWorldPoint(new Vector3(0, Camera.main.pixelRect.yMax, 10)).y;            
+            // Max Y value in screen is 6.4f
+            float ScreenYOffset = 6.4f;
+            return ScreenYOffset + position;
         }
 
         private void ResetTimer()
