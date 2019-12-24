@@ -5,6 +5,7 @@ var  MemoryDatabaseManger = (function () {
     if (!this.room) {
         console.log(" new datastore room creation");
         this.room = new Datastore();
+        this.allOnlineUsers =[];
     }
     return this;
 })();

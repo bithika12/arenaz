@@ -13,7 +13,8 @@ var server = require('http').Server(app);
 //var io = require('socket.io')(server);
 const socketManager = require('./utils/SocketManager');
 socketManager.init(server);
-var gamecontroller = require('./controllers/GameRoomController');
+var socket = require('./controllers/gameplay/SocketModule');
+//var gamecontroller = require('./controllers/GameRoomController');
 
 
 // view engine setup

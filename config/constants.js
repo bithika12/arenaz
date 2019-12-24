@@ -74,7 +74,9 @@ module.exports = {
     VALIDATION_ERROR :422,
     NOT_FOUND_ERR : 403,
     DB_ERROR :201,
-    API_ERROR :203
+    API_ERROR :203,
+    GAME_TIMMER : 4,
+    GAME_MAXIMUM_USER  : 2,
 
 
 

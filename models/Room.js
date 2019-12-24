@@ -1,106 +1,83 @@
 /** Import Module*/
 var underscore  = require('underscore');
-var Room = require('../schema/Schema').roomModel; 
-const client = require("../config/radisConfig.js");
-const  roomPlayer      = require('../utils/RoomPlayerManage');
+const appRoot = require('app-root-path');
+var Room = require(appRoot + '/schema/Schema').roomModel;
+//const client = require(appRoot + "/config/radisConfig.js");
+//const  roomPlayer      = require(appRoot + '/utils/RoomPlayerManage');
 var room ={}
-  //  client.HGETALL(['status','open'],function (err, roomdata) {
-  //   console.log(roomdata);
-    
-  // });
-
-// client.flushdb( function (err, succeeded) {
-//     console.log(succeeded); // will be true if successfull
-// });
-//client.json_set('object','.','{"foo": "bar", "ans": 42}',function(err,succeeded) {  console.log(succeeded);  })
-//client.hmset("RM1568809886520", "users:5d822398d9eab33a7639623e:name", "HII");
-// client.hgetall("RM1568809886520", function (err, obj) {
-//     console.dir(obj);
-// });
-client.HGETALL("RM1568809886520", function (err, obj) {
-   var userarr = [];
-  Object.keys(obj).forEach(function(key) {
-      // console.log(key + ': ' + obj[key]);
-      let arr = key.split(":");
-      let usr =[]
-     
-      //console.log(arr[2]);
-    // userarr.push({ arr[]."":obj[key]})
+var constants          =  require(appRoot + "/config/constants");
 
 
-  });
-});
+
+room.createRoom = function(condObj){
+    return new Promise((resolve,reject) => {
 
 
-room.createRoom =function (reqObj) {
-  return new Promise((resolve,reject) => {
+        Room.aggregate([
+            {$match :{"status":"open"}},
+            { "$redact": {
+                    "$cond": {
+                        "if": {
+                            "$lt": [
+                                { "$size": {
+                                        "$concatArrays": [
+                                            { "$ifNull": [ "$users", [] ] }
+                                        ]
+                                    } },
+                                constants.GAME_MAXIMUM_USER
+                            ]
+                        },
+                        "then": "$$KEEP",
+                        "else": "$$PRUNE"
+                    }
+                }},
+            { "$project": { "_id": 1 ,name:1,users:1} }
+        ]).limit(1).then(responses=> {
+            if(!responses|| responses.length ==0 ){
+                roomObj ={ name : 'RM'+new Date().getTime(),
+                           "status":"open",
+                           users : {userId : condObj.userId ,
+                                     status: "active",
+                                      total:"333",
+                                       score:"333",
+                                       isWin:0,
+                                       turn:0,
+                                       dartPoint:"",
+                                       userName:condObj.userName,
+                                       colorName:condObj.colorName,
+                                       raceName:condObj.raceName}}
 
-     // console.log("  reqestObj",reqestObj)
-      var users = [];
-      client.SMEMBERS("room",function (err, roomlist) {
-          //console.log(" roomlist ",roomlist)
-          if(roomlist.length >= 1){
-              client.HGETALL(roomlist[0],function (err, roomdata) {  
-                  var status =(roomdata.totaluser == 7)?"closed":"open";       
-                  let reqestObj = roomPlayer._playerCreation(reqObj.user_id,reqObj.name,reqObj.texture,roomdata.totaluser)   
-                  users.push(reqestObj);      
-                  client.HMSET(roomlist[0],[ 
-                                            "status",status,
-                                            "users:"+reqestObj.user_id+":id",reqestObj.user_id,
-                                            "users:"+reqestObj.user_id+":name",reqestObj.name,
-                                            "users:"+reqestObj.user_id+":position:X",reqestObj.position.X,
-                                            "users:"+reqestObj.user_id+":position:Y",reqestObj.position.Y,
-                                            "users:"+reqestObj.user_id+":playerScale:X",reqestObj.playerScale.X,
-                                            "users:"+reqestObj.user_id+":playerScale:Y",reqestObj.playerScale.Y,
-                                            "users:"+reqestObj.user_id+":texture",reqestObj.texture,
-                                            "users:"+reqestObj.user_id+":playerAngle",reqestObj.playerAngle,
-                                            "users:"+reqestObj.user_id+":playerSpeed",reqestObj.playerSpeed,
-                                            "users:"+reqestObj.user_id+":type",reqestObj.type,
-                                            "users:"+reqestObj.user_id+":totalUserKill",reqestObj.totalUserKill,                                            
-                                            // "users",JSON.stringify(users)
-                                            ],function (err, roomdata) {
-                      client.HINCRBY(roomlist[0],["totaluser",1],function (err, roomdata) {                        
-                          if(err){
-                              reject();
-                          }else{
-                              resolve({"name":roomlist[0],status:"open",userObj:reqestObj});  
-                          }
-                      });    
-                  })
-              })
-          }else{
-              var room = 'RM'+new Date().getTime();
-              client.SADD("room",[room],function (err, addroom) {
-              let reqestObj = roomPlayer._playerCreation(reqObj.user_id,reqObj.name,reqObj.texture,0)  
-              users.push(reqestObj)               
-                client.HMSET(room,[ "status","open",
-                                    "totaluser", 1,
-                                    "users:"+reqestObj.user_id+":id",reqestObj.user_id,
-                                    "users:"+reqestObj.user_id+":name",reqestObj.name,
-                                    "users:"+reqestObj.user_id+":position:X",reqestObj.position.X,
-                                    "users:"+reqestObj.user_id+":position:Y",reqestObj.position.Y,
-                                    "users:"+reqestObj.user_id+":playerScale:X",reqestObj.playerScale.X,
-                                    "users:"+reqestObj.user_id+":playerScale:Y",reqestObj.playerScale.Y,
-                                    "users:"+reqestObj.user_id+":texture",reqestObj.texture,
-                                    "users:"+reqestObj.user_id+":playerAngle",reqestObj.playerAngle,
-                                    "users:"+reqestObj.user_id+":playerSpeed",reqestObj.playerSpeed,
-                                    "users:"+reqestObj.user_id+":type",reqestObj.type,
-                                    "users:"+reqestObj.user_id+":totalUserKill",reqestObj.totalUserKill,  
-                                   // "users",JSON.stringify(users)
-                                 ],function (err, roomdata) {
-                      console.log("  err  ",err)
-                      if(err){
-                          reject();
-                      }else{
-                          resolve({"name":room,status:"open",userObj:reqestObj});
-                      }
-                  }) 
-              });
-          }
-      });
-  });  
-  // body...
+                console.log(" roomObj",roomObj)
+                Room.create(roomObj).then(responses=> {
+                    resolve({ roomName : responses.name ,_id :responses._id });
+                }).catch(err => {
+                    reject(err);
+                });
+            }else{
+                updateObj  ={}
+                Room.updateOne({ "_id":responses[0]._id},
+                    {
+                        $push: { users: { userId: condObj.userId ,
+                                status:"active",total:333,score:333,isWin:0,turn:0,
+                                userName:condObj.userName,colorName:condObj.colorName,raceName:condObj.raceName } }
+                    },
+                    { multi: true }).then(updateRoomDetails=> {
+                    return resolve({ roomName : responses[0].name ,_id :responses[0]._id });
+
+                }).catch(err => {
+                    reject(err);
+                });
+
+                // }
+
+            }
+        }).catch(err => {
+            reject(err);
+        });
+    })
+
 }
+
 
 
 room.createBot =function (room_name,reqestObj) {
@@ -208,27 +185,114 @@ room.getKeyValueDetails = function(reqestObj){
 
 
 room.storeRoomDetails = function(roomObj){
-   // console.log("   store  room details  ",roomObj)
     return new Promise((resolve,reject) => {
         Room.create(roomObj).then(responses=> {
             return resolve(responses);
         }).catch(err => {
             return reject(err);
         })
-    })  
+    })
 }
 
-room.updateRoomDetails = function(roomObj){
-    console.log("   store  room details  ",roomObj)
+/*db.rooms.updateOne(
+    { _id: ObjectId("5dee3d0e98e37b319712ac27"), "users._id": ObjectId("5dee3d6398e37b319712ac2a") },
+    { $set: { "users.$.score" : 12 } }
+)*/
+
+room.updateRoomDart = function(condObj,updateObj){
     return new Promise((resolve,reject) => {
-        Room.create(roomObj).then(responses=> {
+        Room.updateOne({ "name":condObj.roomName,"users.userId":condObj.userId},updateObj).then(responses=> {
             return resolve(responses);
         }).catch(err => {
             return reject(err);
         })
-    })  
+    })
+}
+room.updateRoomDetails = function(condObj,updateObj){
+    return new Promise((resolve,reject) => {
+        Room.updateOne({ "name":condObj.roomName},updateObj).then(responses=> {
+            return resolve(condObj.roomName);
+            //return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        })
+    })
+}
+room.playerLeave = function(condObj,updateObj){
+    console.log(" remove  room details  ",condObj)
+    return new Promise((resolve,reject) => {
+        Room.updateOne(
+            {
+                "name":condObj.roomName,
+                "users.userId": condObj.userId
+            },
+            updateObj
+            /*{
+                "$set": {
+                    "users.$.status" : "inactive"
+                }
+            }*/
+
+        /*updateOne({ "name":condObj.roomName},
+            {
+                $pull: { users: { userId: condObj.userId} }
+            },
+            { multi: true }*/).then(updateRoomDetails=> {
+            return resolve(updateRoomDetails);
+        }).catch(err => {
+            return reject(err);
+        })
+    })
 }
 
+room.getUserRoomDetails = function(condObj){
+    return  new Promise((resolve,reject) => {
+        Room.findOne({name:condObj.roomName}, {_id: 1, name:1, score:1, total:1, sockets:1}).then(responses=> {
+            return resolve({_id :responses._id ,name : responses.name, score :  responses.score,total: responses.total });
+        }).catch(err => {
+            return reject(err);
+        });
+    });
+}
+room.updateRoomLeave  = function(userObj,updateArr){
+    return new Promise((resolve,reject)=>{
+
+        Room.updateOne({name : userObj.roomName},{ $set: { users: updateArr.usertotal }},
+            function (err, updateroomresult) {
+                if (err)
+                    reject({message:"Error:Database connection error"})
+                else {
+                    if(updateroomresult.nModified >0)
+                        resolve(true)
+                    else
+                        reject({message:"Unable to update memory room"});
+                    //resolve({users: reqObj.userId,remainingScore:calculatedScore})
+                }
+
+            });
+
+    })
+}
+
+room.updateRoomLeaveDisconnect  = function(roomName,updateArr){
+    return new Promise((resolve,reject)=>{
+
+        Room.updateOne({name : roomName},{ $set: { users: updateArr.usertotal }},
+            function (err, updateroomresult) {
+                if (err)
+                    reject({message:"Error:Database connection error"})
+                else {
+                    if(updateroomresult.nModified >0)
+                        resolve(true)
+                    else
+                        reject({message:"Unable to update memory room"});
+                    //resolve({users: reqObj.userId,remainingScore:calculatedScore})
+                }
+
+            });
+
+    })
+}
 
 
 module.exports =room;

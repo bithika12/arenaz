@@ -2,15 +2,20 @@
 const uuidv4 = require('uuid/v4');
 /*Include Constants */
 var constants = require("../config/constants");
+ const time  = require('../utils/TimeManager');
 
 /* INCLUDE UTILS  */
 const timeManage  = require('../utils/TimeManager');
 const password = require('../utils/PasswordManage');
 /*Include model */
 var User = require('../schema/Schema').userModel; 
-var Role = require('../schema/Schema').roleModel; 
+var Role = require('../schema/Schema').roleModel;
+const moment = require('moment');
 
-/** TOTAL USER **/
+ var Room = require('../schema/Schema').roomModel;
+
+
+ /** TOTAL USER **/
 User.totalUser =function(condObj){
     return  new Promise((resolve,reject) => {
         User.countDocuments(condObj).then(responses=> {
@@ -130,6 +135,29 @@ User.checkUserToken = function(condObj){
     });
 }
 
+ User.checkUserTokenMod = function(condObj){
+     return  new Promise((resolve,reject) => {
+         User.findOne({"deviceDetails.accessToken":condObj.accessToken},
+             {_id: 1,name:1,email:1,status:1,userName:1,deviceDetails: {$elemMatch: {accessToken: condObj.accessToken}},
+                 colorName:{$elemMatch: {status: 1}},
+                 raceName:{$elemMatch: {status: 1}}})
+             .then(responses=> {
+                 return resolve(responses);
+             }).catch(err => {
+             return reject(err);
+         });
+     });
+ }
+ User.getUserSocketDetails = function(condObj){
+     return  new Promise((resolve,reject) => {
+         User.findOne({_id:condObj.userId}, {_id: 1, userName:1, email:1, status:1, sockets:1}).then(responses=> {
+             return resolve({_id :responses._id ,userName : responses.userName, socketId :  responses.sockets[responses.sockets.length -1]._id });
+         }).catch(err => {
+             return reject({message:err});
+         });
+     });
+ }
+
 
 /**UPDATE DEVICE **/
 
@@ -236,6 +264,159 @@ User.resetPassword = function(condObj,updateObj){
          console.log(reqObj);
      });
  };
+
+
+ /** SOCKET FUNCTION**/
+ User.updateSocketDetails  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         User.findOne({/*"sockets.socketId":condObj.socketId*/_id :condObj.userId },
+             {_id: 1, userName:1, email:1, status:1, sockets: {$elemMatch: {socketId: updateObj.socketId } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.sockets.length > 0){
+                 return resolve(userDetails);
+             }else{
+                 var  sockets = [{socketId : updateObj.socketId,createdAt : time.now(),updatedAt : time.now()}];
+                 User.updateOne({ _id :condObj.userId},{$push :{ "sockets":sockets}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
+
+ User.colorRequest  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({/*"sockets.socketId":condObj.socketId*/_id :condObj.userId },
+             {_id: 1, userName:1, email:1, status:1, colorName: {$elemMatch: {colorName: updateObj.colorName,status:1 } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.colorName.length > 0){
+                 return resolve(userDetails);
+                 /*var  colors = [{colorName : updateObj.colorName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({ _id :condObj.userId ,"colorName.status": "1"  },{  $set:{ "colorName.$[].status":"0"}}).then(responses=> {
+                     User.updateOne({ _id :condObj.userId},{$push :{ "colorName":colors}}).then(responses=> {
+                         return resolve(userDetails);
+                     }).catch(err => { return reject(err); });
+                 }).catch(err => { return reject(err); });*/
+             }else{
+                 var  colors = [{colorName : updateObj.colorName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({ _id :condObj.userId},{$set :{ "colorName":colors}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
+ User.sageRequest  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({/*"sockets.socketId":condObj.socketId*/_id :condObj.userId },
+             {_id: 1, userName:1, email:1, status:1, raceName: {$elemMatch: {raceName: updateObj.raceName,status:1 } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.raceName.length > 0){
+                 //update this to inactive
+                 //return resolve(userDetails);
+                 /*var  colors = [{raceName : updateObj.raceName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({ _id :condObj.userId ,"raceName.status": "1"  },{  $set:{ "raceName.$[].status":"0"}}).then(responses=> {
+                     User.updateOne({ _id :condObj.userId},{$push :{ "raceName":colors}}).then(responses=> {
+                         return resolve(userDetails);
+                     }).catch(err => { return reject(err); });
+                 }).catch(err => { return reject(err); });*/
+
+                 return resolve(userDetails);
+             }else{
+
+                 var  colors = [{raceName : updateObj.raceName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({ _id :condObj.userId},{$set :{ "raceName":colors}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
+
+ User.fetchColor  = function(roomName){
+     return  new Promise((resolve,reject) => {
+
+         Room.aggregate([
+             { "$unwind": { "path": "$users", "preserveNullAndEmptyArrays": true }},
+             { "$lookup": {
+                     "from": "users",
+                     "localField": "users.userId",
+                     "foreignField": "_id",
+                     "as": "users.userDetail"
+                 }},
+
+             {
+                 $match:{
+                     "name": roomName
+
+                 }
+             },
+
+             { "$group": {
+                     "_id": "$_id",
+                     "roomname": { "$first": "$name" },
+                     "users": { "$addToSet": "$users" }
+
+                 }},
+
+             {
+                 "$project": {
+                     // "_id": 1,
+                     "roomname":1,
+                     "users.userDetail.userName": 1,
+                     "users.userDetail._id": 1,
+                     "users.userDetail.colorName.colorName": 1,
+                     "users.userDetail.raceName.raceName": 1,
+                     //"campaign.client.username": 1
+                 }
+             }
+
+         ])
+             .then(userDetails=> {
+              resolve(userDetails);
+         }).catch(err => {
+             return reject(err);
+         });
+
+
+     });
+ }
+
+ User.fetchColorMod  = function(roomName,userArr){
+     return  new Promise((resolve,reject) => {
+         let totalArr=[];
+         userArr.forEach(function (val, key) {
+
+             console.log(val);
+             //totalArr.push(roomName);
+             User.findOne({_id :val.userId },
+                 {_id: 1, userName:1, email:1, status:1, raceName: 1,colorName: 1}).then(userDetails=> {
+                     if(userDetails.raceName[0]['raceName']){
+                     totalArr.push(userDetails.raceName[0]['raceName']);
+                     }
+                     else if(userDetails.colorName[0]['colorName']){
+                         totalArr.push(userDetails.colorName[0]['colorName']);
+                     }
+                     else if(userDetails.userName){
+                         totalArr.push(userDetails.userName);
+                     }
+
+                    // console.log(totalArr)
+
+             });
+         });
+
+     });
+ }
+
 
 module.exports= User;
 

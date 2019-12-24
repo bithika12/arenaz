@@ -32,6 +32,8 @@ var userSchema =  new Schema({
                         description      :  String,
                         loginTime        :  String,
                         loginIp          :  String,
+                        colorName        :  [{ colorName: String, status: Number,createdAt : Date, updatedAt:Date}],
+                        raceName         :  [{ raceName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
                         loginType        :  {  type : String ,enum :["normal","social"],default :'normal'},
                         status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'}, 
@@ -51,15 +53,18 @@ var userSchema =  new Schema({
 
 // GAME PLAY TABLE DECLARATION
 
+
+
+// GAME PLAY TABLE DECLARATION
+
 var roomSchema = new Schema({
-                     name          : String,
-                     status        : String,
-                     users         : [/*{user_id:String, name : String}*/],
-                     createdAt    : Date,
-                     updatedAt    : Date
+    name          : String,
+    status        : String,
+    users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,userName:String}],
+    //users        : [{userId:String, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String}],
+    createdAt    : Date,
+    updatedAt    : Date
 });
-
-
 
 // the schema is useless so far
 // we need to create a model using it
