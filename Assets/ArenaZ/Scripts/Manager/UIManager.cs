@@ -16,6 +16,7 @@ namespace ArenaZ.Manager
        
         //Private Variables
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
+        private Dictionary<string, TextScreen> textPages = new Dictionary<string, TextScreen>();
         private string _openScreen = string.Empty;
         private string closeScreen = string.Empty;
         private string characterName = string.Empty;
@@ -35,12 +36,13 @@ namespace ArenaZ.Manager
 
         protected override void Awake()
         {
+            AddAllTextScreensToDictionary();
             StartCoroutine(LogInCheck());
         }
 
         private void Start()
-        {           
-            StartAnimations();
+        {
+            StartAnimations();          
         }
 
         public Sprite GetCorrespondingCountrySprite(string spriteName)
@@ -67,7 +69,7 @@ namespace ArenaZ.Manager
         private void StartAnimations()
         {
             ScreenShow(Page.TopAndBottomBarPanel.ToString(), Hide.none);
-            ScreenShow(Page.AcoountAccesOverlay.ToString(), Hide.none);
+            ScreenShow(Page.AccountAccesOverlay.ToString(), Hide.none);
         }
 
         public void ShowPopWithText(string screenName,string message,float duration)
@@ -106,14 +108,14 @@ namespace ArenaZ.Manager
 
         public void ShowCharacterName(string name)
         {
-            if (characterName.Equals(name) || !allPages.ContainsKey(name))
+            if (characterName.Equals(name) || !textPages.ContainsKey(name))
             {
                 return;
             }
-            allPages[name].ShowGameObjWithAnim();
-            if (allPages.ContainsKey(characterName))
+            textPages[name].Show();
+            if (textPages.ContainsKey(characterName))
             {
-                allPages[characterName].Hide();
+                textPages[characterName].Hide();
             }
             characterName = name;
         }
@@ -178,6 +180,24 @@ namespace ArenaZ.Manager
         private void DeactivateAllUI()
         {
             foreach(KeyValuePair<string, UIScreen> child in allPages)
+            {
+                child.Value.Hide();
+            }
+        }
+
+        private void AddAllTextScreensToDictionary()
+        {
+            textPages.Clear();
+            foreach (TextScreen screen in FindObjectsOfType<TextScreen>())
+            {
+                textPages.Add(screen.name, screen);
+            }
+            DeactivateAllTextPages();
+        }
+
+        private void DeactivateAllTextPages()
+        {
+            foreach (KeyValuePair<string, TextScreen> child in textPages)
             {
                 child.Value.Hide();
             }

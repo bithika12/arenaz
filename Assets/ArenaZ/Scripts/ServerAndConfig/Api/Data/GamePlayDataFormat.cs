@@ -2,18 +2,21 @@
 
 namespace RedApple.Api.Data
 {
-    public class GamePlayDataFormat<T>
+    public struct GamePlayDataFormat<T>
     {
         public int status;
-        public string message;
+        [JsonProperty("message")]
+        public string Message { get; set; }
+        [JsonProperty("result")]
         public Result<T> result;
     }
 
-    public class Result<T>
+    public struct Result<T>
     {
         [JsonProperty("roomName")]
-        public string roomName;
+        public string RoomName { get; set; }
         [JsonProperty("users")]
-        public T[] users;
+        public T[] Users;
     }
+
 }

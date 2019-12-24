@@ -19,4 +19,8 @@ MonoBehaviour:
   socketConfig:
     socketHost: http://192.168.2.73:3012/
     SocketListenEvents:
+    - userConnected
+    - colorGet
+    - userJoin
     - gameStart
+    - nextTurn

@@ -26,11 +26,12 @@ namespace RedApple
             socket.On(SystemEvents.connectTimeOut, OnTimeout);
         }
 
+        #region Socket Emit
         public void AddUser()
         {
             AccesToken acToken = new AccesToken
             {
-                AccessToken = User.accessToken
+                AccessToken = User.UserAccessToken
             };
             string addUserJsonData = DataConverter.SerializeObject(acToken);
             Debug.Log("Access Token: " + addUserJsonData);
@@ -41,12 +42,29 @@ namespace RedApple
         {
             AccesToken acToken = new AccesToken
             {
-                AccessToken = User.accessToken
+                AccessToken = User.UserAccessToken
             };
-            string gameRqstJsonData = DataConverter.SerializeObject(acToken);
-            Debug.Log("Access Token: " + gameRqstJsonData);
-            socket.EmitJson(SocketEmitEvents.gameRequest.ToString(), gameRqstJsonData);
+            string gameReqJsonData = DataConverter.SerializeObject(acToken);
+            Debug.Log("Access Token: " + gameReqJsonData);
+            socket.EmitJson(SocketEmitEvents.gameRequest.ToString(), gameReqJsonData);
         }
+
+        public void ColRequest()
+        {
+            ColorRequest colorRequest = new ColorRequest
+            {
+                AccessToken = User.UserAccessToken,
+                Color = User.userColor,
+                CharRace = User.userRace
+            };
+            string colorReqJsonData = DataConverter.SerializeObject(colorRequest);
+            Debug.Log("Access Token: " + colorReqJsonData);
+            socket.EmitJson(SocketEmitEvents.colorRequest.ToString(), colorReqJsonData);
+        }
+
+        #endregion
+
+        #region Socket Callbacks
 
         private void OnConnected()
         {
@@ -79,7 +97,8 @@ namespace RedApple
         {
             Debug.Log("Add Events");
             Config.SocketConfig.SocketListenEvents.ForEach(evt => socket.On(evt, onListen));
-        }  
+        }
+        #endregion
     }
 }
 
@@ -88,4 +107,15 @@ public struct AccesToken
 {
     [JsonProperty("accessToken")]
     public string AccessToken { get; set; }
+}
+
+[Serializable]
+public struct ColorRequest
+{
+    [JsonProperty("accessToken")]
+    public string AccessToken { get; set; }
+    [JsonProperty("color")]
+    public string Color { get; set; }
+    [JsonProperty("race")]
+    public string CharRace { get; set; }
 }

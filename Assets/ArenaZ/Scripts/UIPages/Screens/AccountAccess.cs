@@ -87,7 +87,7 @@ namespace ArenaZ.Screens
 
         private void OnClickAccountAccessPanelOpen()
         {
-            UIManager.Instance.ScreenShow(Page.AcoountAccesOverlay.ToString(), Hide.none);
+            UIManager.Instance.ScreenShow(Page.AccountAccesOverlay.ToString(), Hide.none);
         }
 
         private void OnClickAccountAccessPanelClose()

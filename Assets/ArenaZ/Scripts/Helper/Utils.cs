@@ -3,7 +3,7 @@ public enum Page
 {
     CharacterSelectionPanel,
     AccountAccessDetailsPanel,
-    AcoountAccesOverlay,
+    AccountAccesOverlay,
     RegistrationOverlay,
     LogINOverlay,
     ForgotPasswordOverlay,
@@ -22,6 +22,13 @@ public enum Page
     PlayerLoosePanel,
     PlayerWinPanel,
     ShootingrangePanel,
+    ComingSoonOverlay,
+    PopUpTextAccountAccess,
+    PopUpTextSettings,
+}
+
+public enum Race
+{
     Canines,
     Kepler,
     Cyborg,
@@ -29,12 +36,7 @@ public enum Page
     Human,
     Ebot,
     KeplerSecond,
-    ComingSoonOverlay,
-    PopUpTextAccountAccess,
-    PopUpTextSettings,
 }
-
-
 
 public enum ButtonType
 {
@@ -96,18 +98,36 @@ public enum ProfilePicType
     Medium
 }
 
+public enum GameobjectTag
+{
+    Player,
+    DartBoard
+}
+
+public enum SceneType
+{
+    Loading,
+    LevelSelection,
+    Gameplay
+}
+
 public static class User
 {
     public static string userName;
     public static string userId;
-    public static string email;
-    public static string accessToken;
+    public static string userEmailId;
+    public static string UserAccessToken;
+    public static string userRace;
+    public static string userColor = "Red";
 }
 
 public static class ConstantInteger
 {
     public const int totalDartPointsForProjectileMove = 10;
+    public const int inputPosNo = 5;
+    public const int fewPosNo = 10;
 }
+
 
 public static class ConstantStrings
 {

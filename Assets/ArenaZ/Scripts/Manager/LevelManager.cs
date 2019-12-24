@@ -11,16 +11,6 @@ namespace ArenaZ.Manager
 
         // Public Variables
 
-        private void Start()
-        {
-            SocketListener.Listen("gameStart", OnGameStart);
-        }
-
-        private void OnGameStart(string data)
-        {
-            Debug.Log($"Game Start : {data}");
-            var gameRqstData = DataConverter.DeserializeObject<GamePlayDataFormat<GameRequest>>(data);
-            Debug.Log("Room Name: " + gameRqstData.result.roomName);
-        }
+       
     }
 }

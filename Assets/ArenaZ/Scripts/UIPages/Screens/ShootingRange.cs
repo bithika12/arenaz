@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using RedApple;
+using RedApple.Api.Data;
 
 namespace ArenaZ.GameMode
 {
@@ -27,6 +28,7 @@ namespace ArenaZ.GameMode
         private void Start()
         {
             GettingButtonReferences();
+            ListenSocketEvents();
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
         }
@@ -58,6 +60,42 @@ namespace ArenaZ.GameMode
         }
         #endregion
 
+        private void ListenSocketEvents()
+        {
+            SocketListener.Listen(SocketListenEvents.userJoin.ToString(), OnUserJoin);
+            SocketListener.Listen(SocketListenEvents.gameStart.ToString(), OnGameStart);
+        }
+
+        private void OnGameStart(string data)
+        {
+            Debug.Log($"Game Start : {data}");
+            var gameStartData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
+            UserJoin[] users = gameStartData.result.Users;
+            Debug.Log("No. of users:  "+users.Length);
+            for (int i = 0; i < users.Length; i++)
+            {
+                if (User.userId != users[i].UserId)
+                {
+                    PlayerMatch.Instance.SetEnemyName(users[i].UserName);
+                    PlayerMatch.Instance.SetEnemyProfileImage(users[i].RaceName);
+                    UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
+                }
+                else
+                {
+                    Debug.Log("UserIdMatched");
+                }
+            }
+            PlayerMatch.Instance.LoadScene();
+        }
+
+        private void OnUserJoin(string data)
+        {
+            Debug.Log($"Game Start : {data}");
+            var userJoinData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
+            UserJoin[] users = userJoinData.result.Users;
+            Debug.Log("UserId: " + userJoinData.result.Users[0].UserId);
+        }
+
         public void SetProfileImage(string imageName)
         {
             profileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Medium);
@@ -76,9 +114,7 @@ namespace ArenaZ.GameMode
 
         private void OnClickStartGameWithCoinValue()
         {
-            UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
             SocketManager.Instance.GameRequest();
-            PlayerMatch.Instance.LoadScene();
         }
     }
 }

@@ -97,8 +97,8 @@ namespace ArenaZ.LoginUser
         {
             User.userName = userLogin.UserName;
             User.userId = userLogin.UserId;
-            User.email = userLogin.Email;
-            User.accessToken = userLogin.AccessToken;
+            User.userEmailId = userLogin.Email;
+            User.UserAccessToken = userLogin.AccessToken;
         }
 
         private void OnErrorLogin(RestUtil.RestCallError restError)

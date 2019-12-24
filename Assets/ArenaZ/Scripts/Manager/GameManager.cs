@@ -2,6 +2,8 @@
 using ArenaZ.ShootingObject;
 using UnityEngine;
 using RedApple;
+using System;
+using RedApple.Api;
 
 namespace ArenaZ.Manager
 {
@@ -14,6 +16,7 @@ namespace ArenaZ.Manager
         private Dart currentDart;
 
         // Public Variables
+        public Action<int> dartScore;
 
         protected override void Awake()
         {
@@ -22,14 +25,32 @@ namespace ArenaZ.Manager
         }
 
         private void Start()
-        {           
+        {
+            listenSocketEvents();
             touchBehaviour.OnDartMove += DartMove;
             touchBehaviour.OnDartThrow += DartThrow;
+        }
+
+        private void listenSocketEvents()
+        {
+            SocketListener.Listen(SocketListenEvents.nextTurn.ToString(),onNextTurn);
+        }
+
+        private void onNextTurn(string data)
+        {
+            var nextTurnData = DataConverter.DeserializeObject<ApiResponseFormat<NextTurn>>(data);
+            Debug.Log("Next Turn Id: " + nextTurnData.Result.UserId);
         }
 
         private void DartMove(Vector3 dartPosition)
         {
             currentDart.transform.position = dartPosition;
+        }
+
+        public void OnCompletionDartHit()
+        {
+            BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
+            Debug.Log("Hit Point Value:  " + boardBody.HitPointScore+" "+touchBehaviour.DartHitPoint);
         }
 
         private void DartThrow(Vector3 hitPoint, float angle)
@@ -42,6 +63,6 @@ namespace ArenaZ.Manager
             {
                 currentDart.MoveInProjectilePathWithPhysics(hitPoint, angle);
             }
-        }       
+        }
     }
 }

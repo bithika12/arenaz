@@ -22,12 +22,12 @@ namespace ArenaZ.Screens
 
         [Header("Scroll Snap")]
         [Space(5)]
-        [SerializeField] private HorizontalScrollSnap horizontalScrollSnap;
-        public readonly string[] names = { Page.Canines.ToString(), Page.Kepler.ToString(), Page.Cyborg.ToString(), Page.CyborgSecond.ToString(), Page.Human.ToString(), Page.Ebot.ToString(), Page.KeplerSecond.ToString() };
+        [SerializeField]private HorizontalScrollSnap horizontalScrollSnap;
+        public readonly string[] names = { Race.Canines.ToString(), Race.Kepler.ToString(), Race.Cyborg.ToString(), Race.CyborgSecond.ToString(), Race.Human.ToString(), Race.Ebot.ToString(), Race.KeplerSecond.ToString() };
         //Public Fields
 
         private void Start()
-        {
+        {           
             GettingButtonReferences();
             ShowFirstText();
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(PageChecker);
@@ -41,15 +41,15 @@ namespace ArenaZ.Screens
         #region Button_References
         private void GettingButtonReferences()
         {
-            arenaButton.onClick.AddListener(OnClickArena);
-            trainingButton.onClick.AddListener(OnClickArena);
+            arenaButton.onClick.AddListener(()=> OnClickArena(GameType.normal));
+            trainingButton.onClick.AddListener(()=> OnClickArena(GameType.training));
             rankingButton.onClick.AddListener(OnclickRanking);
         }
 
         private void ReleaseButtonReferences()
         {
-            arenaButton.onClick.RemoveListener(OnClickArena);
-            trainingButton.onClick.RemoveListener(OnClickArena);
+            arenaButton.onClick.RemoveListener(()=> OnClickArena(GameType.normal));
+            trainingButton.onClick.RemoveListener(()=> OnClickArena(GameType.training));
             rankingButton.onClick.RemoveListener(OnclickRanking);
         }
         #endregion
@@ -72,7 +72,7 @@ namespace ArenaZ.Screens
 
         private void ShowFirstText()
         {
-            UIManager.Instance.ShowCharacterName(Page.Canines.ToString());
+            UIManager.Instance.ShowCharacterName(Race.Canines.ToString());
         }
 
         public void PageChecker(int pageNo)
@@ -80,24 +80,22 @@ namespace ArenaZ.Screens
             UIManager.Instance.ShowCharacterName(names[pageNo]);
         }
 
-        private void OnClickArena()
+        private void OnClickArena(GameType type)
         {
-            UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
-            UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.LevelSelectionPanel.ToString(), Hide.none);
+            enterArenaMode();
+            User.userRace = names[horizontalScrollSnap._currentPage];
             UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
-            LevelSelection.Instance.OnSelectionGameplayType(GameType.normal);
+            LevelSelection.Instance.OnSelectionGameplayType(type);
             PlayerPrefs.SetInt(User.userName, horizontalScrollSnap._currentPage);
+            SocketManager.Instance.ColRequest();
         }
 
-        private void OnClickTraining()
+
+        private void enterArenaMode()
         {
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
             UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ScreenShow(Page.LevelSelectionPanel.ToString(), Hide.none);
-            UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
-            LevelSelection.Instance.OnSelectionGameplayType(GameType.training);
-            PlayerPrefs.SetInt(User.userName, horizontalScrollSnap._currentPage);
         }
 
         public void OnclickRanking()

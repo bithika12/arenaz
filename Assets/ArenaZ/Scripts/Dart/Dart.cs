@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using DG.Tweening;
-using System.Collections;
+using System;
+using ArenaZ.Manager;
 
 namespace ArenaZ.ShootingObject
 {
@@ -13,6 +14,8 @@ namespace ArenaZ.ShootingObject
         private Vector3[] points = new Vector3[ConstantInteger.totalDartPointsForProjectileMove];
 
         private readonly float _screenMiddleOffset = 4.5f; // Y axis
+
+        public static Action GetGameObj;
 
         private void Awake()
         {
@@ -47,8 +50,10 @@ namespace ArenaZ.ShootingObject
         public void TweenthroughPoints(Vector3 endPosition)
         {
             AddPointsToArray(endPosition);
-            transform.DOPath(points, .6f, PathType.CatmullRom).SetEase(Ease.Linear).SetLookAt(1, Vector3.forward);
-        }
+            transform.DOPath(points, .6f, PathType.CatmullRom)
+                     .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
+                     .OnComplete(() => GameManager.Instance.OnCompletionDartHit());
+        } 
 
         private Vector3 CalculateQuadraticBeizerCurve(float time,Vector3 pointThree)
         {
@@ -61,11 +66,10 @@ namespace ArenaZ.ShootingObject
             Vector3 calculation = (squareOfInitialV * transform.position) + (2 * initialV * time * pointTwo) + (squareOfTime * pointThree);
             return calculation;
         }
-      
+
         public void MoveInProjectilePathWithPhysics(Vector3 endPosition, float angle)
         {
             dartRB.velocity = BallisticVelocity(endPosition, angle);
         }
-
     }
 }

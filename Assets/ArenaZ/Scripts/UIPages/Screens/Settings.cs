@@ -122,7 +122,7 @@ namespace ArenaZ.SettingsManagement
         {
             UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(), false);
             LogInLogOutButtonNameSet(ConstantStrings.login);
-            UIManager.Instance.showProfilePic?.Invoke((Page.Canines.ToString()));
+            UIManager.Instance.showProfilePic?.Invoke((Race.Canines.ToString()));
             UIManager.Instance.setUserName?.Invoke(ConstantStrings.defaultUserName);
             TopAndBottomBarScreen.Instance.count = 0;
             // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);

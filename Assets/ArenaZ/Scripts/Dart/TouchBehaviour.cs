@@ -9,23 +9,30 @@ namespace ArenaZ.Behaviour
     {
         //Public Fields
         [SerializeField]
-        [Range(0.1f, 1.0f)]
-        private float touchDelay = 0.2f;
+        [Range(1f, 10f)]
+        private float touchDelay = 5.0f;
         [SerializeField]
         [Range(5.0f, 10.0f)]
         private float releaseDelay = 5.5f;
         [SerializeField]
+        [Range(5.0f, 10.0f)]
+        private float initialRotationForDart = 5;
+        [SerializeField]
         LayerMask objectMask = 5;
-        // Private Fields
-        private RaycastHit hit;
-        private float startTouchTime, endTouchTime;
-        private Vector3 FirstTouchPos, LastTouchPos;
-        private Vector3 initialDartPosition = new Vector3(-5,0,0);
-        private Vector3[] positions = new Vector3[4];
-        private bool isDartSelected = false;
-        private int counter = -1;
-        private Vector3 lowestValue = Vector3.zero;
 
+        // Private Fields
+        private GameObject dartHitObj;
+        private Vector3 dartHitPoint;
+        private RaycastHit hit;
+        private Vector3 firstTouchPos;
+        private Vector3[] inputPositions = new Vector3[ConstantInteger.inputPosNo];
+        private bool isDartSelected = false;
+        private int firstpositioncounter = -1;
+        private Vector3 lowestValue = Vector3.zero;
+        private LinkedList<Vector3> lastPositions = new LinkedList<Vector3>();
+
+        public GameObject DartHitGameObj { get { return dartHitObj; } }
+        public Vector3 DartHitPoint { get { return dartHitPoint; } }
         public Action<Vector3> OnDartMove;
         public Action<Vector3, float> OnDartThrow;
 
@@ -63,94 +70,100 @@ namespace ArenaZ.Behaviour
 
         private void DartMove(Vector3 inputPosition)
         {
-            startTouchTime = Time.deltaTime;
-            if (startTouchTime > touchDelay)
-            {
-                ResetTimer();
-            }
             if (Physics.Raycast(Camera.main.ScreenPointToRay(inputPosition), out hit)&& !isDartSelected)
             {
-                if (hit.transform.gameObject.tag == "Player")
-                {
-                    Debug.Log("Hit Player");
+                if (hit.transform.tag == GameobjectTag.Player.ToString())
+                {                 
                     isDartSelected = true;
-                    lowestValue = GetWorldPosFromMousePos(inputPosition);
-                    OnDartMove?.Invoke(FirstTouchPos);
+                    Vector3 dartRotation = Vector3.zero;
+                    dartRotation.x = initialRotationForDart;
+                   // hit.transform.eulerAngles = dartRotation;
+                   // lowestValue = GetWorldPosFromMousePos(inputPosition);
+                    OnDartMove?.Invoke(firstTouchPos);
                 }
             }
             if (isDartSelected)
             {
                 Vector3 nextPosition = GetWorldPosFromMousePos(inputPosition);
-                FirstTouchPos = firstPositionOfY(GetWorldPosFromMousePos(inputPosition));
-               // Debug.Log("First Touch Position: " + FirstTouchPos);
+                // FirstTouchPos = firstPositionOfY(nextPosition);
+                //Debug.Log("Next position: " + nextPosition);
+                storeLastFewInputpositions(nextPosition);
                 OnDartMove?.Invoke(nextPosition);
             }
+        }
+
+        private void storeLastFewInputpositions(Vector3 position)
+        {
+            lastPositions.AddFirst(position);
+            //Debug.Log("linklist count:  " + lastPositions.Count);
+            if(lastPositions.Count > ConstantInteger.fewPosNo)
+            {
+                lastPositions.RemoveLast();
+            }
+        }
+
+        private bool stayLongInPos(LinkedList<Vector3> inputPositions)
+        {
+            if (inputPositions.Count >= ConstantInteger.fewPosNo)
+            {
+                //Debug.Log("Difffffffff: " + (screenpositionOfY(inputPositions.Last.Value.y) - screenpositionOfY(inputPositions.First.Value.y)));
+                if (screenpositionOfY(inputPositions.First.Value.y) - screenpositionOfY(inputPositions.Last.Value.y) < 1f)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private Vector3 firstPositionOfY(Vector3 position)
         {
             Vector3 tempValue = Vector3.zero;
-            counter++;
-            positions[counter] = position;            
-           // Debug.Log("Counter Value:  " + counter);
-            if (counter == 0)
+            firstpositioncounter++;
+            inputPositions[firstpositioncounter] = position;            
+            if (firstpositioncounter == 0)
             {
-                lowestValue = positions[counter];
+                lowestValue = inputPositions[firstpositioncounter];
             }
-            else if(counter > 0)
+            else if(firstpositioncounter > 0)
             { 
-                if (screenpositionOfY(positions[counter].y) < screenpositionOfY(positions[counter-1].y))
+                if (screenpositionOfY(inputPositions[firstpositioncounter].y) < screenpositionOfY(inputPositions[firstpositioncounter-1].y))
                 {
-                    tempValue = positions[counter];
+                    tempValue = inputPositions[firstpositioncounter];
                 }
                 else
                 {
-                    tempValue = positions[counter];
+                    tempValue = inputPositions[firstpositioncounter];
                 }
                 if(screenpositionOfY(tempValue.y) < screenpositionOfY(lowestValue.y))
                 {
                     lowestValue = tempValue;
                 }
             }
-            if(counter==3)
+            if(firstpositioncounter==inputPositions.Length-1)
             {
-                counter = 0;
-                positions[0] = positions[3];
+                firstpositioncounter = 0;
+                inputPositions[0] = inputPositions[inputPositions.Length-1];
             }
             return lowestValue;
         }
 
         private void DartShoot(Vector3 InputPosition)
         {
-
-            LastTouchPos = GetWorldPosFromMousePos(InputPosition);
-             Debug.Log("Mouse Last Touch Position:  " + LastTouchPos); 
-            //Dart Only Move In Upward Direction
-            if (screenpositionOfY(LastTouchPos.y) - screenpositionOfY(FirstTouchPos.y) > 3f)
+            if (!stayLongInPos(lastPositions))
             {
-                float distance = Vector3.Distance(LastTouchPos, FirstTouchPos);
-                endTouchTime = Time.deltaTime;
-                Debug.Log("Last Mouse Final Position of Y:  " + screenpositionOfY(LastTouchPos.y));
-                Debug.Log("first Mouse Final Position of Y:  " + screenpositionOfY(FirstTouchPos.y));
-                Debug.Log("StartTouchTime: " + startTouchTime + "  EndTouchTime: " + endTouchTime + "  Distance: " + distance + "Touch delay: "+touchDelay + "  ReleaseDelay: " + releaseDelay);
-                 Debug.Log("Substraction of start and end: " + (startTouchTime - endTouchTime) + "Vagfol of touch delay: " + distance / releaseDelay);
-                if ((startTouchTime - endTouchTime) < distance / releaseDelay)
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(InputPosition), out hit, Mathf.Infinity, objectMask))
                 {
-                   // Debug.Log("Ya im successfully entered in if condition");
-                   // RaycastHit hit;
-                    if (Physics.Raycast(Camera.main.ScreenPointToRay(InputPosition), out hit, Mathf.Infinity, objectMask))
+                    if (hit.transform.tag == GameobjectTag.DartBoard.ToString())
                     {
-                       // Debug.Log("Gameobject er nam holo vai: " + hit.transform.name);
-                        if (hit.transform.tag == "DartBoard")
-                        {
-                           //Debug.Log("Hit Object:  " + hit.transform.gameObject.name);
-                            float shootAngle = 45; // This angle should change
-                            OnDartThrow?.Invoke( hit.point, shootAngle);
-                        }
+                        Debug.Log("Hit kora gameObject er name:  " + hit.transform.gameObject.name);
+                        float shootAngle = 45; // This angle should change
+                        OnDartThrow?.Invoke(hit.point, shootAngle);
+                        dartHitPoint = hit.point;
+                        dartHitObj = hit.transform.gameObject as GameObject;
                     }
                 }
             }
-            ResetTimer();
+            ResetTouch();
         }
 
         private Vector3 GetWorldPosFromMousePos(Vector3 position)
@@ -167,11 +180,9 @@ namespace ArenaZ.Behaviour
             return ScreenYOffset + position;
         }
 
-        private void ResetTimer()
+        private void ResetTouch()
         {
             isDartSelected = false;
-            startTouchTime = 0;
-            endTouchTime = 0;
         }
     }
 }
