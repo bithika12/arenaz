@@ -61,10 +61,10 @@
                        * or some other number bigger
                        * It is a bust and turn changes
                       */
-                      if (reqObj.score == 1 || reqObj.score < 0 || reqObj.score >remainingScore) {
+                     /* if (reqObj.score == 1 || reqObj.score < 0 || reqObj.score >remainingScore) {
                           reject({message:"It is bust"});
-                     }
-                     else {
+                     }*/
+                    // else {
                           let  findIndex = userArr.findIndex(elemt => elemt.userId ===  reqObj.userId);
 
                           userArr[findIndex].score=reqObj.score;
@@ -92,7 +92,7 @@
                          }
                          let finalArr=result;
                          resolve({users: reqObj.userId,remainingScore:calculatedScore,finalArr:finalArr,userTurn:userTurn,dartPoint:dartPnt});*/
-                     }
+                    // }
                  }
                  else{
                      reject({message:"No room found"});
