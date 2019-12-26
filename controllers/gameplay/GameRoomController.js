@@ -370,16 +370,17 @@ io.on('connection', function(socket){
 				return inmRoom.updateInmemoryRoom(req,roomStatusUpdate
 				);
 			})
+
 			.then(res => {
 				return userNextStartDart(res
 				);
 			})
 			.then(resp=>{
-				io.to(req.roomName).emit('dartThrow',response.generate(constants.SUCCESS_STATUS,{ },resp));
+				return io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : resp.userId,roomName:resp.roomName,remainingScore:resp.remainingScore,dartPoint:resp.dartPoint},"Dart thrown"));
 			})
 			.catch(err=>{
 				console.log(err);
-				io.sockets.to(socket.id).emit('dartThrow',response.generate( constants.ERROR_STATUS,{"err":err},"Something went wrong!"));
+				io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"Something went wrong!"));
 			});
 
 	});
