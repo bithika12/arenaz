@@ -365,7 +365,7 @@ room.removeRoom = function(condObj){
              });
      });
  }
-room.userLeave=  function(condObj,updateObj){
+room.userLeaveOld=  function(condObj,updateObj){
   return new Promise((resolve,reject) => {
       room.findOne({roomName   : condObj.roomName}
           , function (err, result) {
@@ -438,7 +438,7 @@ room.findNextUser = function(condObj){
          room.findOne({roomName : condObj.roomName}, function (err,roomDetails) {
              if(roomDetails ){
                  let  users           = roomDetails.users;
-                 let  findIndex = users.findIndex(elemt => (elemt.turn >0 && elemt.turn <= 3)/*||  elemt.turn < 1 *//*roomDetails.dealStartDirection*/);
+                 let  findIndex = users.findIndex(elemt => (elemt.turn >0 && elemt.turn < 3)/*||  elemt.turn < 1 *//*roomDetails.dealStartDirection*/);
 
                  //resolve({ userId  : users[findIndex].userId});
                  if(findIndex==-1){
@@ -519,6 +519,25 @@ room.findNextUser = function(condObj){
              });
 
      })
+ }
+
+ room.userLeave=  function(condObj,updateObj){
+     console.log("***** leaveJoinee >> ",condObj);
+     return new Promise((resolve,reject) => {
+         room.update({ roomName : condObj.roomName },
+             {$pull : {
+                     users       : { userId  : condObj.userId},
+                 }
+             },
+             { multi: true },
+             function (err,updateRoom) {
+                 if(err){
+                     reject({})
+                 }else{
+                     resolve(updateRoom)
+                 }
+             });
+     });
  }
 
 

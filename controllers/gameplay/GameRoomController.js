@@ -302,7 +302,7 @@ io.on('connection', function(socket){
 		})
 	}
 
-	function playerLeave(req){
+	function playerLeaveOld(req){
 		return function (callback) {
 			inmRoom.userLeave({roomName:req.roomName ,userId : req.userId}).then(function(updateDetails){
 				room.playerLeave({roomName:req.roomName,userId : req.userId},updateDetails).then(function(playerUpdate){
@@ -323,8 +323,28 @@ io.on('connection', function(socket){
 			}
 		})
 	}
-
 	function roomClosed(req,callback){
+		console.log("roomClosed",req)
+		room.updateRoomDetails({roomName:req.roomName},{status:"closed"}).then(function(roomStatusUpdate){
+			io.to(req.roomName).emit('gameClosed',response.generate(constants.ERROR_STATUS,{ },"game closed"));
+			callback(null,req);
+		})
+	}
+
+	function playerLeave(req){
+		return function (callback) {
+			inmRoom.userLeave({roomName:req.roomName ,userId : req.userId}).then(function(updateDetails){
+				room.playerLeave({roomName:req.roomName,userId : req.userId}).then(function(playerUpdate){
+					callback(null,req);
+				})
+			}).catch(err=>{
+				callback("",null);
+			})
+		}
+
+	}
+
+	function roomClosedOld(req,callback){
 		console.log("roomClosed",req)
 		room.updateRoomDetails({roomName:req.roomName},{status:"forfeit"}).then(function(roomStatusUpdate){
 			io.to(req.roomName).emit('gameClosed',response.generate(constants.ERROR_STATUS,{ },"game closed"));
@@ -418,9 +438,10 @@ io.on('connection', function(socket){
 	 * @param {String} accesstoken
 	 * @param {String} roomName
 	 */
-	socket.on('leave',function(req){
+	socket.on('leave1',function(req){
 		if (req.userId && req.roomName) {
 			let currentSocketId = socket.id;
+			var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socketId == currentSocketId });
 			if(io.sockets.sockets[currentSocketId]!=undefined)
 				io.sockets.sockets[currentSocketId].leave(req.roomName);
 			io.to(req.roomName).emit('playerLeave',response.generate(constants.SUCCESS_STATUS,{ userId : req.userId },"Player leave from room"));
@@ -437,6 +458,7 @@ io.on('connection', function(socket){
 				})
 				.then(resp=>{
 					logger.print("Room closed");
+					allOnlineUsers.splice(findIndex, 1);
 					io.sockets.to(req.roomName).emit('userLeave',response.generate( constants.SUCCESS_STATUS,{roomName: req.roomName,userName :req.userName,userId:req.userId },"User Left !"));
 				})
 				.catch(err=>{
@@ -449,7 +471,7 @@ io.on('connection', function(socket){
 	 * @desc This function is used for while user disconnected
 	 * @param {String} accesstoken
 	 */
-	socket.on('disconnect', function(req){
+	socket.on('disconnect1', function(req){
 		let currentSocketId = socket.id;
 		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socketId == currentSocketId });
 		if(findIndex != -1){
@@ -488,6 +510,53 @@ io.on('connection', function(socket){
 	});
 
 
+	socket.on('disconnect', function(req){
+		let currentSocketId = socket.id;
+		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socketId == currentSocketId });
+		if(findIndex != -1){
+			userRoomName  =allOnlineUsers[findIndex].roomName;
+			if(userRoomName != ''){
+				io.to(userRoomName).emit('playerLeave',response.generate(constants.SUCCESS_STATUS,{ userId : allOnlineUsers[findIndex].userId},"Player leave from room"));
+				async.waterfall([
+					playerLeave({roomName:userRoomName,userId :allOnlineUsers[findIndex].userId}),
+					totalPlayerList,
+					roomClosed,
+					memoryRoomRemove
+				],function (err, result) {
+					allOnlineUsers.splice(findIndex, 1);
+					if (result){
+						logger.print("Room closed");
+					}else
+						logger.print("***GAME ERROR ");
+				});
+			}
+		}
+	});
+
+
+	socket.on('leave',function(req){
+		if (req.userId && req.roomName) {
+			let currentSocketId = socket.id;
+
+			var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socketId == currentSocketId });
+			if(io.sockets.sockets[currentSocketId]!=undefined)
+				io.sockets.sockets[currentSocketId].leave(req.roomName);
+			io.to(req.roomName).emit('playerLeave',response.generate(constants.SUCCESS_STATUS,{ userId : req.userId },"Player leave from room"));
+			async.waterfall([
+				playerLeave({roomName:req.roomName ,userId : req.userId}),
+				totalPlayerList,
+				//roomClosed,
+				memoryRoomRemove
+			],function (err, result) {
+				if (result){
+					allOnlineUsers.splice(findIndex, 1);
+					logger.print("Room closed");
+				}else
+					logger.print("***GAME ERROR ",err);
+			});
+
+		}
+	})
 
 
 });

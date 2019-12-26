@@ -218,7 +218,7 @@ room.updateRoomDetails = function(condObj,updateObj){
         })
     })
 }
-room.playerLeave = function(condObj,updateObj){
+room.playerLeaveOld = function(condObj,updateObj){
     console.log(" remove  room details  ",condObj)
     return new Promise((resolve,reject) => {
         Room.updateOne(
@@ -277,7 +277,7 @@ room.updateRoomLeave  = function(userObj,updateArr){
 room.updateRoomLeaveDisconnect  = function(roomName,updateArr){
     return new Promise((resolve,reject)=>{
 
-        Room.updateOne({name : roomName},{ $set: { users: updateArr.usertotal }},
+        Room.updateOne({name : roomName},{ $set: { status:"closed",users: updateArr.usertotal }},
             function (err, updateroomresult) {
                 if (err)
                     reject({message:"Error:Database connection error"})
@@ -294,5 +294,18 @@ room.updateRoomLeaveDisconnect  = function(roomName,updateArr){
     })
 }
 
-
+room.playerLeave = function(condObj){
+    console.log(" remove  room details  ",condObj)
+    return new Promise((resolve,reject) => {
+        Room.updateOne({ "name":condObj.roomName},
+            {
+                $pull: { users: { userId: condObj.userId} }
+            },
+            { multi: true }).then(updateRoomDetails=> {
+            return resolve(updateRoomDetails);
+        }).catch(err => {
+            return reject(err);
+        })
+    })
+}
 module.exports =room;
