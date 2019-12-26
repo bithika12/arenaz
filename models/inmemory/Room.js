@@ -38,7 +38,7 @@
              , function (err, result) {
                  if (result) {
                      userArr = result.users;
-                     let  findIndexOppo = userArr.findIndex(elemt => (elemt.turn >3 /*roomDetails.dealStartDirection*/));
+                     let  findIndexOppo = userArr.findIndex(elemt => (elemt.turn >=3&& elemt.userId!= reqObj.userId/*roomDetails.dealStartDirection*/));
                      if(findIndexOppo!=-1)
                          userArr[findIndexOppo].turn=0;
                      userArr.findIndex(function (elemt) {
