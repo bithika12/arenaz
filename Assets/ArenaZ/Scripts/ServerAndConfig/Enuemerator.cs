@@ -13,5 +13,6 @@ public enum SocketListenEvents
     colorGet,
     userJoin,
     gameStart,
-    nextTurn
+    nextTurn,
+    gameThrow
 }

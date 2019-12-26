@@ -1,6 +1,8 @@
 ﻿
 public enum Page
 {
+    UIPanel,
+    GameplayPanel,
     CharacterSelectionPanel,
     AccountAccessDetailsPanel,
     AccountAccesOverlay,
@@ -119,6 +121,15 @@ public static class User
     public static string UserAccessToken;
     public static string userRace;
     public static string userColor = "Red";
+    public static string RoomName;
+}
+
+public static class Opponent
+{
+    public static string opponentName;
+    public static string opponentId;
+    public static string opponentRace;
+    public static string opponentColor;
 }
 
 public static class ConstantInteger

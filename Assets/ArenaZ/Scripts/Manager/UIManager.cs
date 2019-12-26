@@ -68,6 +68,7 @@ namespace ArenaZ.Manager
 
         private void StartAnimations()
         {
+            ScreenShow(Page.UIPanel.ToString(), Hide.none);
             ScreenShow(Page.TopAndBottomBarPanel.ToString(), Hide.none);
             ScreenShow(Page.AccountAccesOverlay.ToString(), Hide.none);
         }

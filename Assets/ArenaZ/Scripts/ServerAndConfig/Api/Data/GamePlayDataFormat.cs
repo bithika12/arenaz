@@ -5,8 +5,7 @@ namespace RedApple.Api.Data
     public struct GamePlayDataFormat<T>
     {
         public int status;
-        [JsonProperty("message")]
-        public string Message { get; set; }
+        public string message;
         [JsonProperty("result")]
         public Result<T> result;
     }

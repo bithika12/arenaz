@@ -23,7 +23,7 @@ public class PlayerMatch : Singleton<PlayerMatch>
     private void Start()
     {
         UIManager.Instance.setUserName += SetUserName;
-        UIManager.Instance.showProfilePic += SetEnemyProfileImage;
+        UIManager.Instance.showProfilePic += SetOpponentProfileImage;
     }
 
     public void SetUserProfileImage(string imageName)
@@ -36,24 +36,25 @@ public class PlayerMatch : Singleton<PlayerMatch>
         this.userName.text = userName;
     }
 
-    public void SetEnemyProfileImage(string imageName)
+    public void SetOpponentProfileImage(string imageName)
     {
         enemyProfileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Medium);
     }
 
-    public void SetEnemyName(string enemyName)
+    public void SetOpponentName(string OpponentName)
     {
-        this.enemyName.text = enemyName;
+        this.enemyName.text = OpponentName;
     }
 
-    public void LoadScene()
+    public void LoadGameplay()
     {
-        StartCoroutine(LoadSceneAfterAnimation());
+        StartCoroutine(LoadGameplayAfterAnim());
     }
 
-    private IEnumerator LoadSceneAfterAnimation()
+    private IEnumerator LoadGameplayAfterAnim()
     {
-        yield return new WaitForSeconds(animClip.length);
-        SceneManagement.Instance.LoadScene(SceneType.Gameplay.ToString());
+        yield return new WaitForSeconds(animClip.length+1f);
+        UIManager.Instance.HideScreenImmediately(Page.UIPanel.ToString());
+        UIManager.Instance.ScreenShowNormal(Page.GameplayPanel.ToString());
     }
 }

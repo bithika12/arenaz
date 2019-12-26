@@ -76,24 +76,23 @@ namespace ArenaZ.GameMode
             {
                 if (User.userId != users[i].UserId)
                 {
-                    PlayerMatch.Instance.SetEnemyName(users[i].UserName);
-                    PlayerMatch.Instance.SetEnemyProfileImage(users[i].RaceName);
+                    Opponent.opponentName = users[i].UserName;
+                    Opponent.opponentId = users[i].UserId;
+                    Opponent.opponentRace = users[i].RaceName;
+                    Opponent.opponentColor = users[i].ColorName;
+                    PlayerMatch.Instance.SetOpponentName(users[i].UserName);
+                    PlayerMatch.Instance.SetOpponentProfileImage(users[i].RaceName);
                     UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
                 }
-                else
-                {
-                    Debug.Log("UserIdMatched");
-                }
             }
-            PlayerMatch.Instance.LoadScene();
+            PlayerMatch.Instance.LoadGameplay();
         }
 
         private void OnUserJoin(string data)
         {
-            Debug.Log($"Game Start : {data}");
+            Debug.Log($"User Join : {data}");
             var userJoinData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
-            UserJoin[] users = userJoinData.result.Users;
-            Debug.Log("UserId: " + userJoinData.result.Users[0].UserId);
+            User.RoomName = userJoinData.result.RoomName;
         }
 
         public void SetProfileImage(string imageName)
