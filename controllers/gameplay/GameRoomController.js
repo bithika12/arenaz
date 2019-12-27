@@ -189,7 +189,7 @@ io.on('connection', function(socket){
 						dartPoint: roomObj.dartPoint
 					}, "Dart thrown"));*/
 					io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
-					resolve(true);
+					resolve(roomObj);
 					// logger.print("nextBidTurn    : ",roomDetails.userType);
 					/*if(roomDetails.userType === "ai" ){
                         setTimeout(() => {  AIbidding(roomDetails.userId,roomObj.roomName,roomDetails.direction) },1500)
@@ -406,9 +406,9 @@ io.on('connection', function(socket){
 			})
 
 			.then(res => {
-				//return nextUserTurnDart(res)
-				return userNextStartDart(res
-				);
+				return nextUserTurnDart(res)
+				/*return userNextStartDart(res
+				);*/
 			})
 			.then(resp=>{
 				//logger.print(" throw dart done",req);
