@@ -575,7 +575,7 @@ io.on('connection', function(socket){
 					if (result){
 
 						if(allOnlineUsers.length == 1){
-							winnerDeclare(userRoomName,allOnlineUsers[0]);
+							//winnerDeclare(userRoomName,allOnlineUsers[0]);
 							io.to(userRoomName).emit('player_leave',response.generate( constants.SUCCESS_STATUS,{user_id:allOnlineUsers[findIndex].id},"user has been disconnected!!"));
 
 						}
