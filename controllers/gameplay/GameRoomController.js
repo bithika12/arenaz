@@ -26,7 +26,30 @@ let waitingDartInterval =[];
 })*/
 
 
-io.on('connection', function(socket){  
+io.on('connection', function(socket){
+
+
+	function waitingForUser1(reqobj){
+		return function (callback) {
+			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
+				callback(null, roomDetails);
+		     }).catch(err=>{
+	       callback("err", null);
+             })
+
+		}
+	}
+
+	function waitingForUser2(reqobj){
+		return function (callback) {
+			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
+				callback(null, roomDetails);
+			}).catch(err=>{
+				callback("err", null);
+			})
+
+		}
+	}
 
     //GAME START
 	function waitingForUser(reqobj){
@@ -156,16 +179,26 @@ io.on('connection', function(socket){
 
 	function nextUserTurnDart(roomObj)
 	{
-		inmRoom.findNextUserDart({roomName : roomObj.roomName}).then(function(roomDetails){
-			if(roomDetails){
-				io.to(roomObj.roomName).emit('nextTurn',response.generate(constants.SUCCESS_STATUS,{ userId : roomDetails.userId},"Next User"));
-                //resolve(roomDetails);
-				// logger.print("nextBidTurn    : ",roomDetails.userType);
-				/*if(roomDetails.userType === "ai" ){
-					setTimeout(() => {  AIbidding(roomDetails.userId,roomObj.roomName,roomDetails.direction) },1500)
-				}*/
-			}
-		}).catch(err=>{ });
+		return new Promise((resolve, reject) => {
+			inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
+				if (roomDetails) {
+					/*io.to(roomObj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
+						userId: roomObj.userId,
+						roomName: roomObj.roomName,
+						remainingScore: roomObj.remainingScore,
+						dartPoint: roomObj.dartPoint
+					}, "Dart thrown"));*/
+					io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+					resolve(true);
+					// logger.print("nextBidTurn    : ",roomDetails.userType);
+					/*if(roomDetails.userType === "ai" ){
+                        setTimeout(() => {  AIbidding(roomDetails.userId,roomObj.roomName,roomDetails.direction) },1500)
+                    }*/
+				}
+			}).catch(err => {
+				reject(err);
+			});
+		});
 	}
 	/**
 	 * @desc This function is used for game request
@@ -364,6 +397,7 @@ io.on('connection', function(socket){
 	 */
 	socket.on('throwDart', function (req) {
 		req.socketId = socket.id;
+
 		//logger.print(" throw dart ",req);
 		inmRoom.throwDartDetails(req)
 			.then(roomStatusUpdate => {
@@ -372,10 +406,12 @@ io.on('connection', function(socket){
 			})
 
 			.then(res => {
-				return userNextStartDart(res
-				);
+				return nextUserTurnDart(res)
+				/*return userNextStartDart(res
+				)*/;
 			})
 			.then(resp=>{
+				//logger.print(" throw dart done",req);
 				return io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : resp.userId,roomName:resp.roomName,remainingScore:resp.remainingScore,dartPoint:resp.dartPoint},"Dart thrown"));
 			})
 			.catch(err=>{
@@ -468,50 +504,31 @@ io.on('connection', function(socket){
 				});
 		}
 	})
+
+	/**
+	 * @desc winner declare
+	 * @param {String}roomName
+	 * @param {array} user
+	 */
+
+	//WINNER DECLARE
+	function winnerDeclare(room_name,users){
+		User.updatePointDetails({_id: users.userId/*,type : users.type*/},{
+			//point: ((gameConfig.USERKILLPOINT *users.totalUserKill) +  gameConfig.WINNING_POINT),
+			total_no_win:  1 ,
+			//total_kill  : users.totalUserKill
+		}).then(function(updateWinningDetails){
+			//users.rank = users.totalUserKill
+			io.to(room_name).emit('winnerDeclare',response.generate(constants.SUCCESS_STATUS,users,"Game winner!!"));
+		})
+	}
 	/**
 	 * @desc This function is used for while user disconnected
 	 * @param {String} accesstoken
 	 */
+
+
 	socket.on('disconnect1', function(req){
-		let currentSocketId = socket.id;
-		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socketId == currentSocketId });
-		if(findIndex != -1){
-			userRoomName  =allOnlineUsers[findIndex].roomName;
-			if(userRoomName != ''){
-				io.to(userRoomName).emit('playerLeave',response.generate(constants.SUCCESS_STATUS,{ userId : allOnlineUsers[findIndex].userId},"Player leave from room"));
-
-
-				inmRoom.userLeave({roomName:userRoomName ,userId : allOnlineUsers[findIndex].userId})
-					.then(updateDetails => {
-						return inmRoom.updateInmemoryRoomLeaveDisconnect(userRoomName,updateDetails
-						);
-					})
-					.then(roomUpdate => {
-						//allOnlineUsers.splice(findIndex, 1);
-						return room.updateRoomLeaveDisconnect(userRoomName,roomUpdate
-						);
-					})
-					.then(resp=>{
-						logger.print("Room closed");
-						allOnlineUsers.splice(findIndex, 1);
-						io.sockets.to(socket.id).emit('disconnect',response.generate( constants.SUCCESS_STATUS,{},"Disconnected!"));
-					})
-					.catch(err=>{
-						logger.print("***GAME ERROR ");
-						io.sockets.to(socket.id).emit('GameError',response.generate( constants.ERROR_STATUS,{"err":err},"Something went wrong!"));
-					});
-
-			}
-		}
-		else{
-			logger.print("***NO USER ONLINE ");
-			io.sockets.to(socket.id).emit('Disconnect',response.generate( constants.ERROR_STATUS,{},"No user found!"));
-		}
-
-	});
-
-
-	socket.on('disconnect', function(req){
 		let currentSocketId = socket.id;
 		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socketId == currentSocketId });
 		if(findIndex != -1){
@@ -526,10 +543,59 @@ io.on('connection', function(socket){
 				],function (err, result) {
 					allOnlineUsers.splice(findIndex, 1);
 					if (result){
-						logger.print("Room closed");
+
+						if(allOnlineUsers.length == 1){
+							winnerDeclare(userRoomName,allOnlineUsers[0]);
+							io.to(userRoomName).emit('player_leave',response.generate( constants.SUCCESS_STATUS,{user_id:allOnlineUsers[findIndex].id},"user has been disconnected!!"));
+
+						}
+						else{
+							io.to(userRoomName).emit('player_leave',response.generate( constants.SUCCESS_STATUS,{user_id:allOnlineUsers[findIndex].id},"user has been disconnected!!"));
+						}
+
 					}else
-						logger.print("***GAME ERROR ");
+						logger.print("***DISCONNECT ERROR ", err);
+					    io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,err));
 				});
+			}
+		}
+	});
+
+	socket.on('disconnect', function(req){
+		let currentSocketId = socket.id;
+		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socket_id == currentSocketId });
+		if(findIndex != -1){
+			userRoomName  =allOnlineUsers[findIndex].room_name;
+			if(userRoomName != ''){
+				let currentRoom  =  room[userRoomName]
+				roomPlayer._getPlayerDetails(currentRoom,allOnlineUsers[findIndex].id).then(function(playerDetails){
+					console.log(" disconnect playerDetails",playerDetails);
+					tree = roomPlayer._removeChild(currentRoom,allOnlineUsers[findIndex].id)
+					room[userRoomName] = currentRoom;
+					//SET LEADER AND WINNER DECLARE
+					roomPlayer._getPlayer(currentRoom,"USER").then(function(onlinePlayerList){
+						//LEADER CHANGE
+						if(onlinePlayerList.length >= 1 && currentRoom.leaderId == allOnlineUsers[findIndex].id){
+							room[userRoomName].leaderId = onlinePlayerList[0].user_id;
+							io.to(userRoomName).emit('leader_decide',response.generate( constants.SUCCESS_STATUS,{leaderId:onlinePlayerList[0].user_id},"laeder hasbeen changed !!"))
+						}
+
+						io.to(userRoomName).emit('player_leave',response.generate( constants.SUCCESS_STATUS,{user_id:allOnlineUsers[findIndex].id},"user has been disconnected!!"));
+						if(onlinePlayerList.length == 1){
+							winnerDeclare(userRoomName,tree.users[0]);
+						}
+						if(playerDetails.length > 0){
+							User.updatePointDetails({user_id: playerDetails[0].user_id,type : playerDetails[0].type},{
+								point: ((gameConfig.USERKILLPOINT *playerDetails[0].totalUserKill) + 0),
+								total_no_win:  1 ,
+								total_kill  : playerDetails[0].totalUserKill
+							}).then(function(updateWinningDetails){
+								console.log(" update winner details  ");
+							})
+						}
+					});
+
+				})
 			}
 		}
 	});

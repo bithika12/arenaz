@@ -417,6 +417,29 @@ User.resetPassword = function(condObj,updateObj){
      });
  }
 
+ /** USER UPDATE **/
+ User.updatePointDetails =function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         /*if(condObj.type =="AI"){
+             return resolve({});
+         }else{*/
+             var incrementDetails ={ point : updateObj.point}
+             if(updateObj.total_no_win)
+                 incrementDetails.total_no_win = updateObj.total_no_win
+
+             if(updateObj.total_kill)
+                 incrementDetails.total_kill = updateObj.total_kill
+             User.updateOne({ _id :condObj.user_id},{ $inc : incrementDetails }).then(responses=> {
+
+                 return resolve(responses);
+             }).catch(err => {
+                 return reject(err);
+             });
+        // }
+
+     });
+ }
+
 
 module.exports= User;
 
