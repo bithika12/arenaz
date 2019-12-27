@@ -83,7 +83,7 @@ io.on('connection', function(socket){
 				//logger.print("Room closed");
 				logger.print(" throw dart done",req);
 				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,remainingScore:result.remainingScore,dartPoint:result.dartPoint},"Dart thrown"));
-				 //io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ result}));
+				 //io.to(req.roomName).emit('gameThrow',{});
 			}else
 				logger.print("***GAME ERROR ",err);
 		});
@@ -542,16 +542,16 @@ io.on('connection', function(socket){
 	 */
 
 	//WINNER DECLARE
-	function winnerDeclare(room_name,users){
-		User.updatePointDetails({_id: users.userId/*,type : users.type*/},{
-			//point: ((gameConfig.USERKILLPOINT *users.totalUserKill) +  gameConfig.WINNING_POINT),
+	/*function winnerDeclare(room_name,users){
+		User.updatePointDetails({_id: users.userId},{
+
 			total_no_win:  1 ,
-			//total_kill  : users.totalUserKill
+
 		}).then(function(updateWinningDetails){
 			//users.rank = users.totalUserKill
 			io.to(room_name).emit('winnerDeclare',response.generate(constants.SUCCESS_STATUS,users,"Game winner!!"));
 		})
-	}
+	}*/
 	/**
 	 * @desc This function is used for while user disconnected
 	 * @param {String} accesstoken

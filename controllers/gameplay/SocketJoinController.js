@@ -20,7 +20,10 @@ io.on('connection', function(socket){
 
 	//Socket Midileware
 
-	socket.use((packet, next) => { 
+
+	socket.use((packet, next) => {
+
+		logger.print(" ******** packet :",packet)
     	user.checkUserTokenMod({accessToken: packet[1].accessToken}).then((userDetails)=>{
     	    if (userDetails) {
             	packet[1].userId = userDetails._id+"";
