@@ -32,17 +32,17 @@ io.on('connection', function(socket){
 	function waitingForUser1(reqobj){
 		return function (callback) {
 			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
-				callback(null, roomDetails);
+				callback(null,roomDetails);
 		     }).catch(err=>{
-	       callback("err", null);
+	          callback("err", null);
              })
 
 		}
 	}
 
-	function waitingForUser2(reqobj){
+	function waitingForUser21(reqobj){
 		return function (callback) {
-			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
+			inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
 				callback(null, roomDetails);
 			}).catch(err=>{
 				callback("err", null);
@@ -50,6 +50,66 @@ io.on('connection', function(socket){
 
 		}
 	}
+
+
+	function waitingForUser2(reqobj,callback){
+		//room.updateRoomDetails({roomName:reqobj.roomName},{status:"open"}).then(function(roomStatusUpdate){
+		inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
+			callback(null, roomDetails);
+		}).catch(err=>{
+			callback("err", null);
+		})
+		//});
+	}
+
+
+	/**
+	 * @desc This function is used for throw dart
+	 * @param {String} accesstoken
+	 * @param {String} roomName
+	 * @param {String} score
+	 */
+	socket.on('throwDart', function (req) {
+		req.socketId = socket.id;
+
+		async.waterfall([
+			waitingForUser1(req),
+			waitingForUser2,
+			//roomClosed,
+			userNextStartDart
+		],function (err, result) {
+			if (result){
+				//allOnlineUsers.splice(findIndex, 1);
+				//logger.print("Room closed");
+				logger.print(" throw dart done",req);
+				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,remainingScore:result.remainingScore,dartPoint:result.dartPoint},"Dart thrown"));
+				 //io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ result}));
+			}else
+				logger.print("***GAME ERROR ",err);
+		});
+
+
+		/*inmRoom.throwDartDetails(req)
+			.then(roomStatusUpdate => {
+				return inmRoom.updateInmemoryRoom(req,roomStatusUpdate
+				);
+			})
+
+			.then(res => {
+				return nextUserTurnDart(res)
+				return userNextStartDart(res
+				);
+			})
+			.then(resp=>{
+				logger.print(" throw dart done",req);
+				return io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : resp.userId,roomName:resp.roomName,remainingScore:resp.remainingScore,dartPoint:resp.dartPoint},"Dart thrown"));
+			})
+			.catch(err=>{
+				console.log('dart error' + err);
+				io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"Something went wrong!"));
+			});*/
+
+	});
 
     //GAME START
 	function waitingForUser(reqobj){
@@ -164,10 +224,10 @@ io.on('connection', function(socket){
 		callback(null, reqobj);
 	}
 
-	userNextStartDart  = function(reqobj){
+	function userNextStartDart(reqobj,callback){
 		return new Promise((resolve,reject)=>{
 			waitingDartInterval[reqobj.roomName] = setTimeout(() => { nextUserTurnDart(reqobj, 0) }, 1000);
-			resolve(reqobj);
+			callback(null, reqobj);
 		})
 	}
 
@@ -179,7 +239,7 @@ io.on('connection', function(socket){
 
 	function nextUserTurnDart(roomObj)
 	{
-		return new Promise((resolve, reject) => {
+		//return new Promise((resolve, reject) => {
 			inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
 				if (roomDetails) {
 					/*io.to(roomObj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
@@ -189,16 +249,16 @@ io.on('connection', function(socket){
 						dartPoint: roomObj.dartPoint
 					}, "Dart thrown"));*/
 					io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
-					resolve(roomObj);
+					//resolve(roomObj);
 					// logger.print("nextBidTurn    : ",roomDetails.userType);
 					/*if(roomDetails.userType === "ai" ){
                         setTimeout(() => {  AIbidding(roomDetails.userId,roomObj.roomName,roomDetails.direction) },1500)
                     }*/
 				}
 			}).catch(err => {
-				reject(err);
+				//reject(err);
 			});
-		});
+		//});
 	}
 	/**
 	 * @desc This function is used for game request
@@ -389,37 +449,7 @@ io.on('connection', function(socket){
 			callback(null,req)
 		});
 	}
-	/**
-	 * @desc This function is used for throw dart
-	 * @param {String} accesstoken
-	 * @param {String} roomName
-	 * @param {String} score
-	 */
-	socket.on('throwDart', function (req) {
-		req.socketId = socket.id;
 
-		//logger.print(" throw dart ",req);
-		inmRoom.throwDartDetails(req)
-			.then(roomStatusUpdate => {
-				return inmRoom.updateInmemoryRoom(req,roomStatusUpdate
-				);
-			})
-
-			.then(res => {
-				return nextUserTurnDart(res)
-				/*return userNextStartDart(res
-				);*/
-			})
-			.then(resp=>{
-				//logger.print(" throw dart done",req);
-				return io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : resp.userId,roomName:resp.roomName,remainingScore:resp.remainingScore,dartPoint:resp.dartPoint},"Dart thrown"));
-			})
-			.catch(err=>{
-				console.log(err);
-				io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"Something went wrong!"));
-			});
-
-	});
     ///process throw dart request//////////////
 	function processRequest(reqobj,callback) {
 		inmRoom.throwDartDetails(reqobj).then(function(roomStatusUpdate){

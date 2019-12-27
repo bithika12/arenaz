@@ -76,7 +76,7 @@
                           userArr[findIndex].status="active";
                           //userArr[findIndex].userTurn=userTurnGame;
 
-                          resolve({users: reqObj.userId,remainingScore:calculatedScore,finalArr:userArr,userTurn:userTurn,dartPoint:dartPnt});
+                          resolve({roomName:reqObj.roomName,users: reqObj.userId,remainingScore:calculatedScore,finalArr:userArr,userTurn:userTurn,dartPoint:dartPnt});
 
                          /*userArr.findIndex(function (elemt) {
 
@@ -471,6 +471,30 @@ room.findNextUser = function(condObj){
                      if(updateroomresult >0)
                      //resolve({roomName : userObj.roomName,userArr:updateArr})
                      resolve({roomName : userObj.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint})
+                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
+                     else
+                         reject({message:"Unable to update memory room"});
+                     //resolve({users: reqObj.userId,remainingScore:calculatedScore})
+                 }
+
+             });
+
+     })
+ }
+
+ room.updateInmemoryRoomMod  = function(updateArr){
+     return new Promise((resolve,reject)=>{
+
+         room.update({roomName : updateArr.roomName},{ $set: { users: updateArr.finalArr }},
+
+             //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},
+             function (err, updateroomresult) {
+                 if (err)
+                     reject({message:"Error:Database connection error"})
+                 else {
+                     if(updateroomresult >0)
+                         //resolve({roomName : userObj.roomName,userArr:updateArr})
+                         resolve({roomName : updateArr.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint})
                      //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                      else
                          reject({message:"Unable to update memory room"});
