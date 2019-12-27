@@ -406,9 +406,9 @@ io.on('connection', function(socket){
 			})
 
 			.then(res => {
-				return nextUserTurnDart(res)
-				/*return userNextStartDart(res
-				)*/;
+				//return nextUserTurnDart(res)
+				return userNextStartDart(res
+				);
 			})
 			.then(resp=>{
 				//logger.print(" throw dart done",req);
