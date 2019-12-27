@@ -443,8 +443,10 @@ room.findNextUser = function(condObj){
                  //resolve({ userId  : users[findIndex].userId});
                  if(findIndex==-1){
                      let  findIndex1 = users.findIndex(elemt => elemt.turn < 1 /*roomDetails.dealStartDirection*/);
+                     if(findIndex1!=-1)
                      resolve({ userId  : users[findIndex1].userId});
-                     //reject({message:"User not found"});
+                     else
+                     reject({message:"User not found"});
                  }
                  else{
                      resolve({ userId  : users[findIndex].userId});
