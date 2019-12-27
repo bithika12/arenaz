@@ -558,7 +558,7 @@ io.on('connection', function(socket){
 	 */
 
 
-	socket.on('disconnect1', function(req){
+	socket.on('disconnect', function(req){
 		let currentSocketId = socket.id;
 		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socketId == currentSocketId });
 		if(findIndex != -1){
@@ -591,7 +591,7 @@ io.on('connection', function(socket){
 		}
 	});
 
-	socket.on('disconnect', function(req){
+	socket.on('disconnect12', function(req){
 		let currentSocketId = socket.id;
 		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socket_id == currentSocketId });
 		if(findIndex != -1){
