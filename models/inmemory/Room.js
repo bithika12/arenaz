@@ -501,7 +501,7 @@ room.findNextUser = function(condObj){
                  else {
                      if(updateroomresult >0)
                          //resolve({roomName : userObj.roomName,userArr:updateArr})
-                         resolve({roomName : updateArr.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint,playStatus:updateArr.playStatus,isWin:updateArr.isWin})
+                         resolve({roomName : updateArr.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint,playStatus:updateArr.playStatus,isWin:updateArr.isWin,roomUsers:updateArr.finalArr})
                      //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                      else
                          reject({message:"Unable to update memory room"});

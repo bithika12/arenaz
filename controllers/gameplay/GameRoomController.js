@@ -49,6 +49,24 @@ io.on('connection', function(socket){
 
 	}
 
+	function gameOverProcess(reqobj,callback){
+		return new Promise((resolve,reject)=> {
+			if (reqobj.isWin) {
+				room.updateRoomGameOver({roomName: reqobj.roomName}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
+					io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+						userId: reqobj.userId,
+						roomName: reqobj.roomName
+					}, "Game is over"));
+					callback(null, reqobj);
+				}).catch(err => {
+					logger.print("***Room update error ", err);
+				})
+			} else{
+				callback(null, reqobj);
+		     }
+		})
+	}
+
 
 	/**
 	 * @desc This function is used for throw dart
@@ -63,6 +81,7 @@ io.on('connection', function(socket){
 			dartProcess(req),
 			updateRoom,
 			//roomClosed,
+			gameOverProcess,
 			userNextStartDart,
 
 		],function (err, result) {
@@ -70,12 +89,14 @@ io.on('connection', function(socket){
 				//allOnlineUsers.splice(findIndex, 1);
 				//logger.print("Room closed");
 				logger.print(" throw dart done",req);
-				if(result.isWin==1) {
+				/*if(result.isWin==1) {
+					//update room details from nedb//
+
 					io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
 						userId: result.userId,
 						roomName: result.roomName
 					}, "Game is over"));
-				}
+				}*/
 				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,
 					remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus},"Dart thrown"));
 			}else

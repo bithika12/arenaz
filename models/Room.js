@@ -223,8 +223,7 @@ room.playerLeaveOld = function(condObj,updateObj){
     return new Promise((resolve,reject) => {
         Room.updateOne(
             {
-                "name":condObj.roomName,
-                "users.userId": condObj.userId
+                "name":condObj.roomName
             },
             updateObj
             /*{
@@ -308,4 +307,32 @@ room.playerLeave = function(condObj){
         })
     })
 }
+
+room.updateRoomGameOver = function(condObj,updateObj){
+    return new Promise((resolve,reject) => {
+
+        Room.updateOne({name : condObj.roomName},{ $set: { status:"closed",users: updateObj.userObj }},
+       // Room.updateOne({roomName : condObj.roomName},{ $set: { users: updateObj.userObj }},
+
+            //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},
+            function (err, updateroomresult) {
+
+                if (err)
+                    reject({message:"Error:Database connection error"})
+                else {
+                    if(updateroomresult.nModified >0)
+                        //resolve({roomName : userObj.roomName,userArr:updateArr})
+                        resolve(true)
+                    //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
+                    else
+                        reject({message:"Unable to update memory room"});
+                    //resolve({users: reqObj.userId,remainingScore:calculatedScore})
+                }
+
+            });
+    })
+}
+
+
+
 module.exports =room;
