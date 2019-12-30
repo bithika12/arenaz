@@ -34,6 +34,7 @@
          let userTurnOppnt;
          let userTurnGame;
          boardScore = reqObj.score;
+         let playStatus='';
          room.findOne({roomName   : reqObj.roomName}
              , function (err, result) {
                  if (result) {
@@ -61,12 +62,17 @@
                        * or some other number bigger
                        * It is a bust and turn changes
                       */
-                     /* if (reqObj.score == 1 || reqObj.score < 0 || reqObj.score >remainingScore) {
-                          reject({message:"It is bust"});
-                     }*/
+                      if (reqObj.score == 1 || reqObj.score < 0 || calculatedScore < 0) {
+                          //reject({message:"It is bust"});
+                          userTurn = 3;
+                          playStatus='bust';
+
+                     }
+                      if(calculatedScore==0){
+                          isWin=1;
+                      }
                     // else {
                           let  findIndex = userArr.findIndex(elemt => elemt.userId ===  reqObj.userId);
-
                           userArr[findIndex].score=reqObj.score;
                           userArr[findIndex].total=calculatedScore;
                           userArr[findIndex].turn=userTurn;
@@ -76,7 +82,8 @@
                           userArr[findIndex].status="active";
                           //userArr[findIndex].userTurn=userTurnGame;
 
-                          resolve({roomName:reqObj.roomName,users: reqObj.userId,remainingScore:calculatedScore,finalArr:userArr,userTurn:userTurn,dartPoint:dartPnt});
+                          resolve({roomName:reqObj.roomName,users: reqObj.userId,remainingScore:calculatedScore,
+                              finalArr:userArr,userTurn:userTurn,dartPoint:dartPnt,playStatus:playStatus,isWin:isWin});
 
                          /*userArr.findIndex(function (elemt) {
 
@@ -494,7 +501,7 @@ room.findNextUser = function(condObj){
                  else {
                      if(updateroomresult >0)
                          //resolve({roomName : userObj.roomName,userArr:updateArr})
-                         resolve({roomName : updateArr.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint})
+                         resolve({roomName : updateArr.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint,playStatus:updateArr.playStatus,isWin:updateArr.isWin})
                      //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                      else
                          reject({message:"Unable to update memory room"});

@@ -29,7 +29,7 @@ let waitingDartInterval =[];
 io.on('connection', function(socket){
 
 
-	function waitingForUser1(reqobj){
+	function dartProcess(reqobj){
 		return function (callback) {
 			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
 				callback(null,roomDetails);
@@ -40,26 +40,13 @@ io.on('connection', function(socket){
 		}
 	}
 
-	function waitingForUser21(reqobj){
-		return function (callback) {
-			inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
-				callback(null, roomDetails);
-			}).catch(err=>{
-				callback("err", null);
-			})
-
-		}
-	}
-
-
-	function waitingForUser2(reqobj,callback){
-		//room.updateRoomDetails({roomName:reqobj.roomName},{status:"open"}).then(function(roomStatusUpdate){
+	function updateRoom(reqobj,callback){
 		inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
 			callback(null, roomDetails);
 		}).catch(err=>{
 			callback("err", null);
 		})
-		//});
+
 	}
 
 
@@ -73,8 +60,8 @@ io.on('connection', function(socket){
 		req.socketId = socket.id;
 
 		async.waterfall([
-			waitingForUser1(req),
-			waitingForUser2,
+			dartProcess(req),
+			updateRoom,
 			//roomClosed,
 			userNextStartDart
 		],function (err, result) {
@@ -82,8 +69,8 @@ io.on('connection', function(socket){
 				//allOnlineUsers.splice(findIndex, 1);
 				//logger.print("Room closed");
 				logger.print(" throw dart done",req);
-				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,remainingScore:result.remainingScore,dartPoint:result.dartPoint},"Dart thrown"));
-				 //io.to(req.roomName).emit('gameThrow',{});
+				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,
+					remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus,isWin:result.isWin},"Dart thrown"));
 			}else
 				logger.print("***GAME ERROR ",err);
 		});
@@ -134,22 +121,10 @@ io.on('connection', function(socket){
 				inmRoom.getRoomDetails({roomName:roomStatusUpdate},{status:"closed"}).then(function(roomDetails){
 					var gameUserList = (!roomDetails)?[]:roomDetails.users ;
 					if(gameUserList.length == 1){
-						//if(gameUserList.length > 1){
-						//io.sockets.to(socket.id).emit('gameStart',"game start");
-						//io.to(reqobj.roomName).emit('gameStart',"game start");
-						//io.to(reqobj.roomName).emit('gameStart',response.generate(constants.SUCCESS_STATUS,{ },"game start"));
-						/*io.sockets.clients(reqobj.roomName).forEach(function(s){
-                            s.leave(someRoom);
-                        });*/
 						callback(null, reqobj);
 					}
 					else if(gameUserList.length ==2){
 						room.updateRoomDetails({roomName:reqobj.roomName},{status:"closed"}).then(function(roomStatusUpdate) {
-							//io.sockets.to(socket.id).emit('gameStart', response.generate(constants.SUCCESS_STATUS, {}, "game start"));
-							//io.to(reqobj.roomName).emit('gameStart', response.generate(constants.SUCCESS_STATUS, {}, "game start"));
-							/*io.sockets.clients(reqobj.roomName).forEach(function(s){
-                                s.leave(someRoom);
-                            });*/
 							callback(null, reqobj);
 						});
 					}
@@ -166,24 +141,13 @@ io.on('connection', function(socket){
 		}
 	}
 	function gameStart(reqobj,callback){
-		//room.updateRoomDetails({roomName:reqobj.roomName},{status:"open"}).then(function(roomStatusUpdate){
 			inmRoom.getRoomDetails({roomName:reqobj.roomName},{status:"closed"}).then(function(roomDetails){
 				var gameUserList = (!roomDetails)?[]:roomDetails.users ;
 				if(gameUserList.length == 1){
-				//if(gameUserList.length > 1){
-					//io.to(reqobj.roomName).emit('gameStart',"game start");
-					//io.to(reqobj.roomName).emit('gameStart',response.generate(constants.SUCCESS_STATUS,{ },"game start"));
-					/*io.sockets.clients(reqobj.roomName).forEach(function(s){
-						s.leave(someRoom);
-					});*/
 					callback(null, reqobj);
 				}
 				else if(gameUserList.length ==2){
 					room.updateRoomDetails({roomName:reqobj.roomName},{status:"closed"}).then(function(roomStatusUpdate) {
-						//io.to(reqobj.roomName).emit('gameStart', response.generate(constants.SUCCESS_STATUS, {}, "game start"));
-						/*io.sockets.clients(reqobj.roomName).forEach(function(s){
-                            s.leave(someRoom);
-                        });*/
 						callback(null, reqobj);
 					});
 				}
@@ -196,7 +160,7 @@ io.on('connection', function(socket){
 			}).catch(err=>{
 				callback("err", null);
 			})
-		//});
+
 	}
 
 	/**
@@ -210,11 +174,6 @@ io.on('connection', function(socket){
 		inmRoom.findNextUser({roomName : roomObj.roomName}).then(function(roomDetails){
 			if(roomDetails){
 				io.to(roomObj.roomName).emit('nextTurn',response.generate(constants.SUCCESS_STATUS,{ userId : roomDetails.userId},"Next User"));
-
-				// logger.print("nextBidTurn    : ",roomDetails.userType);
-				/*if(roomDetails.userType === "ai" ){
-					setTimeout(() => {  AIbidding(roomDetails.userId,roomObj.roomName,roomDetails.direction) },1500)
-				}*/
 			}
 		}).catch(err=>{ });
 	}
@@ -231,34 +190,15 @@ io.on('connection', function(socket){
 		})
 	}
 
-
-	/*function userNextStartDart(reqobj){
-		waitingDartInterval[reqobj.roomName] = setTimeout(() => { nextUserTurnDart(reqobj, 0) }, 1000);
-		resolve(true);
-	}*/
-
 	function nextUserTurnDart(roomObj)
 	{
-		//return new Promise((resolve, reject) => {
 			inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
 				if (roomDetails) {
-					/*io.to(roomObj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
-						userId: roomObj.userId,
-						roomName: roomObj.roomName,
-						remainingScore: roomObj.remainingScore,
-						dartPoint: roomObj.dartPoint
-					}, "Dart thrown"));*/
 					io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
-					//resolve(roomObj);
-					// logger.print("nextBidTurn    : ",roomDetails.userType);
-					/*if(roomDetails.userType === "ai" ){
-                        setTimeout(() => {  AIbidding(roomDetails.userId,roomObj.roomName,roomDetails.direction) },1500)
-                    }*/
 				}
 			}).catch(err => {
 				//reject(err);
 			});
-		//});
 	}
 	/**
 	 * @desc This function is used for game request
@@ -313,16 +253,11 @@ io.on('connection', function(socket){
 										callback();
 										async.waterfall([
 											waitingForUser({roomName:roomName}),
-											gameStart,
-											//userNextStart
+											gameStart
 										],function (err, result) {
 											if (result){
 												logger.print("***Done  ", result);
-												//io.sockets.to(roomName).emit('userJoin',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,userName :req.userName,userId:req.userId,colorName:req.colorName,raceName:req.raceName },"User enter in a room !"));
-
-												//io.sockets.to(roomName).emit('gameStart',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,userName :req.userName,userId:req.userId,colorName:req.colorName,raceName:req.raceName },"Game start !"));
 												//io.sockets.to(roomName).emit('gameStart',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,users :joineeDetails.users },"Game start !"));
-
 												io.sockets.to(socket.id).emit('userJoin',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,users :joineeDetails.users },"User enter in a room !"));
 											}else
 												logger.print("***GAME START ERROR ", err);
@@ -373,10 +308,7 @@ io.on('connection', function(socket){
 						callback();
 					}
 				}
-				/*else {
-					io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{message:"User not join"}));
-					callback();
-				}*/
+
 			}).catch(err=>{
 				io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,err));
 				callback();
@@ -447,33 +379,6 @@ io.on('connection', function(socket){
 	function memoryRoomRemove(req,callback){
 		inmRoom.removeRoom({roomName:req.roomName}).then(function(roomupdate){
 			callback(null,req)
-		});
-	}
-
-    ///process throw dart request//////////////
-	function processRequest(reqobj,callback) {
-		inmRoom.throwDartDetails(reqobj).then(function(roomStatusUpdate){
-
-			callback();
-			async.waterfall([
-				inmRoom.updateInmemoryRoom(reqobj,roomStatusUpdate)
-
-			],function (err, result) {
-				if (result){
-					logger.print("***Done  ", result);
-					io.to(reqobj.roomName).emit('dartThrow',response.generate(constants.SUCCESS_STATUS,{ },roomStatusUpdate));
-
-					//io.sockets.to(socket.id).emit('gameStart',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,users :joineeDetails.users },"Game start !"));
-				}else
-					logger.print("***GAME START ERROR ", err);
-				    io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,err));
-			});
-
-
-		}).catch(err=>{
-			io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,err));
-			callback();
-
 		});
 	}
 
@@ -587,45 +492,6 @@ io.on('connection', function(socket){
 						logger.print("***DISCONNECT ERROR ", err);
 					    io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,err));
 				});
-			}
-		}
-	});
-
-	socket.on('disconnect12', function(req){
-		let currentSocketId = socket.id;
-		var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.socket_id == currentSocketId });
-		if(findIndex != -1){
-			userRoomName  =allOnlineUsers[findIndex].room_name;
-			if(userRoomName != ''){
-				let currentRoom  =  room[userRoomName]
-				roomPlayer._getPlayerDetails(currentRoom,allOnlineUsers[findIndex].id).then(function(playerDetails){
-					console.log(" disconnect playerDetails",playerDetails);
-					tree = roomPlayer._removeChild(currentRoom,allOnlineUsers[findIndex].id)
-					room[userRoomName] = currentRoom;
-					//SET LEADER AND WINNER DECLARE
-					roomPlayer._getPlayer(currentRoom,"USER").then(function(onlinePlayerList){
-						//LEADER CHANGE
-						if(onlinePlayerList.length >= 1 && currentRoom.leaderId == allOnlineUsers[findIndex].id){
-							room[userRoomName].leaderId = onlinePlayerList[0].user_id;
-							io.to(userRoomName).emit('leader_decide',response.generate( constants.SUCCESS_STATUS,{leaderId:onlinePlayerList[0].user_id},"laeder hasbeen changed !!"))
-						}
-
-						io.to(userRoomName).emit('player_leave',response.generate( constants.SUCCESS_STATUS,{user_id:allOnlineUsers[findIndex].id},"user has been disconnected!!"));
-						if(onlinePlayerList.length == 1){
-							winnerDeclare(userRoomName,tree.users[0]);
-						}
-						if(playerDetails.length > 0){
-							User.updatePointDetails({user_id: playerDetails[0].user_id,type : playerDetails[0].type},{
-								point: ((gameConfig.USERKILLPOINT *playerDetails[0].totalUserKill) + 0),
-								total_no_win:  1 ,
-								total_kill  : playerDetails[0].totalUserKill
-							}).then(function(updateWinningDetails){
-								console.log(" update winner details  ");
-							})
-						}
-					});
-
-				})
 			}
 		}
 	});
