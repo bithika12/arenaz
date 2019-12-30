@@ -63,14 +63,21 @@ io.on('connection', function(socket){
 			dartProcess(req),
 			updateRoom,
 			//roomClosed,
-			userNextStartDart
+			userNextStartDart,
+
 		],function (err, result) {
 			if (result){
 				//allOnlineUsers.splice(findIndex, 1);
 				//logger.print("Room closed");
 				logger.print(" throw dart done",req);
+				if(result.isWin==1) {
+					io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+						userId: result.userId,
+						roomName: result.roomName
+					}, "Game is over"));
+				}
 				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,
-					remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus,isWin:result.isWin},"Dart thrown"));
+					remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus},"Dart thrown"));
 			}else
 				logger.print("***GAME ERROR ",err);
 		});

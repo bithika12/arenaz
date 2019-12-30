@@ -34,7 +34,7 @@
          let userTurnOppnt;
          let userTurnGame;
          boardScore = reqObj.score;
-         let playStatus='';
+         let playStatus=0;
          room.findOne({roomName   : reqObj.roomName}
              , function (err, result) {
                  if (result) {
@@ -65,7 +65,7 @@
                       if (reqObj.score == 1 || reqObj.score < 0 || calculatedScore < 0) {
                           //reject({message:"It is bust"});
                           userTurn = 3;
-                          playStatus='bust';
+                          playStatus=1;
 
                      }
                       if(calculatedScore==0){
