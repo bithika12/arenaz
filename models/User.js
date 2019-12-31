@@ -423,14 +423,10 @@ User.resetPassword = function(condObj,updateObj){
          /*if(condObj.type =="AI"){
              return resolve({});
          }else{*/
-             var incrementDetails ={ point : updateObj.point}
-             if(updateObj.total_no_win)
-                 incrementDetails.total_no_win = updateObj.total_no_win
-
-             if(updateObj.total_kill)
-                 incrementDetails.total_kill = updateObj.total_kill
-             User.updateOne({ _id :condObj.user_id},{ $inc : incrementDetails }).then(responses=> {
-
+             let incrementDetails ={ total_no_win : updateObj.total_no_win}
+            // if(updateObj.total_no_win)
+                // incrementDetails.total_no_win = updateObj.total_no_win
+             User.updateOne({ _id :condObj._id},{ $inc : incrementDetails }).then(responses=> {
                  return resolve(responses);
              }).catch(err => {
                  return reject(err);

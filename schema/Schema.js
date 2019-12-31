@@ -36,7 +36,8 @@ var userSchema =  new Schema({
                         raceName         :  [{ raceName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
                         loginType        :  {  type : String ,enum :["normal","social"],default :'normal'},
-                        status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'}, 
+                        status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
+                        total_no_win     :  Number,
                         isPlaying        :  {  type : String , enum: ['yes','no'] , default : 'no'},
                         socialLogin      :  [{ loginBy : String , uniqueLoginId : String }],
                         resetOtp         :  [{ otp : String     , token :String, status: {type:String , enum: ['active','inactive'] , default : 'inactive'},createdAt : Date,updatedAt:Date}],    

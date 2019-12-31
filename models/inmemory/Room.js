@@ -574,6 +574,25 @@ room.findNextUser = function(condObj){
  }
 
 
+ room.userLeaveMod=  function(condObj,updateObj){
+     console.log("***** leaveJoinee >> ",condObj);
+     return new Promise((resolve,reject) => {
+         room.update({ roomName : condObj.roomName, users  : { userId  : condObj.userId} },
+             {$set : {
+                     users       : { isWin  : 1},
+                 }
+             },
+             function (err,updateRoom) {
+                 if(err){
+                     reject({})
+                 }else{
+                     resolve(updateRoom)
+                 }
+             });
+     });
+ }
+
+
 
 
 
