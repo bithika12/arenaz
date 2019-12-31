@@ -38,8 +38,8 @@ room.createRoom = function(condObj){
                            "status":"open",
                            users : {userId : condObj.userId ,
                                      status: "active",
-                                      total:"333",
-                                       score:"333",
+                                      total:"100",
+                                       score:"100",
                                        isWin:0,
                                        turn:0,
                                        dartPoint:"",
@@ -59,7 +59,7 @@ room.createRoom = function(condObj){
                 Room.updateOne({ "_id":responses[0]._id},
                     {
                         $push: { users: { userId: condObj.userId ,
-                                status:"active",total:333,score:333,isWin:0,turn:0,
+                                status:"active",total:100,score:100,isWin:0,turn:0,
                                 userName:condObj.userName,colorName:condObj.colorName,raceName:condObj.raceName,total_no_win:0 } }
                     },
                     { multi: true }).then(updateRoomDetails=> {

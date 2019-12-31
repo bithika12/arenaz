@@ -268,7 +268,7 @@ io.on('connection', function(socket){
 						//find user already in room
 						room.createRoom({userId: req.userId, userName:req.userName,colorName:req.colorName,raceName:req.raceName}).then(function(result){
 							let roomName = result.roomName;
-							userObj ={userId : req.userId ,score:333,total:333,status:"active",isWin:0,turn:0,dartPoint:"",
+							userObj ={userId : req.userId ,score:100,total:100,status:"active",isWin:0,turn:0,dartPoint:"",
 								userName:req.userName,colorName:req.colorName,raceName:req.raceName,total_no_win:0};
 							inmRoom.roomJoineeCreation({roomId:result._id,roomName:result.roomName},{userObj : userObj}).then((joineeDetails)=>{
 								io.to(roomName).emit('enterUser',response.generate(constants.SUCCESS_STATUS,{ user : userObj},"Player enter to the room"));
