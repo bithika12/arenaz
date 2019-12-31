@@ -98,7 +98,7 @@ io.on('connection', function(socket){
 					}, "Game is over"));
 				}*/
 				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,
-					remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus},"Dart thrown"));
+					remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus,playerScore:result.playerScore},"Dart thrown"));
 			}else
 				logger.print("***GAME ERROR ",err);
 		});

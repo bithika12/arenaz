@@ -83,7 +83,7 @@
                           //userArr[findIndex].userTurn=userTurnGame;
 
                           resolve({roomName:reqObj.roomName,users: reqObj.userId,remainingScore:calculatedScore,
-                              finalArr:userArr,userTurn:userTurn,dartPoint:dartPnt,playStatus:playStatus,isWin:isWin});
+                              finalArr:userArr,userTurn:userTurn,dartPoint:dartPnt,playStatus:playStatus,isWin:isWin,playerScore:reqObj.score});
 
                          /*userArr.findIndex(function (elemt) {
 
@@ -501,7 +501,7 @@ room.findNextUser = function(condObj){
                  else {
                      if(updateroomresult >0)
                          //resolve({roomName : userObj.roomName,userArr:updateArr})
-                         resolve({roomName : updateArr.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint,playStatus:updateArr.playStatus,isWin:updateArr.isWin,roomUsers:updateArr.finalArr})
+                         resolve({roomName : updateArr.roomName,userId: updateArr.users,remainingScore:updateArr.remainingScore,dartPoint:updateArr.dartPoint,playStatus:updateArr.playStatus,isWin:updateArr.isWin,roomUsers:updateArr.finalArr,playerScore:updateArr.playerScore})
                      //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                      else
                          reject({message:"Unable to update memory room"});
