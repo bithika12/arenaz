@@ -32,7 +32,8 @@ io.on('connection', function(socket){
 	function dartProcess(reqobj){
 		return function (callback) {
 			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
-				callback(null,roomDetails);
+	console.log("roomdetails",roomDetails)
+			callback(null,roomDetails);
 		     }).catch(err=>{
 	          callback("err", null);
              })
@@ -42,6 +43,7 @@ io.on('connection', function(socket){
 
 	function updateRoom(reqobj,callback){
 		inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
+   console.log("roomdetails",roomDetails)
 			callback(null, roomDetails);
 		}).catch(err=>{
 			callback("err", null);
@@ -99,7 +101,9 @@ io.on('connection', function(socket){
 				}*/
 				io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : result.userId,roomName:result.roomName,
 					remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus,playerScore:result.playerScore},"Dart thrown"));
-			}else
+			console.log(" thrown score",{ userId : result.userId,roomName:result.roomName,
+                                        remainingScore:result.remainingScore,dartPoint:result.dartPoint,playStatus:result.playStatus,playerScore:result.playerScore})
+                          }else
 				logger.print("***GAME ERROR ",err);
 		});
 
