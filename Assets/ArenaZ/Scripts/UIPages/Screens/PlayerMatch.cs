@@ -23,7 +23,7 @@ public class PlayerMatch : Singleton<PlayerMatch>
     private void Start()
     {
         UIManager.Instance.setUserName += SetUserName;
-        UIManager.Instance.showProfilePic += SetOpponentProfileImage;
+        UIManager.Instance.showProfilePic += SetUserProfileImage;
     }
 
     public void SetUserProfileImage(string imageName)

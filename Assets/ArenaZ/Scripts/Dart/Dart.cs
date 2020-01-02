@@ -2,6 +2,7 @@
 using DG.Tweening;
 using System;
 using ArenaZ.Manager;
+using System.Collections;
 
 namespace ArenaZ.ShootingObject
 {
@@ -52,7 +53,7 @@ namespace ArenaZ.ShootingObject
             AddPointsToArray(endPosition);
             transform.DOPath(points, .6f, PathType.CatmullRom)
                      .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
-                     .OnComplete(() => GameManager.Instance.OnCompletionDartHit());
+                     .OnComplete(() => TasksAfterHit());
         } 
 
         private Vector3 CalculateQuadraticBeizerCurve(float time,Vector3 pointThree)
@@ -70,6 +71,20 @@ namespace ArenaZ.ShootingObject
         public void MoveInProjectilePathWithPhysics(Vector3 endPosition, float angle)
         {
             dartRB.velocity = BallisticVelocity(endPosition, angle);
+        }
+
+        public void TasksAfterHit()
+        {
+            Debug.Log("One");
+            GameManager.Instance.OnCompletionDartHit();
+            Debug.Log("two");
+            StartCoroutine(destroyAfterACertainTime());
+        }
+
+        private IEnumerator destroyAfterACertainTime()
+        {
+            yield return new WaitForSeconds(2f);
+            Destroy(gameObject);
         }
     }
 }

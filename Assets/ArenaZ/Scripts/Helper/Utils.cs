@@ -27,6 +27,7 @@ public enum Page
     ComingSoonOverlay,
     PopUpTextAccountAccess,
     PopUpTextSettings,
+    ScoreText
 }
 
 public enum Race
@@ -137,6 +138,8 @@ public static class ConstantInteger
     public const int totalDartPointsForProjectileMove = 10;
     public const int inputPosNo = 5;
     public const int fewPosNo = 10;
+    public const int shootingAngle = 45;
+    public const int totalGameScore = 100;
 }
 
 

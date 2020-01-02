@@ -66,17 +66,17 @@ namespace RedApple
         }
 
         public void ThrowDartData(int hitValue, Vector3 point)
-        {
+        { 
             ThrowDart throwDart = new ThrowDart
             {
                 AccessToken = User.UserAccessToken,
                 Score = hitValue.ToString(),
                 RoomName = User.RoomName,
-                DartPoint = point.ToString()
-            };
+                DartPoint = System.Text.RegularExpressions.Regex.Replace(point.ToString(), @"\s+", "")
+        };
             string throwDartData = DataConverter.SerializeObject(throwDart);
             Debug.Log("Throw Dart");
-            Debug.Log("Access Token: " + throwDartData);
+            Debug.LogError("Throw Dart Data: " + throwDartData);
             socket.EmitJson(SocketEmitEvents.throwDart.ToString(), throwDartData);
         }
 

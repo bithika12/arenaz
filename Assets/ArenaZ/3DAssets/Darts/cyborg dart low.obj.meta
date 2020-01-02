@@ -3,7 +3,17 @@ guid: 1124681a9ed40b74da276849adcd5775
 ModelImporter:
   serializedVersion: 26
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polySurface17_MeshMat
+    second: {fileID: 2100000, guid: 8a2887032da9e0c43a8e36be4549e94e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: polySurface4Mat
+    second: {fileID: 2100000, guid: 39d98f5d784339641a18ec1731c04fb3, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -31,7 +41,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1

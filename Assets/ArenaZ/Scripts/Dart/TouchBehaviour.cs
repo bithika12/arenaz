@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ArenaZ.Manager;
 
 namespace ArenaZ.Behaviour
 {
@@ -22,17 +22,21 @@ namespace ArenaZ.Behaviour
 
         // Private Fields
         private GameObject dartHitObj;
-        private Vector3 dartHitPoint;
+        private Vector3 dartHitPos;
         private RaycastHit hit;
         private Vector3 firstTouchPos;
         private Vector3[] inputPositions = new Vector3[ConstantInteger.inputPosNo];
         private bool isDartSelected = false;
+        private bool isShooted;
         private int firstpositioncounter = -1;
         private Vector3 lowestValue = Vector3.zero;
         private LinkedList<Vector3> lastPositions = new LinkedList<Vector3>();
 
         public GameObject DartHitGameObj { get { return dartHitObj; } }
-        public Vector3 DartHitPoint { get { return dartHitPoint; } }
+        public Vector3 LastTouchPosition { get { return dartHitPos; } }
+
+        public bool IsShooted { get => isShooted; set => isShooted = value; }
+
         public Action<Vector3> OnDartMove;
         public Action<Vector3, float> OnDartThrow;
 
@@ -50,7 +54,7 @@ namespace ArenaZ.Behaviour
             }
             if (Input.GetMouseButtonUp(0) && isDartSelected)
             {
-                DartShoot(Input.mousePosition);
+                shootIfNotStayedInSamePosForLong(Input.mousePosition);
             }
 #elif UNITY_ANDROID
             if(Input.touchCount > 0)
@@ -62,7 +66,7 @@ namespace ArenaZ.Behaviour
                 }
                 else if(touch.phase==TouchPhase.Ended && isDartSelected)
                 {
-                    DartShoot(touch.position);
+                    shootIfNotStayedInSamePosForLong(touch.position);
                 }
             }
 #endif
@@ -70,7 +74,7 @@ namespace ArenaZ.Behaviour
 
         private void DartMove(Vector3 inputPosition)
         {
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(inputPosition), out hit)&& !isDartSelected)
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(inputPosition), out hit)&& !isDartSelected && !isShooted)
             {
                 if (hit.transform.tag == GameobjectTag.Player.ToString())
                 {                 
@@ -82,7 +86,7 @@ namespace ArenaZ.Behaviour
                     OnDartMove?.Invoke(firstTouchPos);
                 }
             }
-            if (isDartSelected)
+            if (isDartSelected && !isShooted)
             {
                 Vector3 nextPosition = GetWorldPosFromMousePos(inputPosition);
                 // FirstTouchPos = firstPositionOfY(nextPosition);
@@ -102,17 +106,15 @@ namespace ArenaZ.Behaviour
             }
         }
 
-        private bool stayLongInPos(LinkedList<Vector3> inputPositions)
+        private void shootIfNotStayedInSamePosForLong(Vector3 lastPosition)
         {
-            if (inputPositions.Count >= ConstantInteger.fewPosNo)
+            if (lastPositions.Count >= ConstantInteger.fewPosNo)
             {
-                //Debug.Log("Difffffffff: " + (screenpositionOfY(inputPositions.Last.Value.y) - screenpositionOfY(inputPositions.First.Value.y)));
-                if (screenpositionOfY(inputPositions.First.Value.y) - screenpositionOfY(inputPositions.Last.Value.y) < 1f)
+                if (screenpositionOfY(lastPositions.First.Value.y) - screenpositionOfY(lastPositions.Last.Value.y) > 1f)
                 {
-                    return true;
+                    DartShoot(lastPosition);
                 }
             }
-            return false;
         }
 
         private Vector3 firstPositionOfY(Vector3 position)
@@ -147,20 +149,18 @@ namespace ArenaZ.Behaviour
             return lowestValue;
         }
 
-        private void DartShoot(Vector3 InputPosition)
+        private void DartShoot(Vector3 lastPosition)
         {
-            if (!stayLongInPos(lastPositions))
+            Ray ray = Camera.main.ScreenPointToRay(lastPosition);
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, objectMask))
             {
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(InputPosition), out hit, Mathf.Infinity, objectMask))
+                Debug.Log("Dart Shoot");
+                if (hit.transform.tag == GameobjectTag.DartBoard.ToString())
                 {
-                    if (hit.transform.tag == GameobjectTag.DartBoard.ToString())
-                    {
-                        Debug.Log("Hit kora gameObject er name:  " + hit.transform.gameObject.name);
-                        float shootAngle = 45; // This angle should change
-                        OnDartThrow?.Invoke(hit.point, shootAngle);
-                        dartHitPoint = hit.point;
-                        dartHitObj = hit.transform.gameObject as GameObject;
-                    }
+                    Debug.Log("Hit kora gameObject er name:  " + hit.transform.gameObject.name);
+                    OnDartThrow?.Invoke(hit.point, ConstantInteger.shootingAngle);
+                    dartHitObj = hit.transform.gameObject as GameObject;
+                    dartHitPos = hit.point;
                 }
             }
             ResetTouch();

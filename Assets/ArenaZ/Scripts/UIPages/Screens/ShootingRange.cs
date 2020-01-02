@@ -82,6 +82,7 @@ namespace ArenaZ.GameMode
                     Opponent.opponentColor = users[i].ColorName;
                     PlayerMatch.Instance.SetOpponentName(users[i].UserName);
                     PlayerMatch.Instance.SetOpponentProfileImage(users[i].RaceName);
+                    UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
                     UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
                 }
             }

@@ -14,5 +14,6 @@ public enum SocketListenEvents
     userJoin,
     gameStart,
     nextTurn,
-    gameThrow
+    gameThrow,
+    gameOver
 }

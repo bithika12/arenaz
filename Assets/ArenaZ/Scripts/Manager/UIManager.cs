@@ -75,6 +75,7 @@ namespace ArenaZ.Manager
 
         public void ShowPopWithText(string screenName,string message,float duration)
         {
+            StopAllCoroutines();
             StartCoroutine(allPages[screenName].ShowAndHidePopUpText(message, duration));
         }
 

@@ -322,8 +322,8 @@ namespace socket.io {
                         seperateIndex = pkt.body.IndexOf(',');
                         seperatorLen = 1;
                     }
-
                     var eventName = pkt.body.Substring(2, seperateIndex - 3);
+                   // Debug.Log($"Whole Packet:  {pkt.body} : {seperateIndex} Event Name : {eventName}");
                     if (!_handlers.ContainsKey(eventName)) {
                         Debug.LogWarningFormat("{0} event doesn't have a handler", eventName);
                         break;
