@@ -246,10 +246,11 @@ io.on('connection', function (socket) {
      */
     function AIThrow(userId, roomName/*, direction*/) {
         inmRoom.robotThrow(roomName, userId).then(function (throwDetails) {
-            io.to(roomName).emit('bidSubmitAck', response.generate(constants.SUCCESS_STATUS, {
+            io.to(roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                 userId: userId,
-                bid: biddingDetails.bid
-            }, "User bid"));
+                dartPoint:throwDetails,
+                roomName: roomName
+            }, "Dart Thrown"));
             nextUserTurnDart({roomName: roomName})
         }).catch(err => {
             console.log(" err ", err)

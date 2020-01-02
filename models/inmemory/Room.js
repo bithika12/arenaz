@@ -728,7 +728,21 @@ room.robotThrow = function (roomName, userId) {
     return new Promise((resolve, reject) => {
         room.findOne({_id: roomName}, function (err, result) {
             if (result) {
-                let listOfBid = result.bid;
+
+                let  minx=0;
+                let maxx=333;
+                let miny=0;
+                let maxy=333;
+                let x=_.random(minx, maxx);
+                let y=_.random(miny, maxy);
+                let z="0.0";
+                let dartPoint;
+
+                dartPoint=(x,y,z);
+                resolve(dartPoint);
+
+
+                /*let listOfBid = result.bid;
                 let users = result.users;
                 let findIndex = users.findIndex((elemt) => elemt.userId === userId);
                 let cardSuits = users[findIndex].cardSuits;
@@ -740,7 +754,7 @@ room.robotThrow = function (roomName, userId) {
                     let partanerDirection = bridge.getPartner(users[findIndex].direction);
 
 
-                }
+                }*/
             } else reject({})
         });
     });
