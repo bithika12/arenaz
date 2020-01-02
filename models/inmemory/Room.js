@@ -66,6 +66,7 @@
                           //reject({message:"It is bust"});
                           userTurn = 3;
                           playStatus=1;
+                          calculatedScore=remainingScore;
 
                      }
                       if(calculatedScore==0){
