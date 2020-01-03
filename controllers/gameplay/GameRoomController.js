@@ -222,9 +222,11 @@ io.on('connection', function (socket) {
 
     function userNextStartDart(reqobj, callback) {
         return new Promise((resolve, reject) => {
-            waitingDartInterval[reqobj.roomName] = setTimeout(() => {
+
+            nextUserTurnDart(reqobj, 0)
+           /* waitingDartInterval[reqobj.roomName] = setTimeout(() => {
                 nextUserTurnDart(reqobj, 0)
-            }, 10000);
+            }, 10000);*/
             callback(null, reqobj);
         })
     }
