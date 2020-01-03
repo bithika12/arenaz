@@ -27,7 +27,7 @@ public enum Page
     ComingSoonOverlay,
     PopUpTextAccountAccess,
     PopUpTextSettings,
-    ScoreText
+    HitScore
 }
 
 public enum Race
@@ -61,6 +61,18 @@ public enum ButtonType
     RightArrow,
     LeftArrow,
     None
+}
+
+public enum PlayerprefsValue
+{
+    Login,
+    CharacterName
+}
+
+public enum AccountDetails
+{
+    LoginID,
+    Password
 }
 
 public enum Hide
@@ -98,7 +110,8 @@ public enum Checking
 public enum ProfilePicType
 {
     Small,
-    Medium
+    Medium,
+    rounded
 }
 
 public enum GameobjectTag
@@ -140,6 +153,7 @@ public static class ConstantInteger
     public const int fewPosNo = 10;
     public const int shootingAngle = 45;
     public const int totalGameScore = 100;
+    public const int timerValue = 10;
 }
 
 

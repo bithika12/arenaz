@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using RedApple;
 using RedApple.Api.Data;
+using System;
 
 namespace ArenaZ.GameMode
 {
@@ -24,6 +25,9 @@ namespace ArenaZ.GameMode
         [Header("Text")]
         [Space(5)]
         [SerializeField] private Text userName;
+
+        public Action<string> setOpponentName;
+        public Action<string> setOpponentImage;
 
         private void Start()
         {
@@ -76,17 +80,22 @@ namespace ArenaZ.GameMode
             {
                 if (User.userId != users[i].UserId)
                 {
-                    Opponent.opponentName = users[i].UserName;
-                    Opponent.opponentId = users[i].UserId;
-                    Opponent.opponentRace = users[i].RaceName;
-                    Opponent.opponentColor = users[i].ColorName;
-                    PlayerMatch.Instance.SetOpponentName(users[i].UserName);
-                    PlayerMatch.Instance.SetOpponentProfileImage(users[i].RaceName);
+                    saveOpponentData(users[i]);
+                    setOpponentName?.Invoke(users[i].UserName);
+                    setOpponentImage?.Invoke(users[i].RaceName);
                     UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
                     UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
                 }
             }
             PlayerMatch.Instance.LoadGameplay();
+        }
+
+        private void saveOpponentData(UserJoin joinedUser)
+        {
+            Opponent.opponentName = joinedUser.UserName;
+            Opponent.opponentId = joinedUser.UserId;
+            Opponent.opponentRace = joinedUser.RaceName;
+            Opponent.opponentColor = joinedUser.ColorName;
         }
 
         private void OnUserJoin(string data)

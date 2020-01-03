@@ -22,8 +22,8 @@ namespace ArenaZ.Screens
 
         private void Start()
         {
-            GameManager.Instance.userName += SetUserName;
-            GameManager.Instance.userImage += SetUserProfileImage;
+            GameManager.Instance.setUserName += SetUserName;
+            GameManager.Instance.setUserImage += SetUserProfileImage;
         }
 
         private void GettingButtonReferences()

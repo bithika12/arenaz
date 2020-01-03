@@ -5,7 +5,9 @@ using RedApple;
 using RedApple.Api;
 using System;
 using TMPro;
+using UnityEngine.UI;
 using System.Collections.Generic;
+using ArenaZ.GameMode;
 
 namespace ArenaZ.Manager
 {
@@ -17,13 +19,21 @@ namespace ArenaZ.Manager
         [SerializeField] private GameObject dartGameObj;
         [SerializeField] private int scorePopUpDuration;
         [SerializeField] private TextMeshProUGUI txtMeshPro;
+        [SerializeField] private Image userImage;
+        [SerializeField] private Image opponentImage;
+        [SerializeField] private Image userTimerImage;
+        [SerializeField] private Image opponentTimerImage;
+        [SerializeField] private Text userName;
+        [SerializeField] private Text opponentName;
+        private bool playerTurn = false;
         private Dart currentDart;
         private TouchBehaviour touchBehaviour;        
         private Dictionary<string, int> gameScore = new Dictionary<string, int>();
         private int opponentRemainingScore = ConstantInteger.totalGameScore;
+        private float timer = ConstantInteger.timerValue;
 
-        public Action<string> userName;
-        public Action<string> userImage;
+        public Action<string> setUserName;
+        public Action<string> setUserImage;
 
         private enum Player
         {
@@ -33,7 +43,7 @@ namespace ArenaZ.Manager
 
         private Player PlayerType;
 
-        // Public Variables
+        // Public Variables      
 
         protected override void Awake()
         {
@@ -42,10 +52,56 @@ namespace ArenaZ.Manager
 
         private void Start()
         {
+            Input.multiTouchEnabled = false;
             listenSocketEvents();
             touchBehaviour.OnDartMove += DartMove;
             touchBehaviour.OnDartThrow += DartThrow;
-            Input.multiTouchEnabled = false;
+            UIManager.Instance.setUserName += SetUserName;
+            UIManager.Instance.showProfilePic += SetUserProfileImage;
+            ShootingRange.Instance.setOpponentName += SetOpponentName;
+            ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
+        }
+
+        private void Update()
+        {
+            if(playerTurn && PlayerType == Player.player)
+            {
+                timer -= Time.deltaTime;
+                userTimerImage.fillAmount = timer / ConstantInteger.timerValue;
+            }
+            if (playerTurn && PlayerType == Player.opponent)
+            {
+                timer -= Time.deltaTime;
+                opponentTimerImage.fillAmount = timer / ConstantInteger.timerValue;
+            }
+        }
+
+        private void resetTimer()
+        {
+            timer = ConstantInteger.timerValue;
+            userTimerImage.fillAmount = ConstantInteger.timerValue;
+            opponentTimerImage.fillAmount = ConstantInteger.timerValue;
+            playerTurn = false;
+        }
+
+        public void SetUserName(string userName)
+        {
+            this.userName.text = userName;
+        }
+
+        public void SetUserProfileImage(string imageName)
+        {
+            userImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.rounded);
+        }
+
+        public void SetOpponentProfileImage(string imageName)
+        {
+            opponentImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.rounded);
+        }
+
+        public void SetOpponentName(string OpponentName)
+        {
+            this.opponentName.text = OpponentName;
         }
 
         private void listenSocketEvents()
@@ -76,8 +132,8 @@ namespace ArenaZ.Manager
             UIManager.Instance.HideScreenImmediately(Page.PlayerMatchPanel.ToString());
             UIManager.Instance.ScreenShowNormal(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ScreenShowNormal(popUpName.ToString());
-            this.userName?.Invoke(userName);
-            this.userImage?.Invoke(userImage);
+            this.setUserName?.Invoke(userName);
+            this.setUserImage?.Invoke(userImage);
         }
 
         private void onNextTurn(string data)
@@ -96,6 +152,7 @@ namespace ArenaZ.Manager
                 PlayerType = Player.opponent;
                 touchBehaviour.IsShooted = true;
             }
+            playerTurn = true;
             updateScoreBoardInEveryTurn(PlayerType);
         }
 
@@ -106,7 +163,7 @@ namespace ArenaZ.Manager
             if (dartThrowData.Result.UserId != User.userId)
             {
                 Debug.Log("Opponent Hit Score: " + int.Parse(dartThrowData.Result.PlayerScore));
-                UIManager.Instance.ShowPopWithText(Page.ScoreText.ToString(), int.Parse(dartThrowData.Result.PlayerScore).ToString(), scorePopUpDuration);
+                UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), int.Parse(dartThrowData.Result.PlayerScore).ToString(), scorePopUpDuration);
                 if(int.Parse(dartThrowData.Result.PlayStatus) == 0)
                 {
                     storeCalculatedgameScore(PlayerType.ToString(), int.Parse(dartThrowData.Result.PlayerScore));
@@ -125,7 +182,7 @@ namespace ArenaZ.Manager
                 BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
                 int hitScore = boardBody.HitPointScore * boardBody.ScoreMultiplier;
                 Debug.Log("Player Hit Score:  " + hitScore);
-                UIManager.Instance.ShowPopWithText(Page.ScoreText.ToString(), hitScore.ToString(), scorePopUpDuration);
+                UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), hitScore.ToString(), scorePopUpDuration);
                 if (hitScore < gameScore[PlayerType.ToString()])
                 {
                     storeCalculatedgameScore(Player.player.ToString(), hitScore);
@@ -133,6 +190,7 @@ namespace ArenaZ.Manager
                 }
                 SocketManager.Instance.ThrowDartData(hitScore, touchBehaviour.LastTouchPosition);
             }
+            resetTimer();
         }
 
         private Vector3 getValue(string vectorValue)

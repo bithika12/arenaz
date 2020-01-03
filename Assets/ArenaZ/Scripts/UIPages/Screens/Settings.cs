@@ -164,12 +164,12 @@ namespace ArenaZ.SettingsManagement
             UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
             PlayerPrefs.SetInt("Logout", 1);
-            OnClickClose();
+            UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
         }
 
         private void GoToLogIn()
         {
-            OnClickClose();
+            UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
             UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
             inputFieldclear?.Invoke();
         }

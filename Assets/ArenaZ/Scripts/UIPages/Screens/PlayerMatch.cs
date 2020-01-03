@@ -3,8 +3,7 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using System.Collections;
 using RedApple;
-using RedApple.Api.Data;
-using System;
+using ArenaZ.GameMode;
 
 public class PlayerMatch : Singleton<PlayerMatch>
 {
@@ -24,6 +23,8 @@ public class PlayerMatch : Singleton<PlayerMatch>
     {
         UIManager.Instance.setUserName += SetUserName;
         UIManager.Instance.showProfilePic += SetUserProfileImage;
+        ShootingRange.Instance.setOpponentName += SetOpponentName;
+        ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
     }
 
     public void SetUserProfileImage(string imageName)

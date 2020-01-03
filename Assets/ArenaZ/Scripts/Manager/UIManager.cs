@@ -62,6 +62,10 @@ namespace ArenaZ.Manager
                 {
                     return ProfilePic[i].mediumSprite;
                 }
+                else if (ProfilePic[i].profileImageName.Equals(charName) && type == ProfilePicType.rounded)
+                {
+                    return ProfilePic[i].roundSprite;
+                }
             }
             return null;
         }
@@ -234,5 +238,6 @@ namespace ArenaZ.Manager
         public string profileImageName;
         public Sprite smallSprite;
         public Sprite mediumSprite;
+        public Sprite roundSprite;
     }
 }

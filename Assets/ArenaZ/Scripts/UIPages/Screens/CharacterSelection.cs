@@ -62,12 +62,19 @@ namespace ArenaZ.Screens
         #region UI_Functionalities
         public void ResetCharacterScroller(string userName)
         {
-            horizontalScrollSnap.ChangePage(PlayerPrefs.GetInt(userName, 0));
+            for (int i = 0; i < names.Length; i++)
+            {
+                if (names[i] == PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()))
+                {
+                    horizontalScrollSnap.ChangePage(i);
+                }
+            }
+          //  horizontalScrollSnap.ChangePage(PlayerPrefs.GetInt(userName, 0));
         }
 
         public void SetProfilePicOnClick()
         {
-            UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
+            UIManager.Instance.showProfilePic?.Invoke(PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()));
         }
 
         private void ShowFirstText()
@@ -86,7 +93,8 @@ namespace ArenaZ.Screens
             User.userRace = names[horizontalScrollSnap._currentPage];
             UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
             LevelSelection.Instance.OnSelectionGameplayType(type);
-            PlayerPrefs.SetInt(User.userName, horizontalScrollSnap._currentPage);
+            PlayerPrefs.SetString(PlayerprefsValue.CharacterName.ToString(), names[horizontalScrollSnap._currentPage]);
+           // PlayerPrefs.SetInt(User.userName, horizontalScrollSnap._currentPage);
             SocketManager.Instance.ColRequest();
         }
 
