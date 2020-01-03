@@ -43,7 +43,7 @@ io.on('connection', function (socket) {
 
     function updateRoom(reqobj,callback){
 		inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
-   console.log("roomdetails",roomDetails)
+          console.log("roomdetails",roomDetails)
 			callback(null, roomDetails);
 		}).catch(err=>{
 			callback("err", null);
@@ -224,7 +224,7 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
             waitingDartInterval[reqobj.roomName] = setTimeout(() => {
                 nextUserTurnDart(reqobj, 0)
-            }, 1000);
+            }, 10000);
             callback(null, reqobj);
         })
     }
@@ -433,7 +433,7 @@ io.on('connection', function (socket) {
         })
     }
 
-    function playerLeave(req) {
+    function playerLeave1(req) {
         return function (callback) {
             inmRoom.userLeave({roomName: req.roomName, userId: req.userId}).then(function (updateDetails) {
                 room.playerLeave({roomName: req.roomName, userId: req.userId}).then(function (playerUpdate) {
@@ -446,9 +446,28 @@ io.on('connection', function (socket) {
 
     }
 
+    function playerLeave(req) {
+        return function (callback) {
+            inmRoom.userLeave({roomName: req.roomName, userId: req.userId}).then(function (updateDetails) {
+                //room.playerLeave({roomName: req.roomName, userId: req.userId}).then(function (playerUpdate) {
+                    callback(null, updateDetails);
+                //})
+            }).catch(err => {
+                callback("", null);
+            })
+        }
+
+    }
+
 
     function memoryRoomRemove(req, callback) {
         inmRoom.removeRoom({roomName: req.roomName}).then(function (roomupdate) {
+            callback(null, req)
+        });
+    }
+
+    function RoomUpdate(req, callback) {
+        room.updateRoomLeaveDisconnect({roomName: req.roomName,userTotal:req.roomUsers}).then(function (roomupdate) {
             callback(null, req)
         });
     }
@@ -562,9 +581,11 @@ io.on('connection', function (socket) {
 
                 async.waterfall([
                     playerLeave({roomName: userRoomName, userId: allOnlineUsers[findIndex].userId}),
-                    totalPlayerList,
-                    roomClosed,
-                    memoryRoomRemove
+                    updateRoom,
+                    RoomUpdate
+                   // totalPlayerList,
+                   // roomClosed,
+                   // memoryRoomRemove
                 ], function (err, result) {
                     //allOnlineUsers.splice(findIndex, 1);
                     if (result) {
@@ -617,9 +638,11 @@ io.on('connection', function (socket) {
             //if (allOnlineUsers[findIndexOpponent]){
             async.waterfall([
                 playerLeave({roomName: req.roomName, userId: req.userId}),
-                totalPlayerList,
-                roomClosed,
-                memoryRoomRemove,
+                updateRoom,
+                RoomUpdate
+                //totalPlayerList,
+                //roomClosed,
+                //memoryRoomRemove,
                 //winnerDeclare({userId: allOnlineUsers[findIndexOpponent].userId})
             ], function (err, result) {
                 if (result) {

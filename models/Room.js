@@ -275,10 +275,10 @@ room.updateRoomLeave  = function(userObj,updateArr){
     })
 }
 
-room.updateRoomLeaveDisconnect  = function(roomName,updateArr){
+room.updateRoomLeaveDisconnect  = function(updateArr){
     return new Promise((resolve,reject)=>{
 
-        Room.updateOne({name : roomName},{ $set: { status:"closed",users: updateArr.usertotal }},
+        Room.updateOne({name : updateArr.roomName},{ $set: { status:"closed",updated_at:Date.now(),users: updateArr.userTotal }},
             function (err, updateroomresult) {
                 if (err)
                     reject({message:"Error:Database connection error"})
@@ -313,7 +313,7 @@ room.playerLeave = function(condObj){
 room.updateRoomGameOver = function(condObj,updateObj){
     return new Promise((resolve,reject) => {
 
-        Room.updateOne({name : condObj.roomName},{ $set: { status:"closed",users: updateObj.userObj }},
+        Room.updateOne({name : condObj.roomName},{ $set: { status:"closed",updated_at:Date.now(),users: updateObj.userObj }},
        // Room.updateOne({roomName : condObj.roomName},{ $set: { users: updateObj.userObj }},
 
             //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},

@@ -418,70 +418,58 @@ room.userLeaveMod = function (condObj, updateObj) {
             });
     });
 }
-room.userLeaveOld = function (condObj, updateObj) {
+room.userLeave = function (condObj, updateObj) {
     return new Promise((resolve, reject) => {
         room.findOne({roomName: condObj.roomName}
             , function (err, result) {
-                let userArr = result.users;
+                let score;
+                let multiplier;
+                let calculatedScore;
+                let boardScore;
+                let userArr = [];
                 let newArr = [];
                 let newArr1 = [];
                 let newArr3 = [];
-                let userAr = [];
-                let totalArr = [];
-                userArr.findIndex(function (elemt) {
-                    if (elemt.userId == condObj.userId)
-                        newArr.push({
-                            score: elemt.score,
-                            total: elemt.total,
-                            userId: elemt.userId,
-                            status: "inactive",
-                            isWin: elemt.isWin,
-                            turn: elemt.turn,
-                            dartPoint: elemt.dartPoint
-                        });
-                    else
-                        newArr1.push({
-                            score: elemt.score,
-                            total: elemt.total,
-                            userId: elemt.userId,
-                            status: "active",
-                            isWin: elemt.isWin,
-                            turn: elemt.turn,
-                            dartPoint: elemt.dartPoint
-                        });
+                let userTurn;
+                let dartPnt;
+                let remainingScore;
+                let isWin;
+                let userTurnOppnt;
+                let userTurnGame;
+                boardScore = condObj.score;
+                let playStatus = 0;
+                let cupNumber;
+                let playerScore;
+                userArr = result.users;
+                let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
+                let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
+
+                userArr[findIndex].status = "inactive";
+                calculatedScore= userArr[findIndex].total;
+                userTurn=userArr[findIndex].turn;
+                dartPnt=userArr[findIndex].dartPoint;
+                playStatus=userArr[findIndex].playStatus;
+                isWin=userArr[findIndex].isWin;
+                playerScore=userArr[findIndex].score;
+                cupNumber=userArr[findIndex].cupNumber;
+
+                userArr[findIndexOppo].isWin = 1;
+                resolve({
+                    roomName: condObj.roomName,
+                    users: condObj.userId,
+                    remainingScore: calculatedScore,
+                    finalArr: userArr,
+                    userTurn: userTurn,
+                    dartPoint: dartPnt,
+                    playStatus: playStatus,
+                    isWin: isWin,
+                    playerScore: playerScore,
+                    cupNumber: cupNumber
                 });
-                newArr3 = newArr.concat(newArr1);
 
-                for (let i in result) {
-                    result.users = newArr3
-                }
-                let finalArr = result;
-
-                resolve({totalArr: finalArr, userAr: newArr3})
-
-                /*room.update({roomName : condObj.roomName},{ $set: { users: finalArr }},
-                    function (err, updateroomresult) {
-                        if (err)
-                            reject(false)
-                        else {
-                            resolve(newArr3)
-
-                        }
-
-                    });*/
-
-            });
-
-        /*room.update({ _id : condObj.roomName },{$pull : {users       : { userId  : condObj.userId}}},
-                  { multi: true }, function (err,updateRoom) {
-           if(err){
-                    reject({})
-               }else{
-              resolve(updateRoom)
-           }
-        });  */
     });
+});
 }
 
 room.findNextUser = function (condObj) {
@@ -630,7 +618,7 @@ room.updateInmemoryRoomLeaveDisconnect = function (roomName, updateArr) {
     })
 }
 
-room.userLeave = function (condObj, updateObj) {
+room.userLeave1 = function (condObj, updateObj) {
     console.log("***** leaveJoinee >> ", condObj);
     return new Promise((resolve, reject) => {
         room.update({roomName: condObj.roomName},

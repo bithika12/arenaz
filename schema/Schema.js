@@ -63,8 +63,15 @@ var roomSchema = new Schema({
     status        : String,
     users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,userName:String,cupNumber:Number}],
     //users        : [{userId:String, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String}],
-    createdAt    : Date,
-    updatedAt    : Date
+    created_at: {
+        type: Date,
+        default: Date.now()
+    },
+    updated_at: {
+        type: Date,
+       // default: Date.now
+    }
+
 });
 
 // the schema is useless so far
