@@ -216,7 +216,7 @@ io.on('connection', function (socket) {
     function userNextStart(reqobj, callback) {
         waitingDartInterval[reqobj.roomName] = setTimeout(() => {
             nextUserTurn(reqobj, 0)
-        }, 0);
+        }, 1000);
         callback(null, reqobj);
     }
 
