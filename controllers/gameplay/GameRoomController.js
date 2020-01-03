@@ -29,25 +29,27 @@ let waitingDartInterval = [];
 io.on('connection', function (socket) {
 
 
-    function dartProcess(reqobj) {
-        return function (callback) {
-            inmRoom.throwDartDetails(reqobj).then(function (roomDetails) {
-                callback(null, roomDetails);
-            }).catch(err => {
-                callback("err", null);
-            })
+   function dartProcess(reqobj){
+		return function (callback) {
+			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
+	console.log("roomdetails",roomDetails)
+			callback(null,roomDetails);
+		     }).catch(err=>{
+	          callback("err", null);
+             })
 
-        }
-    }
+		}
+	}
 
-    function updateRoom(reqobj, callback) {
-        inmRoom.updateInmemoryRoomMod(reqobj).then(function (roomDetails) {
-            callback(null, roomDetails);
-        }).catch(err => {
-            callback("err", null);
-        })
+    function updateRoom(reqobj,callback){
+		inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
+   console.log("roomdetails",roomDetails)
+			callback(null, roomDetails);
+		}).catch(err=>{
+			callback("err", null);
+		})
 
-    }
+	}
 
     function gameOverProcess(reqobj, callback) {
         return new Promise((resolve, reject) => {
