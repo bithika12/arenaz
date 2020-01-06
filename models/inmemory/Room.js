@@ -36,6 +36,7 @@ room.throwDartDetails = function (reqObj) {
         boardScore = reqObj.score;
         let playStatus = 0;
         let cupNumber;
+        let cupNumberOppo;
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
                 if (result) {
@@ -70,10 +71,15 @@ room.throwDartDetails = function (reqObj) {
                             if (calculatedScore == 0) {
                                 isWin = 1;
                                 cupNumber = 70;
-                            } else {
+
+                                let findIndexOpponent = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
+                                cupNumberOppo = Math.round(((userArr[findIndexOpponent].score / userArr[findIndexOpponent].total) * 100), 0);
+                                cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
+                                userArr[findIndexOpponent].cupNumber = cupNumberOppo;
+                            } /*else {
                                 cupNumber = Math.round(((reqObj.score / remainingScore) * 100), 0);
                                 cupNumber = Math.round(((cupNumber * 70) / 100), 0);
-                            }
+                            }*/
                         }
 
                     });
@@ -97,7 +103,7 @@ room.throwDartDetails = function (reqObj) {
                     userArr[findIndex].isWin = isWin;
                     userArr[findIndex].userId = reqObj.userId;
                     userArr[findIndex].status = "active";
-                    userArr[findIndex].cupNo = cupNumber;
+                    userArr[findIndex].cupNumber = cupNumber;
                     //userArr[findIndex].userTurn=userTurnGame;
 
                     resolve({
@@ -513,6 +519,22 @@ room.findNextUserDart = function (condObj) {
         })
     })
 }
+
+
+room.findNextUserDartMod = function (condObj) {
+    return new Promise((resolve, reject) => {
+        room.findOne({roomName: condObj.roomName}, function (err, roomDetails) {
+            if (roomDetails) {
+                let users = roomDetails.users;
+                let findIndex = users.findIndex(elemt => (elemt.userId!=condObj.userId)/*||  elemt.turn < 1 *//*roomDetails.dealStartDirection*/);
+                resolve({userId: users[findIndex].userId});
+            } else {
+                reject({});
+            }
+        })
+    })
+}
+
 
 room.updateInmemoryRoom = function (userObj, updateArr) {
     return new Promise((resolve, reject) => {

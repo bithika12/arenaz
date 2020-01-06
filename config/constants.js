@@ -77,6 +77,7 @@ module.exports = {
     API_ERROR :203,
     GAME_TIMMER : 4,
     GAME_MAXIMUM_USER  : 2,
+    TURN_WAITING_TIME  : 10, /* Seconds */
 
 
 

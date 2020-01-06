@@ -19,6 +19,7 @@ let allOnlineUsers = require(appRoot + '/utils/MemoryDatabaseManger').allOnlineU
 let gameRequestQueue = [];
 let requestIsRunning = false;
 let waitingDartInterval = [];
+let count = 0;
 /*room.createRoom({userId : "5de7ac25c9dba27a72be9023"}).then(function(result){
 	console.log("success",result);
 }).catch(err=>{
@@ -32,7 +33,7 @@ io.on('connection', function (socket) {
    function dartProcess(reqobj){
 		return function (callback) {
 			inmRoom.throwDartDetails(reqobj).then(function(roomDetails){
-	console.log("roomdetails",roomDetails)
+	        console.log("roomdetails",roomDetails)
 			callback(null,roomDetails);
 		     }).catch(err=>{
 	          callback("err", null);
@@ -50,7 +51,15 @@ io.on('connection', function (socket) {
 		})
 
 	}
-
+    function intervalFunc() {
+        count++;
+        client.send(message, 3001, 'localhost', (err) => {
+            //client.close();
+        });
+        if (count == '3') {
+            clearInterval(this);
+        }
+    }
     function gameOverProcess(reqobj, callback) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
@@ -78,7 +87,6 @@ io.on('connection', function (socket) {
      */
     socket.on('throwDart', function (req) {
         req.socketId = socket.id;
-
         async.waterfall([
             dartProcess(req),
             updateRoom,
@@ -137,6 +145,7 @@ io.on('connection', function (socket) {
 
     //GAME START
     function waitingForUser(reqobj) {
+        let count    = 0;
         return function (callback) {
             var i = constants.GAME_TIMMER;
             logger.print("  ************  game start call");
@@ -222,11 +231,27 @@ io.on('connection', function (socket) {
 
     function userNextStartDart(reqobj, callback) {
         return new Promise((resolve, reject) => {
-
-            nextUserTurnDart(reqobj, 0)
-           /* waitingDartInterval[reqobj.roomName] = setTimeout(() => {
+            if (reqobj.dartPoint != ''){
+                let count    = 0;
                 nextUserTurnDart(reqobj, 0)
-            }, 10000);*/
+                waitingDartInterval[reqobj.roomName] = setInterval(()=>{
+                    count++;
+                    console.log("count-",count);
+                    console.log("pending time-",constants.TURN_WAITING_TIME);
+                    if(count > (constants.TURN_WAITING_TIME)){
+                        nextUserTurnDartMod(reqobj, 0)
+                        clearInterval(waitingDartInterval[reqobj.roomName]);
+                        clearTimeout(waitingDartInterval[reqobj.roomName]);
+
+                    }
+
+                },1000);
+            }
+            else{
+                waitingDartInterval[reqobj.roomName] = setTimeout(() => {
+                    nextUserTurnDart(reqobj, 0)
+                }, 10000);
+            }
             callback(null, reqobj);
         })
     }
@@ -235,6 +260,19 @@ io.on('connection', function (socket) {
         inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
             if (roomDetails) {
                 io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                //clearTimeout(waitingDartInterval[reqobj.roomName]);
+            }
+        }).catch(err => {
+            //reject(err);
+        });
+    }
+
+
+    function nextUserTurnDartMod(roomObj) {
+        inmRoom.findNextUserDartMod({roomName: roomObj.roomName}).then(function (roomDetails) {
+            if (roomDetails) {
+                io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                //clearTimeout(waitingDartInterval[reqobj.roomName]);
             }
         }).catch(err => {
             //reject(err);
