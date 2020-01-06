@@ -56,6 +56,6 @@ public class PlayerMatch : Singleton<PlayerMatch>
     {
         yield return new WaitForSeconds(animClip.length+1f);
         UIManager.Instance.HideScreenImmediately(Page.UIPanel.ToString());
-        UIManager.Instance.ScreenShowNormal(Page.GameplayPanel.ToString());
+        UIManager.Instance.ScreenShow(Page.GameplayPanel.ToString());
     }
 }

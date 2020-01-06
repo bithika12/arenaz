@@ -102,6 +102,11 @@ namespace ArenaZ.RegistrationUser
         private void OnCompleteRegistration(CreateAccount registeredProfile)
         {
             Debug.Log("Registered:  " + registeredProfile.UserName);
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                UIManager.Instance.SaveDetails(PlayerprefsValue.LoginID.ToString(), regIf_userEmail.text);
+                UIManager.Instance.SaveDetails(PlayerprefsValue.Password.ToString(), regIf_UserPassword.text);
+            }
             storeUserData(registeredProfile);
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.successFullyRegisterd, PopUpduration);
             OnClickRegisterPopUpClose();

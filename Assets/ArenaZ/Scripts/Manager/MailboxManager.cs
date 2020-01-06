@@ -61,7 +61,7 @@ namespace ArenaZ.Mail
 
         private void OnClickMailPopUpClose()
         {
-            UIManager.Instance.HideScreenNormalWithAnim(Page.MailPopUp.ToString());
+            UIManager.Instance.HideScreenWithAnim(Page.MailPopUp.ToString());
         }
     }
 }

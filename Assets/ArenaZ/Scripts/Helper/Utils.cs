@@ -60,19 +60,17 @@ public enum ButtonType
     PlusImage,
     RightArrow,
     LeftArrow,
+    coloredButton,
     None
 }
 
 public enum PlayerprefsValue
 {
-    Login,
-    CharacterName
-}
-
-public enum AccountDetails
-{
     LoginID,
-    Password
+    Password,
+    Logout,
+    AutoLogin,
+    CharacterName
 }
 
 public enum Hide
@@ -154,6 +152,7 @@ public static class ConstantInteger
     public const int shootingAngle = 45;
     public const int totalGameScore = 100;
     public const int timerValue = 10;
+    public const int autoLoginWait = 1;
 }
 
 

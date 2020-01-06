@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Collections;
+using ArenaZ.Data;
 using UnityEngine.U2D;
 using RedApple;
+using System.Text;
+using System.Collections;
 
 namespace ArenaZ.Manager
 {
@@ -33,17 +35,31 @@ namespace ArenaZ.Manager
         //Public Variables
         public Action<string> showProfilePic;
         public Action<string> setUserName;
+        public Action<string, string> userLogin;
 
         protected override void Awake()
         {
             AddAllTextScreensToDictionary();
-            StartCoroutine(LogInCheck());
+            AddAllUIScreensToDictionary();
         }
 
         private void Start()
         {
-            StartAnimations();          
+            StartAnimations();
+#if UNITY_EDITOR
+            ScreenShow(Page.AccountAccesOverlay.ToString());
+            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
+#elif UNITY_ANDROID
+            logInCheck();
+#endif
         }
+        private void StartAnimations()
+        {
+            ScreenShow(Page.UIPanel.ToString(), Hide.none);
+            ScreenShow(Page.TopAndBottomBarPanel.ToString(), Hide.none);
+            ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
+        }
+
 
         public Sprite GetCorrespondingCountrySprite(string spriteName)
         {
@@ -68,13 +84,6 @@ namespace ArenaZ.Manager
                 }
             }
             return null;
-        }
-
-        private void StartAnimations()
-        {
-            ScreenShow(Page.UIPanel.ToString(), Hide.none);
-            ScreenShow(Page.TopAndBottomBarPanel.ToString(), Hide.none);
-            ScreenShow(Page.AccountAccesOverlay.ToString(), Hide.none);
         }
 
         public void ShowPopWithText(string screenName,string message,float duration)
@@ -103,7 +112,7 @@ namespace ArenaZ.Manager
             closeScreen = string.Empty;
         }
 
-        public void ScreenShowNormal(string screenName)
+        public void ScreenShow(string screenName)
         {
             if (_openScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
             {
@@ -137,7 +146,7 @@ namespace ArenaZ.Manager
             _openScreen = string.Empty;
         }
 
-        public void HideScreenNormalWithAnim(string screenName)
+        public void HideScreenWithAnim(string screenName)
         {
             if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
             {
@@ -209,14 +218,56 @@ namespace ArenaZ.Manager
             }
         }
 
-        IEnumerator LogInCheck()
+        private string getFileName(string fileName)
         {
-            yield return new WaitUntil(()=> AddAllUIScreensToDictionary());
-            if (PlayerPrefs.GetInt("AlreadyLoggedIn") == 0)
+            return string.Format("Arena_{0}.dat", fileName);
+        }
+
+        private byte[] getByteFromString(string anyString)
+        {
+            return Encoding.ASCII.GetBytes(anyString);
+        }
+
+        public void SaveDetails(string filename, string data)
+        {
+            byte[] dataBytes = getByteFromString(data);
+            PlayerPrefs.SetString(filename, data);
+            DataSaveAndLoad dataSaveAndLoad = new DataSaveAndLoad(filename, filename, dataBytes);
+            Debug.Log("Saving...  " + filename);
+            dataSaveAndLoad.SaveToDisk(dataBytes);
+        }
+
+        private string loadDetails(string filename)
+        {
+            DataSaveAndLoad fileManagement = new DataSaveAndLoad(filename, filename);
+            fileManagement.LoadDataFromStorage();
+            byte[] details = fileManagement.LoadedData;
+            Debug.Log("Data :::::: " + Encoding.ASCII.GetString(details));
+            return Encoding.ASCII.GetString(details);
+        }
+
+        private IEnumerator logInCheck()
+        {
+            yield return new WaitForSeconds(ConstantInteger.autoLoginWait);
+            string savedLoginID = loadDetails(PlayerprefsValue.LoginID.ToString());
+            string savedPassword = loadDetails(PlayerprefsValue.Password.ToString());
+            Debug.Log("PlayerPrefs: " + PlayerPrefs.GetString(PlayerprefsValue.LoginID.ToString()) + "   " + PlayerPrefs.GetString(PlayerprefsValue.Password.ToString()) + "   Loaded String:  " + savedLoginID + "   " + savedPassword);
+            if (PlayerPrefs.GetString(PlayerprefsValue.LoginID.ToString()) != string.Empty && PlayerPrefs.GetString(PlayerprefsValue.Password.ToString()) != string.Empty)
             {
-                ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
-                PlayerPrefs.SetInt("Logout", 1);
-            }            
+                if (PlayerPrefs.GetString(PlayerprefsValue.LoginID.ToString()) == savedLoginID && PlayerPrefs.GetString(PlayerprefsValue.Password.ToString()) == savedPassword)
+                {
+                    Debug.Log("Matched");
+                    ScreenShow(Page.AccountAccesOverlay.ToString());
+                    ScreenShow(Page.LogINOverlay.ToString());
+                    userLogin?.Invoke(savedLoginID, savedPassword);
+                    PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 1);
+                }
+            }
+            else
+            {
+                ScreenShow(Page.AccountAccesOverlay.ToString());
+                PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
+            }
         }
 
     }

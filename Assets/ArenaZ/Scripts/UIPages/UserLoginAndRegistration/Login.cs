@@ -29,17 +29,19 @@ namespace ArenaZ.LoginUser
 
         RegularExpression regExp = new RegularExpression();
 
+        private void Awake()
+        {
+            UIManager.Instance.userLogin += onClickUserLogin;
+        }
+
         private void Start()
         {
             Settings.Instance.inputFieldclear += ClearLoginInputFieldData;
+            PlayerPrefs.GetInt(PlayerprefsValue.AutoLogin.ToString(), 0);
+            GettingButtonReferences();
         }
 
-        private void OnEnable()
-        {
-            GettingButtonReferences();           
-        }
-
-        private void OnDisable()
+        private void OnDestroy()
         {
             ReleaseButtonReferences();
         }
@@ -49,14 +51,14 @@ namespace ArenaZ.LoginUser
         {
             loginBackButton.onClick.AddListener(OnClickLoginPopUpClose);
             loginForgotButton.onClick.AddListener(OnClickForgotPasswordPopUpShow);
-            loginButton.onClick.AddListener(OnClickUserLogin);
+            loginButton.onClick.AddListener(()=> onClickUserLogin(logInIf_userEmail.text,logInIf_password.text));
         }
 
         private void ReleaseButtonReferences()
         {
             loginBackButton.onClick.RemoveListener(OnClickLoginPopUpClose);
             loginForgotButton.onClick.RemoveListener(OnClickForgotPasswordPopUpShow);
-            loginButton.onClick.RemoveListener(OnClickUserLogin);
+            loginButton.onClick.RemoveListener(() => onClickUserLogin(logInIf_userEmail.text, logInIf_password.text));
         }
         #endregion
 
@@ -66,27 +68,34 @@ namespace ArenaZ.LoginUser
             logInIf_password.text = null;
         }
 
-        private void OnClickUserLogin()
+        private void onClickUserLogin(string emailID,string password)
         {
             Debug.Log("Logging in");
-            if (GetMessageWhenFaultCheckOnLogin(logInIf_userEmail.text, Checking.EmailID) != null)
+            if (GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID) != null)
             {
-                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnLogin(logInIf_userEmail.text, Checking.EmailID), PopUpduration);
+                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID), PopUpduration);
                 return;
             }
-            else if (GetMessageWhenFaultCheckOnLogin(logInIf_password.text, Checking.Password) != null)
+            else if (GetMessageWhenFaultCheckOnLogin(password, Checking.Password) != null)
             {
-                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnLogin(logInIf_password.text, Checking.Password), PopUpduration);
+                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnLogin(password, Checking.Password), PopUpduration);
                 return;
             }
             else
             {
-                RestManager.LoginProfile(logInIf_userEmail.text, logInIf_password.text, OnCompleteLogin, OnErrorLogin);
+                RestManager.LoginProfile(emailID, password, OnCompleteLogin, OnErrorLogin);
             }
         }
 
         private void OnCompleteLogin(UserLogin loggedinProfile)
         {
+            Debug.Log("Login Successful: " + loggedinProfile);
+            if (Application.platform == RuntimePlatform.Android && PlayerPrefs.GetInt(PlayerprefsValue.AutoLogin.ToString()) == 0)
+            {
+                Debug.Log("Saving UserName and Password");
+                UIManager.Instance.SaveDetails(PlayerprefsValue.LoginID.ToString(), logInIf_userEmail.text);
+                UIManager.Instance.SaveDetails(PlayerprefsValue.Password.ToString(), logInIf_password.text);
+            }
             storeUserData(loggedinProfile);
             AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName,AccountAccessType.Login);
             OnClickLoginPopUpClose();
@@ -137,7 +146,7 @@ namespace ArenaZ.LoginUser
         private void OnClickForgotPasswordPopUpShow()
         {
             UIManager.Instance.HideScreenImmediately(Page.LogINOverlay.ToString());
-            UIManager.Instance.ScreenShowNormal(Page.ForgotPasswordOverlay.ToString());
+            UIManager.Instance.ScreenShow(Page.ForgotPasswordOverlay.ToString());
         }
     }
 }

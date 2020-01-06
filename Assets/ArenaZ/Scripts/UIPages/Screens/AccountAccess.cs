@@ -67,7 +67,7 @@ namespace ArenaZ.Screens
             yield return new WaitForSeconds(delay);
             UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(),true);
             Settings.Instance.LogInLogOutButtonNameSet(ConstantStrings.logout);
-            PlayerPrefs.SetInt("Logout", 0);
+            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 0);
             OpenCharacterUI();
             UIManager.Instance.setUserName?.Invoke(userName);
             CharacterSelection.Instance.ResetCharacterScroller(userName);

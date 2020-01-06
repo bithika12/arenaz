@@ -130,8 +130,8 @@ namespace ArenaZ.Manager
             UIManager.Instance.HideScreen(Page.GameplayPanel.ToString());
             UIManager.Instance.ScreenShow(Page.UIPanel.ToString(), Hide.none);
             UIManager.Instance.HideScreenImmediately(Page.PlayerMatchPanel.ToString());
-            UIManager.Instance.ScreenShowNormal(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.ScreenShowNormal(popUpName.ToString());
+            UIManager.Instance.ScreenShow(Page.TopAndBottomBarPanel.ToString());
+            UIManager.Instance.ScreenShow(popUpName.ToString());
             this.setUserName?.Invoke(userName);
             this.setUserImage?.Invoke(userImage);
         }

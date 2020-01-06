@@ -69,7 +69,7 @@ namespace ArenaZ.SettingsManagement
 
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
-            UIManager.Instance.ScreenShowNormal(Page.LoggedInText.ToString());
+            UIManager.Instance.ScreenShow(Page.LoggedInText.ToString());
         }
 
         private void OnDestroy()
@@ -146,10 +146,10 @@ namespace ArenaZ.SettingsManagement
 
         private void OnClickLogInLogOut()
         {
-            if (PlayerPrefs.GetInt("Logout") == 0)
+            if (PlayerPrefs.GetInt(PlayerprefsValue.Logout.ToString()) == 0)
             {
                 Debug.Log("Logged Out");
-                UIManager.Instance.ScreenShowNormal(Page.LogOutAlertOverlay.ToString());
+                UIManager.Instance.ScreenShow(Page.LogOutAlertOverlay.ToString());
             }
             else
             {
@@ -163,7 +163,8 @@ namespace ArenaZ.SettingsManagement
             TasksAfterLogout();
             UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
-            PlayerPrefs.SetInt("Logout", 1);
+            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
+            PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 0);
             UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
         }
 

@@ -32,7 +32,7 @@ namespace ArenaZ.LeaderBoard
 
         public void OnClickLeaderBoardBack()
         {
-            UIManager.Instance.HideScreenNormalWithAnim(Page.LeaderBoardPanel.ToString());
+            UIManager.Instance.HideScreenWithAnim(Page.LeaderBoardPanel.ToString());
         }
     }
 }

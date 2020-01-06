@@ -80,12 +80,12 @@ namespace ArenaZ.LevelMangement
         {
             if (gamePlayType == GameType.normal)
             {
-                UIManager.Instance.ScreenShowNormal(Page.ShootingrangePanel.ToString());
+                UIManager.Instance.ScreenShow(Page.ShootingrangePanel.ToString());
                 UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
             }
             else
             {
-                UIManager.Instance.ScreenShowNormal(Page.ShootingrangePanel.ToString());
+                UIManager.Instance.ScreenShow(Page.ShootingrangePanel.ToString());
                 UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
             }
         }
