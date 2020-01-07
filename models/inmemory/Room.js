@@ -126,6 +126,57 @@ room.throwDartDetails = function (reqObj) {
 }
 
 
+room.throwDartDetailsDraw = function (reqObj) {
+    return new Promise((resolve, reject) => {
+
+
+        let score;
+        let multiplier;
+        let calculatedScore;
+        let boardScore;
+        let userArr = [];
+        let newArr = [];
+        let newArr1 = [];
+        let newArr3 = [];
+        let userTurn;
+        let dartPnt;
+        let remainingScore;
+        let isWin;
+        let userTurnOppnt;
+        let userTurnGame;
+        boardScore = reqObj.score;
+        let playStatus = 0;
+        let cupNumber;
+        let cupNumberOppo;
+        room.findOne({roomName: reqObj.roomName}
+            , function (err, result) {
+                if (result) {
+
+
+                    let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
+                    cupNumber=70;
+                    userArr[findIndex].isWin = 2;
+                    userArr[findIndex].status = "inactive";
+                    userArr[findIndex].cupNumber = cupNumber;
+
+                    let findIndexOpp = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
+                    userArr[findIndexOpp].isWin = 2;
+                    userArr[findIndexOpp].status = "inactive";
+                    userArr[findIndexOpp].cupNumber = cupNumber;
+
+                    resolve({
+                        roomName: reqObj.roomName,
+                        finalArr: userArr
+
+                    });
+                } else {
+                    reject({message: "No room found"});
+                }
+            });
+    });
+}
+
+
 room.throwDartDetailsOld = function (reqObj) {
     return new Promise((resolve, reject) => {
 
@@ -525,9 +576,25 @@ room.findNextUserDartMod = function (condObj) {
     return new Promise((resolve, reject) => {
         room.findOne({roomName: condObj.roomName}, function (err, roomDetails) {
             if (roomDetails) {
-                let users = roomDetails.users;
+                let users=[];
+                users = roomDetails.users;
                 let findIndex = users.findIndex(elemt => (elemt.userId!=condObj.userId)/*||  elemt.turn < 1 *//*roomDetails.dealStartDirection*/);
-                resolve({userId: users[findIndex].userId});
+                users[findIndex].turn = 4;
+                //resolve({userId: users[findIndex].userId});
+
+                room.update({roomName: condObj.roomName}, {$set: {users: users}},
+
+                    function (err, updateroomresult) {
+                        if (err)
+                            reject({message: "Error:Database connection error"})
+                        else {
+                            if (updateroomresult > 0)
+                                resolve({userId: users[findIndex].userId});
+                            else
+                                reject({message: "Unable to update memory room"});
+                        }
+
+                    });
             } else {
                 reject({});
             }
