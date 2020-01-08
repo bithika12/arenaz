@@ -5,10 +5,11 @@ using ArenaZ.Manager;
 [RequireComponent(typeof(Button))][DisallowMultipleComponent]
 public class ButtonImageChanger : MonoBehaviour
 {
-    private Button myButton;
+    protected Button myButton;
     private SpriteState myButtonSpriteState;
     private ButtonImage buttonImageType;
     public ButtonType myButtonType;
+    public string GetButtonType { get { return myButtonType.ToString(); } }
 
     private void Awake()
     {
@@ -18,7 +19,7 @@ public class ButtonImageChanger : MonoBehaviour
 
     private void Start()
     {
-        buttonImageType = UIManager.Instance.ButtonImageType(myButtonType);
+        buttonImageType = UIManager.Instance.ButtonImageType(GetButtonType);
         ChangeButtonSpriteWhenPressed();
     }
 
@@ -43,4 +44,5 @@ public class ButtonImageChanger : MonoBehaviour
             myButton.image.sprite = buttonImageType.disabledSprite;
         }
     }
+
 }

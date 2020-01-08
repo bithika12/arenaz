@@ -4,6 +4,7 @@ using ArenaZ.Manager;
 using RedApple;
 using RedApple.Api.Data;
 using System;
+using ArenaZ.Screens;
 
 namespace ArenaZ.GameMode
 {
@@ -21,6 +22,7 @@ namespace ArenaZ.GameMode
         [Header("Images")]
         [Space(5)]
         [SerializeField] private Image profileImage;
+        [SerializeField] private Image dartImage;
 
         [Header("Text")]
         [Space(5)]
@@ -33,6 +35,7 @@ namespace ArenaZ.GameMode
         {
             GettingButtonReferences();
             ListenSocketEvents();
+            CharacterSelection.setDartImage += SetDartImage;
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
         }
@@ -103,6 +106,12 @@ namespace ArenaZ.GameMode
             Debug.Log($"User Join : {data}");
             var userJoinData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
             User.RoomName = userJoinData.result.RoomName;
+        }
+
+        public void SetDartImage(string dartName)
+        {
+            string path = GameResources.dartImageFolderPath + "/" + dartName+User.userColor;
+            dartImage.sprite = Resources.Load<Sprite>(path);
         }
 
         public void SetProfileImage(string imageName)

@@ -22,12 +22,14 @@ namespace ArenaZ.Manager
         private string _openScreen = string.Empty;
         private string closeScreen = string.Empty;
         private string characterName = string.Empty;
+        private string startColorName = ButtonType.DarkGreen.ToString();
+        public string StartColorName { get { return startColorName; } }
 
         [Header("SpriteAtlas")][Space(5)]
         [SerializeField] private SpriteAtlas countryAtlas;
 
         [Header("Button Images")][Space(5)]
-        [SerializeField]private ButtonImage[] allButtonImages = new ButtonImage[17];
+        [SerializeField]private ButtonImage[] allButtonImages = new ButtonImage[28];
 
         [Header("Profile Image")][Space(5)]
         [SerializeField] private ProfileImage[] ProfilePic = new ProfileImage[7];
@@ -163,16 +165,40 @@ namespace ArenaZ.Manager
             }
         }
 
+        public void ToggleScreenWithAnim(string screenName)
+        {
+            if (!allPages[screenName].gameObject.activeSelf)
+            {
+                allPages[screenName].ShowGameObjWithAnim();
+            }
+            else
+            {
+                allPages[screenName].HideGameObjWithAnim();
+            }
+        }
+
+        public void ToggleScreenImmediately(string screenName)
+        {
+            if (!allPages[screenName].gameObject.activeSelf)
+            {
+                allPages[screenName].Show();
+            }
+            else
+            {
+                allPages[screenName].Hide();
+            }
+        }
+
         public void SetComponent<T>(string screenName, bool value)
         {
             allPages[screenName].EnableDisableComponent<T>(value);
         }
 
-        public ButtonImage ButtonImageType(ButtonType type)
+        public ButtonImage ButtonImageType(string type)
         {
             for (int i = 0; i < allButtonImages.Length; i++)
             {
-                if (allButtonImages[i].buttonType == type)
+                if (allButtonImages[i].buttonType.ToString() == type)
                 {
                     return allButtonImages[i];
                 }
@@ -268,8 +294,7 @@ namespace ArenaZ.Manager
                 ScreenShow(Page.AccountAccesOverlay.ToString());
                 PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
             }
-        }
-
+        }        
     }
 
     [Serializable]

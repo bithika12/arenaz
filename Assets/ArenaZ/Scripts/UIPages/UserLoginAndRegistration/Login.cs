@@ -36,7 +36,7 @@ namespace ArenaZ.LoginUser
 
         private void Start()
         {
-            Settings.Instance.inputFieldclear += ClearLoginInputFieldData;
+            Settings.inputFieldclear += ClearLoginInputFieldData;
             PlayerPrefs.GetInt(PlayerprefsValue.AutoLogin.ToString(), 0);
             GettingButtonReferences();
         }

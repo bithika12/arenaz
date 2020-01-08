@@ -11,6 +11,7 @@ public enum Page
     ForgotPasswordOverlay,
     LevelSelectionPanel,
     SettingsPanel,
+    PlayerColorChooser,
     LoggedInText,
     LogOutAlertOverlay,
     LeaderBoardPanel,
@@ -39,6 +40,7 @@ public enum Race
     Human,
     Ebot,
     KeplerSecond,
+    KeplerWoman
 }
 
 public enum ButtonType
@@ -60,7 +62,17 @@ public enum ButtonType
     PlusImage,
     RightArrow,
     LeftArrow,
-    coloredButton,
+    Black,
+    DarkBlue,
+    DarkGreen,
+    Grey,
+    LightBlue,
+    LightGreen,
+    Orange,
+    Red,
+    Teal,
+    White,
+    Yellow,
     None
 }
 
@@ -125,6 +137,12 @@ public enum SceneType
     Gameplay
 }
 
+public static class GameResources
+{
+    public const string characterImageFolderPath = "Characters";
+    public const string dartImageFolderPath = "Darts";
+}
+
 public static class User
 {
     public static string userName;
@@ -132,7 +150,7 @@ public static class User
     public static string userEmailId;
     public static string UserAccessToken;
     public static string userRace;
-    public static string userColor = "Red";
+    public static string userColor;
     public static string RoomName;
 }
 
@@ -185,4 +203,5 @@ public static class ConstantStrings
     public const string defaultUserName = "UserName";
     public const string showTrigger = "Straight";
     public const string hideTrigger = "Reverse";
+    public const string dart = "Dart";
 }

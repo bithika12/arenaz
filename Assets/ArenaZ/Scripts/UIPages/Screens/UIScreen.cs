@@ -12,6 +12,7 @@ namespace ArenaZ.Screens
     {     
         protected Animator animator;
         protected TextMeshProUGUI txtMeshPro;
+        protected bool activeSelf = true;
         protected virtual void Awake()
         {
             if (GetComponent<Animator>())

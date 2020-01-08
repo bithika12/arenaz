@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 using ArenaZ.Manager;
 using UnityEngine.UI.Extensions;
 using ArenaZ.LevelMangement;
 using RedApple;
+using System;
+using System.Text.RegularExpressions;
 
 namespace ArenaZ.Screens
 {
@@ -20,11 +23,17 @@ namespace ArenaZ.Screens
         [Space(5)]
         [SerializeField] private Text userName;
 
+        [Header("TransForm")]
+        [Space(5)]
+        [SerializeField] private Transform characterParent;
+
         [Header("Scroll Snap")]
         [Space(5)]
         [SerializeField]private HorizontalScrollSnap horizontalScrollSnap;
-        public readonly string[] names = { Race.Canines.ToString(), Race.Kepler.ToString(), Race.Cyborg.ToString(), Race.CyborgSecond.ToString(), Race.Human.ToString(), Race.Ebot.ToString(), Race.KeplerSecond.ToString() };
+        private string dartName = string.Empty;
+        public readonly string[] raceNames = { Race.Canines.ToString(), Race.Kepler.ToString(), Race.Cyborg.ToString(), Race.CyborgSecond.ToString(), Race.Human.ToString(), Race.Ebot.ToString(), Race.KeplerSecond.ToString(),Race.KeplerWoman.ToString() };
         //Public Fields
+        public static Action<string> setDartImage;
 
         private void Start()
         {           
@@ -32,8 +41,9 @@ namespace ArenaZ.Screens
             ShowFirstText();
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(PageChecker);
             UIManager.Instance.setUserName += SetUserName;
+            PlayerColorChooser.setColorAfterChooseColor += SetColorOnCharacter;
         }
-        //horizontalScrollSnap.OnSelectionPageChangedEvent.RemoveListener(PageChecker);
+
         private void OnDestroy()
         {
             ReleaseButtonReferences();
@@ -54,7 +64,16 @@ namespace ArenaZ.Screens
         }
         #endregion
 
-        public void SetUserName(string userName)
+        public void SetColorOnCharacter(string colorName)
+        {
+            GameObject[] characters = horizontalScrollSnap.ChildObjects;
+            for (int i = 0; i < characters.Length; i++)
+            {
+                characters[i].GetComponent<Character>().SetCharacterImage(colorName);
+            }
+        }
+
+        private void SetUserName(string userName)
         {
             this.userName.text = userName;
         }
@@ -62,11 +81,11 @@ namespace ArenaZ.Screens
         #region UI_Functionalities
         public void ResetCharacterScroller(string userName)
         {
-            for (int i = 0; i < names.Length; i++)
+            for (int i = 0; i < raceNames.Length; i++)
             {
-                if (names[i] == PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()))
+                if (raceNames[i] == PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()))
                 {
-                    horizontalScrollSnap.ChangePage(i);
+                    horizontalScrollSnap.GoToScreen(i);
                 }
             }
           //  horizontalScrollSnap.ChangePage(PlayerPrefs.GetInt(userName, 0));
@@ -84,20 +103,27 @@ namespace ArenaZ.Screens
 
         public void PageChecker(int pageNo)
         {
-            UIManager.Instance.ShowCharacterName(names[pageNo]);
+            UIManager.Instance.ShowCharacterName(raceNames[pageNo]);
         }
 
         private void OnClickArena(GameType type)
         {
             enterArenaMode();
-            User.userRace = names[horizontalScrollSnap._currentPage];
-            UIManager.Instance.showProfilePic?.Invoke(names[horizontalScrollSnap._currentPage]);
+            User.userRace = raceNames[horizontalScrollSnap._currentPage];
+            dartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
+            Debug.Log("DartName:  " + dartName);
+            setDartImage?.Invoke(dartName);
+            UIManager.Instance.showProfilePic?.Invoke(raceNames[horizontalScrollSnap._currentPage]);
             LevelSelection.Instance.OnSelectionGameplayType(type);
-            PlayerPrefs.SetString(PlayerprefsValue.CharacterName.ToString(), names[horizontalScrollSnap._currentPage]);
-           // PlayerPrefs.SetInt(User.userName, horizontalScrollSnap._currentPage);
+            PlayerPrefs.SetString(PlayerprefsValue.CharacterName.ToString(), raceNames[horizontalScrollSnap._currentPage]);
             SocketManager.Instance.ColRequest();
         }
 
+        private string GetTruncatedString(string characterString)
+        {
+            string[] splittedString = Regex.Split(characterString, @"(?<!^)(?=[A-Z])");
+            return splittedString[1];
+        }
 
         private void enterArenaMode()
         {

@@ -31,16 +31,16 @@ namespace ArenaZ.RegistrationUser
 
         //Public Variables
 
-        private void OnEnable()
+        private void Start()
         {
             GettingButtonReferences();
-            Settings.Instance.inputFieldclear += ClearRegInputFieldData;
+            Settings.inputFieldclear += ClearRegInputFieldData;
         }
 
         private void OnDisable()
         {
             ReleaseButtonReferences();
-            Settings.Instance.inputFieldclear -= ClearRegInputFieldData;
+            Settings.inputFieldclear -= ClearRegInputFieldData;
         }
 
         #region Button_References

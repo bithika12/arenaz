@@ -27,6 +27,8 @@ namespace ArenaZ.SettingsManagement
         [SerializeField] private Image MusicImage;
         [SerializeField] private Image SFXImage;
         [SerializeField] private Image profileImage;
+        [SerializeField] private Image selectedColorImage;
+
 
         [Header("Text Fields")]
         [Space(5)]
@@ -46,7 +48,7 @@ namespace ArenaZ.SettingsManagement
         [SerializeField] private Button logOutButton;
         [SerializeField] private Button languageButton;
         [SerializeField] private Button deleteAccountButton;
-        [SerializeField] private Button playerColor;
+        [SerializeField] private Button playerColorButton;
 
         [Header("Integer and Floating Point")]
         [Space(5)]
@@ -58,7 +60,7 @@ namespace ArenaZ.SettingsManagement
 
         private Sprite countrySprite;
 
-        public Action inputFieldclear;
+        public static Action inputFieldclear;
 
         //------------------------------------------------------------+
         private void Start()
@@ -66,9 +68,9 @@ namespace ArenaZ.SettingsManagement
            // facebookLogin = GetComponent<FacebookLogin>();
             UpdateButtonsOnStart();
             GettingButtonReferences();
-
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
+            PlayerColorChooser.setColorAfterChooseColor += setSelectedColorImage;
             UIManager.Instance.ScreenShow(Page.LoggedInText.ToString());
         }
 
@@ -83,6 +85,8 @@ namespace ArenaZ.SettingsManagement
             closeButton.onClick.AddListener(OnClickClose);
 
             logOutButton.onClick.AddListener(OnClickLogInLogOut);
+
+            playerColorButton.onClick.AddListener(onClickPlayerColor);
 
             MusicToggle.onValueChanged.AddListener(delegate
             {
@@ -100,6 +104,8 @@ namespace ArenaZ.SettingsManagement
             closeButton.onClick.RemoveListener(OnClickClose);
 
             logOutButton.onClick.RemoveListener(OnClickLogInLogOut);
+
+            playerColorButton.onClick.RemoveListener(onClickPlayerColor);
 
             MusicToggle.onValueChanged.RemoveListener(delegate
             {
@@ -138,9 +144,28 @@ namespace ArenaZ.SettingsManagement
             this.userName.text = userName;
         }
 
+        private void setSelectedColorImage(string imageName)
+        {
+            User.userColor = imageName;
+            ButtonImage buttonImage = UIManager.Instance.ButtonImageType(imageName);
+            if(buttonImage.normalSprite)
+            {
+                selectedColorImage.sprite = buttonImage.normalSprite;
+            }
+        }
+
         #region UI_Functionalities
+
+        private void onClickPlayerColor()
+        {
+            UIManager.Instance.ToggleScreenWithAnim(Page.PlayerColorChooser.ToString());
+        }
+
         private void OnClickClose()
         {
+            //toggleAnimation = false;
+            //UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
+            UIManager.Instance.ToggleScreenImmediately(Page.PlayerColorChooser.ToString());
             UIManager.Instance.HideScreen(Page.SettingsPanel.ToString());
         }
 
