@@ -77,7 +77,7 @@ io.on('connection', function (socket) {
     function gameOverProcess(reqobj, callback) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
-                room.updateRoomGameOver({roomName: reqobj.roomName}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
+                room.updateRoomGameOver({roomName: reqobj.roomName,gameTotalTime:reqobj.gameTotalTime}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
                     io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                         userId: reqobj.userId,
                         roomName: reqobj.roomName,
@@ -544,7 +544,7 @@ io.on('connection', function (socket) {
     }
 
     function RoomUpdate(req, callback) {
-        room.updateRoomLeaveDisconnect({roomName: req.roomName,userTotal:req.roomUsers}).then(function (roomupdate) {
+        room.updateRoomLeaveDisconnect({roomName: req.roomName,gameTotalTime:req.gameTotalTime,userTotal:req.roomUsers}).then(function (roomupdate) {
             callback(null, req)
         });
     }

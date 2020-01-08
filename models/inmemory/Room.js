@@ -41,6 +41,10 @@ room.throwDartDetails = function (reqObj) {
             , function (err, result) {
                 if (result) {
                     userArr = result.users;
+                    let currentTime=new Date().getTime();
+                    const diff = currentTime - result.gametime;
+                    const gameSeconds = Math.floor(diff / 1000 % 60);
+
                     let findIndexOppo = userArr.findIndex(elemt => (elemt.turn >= 3 && elemt.userId != reqObj.userId/*roomDetails.dealStartDirection*/));
                     if (findIndexOppo != -1)
                         userArr[findIndexOppo].turn = 0;
@@ -116,7 +120,8 @@ room.throwDartDetails = function (reqObj) {
                         playStatus: playStatus,
                         isWin: isWin,
                         playerScore: reqObj.score,
-                        cupNumber: cupNumber
+                        cupNumber: cupNumber,
+                        gameTotalTime:gameSeconds
                     });
                 } else {
                     reject({message: "No room found"});
@@ -549,7 +554,8 @@ room.userLeave = function (condObj, updateObj) {
                     playStatus: playStatus,
                     isWin: isWin,
                     playerScore: playerScore,
-                    cupNumber: cupNumber
+                    cupNumber: cupNumber,
+                    gameTotalTime:gameSeconds
                 });
 
     });
@@ -620,7 +626,8 @@ room.userLeaveNew = function (condObj, updateObj) {
                     playStatus: playStatus,
                     isWin: isWin,
                     playerScore: playerScore,
-                    cupNumber: cupNumber
+                    cupNumber: cupNumber,
+                    gameTotalTime:gameSeconds
                 });
 
             });
@@ -733,7 +740,7 @@ room.updateInmemoryRoom = function (userObj, updateArr) {
 room.updateInmemoryRoomMod = function (updateArr) {
     return new Promise((resolve, reject) => {
 
-        room.update({roomName: updateArr.roomName}, {$set: {users: updateArr.finalArr}},
+        room.update({roomName: updateArr.roomName}, {$set: {gameTotalTime:updateArr.gameTotalTime,users: updateArr.finalArr}},
 
             //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},
             function (err, updateroomresult) {
@@ -751,7 +758,8 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             isWin: updateArr.isWin,
                             roomUsers: updateArr.finalArr,
                             playerScore: updateArr.playerScore,
-                            cupNumber: updateArr.cupNumber
+                            cupNumber: updateArr.cupNumber,
+                            gameTotalTime:updateArr.gameTotalTime
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else
