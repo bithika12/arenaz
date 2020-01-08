@@ -80,7 +80,8 @@ io.on('connection', function (socket) {
                 room.updateRoomGameOver({roomName: reqobj.roomName}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
                     io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                         userId: reqobj.userId,
-                        roomName: reqobj.roomName
+                        roomName: reqobj.roomName,
+                        gameStatus:"Win"
                     }, "Game is over"));
                     callback(null, reqobj);
                 }).catch(err => {
@@ -244,83 +245,33 @@ io.on('connection', function (socket) {
     })();
 
 
-    function userNextStartDart2(reqobj, callback) {
-        return new Promise((resolve, reject) => {
-            waitingDartInterval[reqobj.roomName] = setTimeout(() => {
-                nextUserTurnDart(reqobj, 0)
-            }, 1000);
-        })
-    }
     function userNextStartDart(reqobj, callback) {
         return new Promise((resolve, reject) => {
+            //waitingDartInterval[reqobj.roomName] = setTimeout(() => {
+                nextUserTurnDart(reqobj, 0)
+            //}, 1000);
+
+            callback(null, reqobj);
+        })
+    }
+    function userNextStartDart45(reqobj, callback) {
+        return new Promise((resolve, reject) => {
             if (reqobj.dartPoint != '') {
-                let count = 0;
-                //clearTimeout(waitingDartInterval[reqobj.roomName]);
 
                 inmRoom.findNextUserDart({roomName: reqobj.roomName}).then(function (roomDetails) {
                     if (roomDetails) {
                         io.to(reqobj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
-                        const  waitingDartInterval1 = setInterval(() => {
-                            const properID = CheckReload();
-                            console.log(properID);
-                            if (properID > constants.TURN_WAITING_TIME) {
-                                count = 0;
-                                clearInterval(waitingDartInterval1);
-                                nextUserTurnDartMod(reqobj, 0)
-                                //return;
-                            }
-                            /*count++;
-                            console.log("count-", count);
-                            console.log("pending time-", constants.TURN_WAITING_TIME);
-                            if (count > (constants.TURN_WAITING_TIME)) {
-                                console.log("pending time-CROSS", constants.TURN_WAITING_TIME);
-                                clearTimeout(waitingDartInterval[reqobj.roomName]);
-                                nextUserTurnDartMod(reqobj, 0)
 
-                            }
-                            else{
-                                clearInterval(waitingDartInterval);
-                                clearTimeout(waitingDartInterval[reqobj.roomName]);
-                            }*/
-
-
-                        }, 1000);
                     }
                 }).catch(err => {
                     //reject(err);
                 });
-                //nextUserTurnDart(reqobj, 0)
-                //clearInterval(waitingDartInterval[reqobj.roomName]);
-               /* if(waitingDartInterval.length ==0){
-                    waitingDartInterval[reqobj.roomName] = setInterval(() => {
-                    count++;
-                    console.log("count-", count);
-                    console.log("pending time-", constants.TURN_WAITING_TIME);
-                    if (count > (constants.TURN_WAITING_TIME)) {
-                        console.log("pending time-CROSS", constants.TURN_WAITING_TIME);
-                        //clearInterval(waitingDartInterval[reqobj.roomName]);
-                        clearTimeout(waitingDartInterval[reqobj.roomName]);
-                        nextUserTurnDartMod(reqobj, 0)
-                        //clearInterval(waitingDartInterval[reqobj.roomName]);
-                        //clearTimeout(waitingDartInterval[reqobj.roomName]);
 
-                    }
-
-
-                }, 1000);
-             }
-            else{
-
-                    console.log("already running");
-                    clearTimeout(waitingDartInterval[reqobj.roomName]);
-                    nextUserTurnDartMod(reqobj, 0)
-
-                }*/
             }
             else{
                 waitingDartInterval[reqobj.roomName] = setTimeout(() => {
                     nextUserTurnDart(reqobj, 0)
-                }, 10000);
+                }, 1000);
             }
           // callback(null, reqobj);
         })
@@ -409,6 +360,7 @@ io.on('connection', function (socket) {
                                 raceName: req.raceName,
                                 total_no_win: 0,
                                 cupNumber: 0
+
                             };
                             inmRoom.roomJoineeCreation({
                                 roomId: result._id,
@@ -562,6 +514,20 @@ io.on('connection', function (socket) {
             inmRoom.userLeave({roomName: req.roomName, userId: req.userId}).then(function (updateDetails) {
                 //room.playerLeave({roomName: req.roomName, userId: req.userId}).then(function (playerUpdate) {
                     callback(null, updateDetails);
+                //})
+            }).catch(err => {
+                callback("", null);
+            })
+        }
+
+    }
+
+
+    function playerLeaveMod(req) {
+        return function (callback) {
+            inmRoom.userLeaveNew({roomName: req.roomName, userId: req.userId}).then(function (updateDetails) {
+                //room.playerLeave({roomName: req.roomName, userId: req.userId}).then(function (playerUpdate) {
+                callback(null, updateDetails);
                 //})
             }).catch(err => {
                 callback("", null);
@@ -786,17 +752,34 @@ io.on('connection', function (socket) {
                     //allOnlineUsers.splice(findIndex, 1);
                     if (result) {
 
-                        if (findIndexOpponent != -1) {
+                        if (findIndexOpponent != -1 && result.isWin==1) {
                             winnerDeclare({
                                 userId: allOnlineUsers[findIndexOpponent].userId,
-                                roomName: req.roomName
+                                roomName: userRoomName
                             }).then(function (roomDetails) {
-                                io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                     userId: roomDetails,
-                                    roomName: req.roomName
+                                    roomName: userRoomName,
+                                    gameStatus:"Win"
                                 }, "Game is over"));
                                 logger.print("Room closed");
                             });
+                        }
+                        else if(findIndexOpponent != -1 && result.isWin==2){
+                            io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                userId: result.roomUsers,
+                                roomName: userRoomName,
+                                gameStatus:"Draw"
+                            }, "Game is over"));
+                            logger.print("Room closed");
+                        }
+                        else{
+                            io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                userId: result.roomUsers,
+                                roomName: userRoomName,
+                                gameStatus:""
+                            }, "Game is over"));
+                            logger.print("Room closed");
                         }
                         logger.print("Room closed");
                         allOnlineUsers.splice(findIndex, 1);
@@ -833,7 +816,7 @@ io.on('connection', function (socket) {
             io.to(req.roomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: req.userId}, "Player leave from room"));
             //if (allOnlineUsers[findIndexOpponent]){
             async.waterfall([
-                playerLeave({roomName: req.roomName, userId: req.userId}),
+                playerLeaveMod({roomName: req.roomName, userId: req.userId}),
                 updateRoom,
                 RoomUpdate
                 //totalPlayerList,
@@ -842,18 +825,36 @@ io.on('connection', function (socket) {
                 //winnerDeclare({userId: allOnlineUsers[findIndexOpponent].userId})
             ], function (err, result) {
                 if (result) {
-                    if (findIndexOpponent != -1) {
+                    if (findIndexOpponent != -1 && result.isWin==1) {
                         winnerDeclare({
                             userId: allOnlineUsers[findIndexOpponent].userId,
                             roomName: req.roomName
                         }).then(function (roomDetails) {
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: roomDetails,
-                                roomName: req.roomName
+                                roomName: req.roomName,
+                                gameStatus:"Win"
                             }, "Game is over"));
                             logger.print("Room closed");
                         });
                     }
+                    else if(findIndexOpponent != -1 && result.isWin==2){
+                        io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                            userId: result.roomUsers,
+                            roomName: req.roomName,
+                            gameStatus:"Draw"
+                        }, "Game is over"));
+                        logger.print("Room closed");
+                    }
+                    else{
+                        io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                            userId: result.roomUsers,
+                            roomName: req.roomName,
+                            gameStatus:""
+                        }, "Game is over"));
+                        logger.print("Room closed");
+                    }
+
                     logger.print("Room closed");
                     allOnlineUsers.splice(findIndex, 1);
                 } else
