@@ -1,4 +1,5 @@
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
+//var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
 
 
