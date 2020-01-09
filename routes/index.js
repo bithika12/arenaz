@@ -26,6 +26,8 @@ router.get('/', function(req, res, next) {
   let forgotPasswordController=require('../controllers/ForgotPasswordController');
   const forgotPassword = require(appRoot + '/controllers/ForgotPasswordController');
 
+  const fetchGameHistory = require(appRoot + '/controllers/GameHistoryController');
+
 
 /**  LOGIN ROUTING **/
   router.post('/registration',userController.registration);
@@ -35,6 +37,8 @@ router.get('/', function(req, res, next) {
 
   //forgot password
 router.post('/forgot/password',forgotPassword.forgotPassword);
+
+router.post('/game/history',fetchGameHistory.fetchGame);
 
 
  /* FORGET PASSWORD RESET PASSWORD*/

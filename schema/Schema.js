@@ -44,7 +44,8 @@ var userSchema =  new Schema({
                         deviceDetails    :  [{ accessToken : String, deviceId: String, deviceToken : String,expiryAt : Date, status: {type:String , enum: ['active','inactive'] , default : 'active'}, createdAt : Date,updatedAt:Date}],
                         sockets          :  [{ socketId: String, status: Number,createdAt : Date, updatedAt:Date}], 
                         createdAt        :  Date,
-                        updatedAt        :  Date
+                        updatedAt        :  Date,
+                        roleId           :  Schema.Types.ObjectId
                   },{
                      strict:false
                   });
@@ -71,7 +72,7 @@ var roomSchema = new Schema({
         type: Date,
        // default: Date.now
     },
-    gameTotalTime:String
+    game_time:Number
 
 });
 

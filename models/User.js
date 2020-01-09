@@ -40,12 +40,16 @@ User.countUser = function(condObj){
 User.createUser = function(reqObj){
       return new Promise((resolve,reject)=>{
       reqObj.password  =  password.hashPassword(reqObj.password);
-      reqObj.deviceDetails = [{accessToken :  uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];  
-        User.create(reqObj).then(response=> {
-              resolve(response)
-        }).catch(err=>{
-              reject(err);
-        })  
+      reqObj.deviceDetails = [{accessToken :  uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];
+
+             Role.findOne({ slug: reqObj.roleType},{_id: 1,name:1,slug:1}).then(roledetails=> {
+                 reqObj.roleId = roledetails._id;
+              User.create(reqObj).then(response => {
+                  resolve(response)
+              }).catch(err => {
+                  reject(err);
+              })
+          })
    })
 }
 
@@ -119,6 +123,17 @@ User.findDetails = function(condObj){
         });
     });
 }
+
+ User.findDetailsByEmail = function(condObj){
+     console.log(" condObj",)
+     return  new Promise((resolve,reject) => {
+         User.findOne({email: condObj.email}).then(responses=> {
+             return resolve(responses);
+         }).catch(err => {
+             return reject(err);
+         });
+     });
+ }
 
 
 /*******   CHECK USER TOKEN   *******/

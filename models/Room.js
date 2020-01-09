@@ -278,7 +278,7 @@ room.updateRoomLeave  = function(userObj,updateArr){
 room.updateRoomLeaveDisconnect  = function(updateArr){
     return new Promise((resolve,reject)=>{
 
-        Room.updateOne({name : updateArr.roomName},{ $set: { status:"closed",gameTotalTime:updateArr.gameTotalTime,updated_at:Date.now(),users: updateArr.userTotal }},
+        Room.updateOne({name : updateArr.roomName},{ $set: { status:"closed",game_time:updateArr.gameTotalTime,updated_at:Date.now(),users: updateArr.userTotal }},
             function (err, updateroomresult) {
                 if (err)
                     reject({message:"Error:Database connection error"})
@@ -313,7 +313,7 @@ room.playerLeave = function(condObj){
 room.updateRoomGameOver = function(condObj,updateObj){
     return new Promise((resolve,reject) => {
 
-        Room.updateOne({name : condObj.roomName},{ $set: { status:"closed",updated_at:Date.now(),gameTotalTime:condObj.gameTotalTime,users: updateObj.userObj }},
+        Room.updateOne({name : condObj.roomName},{ $set: { status:"closed",updated_at:Date.now(),game_time:condObj.gameTotalTime,users: updateObj.userObj }},
        // Room.updateOne({roomName : condObj.roomName},{ $set: { users: updateObj.userObj }},
 
             //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},
@@ -335,6 +335,19 @@ room.updateRoomGameOver = function(condObj,updateObj){
     })
 }
 
+/*
+   * Fetch game history
+ */
 
+ room.findHistory = function(condObj){
+    console.log(" fetch game history  ",condObj)
+    return new Promise((resolve,reject) => {
+        Room.find({status:"closed"}, {_id: 1, name:1, users:1, game_time:1,updated_at:1}).then(responses=> {
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+    })
+ }
 
 module.exports =room;
