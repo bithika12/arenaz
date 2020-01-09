@@ -46,6 +46,7 @@ room.createRoom = function(condObj){
                                        userName:condObj.userName,
                                        colorName:condObj.colorName,
                                        raceName:condObj.raceName,
+                                       dartName:condObj.dartName,
                                        total_no_win:0,
                                        cupNumber:0}}
 
@@ -61,7 +62,7 @@ room.createRoom = function(condObj){
                     {
                         $push: { users: { userId: condObj.userId ,
                                 status:"active",total:100,score:100,isWin:0,turn:0,
-                                userName:condObj.userName,colorName:condObj.colorName,raceName:condObj.raceName,total_no_win:0,cupNumber:0 } }
+                                userName:condObj.userName,colorName:condObj.colorName,raceName:condObj.raceName,dartName:condObj.dartName,total_no_win:0,cupNumber:0 } }
                     },
                     { multi: true }).then(updateRoomDetails=> {
                     return resolve({ roomName : responses[0].name ,_id :responses[0]._id });

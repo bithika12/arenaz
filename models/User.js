@@ -155,7 +155,8 @@ User.checkUserToken = function(condObj){
          User.findOne({"deviceDetails.accessToken":condObj.accessToken},
              {_id: 1,name:1,email:1,status:1,userName:1,deviceDetails: {$elemMatch: {accessToken: condObj.accessToken}},
                  colorName:{$elemMatch: {status: 1}},
-                 raceName:{$elemMatch: {status: 1}}})
+                 raceName:{$elemMatch: {status: 1}},
+                 dartName:{$elemMatch: {status: 1}}})
              .then(responses=> {
                  return resolve(responses);
              }).catch(err => {
@@ -318,6 +319,38 @@ User.resetPassword = function(condObj,updateObj){
              }else{
                  var  colors = [{colorName : updateObj.colorName,status:1,createdAt : currentDay,updatedAt : currentDay}];
                  User.updateOne({ _id :condObj.userId},{$set :{ "colorName":colors}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
+
+
+
+ User.nameRequest  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({/*"sockets.socketId":condObj.socketId*/_id :condObj.userId },
+             {_id: 1, userName:1, email:1, status:1, dartName: {$elemMatch: {dartName: updateObj.dartName,status:1 } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.dartName.length > 0){
+                 //update this to inactive
+                 //return resolve(userDetails);
+                 /*var  colors = [{raceName : updateObj.raceName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({ _id :condObj.userId ,"raceName.status": "1"  },{  $set:{ "raceName.$[].status":"0"}}).then(responses=> {
+                     User.updateOne({ _id :condObj.userId},{$push :{ "raceName":colors}}).then(responses=> {
+                         return resolve(userDetails);
+                     }).catch(err => { return reject(err); });
+                 }).catch(err => { return reject(err); });*/
+
+                 return resolve(userDetails);
+             }else{
+
+                 var  colors = [{dartName : updateObj.dartName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({ _id :condObj.userId},{$set :{ "dartName":colors}}).then(responses=> {
                      return resolve(responses);
                  }).catch(err => {
                      reject(err);

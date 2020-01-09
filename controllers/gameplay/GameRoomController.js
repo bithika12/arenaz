@@ -344,7 +344,8 @@ io.on('connection', function (socket) {
                             userId: req.userId,
                             userName: req.userName,
                             colorName: req.colorName,
-                            raceName: req.raceName
+                            raceName: req.raceName,
+                            dartName: req.dartname,
                         }).then(function (result) {
                             let roomName = result.roomName;
                             userObj = {
@@ -358,6 +359,7 @@ io.on('connection', function (socket) {
                                 userName: req.userName,
                                 colorName: req.colorName,
                                 raceName: req.raceName,
+                                dartName:req.dartname,
                                 total_no_win: 0,
                                 cupNumber: 0
 
@@ -560,6 +562,11 @@ io.on('connection', function (socket) {
         user.colorRequest({userId: req.userId}, {"colorName": req.color})
             .then(colorUpdate => {
                 return user.sageRequest({userId: req.userId}, {"raceName": req.race}
+                );
+                //io.to(req.roomName).emit('colorRequest',response.generate(constants.SUCCESS_STATUS,{ },colorUpdate));
+            })
+            .then(raceUpdate => {
+                return user.nameRequest({userId: req.userId}, {"dartName": req.dartName}
                 );
                 //io.to(req.roomName).emit('colorRequest',response.generate(constants.SUCCESS_STATUS,{ },colorUpdate));
             })

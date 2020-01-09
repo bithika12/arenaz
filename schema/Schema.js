@@ -34,6 +34,7 @@ var userSchema =  new Schema({
                         loginIp          :  String,
                         colorName        :  [{ colorName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         raceName         :  [{ raceName: String, status: Number,createdAt : Date, updatedAt:Date}],
+                        dartName         :  [{ dartName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
                         loginType        :  {  type : String ,enum :["normal","social"],default :'normal'},
                         status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
@@ -62,7 +63,7 @@ var userSchema =  new Schema({
 var roomSchema = new Schema({
     name          : String,
     status        : String,
-    users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,userName:String,cupNumber:Number}],
+    users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,dartName:String,userName:String,cupNumber:Number}],
     //users        : [{userId:String, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String}],
     created_at: {
         type: Date,
