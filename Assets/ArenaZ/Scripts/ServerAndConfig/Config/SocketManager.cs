@@ -81,6 +81,21 @@ namespace RedApple
             socket.EmitJson(SocketEmitEvents.throwDart.ToString(), throwDartData);
         }
 
+        public void ThrowDartData(int hitValue, string point)
+        {
+            ThrowDart throwDart = new ThrowDart
+            {
+                AccessToken = User.UserAccessToken,
+                Score = hitValue.ToString(),
+                RoomName = User.RoomName,
+                DartPoint = point
+            };
+            string throwDartData = DataConverter.SerializeObject(throwDart);
+            Debug.Log("Throw Dart");
+            Debug.LogError("Throw Dart Data: " + throwDartData);
+            socket.EmitJson(SocketEmitEvents.throwDart.ToString(), throwDartData);
+        }
+
         #endregion
 
         #region Socket Callbacks

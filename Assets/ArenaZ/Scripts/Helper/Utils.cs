@@ -207,4 +207,5 @@ public static class ConstantStrings
     public const string showTrigger = "Straight";
     public const string hideTrigger = "Reverse";
     public const string dart = "Dart";
+    public const string turnCancelled = "TurnCancelled";
 }

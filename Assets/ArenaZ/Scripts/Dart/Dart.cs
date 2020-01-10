@@ -55,7 +55,7 @@ namespace ArenaZ.ShootingObject
                 AddPointsToArray(endPosition);
                 transform.DOPath(points, .6f, PathType.CatmullRom)
                          .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
-                         .OnComplete(() => TasksAfterHit());
+                         .OnComplete(GameManager.Instance.OnCompletionDartHit);
             }
         } 
 
@@ -76,16 +76,16 @@ namespace ArenaZ.ShootingObject
             dartRB.velocity = BallisticVelocity(endPosition, angle);
         }
 
-        public void TasksAfterHit()
-        {
-            GameManager.Instance.OnCompletionDartHit();
-            StartCoroutine(destroyAfterACertainTime());
-        }
+        //public void TasksAfterHit()
+        //{
+        //    GameManager.Instance.OnCompletionDartHit();
+        //    StartCoroutine(destroyAfterACertainTime());
+        //}
 
-        private IEnumerator destroyAfterACertainTime()
-        {
-            yield return new WaitForSeconds(2f);
-            Destroy(gameObject);
-        }
+        //private IEnumerator destroyAfterACertainTime()
+        //{
+        //    yield return new WaitForSeconds(2f);
+        //    Destroy(gameObject);
+        //}
     }
 }

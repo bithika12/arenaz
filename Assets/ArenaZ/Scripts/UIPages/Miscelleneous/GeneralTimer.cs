@@ -8,25 +8,26 @@ public class GeneralTimer
     private MonoBehaviour _monoBehaviour;
     private float _time;
     private float _remainingTime;
-    private float _slowTimeFactor;
+    private const float _slowTimeFactor = 1;
     private Action _onTimerComplete;
     private IEnumerator _coroutine;
-    private bool _isTimerPaused;
+    private bool _isTimerPaused = false;
+
+    private float vanillaTimerRef= 0.0f;
 
     //public uint RemainingTime { get => Convert.ToUInt32(_remainingTime); set => _remainingTime = value; }
     public float RemainingTime { get => _remainingTime; set => _remainingTime = value; }
-    public float SlowTimeFactor { get => _slowTimeFactor; set => _slowTimeFactor = value; }
+    public float SlowTimeFactor { get => _slowTimeFactor; set { } }
     public bool IsTimerPaused { get => _isTimerPaused; set => _isTimerPaused = value; }
 
-    public GeneralTimer(MonoBehaviour mono)
+    public GeneralTimer(MonoBehaviour mono, float time)
     {
         _monoBehaviour = mono;
+        vanillaTimerRef = time;
     }
-    public void StartTimer(float time, Action onTimerComplete)
+    public void StartTimer(Action onTimerComplete)
     {
-        IsTimerPaused = false;
-        _time = time;
-        SlowTimeFactor = 1;
+        ResetTimer();
         _onTimerComplete = onTimerComplete;
         if (_coroutine != null)
             _monoBehaviour.StopCoroutine(_coroutine);
@@ -36,12 +37,18 @@ public class GeneralTimer
 
     public void StopTimer()
     {
-        if (_coroutine != null)
-        {
-            _monoBehaviour.StopCoroutine(_coroutine);
-        }
-        _coroutine = null;
-        _onTimerComplete = null;
+        _monoBehaviour.StopAllCoroutines();
+        //if (_coroutine != null)
+        //{
+        //    _monoBehaviour.StopCoroutine(_coroutine);
+        //}
+        //_coroutine = null;
+        //_onTimerComplete = null;
+    }
+
+    public void ResetTimer()
+    {
+        _time = vanillaTimerRef;
     }
 
     IEnumerator CountDown()
@@ -50,16 +57,14 @@ public class GeneralTimer
         {
             if(!IsTimerPaused)
             {
-                _time -= Time.deltaTime / SlowTimeFactor;
+                _time -= Time.deltaTime / _slowTimeFactor;
                 _remainingTime = _time;
                 yield return null;
             }
             else
                 yield return null;                  
         }
-
-        if (_onTimerComplete != null)
-            _onTimerComplete?.Invoke();
+        _onTimerComplete?.Invoke();
         StopTimer();
     }
 }

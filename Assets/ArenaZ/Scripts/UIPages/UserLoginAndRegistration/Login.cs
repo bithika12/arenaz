@@ -31,7 +31,8 @@ namespace ArenaZ.LoginUser
 
         private void Awake()
         {
-            UIManager.Instance.userLogin += onClickUserLogin;
+            Debug.Log("Awake Called");
+            LoginHandler.userLogin += onClickUserLogin;
         }
 
         private void Start()

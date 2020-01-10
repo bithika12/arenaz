@@ -36,7 +36,6 @@ namespace ArenaZ.Manager
         //Public Variables
         public Action<string> showProfilePic;
         public Action<string> setUserName;
-        public Action<string, string> userLogin;
 
         protected override void Awake()
         {
@@ -46,10 +45,9 @@ namespace ArenaZ.Manager
 
         private void Start()
         {
-            StartAnimations();
-            StartCoroutine(logInCheck());
+            enableGameStartPages();
         }
-        private void StartAnimations()
+        private void enableGameStartPages()
         {
             ShowScreen(Page.UIPanel.ToString());
             ShowScreen(Page.TopAndBottomBarPanel.ToString());
@@ -97,9 +95,7 @@ namespace ArenaZ.Manager
             ShowScreen(screenName);            
             if (!_openPages.Contains(screenName))
             {
-                Debug.Log("Pushing....."+screenName);
                 _openPages.Push(screenName);
-                Debug.Log("stack count: " + _openPages.Count);
             }            
         }
 
@@ -108,11 +104,9 @@ namespace ArenaZ.Manager
             if (_openPages.Count > 0)
             {
                 for (int i =_openPages.Count; i > 0; i--)
-                {
-                    Debug.Log("Hiding..."+ _openPages.Peek());
+                { 
                     HideScreenImmediately(_openPages.Peek());
                     _openPages.Pop();
-                    Debug.Log("stack count: " + _openPages.Count);
                 }
             }
         }
@@ -244,18 +238,17 @@ namespace ArenaZ.Manager
         public void SaveDetails(string filename, string data)
         {
             byte[] dataBytes = getByteFromString(data);
-            //PlayerPrefs.SetString(filename, data);
             DataSaveAndLoad dataSaveAndLoad = new DataSaveAndLoad(filename, filename, dataBytes);
             Debug.Log("Saving...  " + filename);
             dataSaveAndLoad.SaveToDisk(dataBytes);
         }
 
-        private string loadDetails(string fileName)
+        public string LoadDetails(string fileName)
         {
             DataSaveAndLoad fileManagement = new DataSaveAndLoad(fileName, fileName);
             fileManagement.LoadDataFromStorage();
             byte[] details = fileManagement.LoadedData;
-            Debug.Log("Data :::::: " + Encoding.ASCII.GetString(details));
+            Debug.Log("Fetched Data :::::: " + Encoding.ASCII.GetString(details));
             return Encoding.ASCII.GetString(details);
         }
 
@@ -263,26 +256,6 @@ namespace ArenaZ.Manager
         {
             DataSaveAndLoad fileManagement = new DataSaveAndLoad(fileName, fileName);
             fileManagement.DeleteFile();
-        }
-
-        private IEnumerator logInCheck()
-        {
-            ShowScreen(Page.AccountAccesOverlay.ToString());
-            yield return new WaitForSeconds(ConstantInteger.autoLoginWait);
-            string savedLoginID = loadDetails(PlayerprefsValue.LoginID.ToString());
-            string savedPassword = loadDetails(PlayerprefsValue.Password.ToString());
-            Debug.Log("Loaded String:  " + savedLoginID + "   " + savedPassword);
-            if (savedLoginID!=string.Empty && savedPassword!=string.Empty)
-            {
-                Debug.Log("Matched");
-                ShowScreen(Page.LogINOverlay.ToString());
-                userLogin?.Invoke(savedLoginID, savedPassword);
-                PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 1);
-            }
-            else
-            {
-                PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
-            }
         }
     }
 

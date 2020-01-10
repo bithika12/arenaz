@@ -8,6 +8,7 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using ArenaZ.GameMode;
+using System.Collections;
 
 namespace ArenaZ.Manager
 {
@@ -62,7 +63,7 @@ namespace ArenaZ.Manager
             UIManager.Instance.showProfilePic += SetUserProfileImage;
             ShootingRange.Instance.setOpponentName += SetOpponentName;
             ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
-            genericTimer = new GeneralTimer(this);
+            genericTimer = new GeneralTimer(this,ConstantInteger.timerValue);
         }
 
         private void Update()
@@ -83,8 +84,8 @@ namespace ArenaZ.Manager
         private void resetTimer()
         {
             timer = ConstantInteger.timerValue;
-            userTimerImage.fillAmount = ConstantInteger.timerValue;
-            opponentTimerImage.fillAmount = ConstantInteger.timerValue;
+            userTimerImage.fillAmount = genericTimer.SlowTimeFactor;
+            opponentTimerImage.fillAmount = genericTimer.SlowTimeFactor;
             playerTurn = false;
         }
 
@@ -93,7 +94,7 @@ namespace ArenaZ.Manager
             string userDartPath = GameResources.dartPrefabFolderPath +"/"+User.dartName;
             string opponentDartPath = GameResources.dartPrefabFolderPath + "/" +Opponent.dartName;
             userDart = Resources.Load<GameObject>(userDartPath);
-            opponentDart = Resources.Load<GameObject>(userDartPath);
+            opponentDart = Resources.Load<GameObject>(opponentDartPath);
         }
 
         private void getDartMaterialColorCode(string colorName)
@@ -167,14 +168,14 @@ namespace ArenaZ.Manager
                 InstantiateDart(userDart);
                 PlayerType = Player.player;
                 touchBehaviour.IsShooted = false;
-                genericTimer.StartTimer(ConstantInteger.timerValue, OnPlayerTimerComplete);
+                genericTimer.StartTimer(OnPlayerTimerComplete);
             }
             else
             {
                 InstantiateDart(opponentDart);
                 PlayerType = Player.opponent;
                 touchBehaviour.IsShooted = true;
-                genericTimer.StartTimer(ConstantInteger.timerValue, OnOponnetTimerComplete);
+                genericTimer.StartTimer(OnOponnetTimerComplete);
             }
             playerTurn = true;
             updateScoreBoardInEveryTurn(PlayerType);
@@ -182,34 +183,39 @@ namespace ArenaZ.Manager
 
         private void OnOponnetTimerComplete()
         {
-            genericTimer.StopTimer();
-            OnCompletionDartHit();
+            resetTimer();
         }
 
         private void OnPlayerTimerComplete()
         {
             // Call Drat Throw Event WIth ZERO values
-            genericTimer.StopTimer();
-            SocketManager.Instance.ThrowDartData(0, Vector3.zero);
-            OnCompletionDartHit();
+            SocketManager.Instance.ThrowDartData(0, ConstantStrings.turnCancelled);
+            resetTimer();
         }
 
         private void onOpponentDartThrow(string data)
         {
             Debug.Log($"Dart Throw : {data}");
             var dartThrowData = DataConverter.DeserializeObject<ApiResponseFormat<DartThrow>>(data);
-            if (dartThrowData.Result.UserId != User.userId)
+            if(dartThrowData.Result.UserId != User.userId)
             {
-                Debug.Log("Opponent Hit Score: " + int.Parse(dartThrowData.Result.PlayerScore));
-                UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), int.Parse(dartThrowData.Result.PlayerScore).ToString(), scorePopUpDuration);
-                if(int.Parse(dartThrowData.Result.PlayStatus) == 0)
+                if (dartThrowData.Result.DartPoint.Contains(ConstantStrings.turnCancelled))
                 {
-                    storeCalculatedgameScore(PlayerType.ToString(), int.Parse(dartThrowData.Result.PlayerScore));
-                    showScore(int.Parse(dartThrowData.Result.PlayerScore));
+                    StartCoroutine(destroyDartAfterACertainTime(0,currentDart.gameObject));
                 }
-                Vector3 opponenDartHitPoint = getValue(dartThrowData.Result.DartPoint);
-                DartThrow(opponenDartHitPoint, ConstantInteger.shootingAngle);
-                Debug.Log("Opponent Dart Hit point:  " + opponenDartHitPoint + " " + " IsBust " + dartThrowData.Result.PlayStatus + " Score " + opponentRemainingScore);
+                else
+                {
+                    Debug.Log("Opponent Hit Score: " + int.Parse(dartThrowData.Result.PlayerScore));
+                    UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), int.Parse(dartThrowData.Result.PlayerScore).ToString(), scorePopUpDuration);
+                    if (int.Parse(dartThrowData.Result.PlayStatus) == 0)
+                    {
+                        storeCalculatedgameScore(PlayerType.ToString(), int.Parse(dartThrowData.Result.PlayerScore));
+                        showScore(int.Parse(dartThrowData.Result.PlayerScore));
+                    }
+                    Vector3 opponenDartHitPoint = getValue(dartThrowData.Result.DartPoint);
+                    DartThrow(opponenDartHitPoint, ConstantInteger.shootingAngle);
+                    Debug.Log("Opponent Dart Hit point:  " + opponenDartHitPoint + " " + " IsBust " + dartThrowData.Result.PlayStatus + " Score " + opponentRemainingScore);
+                }
             }
         }
 
@@ -229,6 +235,7 @@ namespace ArenaZ.Manager
                 SocketManager.Instance.ThrowDartData(hitScore, touchBehaviour.LastTouchPosition);
             }
             resetTimer();
+            StartCoroutine(destroyDartAfterACertainTime(1, currentDart.gameObject));
         }
 
         private Vector3 getValue(string vectorValue)
@@ -270,15 +277,23 @@ namespace ArenaZ.Manager
             currentDart = Instantiate(dartGameObj, Vector3.zero,Quaternion.identity).GetComponent<Dart>();
         }
 
+        private IEnumerator destroyDartAfterACertainTime(float seconds,GameObject dartObj)
+        {
+            yield return new WaitForSeconds(seconds);
+            Destroy(dartObj);
+        }
+
         private void DartThrow(Vector3 hitPoint, float angle)
         {
             if (!projectileMove)
             {
+                genericTimer.StopTimer();
                 currentDart.TweenthroughPoints(hitPoint);
                 Debug.Log("Move Dart");
             }
             else
             {
+                genericTimer.StopTimer();
                 currentDart.MoveInProjectilePathWithPhysics(hitPoint, angle);
             }
         }
