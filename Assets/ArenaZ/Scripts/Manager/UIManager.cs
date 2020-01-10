@@ -19,11 +19,10 @@ namespace ArenaZ.Manager
         //Private Variables
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
         private Dictionary<string, TextScreen> textPages = new Dictionary<string, TextScreen>();
-        private string _openScreen = string.Empty;
-        private string closeScreen = string.Empty;
+        private Stack<string> _openPages = new Stack<string>();
         private string characterName = string.Empty;
         private string startColorName = ButtonType.DarkGreen.ToString();
-        public string StartColorName { get { return startColorName; } }
+        public string StartColorName { get { return startColorName; } private set { } }
 
         [Header("SpriteAtlas")][Space(5)]
         [SerializeField] private SpriteAtlas countryAtlas;
@@ -48,18 +47,13 @@ namespace ArenaZ.Manager
         private void Start()
         {
             StartAnimations();
-#if UNITY_EDITOR
-            ScreenShow(Page.AccountAccesOverlay.ToString());
-            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
-#elif UNITY_ANDROID
-            logInCheck();
-#endif
+            StartCoroutine(logInCheck());
         }
         private void StartAnimations()
         {
-            ScreenShow(Page.UIPanel.ToString(), Hide.none);
-            ScreenShow(Page.TopAndBottomBarPanel.ToString(), Hide.none);
-            ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
+            ShowScreen(Page.UIPanel.ToString());
+            ShowScreen(Page.TopAndBottomBarPanel.ToString());
+            ShowScreen(Page.AccountAccessDetailsPanel.ToString());
         }
 
 
@@ -94,29 +88,38 @@ namespace ArenaZ.Manager
             StartCoroutine(allPages[screenName].ShowAndHidePopUpText(message, duration));
         }
 
-        public void ScreenShow(string screenName,Hide type)
+        public void ShowScreen(string screenName, Hide type)
         {
-            if (_openScreen.Equals(screenName) || !allPages.ContainsKey(screenName) || allPages[screenName].gameObject.activeInHierarchy)
+            if (allPages.ContainsKey(screenName) && type == Hide.previous)
             {
-                Debug.Log("Return When Showing");
-                return;
+                hidePreviousScreens();
             }
-            allPages[screenName].ShowGameObjWithAnim();
-            if (_openScreen==string.Empty && type == Hide.previous)
+            ShowScreen(screenName);            
+            if (!_openPages.Contains(screenName))
             {
-                _openScreen = screenName;
-            }
-            else if(allPages.ContainsKey(_openScreen) && type == Hide.previous)
-            {
-                allPages[_openScreen].Hide();
-                _openScreen = screenName;
-            }                           
-            closeScreen = string.Empty;
+                Debug.Log("Pushing....."+screenName);
+                _openPages.Push(screenName);
+                Debug.Log("stack count: " + _openPages.Count);
+            }            
         }
 
-        public void ScreenShow(string screenName)
+        private void hidePreviousScreens()
         {
-            if (_openScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            if (_openPages.Count > 0)
+            {
+                for (int i =_openPages.Count; i > 0; i--)
+                {
+                    Debug.Log("Hiding..."+ _openPages.Peek());
+                    HideScreenImmediately(_openPages.Peek());
+                    _openPages.Pop();
+                    Debug.Log("stack count: " + _openPages.Count);
+                }
+            }
+        }
+
+        public void ShowScreen(string screenName)
+        {
+            if (!allPages.ContainsKey(screenName) && allPages[screenName].gameObject.activeInHierarchy)
             {
                 return;
             }
@@ -139,18 +142,7 @@ namespace ArenaZ.Manager
 
         public void HideScreen(string screenName)
         {
-            if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
-            {
-                return;
-            }
-            allPages[screenName].HideGameObjWithAnim();
-            closeScreen = screenName;
-            _openScreen = string.Empty;
-        }
-
-        public void HideScreenWithAnim(string screenName)
-        {
-            if (closeScreen.Equals(screenName) || !allPages.ContainsKey(screenName))
+            if (!allPages.ContainsKey(screenName) && !allPages[screenName].gameObject.activeInHierarchy)
             {
                 return;
             }
@@ -244,11 +236,6 @@ namespace ArenaZ.Manager
             }
         }
 
-        private string getFileName(string fileName)
-        {
-            return string.Format("Arena_{0}.dat", fileName);
-        }
-
         private byte[] getByteFromString(string anyString)
         {
             return Encoding.ASCII.GetBytes(anyString);
@@ -257,44 +244,46 @@ namespace ArenaZ.Manager
         public void SaveDetails(string filename, string data)
         {
             byte[] dataBytes = getByteFromString(data);
-            PlayerPrefs.SetString(filename, data);
+            //PlayerPrefs.SetString(filename, data);
             DataSaveAndLoad dataSaveAndLoad = new DataSaveAndLoad(filename, filename, dataBytes);
             Debug.Log("Saving...  " + filename);
             dataSaveAndLoad.SaveToDisk(dataBytes);
         }
 
-        private string loadDetails(string filename)
+        private string loadDetails(string fileName)
         {
-            DataSaveAndLoad fileManagement = new DataSaveAndLoad(filename, filename);
+            DataSaveAndLoad fileManagement = new DataSaveAndLoad(fileName, fileName);
             fileManagement.LoadDataFromStorage();
             byte[] details = fileManagement.LoadedData;
             Debug.Log("Data :::::: " + Encoding.ASCII.GetString(details));
             return Encoding.ASCII.GetString(details);
         }
 
+        public void DeleteDetails(string fileName)
+        {
+            DataSaveAndLoad fileManagement = new DataSaveAndLoad(fileName, fileName);
+            fileManagement.DeleteFile();
+        }
+
         private IEnumerator logInCheck()
         {
+            ShowScreen(Page.AccountAccesOverlay.ToString());
             yield return new WaitForSeconds(ConstantInteger.autoLoginWait);
             string savedLoginID = loadDetails(PlayerprefsValue.LoginID.ToString());
             string savedPassword = loadDetails(PlayerprefsValue.Password.ToString());
-            Debug.Log("PlayerPrefs: " + PlayerPrefs.GetString(PlayerprefsValue.LoginID.ToString()) + "   " + PlayerPrefs.GetString(PlayerprefsValue.Password.ToString()) + "   Loaded String:  " + savedLoginID + "   " + savedPassword);
-            if (PlayerPrefs.GetString(PlayerprefsValue.LoginID.ToString()) != string.Empty && PlayerPrefs.GetString(PlayerprefsValue.Password.ToString()) != string.Empty)
+            Debug.Log("Loaded String:  " + savedLoginID + "   " + savedPassword);
+            if (savedLoginID!=string.Empty && savedPassword!=string.Empty)
             {
-                if (PlayerPrefs.GetString(PlayerprefsValue.LoginID.ToString()) == savedLoginID && PlayerPrefs.GetString(PlayerprefsValue.Password.ToString()) == savedPassword)
-                {
-                    Debug.Log("Matched");
-                    ScreenShow(Page.AccountAccesOverlay.ToString());
-                    ScreenShow(Page.LogINOverlay.ToString());
-                    userLogin?.Invoke(savedLoginID, savedPassword);
-                    PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 1);
-                }
+                Debug.Log("Matched");
+                ShowScreen(Page.LogINOverlay.ToString());
+                userLogin?.Invoke(savedLoginID, savedPassword);
+                PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 1);
             }
             else
             {
-                ScreenShow(Page.AccountAccesOverlay.ToString());
                 PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
             }
-        }        
+        }
     }
 
     [Serializable]

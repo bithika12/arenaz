@@ -1,15 +1,16 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Mail;
 using RedApple;
+using System.Collections.Generic;
+using System;
 
 namespace ArenaZ.Screens
 {
     public class TopAndBottomBarScreen : Singleton<TopAndBottomBarScreen>
     {
-        [Header("Interactive Elements")]
+        [Header("Buttons")]
         [SerializeField] private Button historyButton;
         [SerializeField] private Button infoButton;
         [SerializeField] private Button mailButton;
@@ -45,15 +46,15 @@ namespace ArenaZ.Screens
 
         private void InfoButtonClicked()
         {
-            UIManager.Instance.ScreenShow(Page.InfoAndRulesForPlayerPanel.ToString(),Hide.previous);
+            UIManager.Instance.ShowScreen(Page.InfoAndRulesForPlayerPanel.ToString(),Hide.previous);
         }
 
         private void SettingButtonClicked()
         {
-            UIManager.Instance.HideScreenImmediately(Page.LeaderBoardPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.SettingsPanel.ToString(), Hide.previous);
-            UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
-            if(PlayerPrefs.GetInt(PlayerprefsValue.Logout.ToString())==0)
+           // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
+            UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.previous);
+            UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
+            if (PlayerPrefs.GetInt(PlayerprefsValue.Logout.ToString())==0)
             {
                 CharacterSelection.Instance.SetProfilePicOnClick();
             }
@@ -61,15 +62,13 @@ namespace ArenaZ.Screens
 
         private void MailButtonClicked()
         {
-            UIManager.Instance.ScreenShow(Page.MailboxPanel.ToString(),Hide.previous);
-            UIManager.Instance.HideScreenImmediately(Page.LeaderBoardPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.MailboxPanel.ToString(),Hide.previous);
             MailboxManager.Instance.DeactivateScreenIfActivated();
         }
 
         private void HistoryButtonClicked()
         {
-            UIManager.Instance.ScreenShow(Page.PlayerMatchHistoryPanel.ToString(),Hide.previous);
-            UIManager.Instance.HideScreenImmediately(Page.LeaderBoardPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.PlayerMatchHistoryPanel.ToString(),Hide.previous);
         }
     }
 }

@@ -80,19 +80,19 @@ namespace ArenaZ.LevelMangement
         {
             if (gamePlayType == GameType.normal)
             {
-                UIManager.Instance.ScreenShow(Page.ShootingrangePanel.ToString());
+                UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString());
                 UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
             }
             else
             {
-                UIManager.Instance.ScreenShow(Page.ShootingrangePanel.ToString());
+                UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString());
                 UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
             }
         }
 
         private void OnClickSpeedRaceAndBunkerDef()
         {
-            UIManager.Instance.ScreenShow(Page.ComingSoonOverlay.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.ComingSoonOverlay.ToString());
         }
 
         private void OnClickComingSoonClose()
@@ -102,8 +102,8 @@ namespace ArenaZ.LevelMangement
 
         private void OnClickBack()
         {
-            UIManager.Instance.ScreenShow(Page.CharacterSelectionPanel.ToString(), Hide.none);
-            UIManager.Instance.ScreenShow(Page.TopAndBottomBarPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
         }
         #endregion

@@ -57,7 +57,8 @@ namespace RedApple
             {
                 AccessToken = User.UserAccessToken,
                 Color = User.userColor,
-                CharRace = User.userRace
+                CharRace = User.userRace,
+                DartName = User.dartName
             };
             string colorReqJsonData = DataConverter.SerializeObject(colorRequest);
             Debug.Log("Color Request");
@@ -136,6 +137,8 @@ public struct ColorRequest
     public string Color { get; set; }
     [JsonProperty("race")]
     public string CharRace { get; set; }
+    [JsonProperty("dartName")]
+    public string DartName { get; set; }
 }
 [Serializable]
 public struct ThrowDart

@@ -50,10 +50,13 @@ namespace ArenaZ.ShootingObject
 
         public void TweenthroughPoints(Vector3 endPosition)
         {
-            AddPointsToArray(endPosition);
-            transform.DOPath(points, .6f, PathType.CatmullRom)
-                     .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
-                     .OnComplete(() => TasksAfterHit());
+            if (endPosition != Vector3.zero)
+            {
+                AddPointsToArray(endPosition);
+                transform.DOPath(points, .6f, PathType.CatmullRom)
+                         .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
+                         .OnComplete(() => TasksAfterHit());
+            }
         } 
 
         private Vector3 CalculateQuadraticBeizerCurve(float time,Vector3 pointThree)
@@ -75,9 +78,7 @@ namespace ArenaZ.ShootingObject
 
         public void TasksAfterHit()
         {
-            Debug.Log("One");
             GameManager.Instance.OnCompletionDartHit();
-            Debug.Log("two");
             StartCoroutine(destroyAfterACertainTime());
         }
 

@@ -61,6 +61,17 @@ namespace ArenaZ.Data
 
         }
 
+        public void DeleteFile()
+        {
+            createPath();
+            DirectoryInfo directoryInfo = new DirectoryInfo(Path.GetDirectoryName(path));
+            FileInfo[] fileInfo = directoryInfo.GetFiles();
+            if (fileInfo.Length > 0)
+            {
+                fileInfo[0].Delete();
+            }
+        }
+
         private void createNewFile()
         {
             Debug.Log("Saving New Data...");

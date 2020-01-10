@@ -52,7 +52,7 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.HideScreen(Page.PlayerWinPanel.ToString());
             UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.ShootingrangePanel.ToString());
+            UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString());
         }
 
         private void onClickPlayAgain()

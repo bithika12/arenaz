@@ -23,22 +23,18 @@ namespace ArenaZ.Screens
         [Space(5)]
         [SerializeField] private Text userName;
 
-        [Header("TransForm")]
-        [Space(5)]
-        [SerializeField] private Transform characterParent;
-
         [Header("Scroll Snap")]
         [Space(5)]
         [SerializeField]private HorizontalScrollSnap horizontalScrollSnap;
-        private string dartName = string.Empty;
         public readonly string[] raceNames = { Race.Canines.ToString(), Race.Kepler.ToString(), Race.Cyborg.ToString(), Race.CyborgSecond.ToString(), Race.Human.ToString(), Race.Ebot.ToString(), Race.KeplerSecond.ToString(),Race.KeplerWoman.ToString() };
         //Public Fields
-        public static Action<string> setDartImage;
+        public static Action<string> setDart;
 
         private void Start()
         {           
             GettingButtonReferences();
             ShowFirstText();
+            SetColorOnCharacter(UIManager.Instance.StartColorName);
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(PageChecker);
             UIManager.Instance.setUserName += SetUserName;
             PlayerColorChooser.setColorAfterChooseColor += SetColorOnCharacter;
@@ -66,6 +62,7 @@ namespace ArenaZ.Screens
 
         public void SetColorOnCharacter(string colorName)
         {
+            User.userColor = colorName;
             GameObject[] characters = horizontalScrollSnap.ChildObjects;
             for (int i = 0; i < characters.Length; i++)
             {
@@ -93,7 +90,14 @@ namespace ArenaZ.Screens
 
         public void SetProfilePicOnClick()
         {
-            UIManager.Instance.showProfilePic?.Invoke(PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()));
+            if (PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()) != string.Empty)
+            {
+                UIManager.Instance.showProfilePic?.Invoke(PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()));
+            }
+            else
+            {
+                UIManager.Instance.showProfilePic?.Invoke(Race.Canines.ToString());
+            }
         }
 
         private void ShowFirstText()
@@ -109,10 +113,10 @@ namespace ArenaZ.Screens
         private void OnClickArena(GameType type)
         {
             enterArenaMode();
+            User.dartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
             User.userRace = raceNames[horizontalScrollSnap._currentPage];
-            dartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
-            Debug.Log("DartName:  " + dartName);
-            setDartImage?.Invoke(dartName);
+            Debug.Log("DartName:  " + User.dartName);
+            setDart?.Invoke(User.dartName);
             UIManager.Instance.showProfilePic?.Invoke(raceNames[horizontalScrollSnap._currentPage]);
             LevelSelection.Instance.OnSelectionGameplayType(type);
             PlayerPrefs.SetString(PlayerprefsValue.CharacterName.ToString(), raceNames[horizontalScrollSnap._currentPage]);
@@ -129,12 +133,12 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
             UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.LevelSelectionPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString());
         }
 
         public void OnclickRanking()
         {
-            UIManager.Instance.ScreenShow(Page.LeaderBoardPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.LeaderBoardPanel.ToString(),Hide.previous);
         }
         #endregion
     }

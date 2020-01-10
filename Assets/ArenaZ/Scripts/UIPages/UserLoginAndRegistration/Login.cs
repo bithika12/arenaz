@@ -146,7 +146,7 @@ namespace ArenaZ.LoginUser
         private void OnClickForgotPasswordPopUpShow()
         {
             UIManager.Instance.HideScreenImmediately(Page.LogINOverlay.ToString());
-            UIManager.Instance.ScreenShow(Page.ForgotPasswordOverlay.ToString());
+            UIManager.Instance.ShowScreen(Page.ForgotPasswordOverlay.ToString());
         }
     }
 }

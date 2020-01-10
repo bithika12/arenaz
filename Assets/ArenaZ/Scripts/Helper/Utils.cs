@@ -141,6 +141,7 @@ public static class GameResources
 {
     public const string characterImageFolderPath = "Characters";
     public const string dartImageFolderPath = "Darts";
+    public const string dartPrefabFolderPath = "Prefabs/Darts";
 }
 
 public static class User
@@ -150,6 +151,7 @@ public static class User
     public static string userEmailId;
     public static string UserAccessToken;
     public static string userRace;
+    public static string dartName;
     public static string userColor;
     public static string RoomName;
 }
@@ -160,6 +162,7 @@ public static class Opponent
     public static string opponentId;
     public static string opponentRace;
     public static string opponentColor;
+    public static string dartName;
 }
 
 public static class ConstantInteger

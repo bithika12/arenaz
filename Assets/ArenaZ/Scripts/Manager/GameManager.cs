@@ -16,7 +16,6 @@ namespace ArenaZ.Manager
     {
         // Private Variables
         [SerializeField] private bool projectileMove;
-        [SerializeField] private GameObject dartGameObj;
         [SerializeField] private int scorePopUpDuration;
         [SerializeField] private TextMeshProUGUI txtMeshPro;
         [SerializeField] private Image userImage;
@@ -26,6 +25,8 @@ namespace ArenaZ.Manager
         [SerializeField] private Text userName;
         [SerializeField] private Text opponentName;
         private bool playerTurn = false;
+        private GameObject userDart;
+        private GameObject opponentDart;
         private Dart currentDart;
         private TouchBehaviour touchBehaviour;        
         private Dictionary<string, int> gameScore = new Dictionary<string, int>();
@@ -42,6 +43,7 @@ namespace ArenaZ.Manager
         }
 
         private Player PlayerType;
+        private GeneralTimer genericTimer;
 
         // Public Variables      
 
@@ -60,19 +62,21 @@ namespace ArenaZ.Manager
             UIManager.Instance.showProfilePic += SetUserProfileImage;
             ShootingRange.Instance.setOpponentName += SetOpponentName;
             ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
+            genericTimer = new GeneralTimer(this);
         }
 
         private void Update()
         {
-            if(playerTurn && PlayerType == Player.player)
+            if (genericTimer != null)
             {
-                timer -= Time.deltaTime;
-                userTimerImage.fillAmount = timer / ConstantInteger.timerValue;
-            }
-            if (playerTurn && PlayerType == Player.opponent)
-            {
-                timer -= Time.deltaTime;
-                opponentTimerImage.fillAmount = timer / ConstantInteger.timerValue;
+                if (playerTurn && PlayerType == Player.player)
+                {
+                    userTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
+                }
+                if (playerTurn && PlayerType == Player.opponent)
+                {
+                    opponentTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
+                }
             }
         }
 
@@ -84,24 +88,42 @@ namespace ArenaZ.Manager
             playerTurn = false;
         }
 
-        public void SetUserName(string userName)
+        public void GetDartGameObj()
+        {
+            string userDartPath = GameResources.dartPrefabFolderPath +"/"+User.dartName;
+            string opponentDartPath = GameResources.dartPrefabFolderPath + "/" +Opponent.dartName;
+            userDart = Resources.Load<GameObject>(userDartPath);
+            opponentDart = Resources.Load<GameObject>(userDartPath);
+        }
+
+        private void getDartMaterialColorCode(string colorName)
+        {
+
+        }
+
+        private void setDartColor(string colorName,GameObject dartGameObj)
+        {
+           // dartGameObj.GetComponent<MeshRenderer>().material.color = 
+        }
+
+        private void SetUserName(string userName)
         {
             this.userName.text = userName;
         }
 
-        public void SetUserProfileImage(string imageName)
+        private void SetUserProfileImage(string imageName)
         {
             userImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.rounded);
         }
 
-        public void SetOpponentProfileImage(string imageName)
+        private void SetOpponentProfileImage(string imageName)
         {
             opponentImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.rounded);
         }
 
-        public void SetOpponentName(string OpponentName)
+        private void SetOpponentName(string opponentName)
         {
-            this.opponentName.text = OpponentName;
+            this.opponentName.text = opponentName;
         }
 
         private void listenSocketEvents()
@@ -128,12 +150,12 @@ namespace ArenaZ.Manager
         private void onOpenWinloosePopUp(Page popUpName,string userName,string userImage)
         {
             UIManager.Instance.HideScreen(Page.GameplayPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.UIPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.UIPanel.ToString());
             UIManager.Instance.HideScreenImmediately(Page.PlayerMatchPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.ScreenShow(popUpName.ToString());
-            this.setUserName?.Invoke(userName);
-            this.setUserImage?.Invoke(userImage);
+            UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
+            UIManager.Instance.ShowScreen(popUpName.ToString());
+            setUserName?.Invoke(userName);
+            setUserImage?.Invoke(userImage);
         }
 
         private void onNextTurn(string data)
@@ -142,18 +164,34 @@ namespace ArenaZ.Manager
             var nextTurnData = DataConverter.DeserializeObject<ApiResponseFormat<NextTurn>>(data);
             if(nextTurnData.Result.UserId == User.userId)
             {
-                InstantiateDart();
+                InstantiateDart(userDart);
                 PlayerType = Player.player;
                 touchBehaviour.IsShooted = false;
+                genericTimer.StartTimer(ConstantInteger.timerValue, OnPlayerTimerComplete);
             }
             else
             {
-                InstantiateDart();
+                InstantiateDart(opponentDart);
                 PlayerType = Player.opponent;
                 touchBehaviour.IsShooted = true;
+                genericTimer.StartTimer(ConstantInteger.timerValue, OnOponnetTimerComplete);
             }
             playerTurn = true;
             updateScoreBoardInEveryTurn(PlayerType);
+        }
+
+        private void OnOponnetTimerComplete()
+        {
+            genericTimer.StopTimer();
+            OnCompletionDartHit();
+        }
+
+        private void OnPlayerTimerComplete()
+        {
+            // Call Drat Throw Event WIth ZERO values
+            genericTimer.StopTimer();
+            SocketManager.Instance.ThrowDartData(0, Vector3.zero);
+            OnCompletionDartHit();
         }
 
         private void onOpponentDartThrow(string data)
@@ -227,7 +265,7 @@ namespace ArenaZ.Manager
             currentDart.transform.position = dartPosition;
         }
 
-        public void InstantiateDart()
+        public void InstantiateDart(GameObject dartGameObj)
         {
             currentDart = Instantiate(dartGameObj, Vector3.zero,Quaternion.identity).GetComponent<Dart>();
         }

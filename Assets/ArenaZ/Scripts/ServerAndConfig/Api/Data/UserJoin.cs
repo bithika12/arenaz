@@ -10,4 +10,6 @@ public class UserJoin
     public string ColorName { get; set; }
     [JsonProperty("raceName")]
     public string RaceName { get; set; }
+    [JsonProperty("dartName")]
+    public string DartName { get; set; }
 }

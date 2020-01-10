@@ -5,6 +5,7 @@ using UnityEngine.Audio;
 using RedApple;
 using System;
 using ArenaZ.Screens;
+using ArenaZ.Data;
 
 namespace ArenaZ.SettingsManagement
 {
@@ -71,7 +72,7 @@ namespace ArenaZ.SettingsManagement
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
             PlayerColorChooser.setColorAfterChooseColor += setSelectedColorImage;
-            UIManager.Instance.ScreenShow(Page.LoggedInText.ToString());
+            UIManager.Instance.ShowScreen(Page.LoggedInText.ToString());
         }
 
         private void OnDestroy()
@@ -126,11 +127,14 @@ namespace ArenaZ.SettingsManagement
 
         private void TasksAfterLogout()
         {
+            UIManager.Instance.DeleteDetails(PlayerprefsValue.LoginID.ToString());
+            UIManager.Instance.DeleteDetails(PlayerprefsValue.Password.ToString());
             UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(), false);
             LogInLogOutButtonNameSet(ConstantStrings.login);
             UIManager.Instance.showProfilePic?.Invoke((Race.Canines.ToString()));
             UIManager.Instance.setUserName?.Invoke(ConstantStrings.defaultUserName);
-            TopAndBottomBarScreen.Instance.count = 0;
+            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
+            PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 0);
             // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
         }
 
@@ -146,7 +150,6 @@ namespace ArenaZ.SettingsManagement
 
         private void setSelectedColorImage(string imageName)
         {
-            User.userColor = imageName;
             ButtonImage buttonImage = UIManager.Instance.ButtonImageType(imageName);
             if(buttonImage.normalSprite)
             {
@@ -163,9 +166,7 @@ namespace ArenaZ.SettingsManagement
 
         private void OnClickClose()
         {
-            //toggleAnimation = false;
-            //UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
-            UIManager.Instance.ToggleScreenImmediately(Page.PlayerColorChooser.ToString());
+            UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
             UIManager.Instance.HideScreen(Page.SettingsPanel.ToString());
         }
 
@@ -174,7 +175,7 @@ namespace ArenaZ.SettingsManagement
             if (PlayerPrefs.GetInt(PlayerprefsValue.Logout.ToString()) == 0)
             {
                 Debug.Log("Logged Out");
-                UIManager.Instance.ScreenShow(Page.LogOutAlertOverlay.ToString());
+                UIManager.Instance.ShowScreen(Page.LogOutAlertOverlay.ToString(),Hide.none);
             }
             else
             {
@@ -186,17 +187,15 @@ namespace ArenaZ.SettingsManagement
         public void AfterCompleteLogout()
         {
             TasksAfterLogout();
-            UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.AccountAccessDetailsPanel.ToString());
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
-            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
-            PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 0);
             UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
         }
 
         private void GoToLogIn()
         {
             UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.AccountAccessDetailsPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.AccountAccessDetailsPanel.ToString());
             inputFieldclear?.Invoke();
         }
 

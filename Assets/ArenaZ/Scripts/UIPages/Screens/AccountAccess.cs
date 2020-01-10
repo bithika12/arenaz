@@ -77,17 +77,17 @@ namespace ArenaZ.Screens
 
         private void OnClickFirstRegisterButton()
         {
-            UIManager.Instance.ScreenShow(Page.RegistrationOverlay.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.RegistrationOverlay.ToString());
         }
 
         private void OnClickFirstLoginButton()
         {
-            UIManager.Instance.ScreenShow(Page.LogINOverlay.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.LogINOverlay.ToString());
         }
 
         private void OnClickAccountAccessPanelOpen()
         {
-            UIManager.Instance.ScreenShow(Page.AccountAccesOverlay.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.AccountAccesOverlay.ToString());
         }
 
         private void OnClickAccountAccessPanelClose()
@@ -98,7 +98,7 @@ namespace ArenaZ.Screens
         private void OpenCharacterUI()
         {
             UIManager.Instance.HideScreen(Page.AccountAccessDetailsPanel.ToString());
-            UIManager.Instance.ScreenShow(Page.CharacterSelectionPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
         }
         #endregion
     }

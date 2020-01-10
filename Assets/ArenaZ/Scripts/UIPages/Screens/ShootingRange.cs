@@ -35,7 +35,7 @@ namespace ArenaZ.GameMode
         {
             GettingButtonReferences();
             ListenSocketEvents();
-            CharacterSelection.setDartImage += SetDartImage;
+            CharacterSelection.setDart += SetDartImage;
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetProfileImage;
         }
@@ -87,9 +87,10 @@ namespace ArenaZ.GameMode
                     setOpponentName?.Invoke(users[i].UserName);
                     setOpponentImage?.Invoke(users[i].RaceName);
                     UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
-                    UIManager.Instance.ScreenShow(Page.PlayerMatchPanel.ToString(), Hide.none);
+                    UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString());
                 }
             }
+            GameManager.Instance.GetDartGameObj();
             PlayerMatch.Instance.LoadGameplay();
         }
 
@@ -99,6 +100,7 @@ namespace ArenaZ.GameMode
             Opponent.opponentId = joinedUser.UserId;
             Opponent.opponentRace = joinedUser.RaceName;
             Opponent.opponentColor = joinedUser.ColorName;
+            Opponent.dartName = joinedUser.DartName;
         }
 
         private void OnUserJoin(string data)
@@ -126,7 +128,7 @@ namespace ArenaZ.GameMode
 
         private void OnClickShootingRangeBack()
         {
-            UIManager.Instance.ScreenShow(Page.LevelSelectionPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString());
             UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
         }
 

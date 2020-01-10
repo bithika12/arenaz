@@ -96,7 +96,7 @@ public class ForgotPassword : MonoBehaviour
     {
         ClearForgotPassWordInputFieldData();
         UIManager.Instance.HideScreenImmediately(Page.ForgotPasswordOverlay.ToString());
-        UIManager.Instance.ScreenShow(Page.LogINOverlay.ToString());
+        UIManager.Instance.ShowScreen(Page.LogINOverlay.ToString());
     }
 
 }

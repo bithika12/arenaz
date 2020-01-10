@@ -22,8 +22,7 @@ namespace ArenaZ.Screens
         public static Action<string> setColorAfterChooseColor;
 
         private void Start()
-        {
-            setColorAfterChooseColor?.Invoke(UIManager.Instance.StartColorName);
+        {           
             gettingButtonReferences();
         }
 
