@@ -340,10 +340,10 @@ room.updateRoomGameOver = function(condObj,updateObj){
    * Fetch game history
  */
 
- room.findHistory = function(condObj){
-    console.log(" fetch game history  ",condObj)
+ room.findHistory = function(userId){
+    //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
-        Room.find({status:"closed"}, {_id: 1, name:1, users:1, game_time:1,updated_at:1}).then(responses=> {
+        Room.find({status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1}).then(responses=> {
             return resolve(responses);
         }).catch(err => {
             return reject(err);

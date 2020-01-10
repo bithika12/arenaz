@@ -1,5 +1,6 @@
 /**  Import Package**/
 var async = require('async');
+const appRoot = require('app-root-path');
 /**  Import model **/
 var User  = require('../models/User');
 var Role  = require('../models/Role');
@@ -13,6 +14,7 @@ const response  = require('../utils/ResponseManeger');
 
 const password = require('../utils/PasswordManage');
 const Joi = require('joi');
+let Notification  = require(appRoot +'/models/Notification');
 
 /* Async function*/
 
@@ -103,6 +105,22 @@ function createUser(reqObj,callback){
     });
 }
 
+function createNotification(reqObj,callback){
+
+    Notification.createNotification({
+        //sent_by_user     : req.user_id ,
+        received_by_user : reqobj._id,
+        message          : "You are successfully created account",
+        read_unread      : 0
+    }).then(function(notificationdetails){
+        callback (null,notificationdetails);
+    }).catch(err => {
+        callback (err,null);
+    });
+
+
+}
+
 
 function createUpdateUser(reqObj){
     return function (callback) {
@@ -184,6 +202,7 @@ exports.registration= function(req,res) {
             checkUniqueEmailUserName(userObj),
             //checkRole,
             createUser
+
         ],
         function (err, result) {
             if (result) {

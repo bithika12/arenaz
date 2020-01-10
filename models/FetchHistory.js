@@ -12,13 +12,49 @@ const User = require(appRoot + '/models/User');
  *
  * @param {String} username
  */
-const fetchHistory = userEmail => {
+const fetchHistory = userId => {
 
     return new Promise((resolve, reject) => {
 
-        Room.findHistory({userEmail: userEmail}).then(function (responseParams) {
+        Room.findHistory(userId).then(function (responseParams) {
+            if(responseParams.length >0){
 
-            resolve(responseParams)
+
+                let chart = [];
+                let gameStatus;
+
+                responseParams.map(function(entry) {
+                    //console.log(entry.users);
+                    let entusers=entry.users;
+                    chart.push({
+                        game_time: entry.game_time,
+                        updated_at: entry.updated_at,
+                        values: entusers.map(function(entry1) {
+                            if(entry1.userId==userId){
+                                if(entry1.isWin==1)
+                                    gameStatus='VICTORY';
+                                else if(entry1.isWin==2)
+                                    gameStatus='DRAW';
+                                else if(entry1.isWin==0)
+                                    gameStatus='DEFEAT';
+                            }
+                            return {
+                                gameResult:gameStatus,
+                                userId: entry1.userId,
+                                userName: entry1.userName,
+                                userScore:entry1.total,
+                                cupNumber:entry1.cupNumber};
+                        })
+                    });
+                });
+
+                console.log(chart);
+                resolve(chart);
+            }
+            else{
+                resolve({status:Constants.SUCCESS_STATUS,message:"No Data Found"});
+            }
+
 
         }).catch(function (fetchHistoryErr) {
             reject({status:Constants.API_ERROR,message:fetchHistoryErr});
@@ -37,8 +73,8 @@ const userValidChk = userEmail => {
     return new Promise((resolve, reject) => {
 
         User.findDetailsByEmail({email: userEmail}).then(function (responseParams) {
-
-            resolve(responseParams)
+            let usrId = responseParams._id+"";
+            resolve(usrId)
 
         }).catch(function (fetchHistoryErr) {
             reject({status:Constants.API_ERROR,message:fetchHistoryErr});

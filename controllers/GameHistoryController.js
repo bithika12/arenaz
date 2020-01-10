@@ -1,5 +1,6 @@
 /**  Import Package**/
 let async = require('async');
+var underscore  = require('underscore');
 let _jade = require('jade');
 const Joi = require('joi');
 const appRoot = require('app-root-path');
@@ -40,7 +41,7 @@ exports.fetchGame= function(req,res) {
     else{
            userValidChk(req.body.userEmail)
             .then(validResponse => {
-                return fetchHistory(req.body.userEmail);
+                return fetchHistory(validResponse);
             })
 
             .then(resp=>{

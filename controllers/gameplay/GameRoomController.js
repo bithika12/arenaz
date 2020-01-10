@@ -20,6 +20,7 @@ let gameRequestQueue = [];
 let requestIsRunning = false;
 let waitingDartInterval = [];
 let count = 0;
+let Notification  = require(appRoot +'/models/Notification');
 /*room.createRoom({userId : "5de7ac25c9dba27a72be9023"}).then(function(result){
 	console.log("success",result);
 }).catch(err=>{
@@ -78,12 +79,22 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
                 room.updateRoomGameOver({roomName: reqobj.roomName,gameTotalTime:reqobj.gameTotalTime}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
-                    io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                        userId: reqobj.userId,
-                        roomName: reqobj.roomName,
-                        gameStatus:"Win"
-                    }, "Game is over"));
-                    callback(null, reqobj);
+
+                    Notification.createNotification({
+                        //sent_by_user     : req.user_id ,
+                        received_by_user : reqobj.userId,
+                        message          : "You are winner",
+                        read_unread      : 0
+                    }).then(function(notificationdetails){
+                        io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
+                        io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                            userId: reqobj.userId,
+                            roomName: reqobj.roomName,
+                            gameStatus:"Win"
+                        }, "Game is over"));
+                        callback(null, reqobj);
+                    });
+
                 }).catch(err => {
                     logger.print("***Room update error ", err);
                 })

@@ -1,5 +1,6 @@
  /* INCLUDE  PACKAGE */
 const uuidv4 = require('uuid/v4');
+const appRoot = require('app-root-path');
 /*Include Constants */
 var constants = require("../config/constants");
  const time  = require('../utils/TimeManager');
@@ -13,6 +14,7 @@ var Role = require('../schema/Schema').roleModel;
 const moment = require('moment');
 
  var Room = require('../schema/Schema').roomModel;
+ let Notification  = require(appRoot +'/models/Notification');
 
 
  /** TOTAL USER **/
@@ -42,10 +44,22 @@ User.createUser = function(reqObj){
       reqObj.password  =  password.hashPassword(reqObj.password);
       reqObj.deviceDetails = [{accessToken :  uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];
 
-             Role.findOne({ slug: reqObj.roleType},{_id: 1,name:1,slug:1}).then(roledetails=> {
+             Role.findOne({ slug: reqObj.userType},{_id: 1,name:1,slug:1}).then(roledetails=> {
                  reqObj.roleId = roledetails._id;
               User.create(reqObj).then(response => {
-                  resolve(response)
+
+                  Notification.createNotification({
+                      //sent_by_user     : req.user_id ,
+                      received_by_user : response._id,
+                      message          : "You are successfully created account",
+                      read_unread      : 0
+                  }).then(function(notificationdetails){
+                      resolve(response);
+                  }).catch(err => {
+                      reject(err);
+                  });
+
+
               }).catch(err => {
                   reject(err);
               })

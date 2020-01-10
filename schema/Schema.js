@@ -79,7 +79,31 @@ var roomSchema = new Schema({
 
 // the schema is useless so far
 // we need to create a model using it
-
+var notificationSchema = Schema({
+    /*sent_by_user:{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },*/
+    received_by_user:{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    message:String,
+    read_unread: {
+        type: Number,
+        default: 0
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now
+    }
+},{
+    versionKey: false
+});
 
 //MODEL DECLARATION
 
@@ -88,5 +112,6 @@ schema.moduleModel = mongoose.model('modules', modulesSchema);
 schema.avatarModel = mongoose.model('avatar' , avatarSchema);
 schema.userModel   = mongoose.model('users'  , userSchema);
 schema.roomModel   = mongoose.model('rooms'  , roomSchema);
+schema.notificationModel   = mongoose.model('notifications'  , notificationSchema);
 
 module.exports = schema;
