@@ -76,8 +76,7 @@ namespace RedApple
                 DartPoint = System.Text.RegularExpressions.Regex.Replace(point.ToString(), @"\s+", "")
         };
             string throwDartData = DataConverter.SerializeObject(throwDart);
-            Debug.Log("Throw Dart");
-            Debug.LogError("Throw Dart Data: " + throwDartData);
+            Debug.Log("Throw Dart Data: " + throwDartData);
             socket.EmitJson(SocketEmitEvents.throwDart.ToString(), throwDartData);
         }
 

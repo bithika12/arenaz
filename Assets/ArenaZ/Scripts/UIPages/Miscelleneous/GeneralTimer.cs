@@ -37,13 +37,13 @@ public class GeneralTimer
 
     public void StopTimer()
     {
-        _monoBehaviour.StopAllCoroutines();
-        //if (_coroutine != null)
-        //{
-        //    _monoBehaviour.StopCoroutine(_coroutine);
-        //}
-        //_coroutine = null;
-        //_onTimerComplete = null;
+        //_monoBehaviour.StopAllCoroutines();
+        if (_coroutine != null)
+        {
+            _monoBehaviour.StopCoroutine(_coroutine);
+        }
+        _coroutine = null;
+        _onTimerComplete = null;
     }
 
     public void ResetTimer()
@@ -65,6 +65,5 @@ public class GeneralTimer
                 yield return null;                  
         }
         _onTimerComplete?.Invoke();
-        StopTimer();
     }
 }
