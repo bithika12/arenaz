@@ -20,6 +20,7 @@ namespace ArenaZ.Manager
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
         private Dictionary<string, TextScreen> textPages = new Dictionary<string, TextScreen>();
         private Stack<string> _openPages = new Stack<string>();
+        private Stack<string> _closedPages = new Stack<string>();
         private string characterName = string.Empty;
         private string startColorName = ButtonType.DarkGreen.ToString();
         public string StartColorName { get { return startColorName; } private set { } }
@@ -111,6 +112,20 @@ namespace ArenaZ.Manager
             }
         }
 
+        public void ClearOpenPagesContainer()
+        {
+            _openPages.Clear();
+        }
+
+        public void HideOpenScreen()
+        {
+            if(_openPages.Count > 0)
+            {
+                HideScreenImmediately(_openPages.Peek());
+                _openPages.Pop();
+            }           
+        }
+
         public void ShowScreen(string screenName)
         {
             if (!allPages.ContainsKey(screenName) && allPages[screenName].gameObject.activeInHierarchy)
@@ -148,6 +163,14 @@ namespace ArenaZ.Manager
             if (allPages.ContainsKey(screenName) && allPages[screenName].gameObject.activeInHierarchy)
             {
                 allPages[screenName].Hide();
+            }
+        }
+
+        public void ShowScreenImmediately(string screenName)
+        {
+            if (allPages.ContainsKey(screenName) && !allPages[screenName].gameObject.activeInHierarchy)
+            {
+                allPages[screenName].Show();
             }
         }
 

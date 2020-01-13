@@ -55,7 +55,7 @@ public class PlayerMatch : Singleton<PlayerMatch>
     private IEnumerator LoadGameplayAfterAnim()
     {
         yield return new WaitForSeconds(animClip.length+1f);
-        UIManager.Instance.HideScreenImmediately(Page.UIPanel.ToString());
-        UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString());
+        UIManager.Instance.HideScreen(Page.UIPanel.ToString());
+        UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(),Hide.none);
     }
 }

@@ -80,13 +80,11 @@ namespace ArenaZ.LevelMangement
         {
             if (gamePlayType == GameType.normal)
             {
-                UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString());
-                UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
+                UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(),Hide.none);
             }
             else
             {
-                UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString());
-                UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
+                UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(),Hide.none);
             }
         }
 
@@ -102,9 +100,9 @@ namespace ArenaZ.LevelMangement
 
         private void OnClickBack()
         {
-            UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
+            UIManager.Instance.HideOpenScreen();
             UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
         }
         #endregion
     }

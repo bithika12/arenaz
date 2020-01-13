@@ -91,6 +91,12 @@ public enum Hide
     none
 }
 
+public enum Show
+{
+    previous,
+    none
+}
+
 public enum AccountAccessType
 {
     Registration,

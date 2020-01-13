@@ -151,11 +151,10 @@ namespace ArenaZ.Manager
 
         private void onOpenWinloosePopUp(Page popUpName,string userName,string userImage)
         {
-            UIManager.Instance.HideScreen(Page.GameplayPanel.ToString());
             UIManager.Instance.ShowScreen(Page.UIPanel.ToString());
-            UIManager.Instance.HideScreenImmediately(Page.PlayerMatchPanel.ToString());
             UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.ShowScreen(popUpName.ToString());
+            UIManager.Instance.ShowScreen(popUpName.ToString(),Hide.previous);
+            UIManager.Instance.ClearOpenPagesContainer();
             setUserName?.Invoke(userName);
             setUserImage?.Invoke(userImage);
         }

@@ -86,8 +86,7 @@ namespace ArenaZ.GameMode
                     saveOpponentData(users[i]);
                     setOpponentName?.Invoke(users[i].UserName);
                     setOpponentImage?.Invoke(users[i].RaceName);
-                    UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
-                    UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString());
+                    UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString(),Hide.none);
                 }
             }
             GameManager.Instance.GetDartGameObj();
@@ -128,8 +127,7 @@ namespace ArenaZ.GameMode
 
         private void OnClickShootingRangeBack()
         {
-            UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString());
-            UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
+            UIManager.Instance.HideOpenScreen();
         }
 
         private void OnClickStartGameWithCoinValue()

@@ -133,7 +133,7 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
             UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString(),Hide.none);
         }
 
         public void OnclickRanking()
