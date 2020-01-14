@@ -59,9 +59,9 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   columns: TableColumn<Player>[] = [
     { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: true },
     { label: 'Image', property: 'image', type: 'image', visible: false },
-    { label: 'Username', property: 'username', type: 'text', visible: true, cssClasses: ['font-medium'] },
-    { label: 'First Name', property: 'firstname', type: 'text', visible: true },
-    { label: 'Last Name', property: 'lastname', type: 'text', visible: true },
+    { label: 'Username', property: 'userName', type: 'text', visible: true, cssClasses: ['font-medium'] },
+    { label: 'First Name', property: 'firstName', type: 'text', visible: true },
+    { label: 'Last Name', property: 'lastName', type: 'text', visible: true },
     { label: 'Email', property: 'email', type: 'text', visible: true },
     { label: 'Country', property: 'country', type: 'text', visible: false },
     { label: 'Contact NO', property: 'contact_no', type: 'text', visible: false },
@@ -101,13 +101,16 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
    * Example on how to get data and pass it to the table - usually you would want a dedicated service with a HTTP request for this
    * We are simulating this request here.
    */
-  
+
 
   ngOnInit() {
-    
+
     this.userService.getAllUsers().subscribe(users => {
-      this.players = users["result"]["users"];
-      this.subject$.next(this.players);   
+      this.players = users["result"];
+      console.log(this.players);
+      console.log("players");
+      //this.players = users["result"]["users"];
+      this.subject$.next(this.players);
     });
 
     this.dataSource = new MatTableDataSource();
@@ -115,6 +118,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
     this.data$.pipe(
       filter<Player[]>(Boolean)
     ).subscribe(users => {
+      console.log(users);
       this.players = users;
       this.dataSource.data = users;
     });
@@ -123,7 +127,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe(value => this.onFilterChange(value));
   }
- 
+
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -159,7 +163,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
          * You would probably make an HTTP request here.
          */
         const index = this.players.findIndex((existingPlayer) => existingPlayer.id === updatedPlayer.id);
-        
+
         let userObj = {
           id: (!updatedPlayer.id)?this.players[index].id:updatedPlayer.id,
           username: (!updatedPlayer.username)?this.players[index].username:updatedPlayer.username,
@@ -184,9 +188,10 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
      * Here we are updating our local array.
      * You would probably make an HTTP request here.
      */
-    player.status = '0';
-    player.online_status = '0';
-    this.userService.editUser(player).subscribe(user => {
+    //player.userName = player.userName;
+    //player.online_status = '0';
+    this.userService.deleteUser(player).subscribe(user => {
+    //this.userService.editUser(player).subscribe(user => {
       if(user){
           this.players.splice(this.players.findIndex((existingPlayer) => existingPlayer.id === player.id), 1);
           this.selection.deselect(player);

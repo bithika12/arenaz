@@ -137,7 +137,15 @@ User.findDetails = function(condObj){
         });
     });
 }
-
+ User.findDetailsAdmin = function(condObj){
+     return  new Promise((resolve,reject) => {
+         User.findOne({email: condObj.email,roleId:condObj.roleId},{password:1,firstName:1,email:1,"deviceDetails.accessToken":1,resetOtp:1}).then(responses=> {
+             return resolve(responses);
+         }).catch(err => {
+             return reject(err);
+         });
+     });
+ }
  User.findDetailsByEmail = function(condObj){
      console.log(" condObj",)
      return  new Promise((resolve,reject) => {
@@ -498,7 +506,19 @@ User.resetPassword = function(condObj,updateObj){
      });
  }
 
-
+ /*
+   * This function is used for fetch users list
+   * output---object
+  */
+ User.findUserListAdmin   =   function(){
+     return  new Promise((resolve,reject) => {
+         User.find({status:"active"}).then(responses=> {
+             return resolve(responses);
+         }).catch(err => {
+             return reject(err);
+         });
+     });
+ };
 module.exports= User;
 
 

@@ -18,17 +18,22 @@ const fetchHistory = userId => {
 
         Room.findHistory(userId).then(function (responseParams) {
             if(responseParams.length >0){
-
-
                 let chart = [];
                 let gameStatus;
 
                 responseParams.map(function(entry) {
                     //console.log(entry.users);
+                    let upDate=entry.updated_at;
+                    let updatedTime=upDate.getTime();//in seconds
+                    let currentTime=new Date().getTime();
+                    const diff = currentTime - updatedTime;
+                    let timeWithCurrent = Math.floor(diff / 1000 % 60);
+
                     let entusers=entry.users;
                     chart.push({
                         game_time: entry.game_time,
                         updated_at: entry.updated_at,
+                        last_time:timeWithCurrent,
                         values: entusers.map(function(entry1) {
                             if(entry1.userId==userId){
                                 if(entry1.isWin==1)

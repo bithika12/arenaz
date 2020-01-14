@@ -15,6 +15,7 @@ var User  = require('../models/User');
 var Role  = require('../models/Role');
 
 
+
 // Role.createUser().then((details)=>{
 
 // })
@@ -24,15 +25,22 @@ var Role  = require('../models/Role');
 
 function getUserDetails(reqObj){
   return function(callback){
-    User.findDetails({email:reqObj.email,role:reqObj.role}).then((userdetails)=>{
-       if(password._comparePasswordSync(reqObj.password, userdetails.password)){
-            callback (null,userdetails);
-       }else{
-            callback(err,null)
-       }
-    }).catch(err=>{
-         callback(err,null);
-    })
+      let roleId;
+      Role.findOne({ slug: "admin"},{_id: 1,name:1,slug:1}).then(roledetails=> {
+          roleId = roledetails._id+"";
+          User.findDetailsAdmin({email:reqObj.email,roleId:roleId}).then((userdetails)=>{
+              if(password.comparePasswordSync(reqObj.password, userdetails.password)){
+                  callback (null,userdetails);
+              }else{
+                  callback(err,null)
+              }
+          }).catch(err=>{
+              callback(err,null);
+          })
+      }).catch(err=>{
+          callback(err,null);
+      })
+
   }
 }
 
@@ -41,7 +49,7 @@ function getUserDetails(reqObj){
 function updateToken(user,callback){
     console.log(" user",user)
     User.updateToken({_id :user._id},{}).then((tokendetails) => {
-      user.set('access_token', tokendetails[0].access_token)
+      user.set('accessToken', tokendetails[0].accessToken)
       callback (null,user);
     }).catch(err => {
         callback (err,null);
@@ -52,22 +60,26 @@ function updateToken(user,callback){
 
 exports.login= function(req,res){
     if(!req.body.email || !req.body.password  ){
-         return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
 
     var userObj  ={email: req.body.email,password: req.body.password,role :"admin"}
     async.waterfall([
-         getUserDetails(userObj),
-         updateToken
-      ],
-      function (err, result) {
-          if(result){
-              res.send(response.generate(constants.SUCCESS_STATUS,{"_id":result._id,"name":result.name,email:result.email,score:result.score,"access_token":result.get('access_token')}, 'User login successfully !!'));
-          }else{
-              res.send(response.error(constants.ERROR_STATUS,err,"Invalid password!!"));
-          }
-    });
+            getUserDetails(userObj),
+            updateToken
+        ],
+        function (err, result) {
+            if(result){
+                res.send(response.generate(constants.SUCCESS_STATUS,
+                    {"_id":result._id,
+                        "name":result.firstName,email:result.email,
+                        "access_token":result.get('accessToken')}, 'User login successfully !!'));
+            }else{
+                res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
+            }
+        });
 }
+
 
 exports.logout = function (req,res) {
     User.removeToken({access_token: req.header("access-token")}).then(function (result) {
@@ -79,6 +91,15 @@ exports.logout = function (req,res) {
    }).catch(err => {
     	    res.send({"status":constants.ERROR_STATUS,"result":err,"message":"Something went Wrong!!"});
    }); 
+};
+
+exports.userList = function (req,res) {
+    User.findUserListAdmin().then((userdetails)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            userdetails, 'User login successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch user list"));
+    })
 };
 
 

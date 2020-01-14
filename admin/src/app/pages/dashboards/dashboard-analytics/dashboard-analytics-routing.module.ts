@@ -5,7 +5,7 @@ import { DashboardAnalyticsComponent } from './dashboard-analytics.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'dashboards/analytics',
     component: DashboardAnalyticsComponent
   }
 ];

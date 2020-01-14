@@ -8,6 +8,7 @@ import { fadeInUp400ms } from '../../../@vex/animations/fade-in-up.animation';
 
 import { AuthService } from '../../../app/pages/auth/auth.service';
 
+
 @Component({
   selector: 'vex-login',
   templateUrl: './login.component.html',
@@ -31,14 +32,20 @@ export class LoginComponent implements OnInit {
               private fb: FormBuilder,
               private cd: ChangeDetectorRef,
               private snackbar: MatSnackBar,
-              public authService: AuthService
-  ) {}
+              public authService: AuthService,
+
+  ) {
+    // redirect to home if already logged in
+
+  }
 
   ngOnInit() {
+
     this.form = this.fb.group({
       email: ['', Validators.required],
       password: ['', Validators.required]
-    });   
+    });
+
   }
 
   send() {
@@ -47,15 +54,19 @@ export class LoginComponent implements OnInit {
     this.authService.login(authuser.email, authuser.password)
             .subscribe(
                 data => {
-                //console.log(data);
+                console.log(data);
                 if(data.status == 0)
                     {
                       this.snackbar.open('Invalid Credential', 'Sorry', {
                         duration: 10000
                       });
                     }else{
-                      this.router.navigate(['/']);
-                    }                    
+                       console.log(" located in auth.gaurd access_token :",localStorage.getItem('access_token'))
+                       console.log('ok');
+                      // this.router.navigate(['/']);
+                       this.router.navigate(['/dashboards/analytics']);
+                       //this.router.navigate(['/']);
+                    }
                 },
                 error => {
                     //this.alertService.error(error);

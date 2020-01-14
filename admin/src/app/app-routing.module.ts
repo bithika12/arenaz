@@ -5,12 +5,12 @@ import { VexRoutes } from '../@vex/interfaces/vex-route.interface';
 import { AuthGuard } from '../app/pages/auth/auth.guard';
 
 const childrenRoutes: VexRoutes = [
-  {
+ /* {
     path: '',
     canActivate: [AuthGuard],
     redirectTo: 'dashboards/analytics',
     pathMatch: 'full',
-  },
+  },*/
   {
     path: 'dashboards/analytics',
     canActivate: [AuthGuard],
@@ -26,13 +26,13 @@ const childrenRoutes: VexRoutes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/tournament/tournament.module').then(m => m.TournamentModule),
   }
-  
+
 ];
 const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule),
-  },  
+  },
   {
     path: '',
     component: LayoutComponent,

@@ -13,18 +13,20 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): boolean {
     let url: string = state.url;
+    console.log(url);
     return this.checkLogin(url);
   }
 
   checkLogin(url: string): boolean {
-    
-    //console.log(" located in auth.gaurd access_token :",localStorage.getItem('access_token'))
-    if (this.authService.isLoggedIn ) { 
-       return true; 
+
+    console.log(" located in auth.gaurd access_token :",localStorage.getItem('access_token'))
+    if (this.authService.isLoggedIn ) {
+       console.log("login");
+       return true;
     }
     // Store the attempted URL for redirecting
-    this.authService.redirectUrl = url;
 
+    this.authService.redirectUrl = url;
     // Navigate to the login page with extras
     this.router.navigate(['/login']);
     return false;

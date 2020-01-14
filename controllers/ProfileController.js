@@ -68,7 +68,24 @@ exports.updateProfile = function (req,res){
 
 }
 
+ exports.disableProfile = function (req,res){
+     if(!req.body.userName ){
+         return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+     }
+     let updateObj ={status:"inactive"};
 
+
+     async.waterfall([
+         updateProfile({_id: res.userData. _id},updateObj)
+     ],function (err, result) {
+         if(result){
+             res.send(response.generate(constants.SUCCESS_STATUS,updateObj, 'User updated successfully !!'));
+         }else{
+             res.send(response.error(constants.ERROR_STATUS,err,"Something went wrong!!"));
+         }
+     });
+
+ }
 exports.updateProfileImage = function(req,res){
   
 }

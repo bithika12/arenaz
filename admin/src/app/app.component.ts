@@ -72,7 +72,7 @@ export class AppComponent {
       },
       {
         type: 'link',
-        label: 'Tournament Module',
+        label: 'Dart Module',
         route: '/tournament',
         icon: icAssigment
       }

@@ -27,6 +27,7 @@ router.get('/', function(req, res, next) {
   const forgotPassword = require(appRoot + '/controllers/ForgotPasswordController');
 
   const fetchGameHistory = require(appRoot + '/controllers/GameHistoryController');
+  const fetchNotification= require(appRoot + '/controllers/FetchNotificationController');
 
 
 /**  LOGIN ROUTING **/
@@ -40,6 +41,8 @@ router.post('/forgot/password',forgotPassword.forgotPassword);
 
 router.post('/game/history',fetchGameHistory.fetchGame);
 
+router.post('/fetch/notifications',fetchNotification.fetchGame);
+
 
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD
@@ -49,7 +52,7 @@ router.post('/game/history',fetchGameHistory.fetchGame);
 
 /* PROFILES DETAILS*/
  // router.post('/profile-details',authetication.authChecker,profileController.profiledDetails);
- // router.post('/update-profile',authetication.authChecker,profileController.updateProfile);
+  //router.post('/update-profile',authetication.authChecker,profileController.updateProfile);
  // router.post('/update-password',authetication.authChecker,profileController.updatePassword);
  // router.post('/profile-image-upload',authetication.authChecker,profileController.profiledDetails);
 // router.post('/leader-board',authetication.authChecker,profileController.leaderBoard);
@@ -57,9 +60,10 @@ router.post('/game/history',fetchGameHistory.fetchGame);
 //ADMIN LOGIN
   router.post('/admin/login',adminController.login);
 
-
-
-
+  //fetch user list in admin panel
+  router.post('/admin/users-list',adminController.userList);
+   //admin/edit-user
+  router.post('/admin/delete-user',authetication.authChecker,profileController.disableProfile);
 
 
 
