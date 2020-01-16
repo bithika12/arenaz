@@ -277,9 +277,9 @@ io.on('connection', function (socket) {
 
     function userNextStartDart(reqobj, callback) {
         return new Promise((resolve, reject) => {
-            //waitingDartInterval[reqobj.roomName] = setTimeout(() => {
+            waitingDartInterval[reqobj.roomName] = setTimeout(() => {
                 nextUserTurnDart(reqobj, 0)
-            //}, 1000);
+            }, 2000);
 
             callback(null, reqobj);
         })
