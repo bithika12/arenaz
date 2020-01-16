@@ -45,7 +45,7 @@
 
       <mat-form-field class="mt-6" fxFlex>
         <mat-label>Email</mat-label>
-        <input cdkFocusInitial formControlName="useremail" matInput>
+        <input cdkFocusInitial formControlName="useremail" readonly matInput>
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
@@ -89,9 +89,18 @@
     </mat-form-field>-->
 
     <mat-form-field>
+      <mat-label>tst</mat-label>
+      <input formControlName="rolename" matInput>
+
+      <mat-icon [icIcon]="icPhone" class="mr-3" matPrefix></mat-icon>
+    </mat-form-field>
+
+    <mat-form-field>
+
       <mat-label>Roles</mat-label>
       <mat-select formControlName="roleid" >
-        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand.slug" >
+
+        <mat-option *ngFor="let brand of rolelists"  [value]="brand.slug ==rolename ? selected : brand.slug" >
         <!--<mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand._id" >-->
           {{ brand.slug }}
         </mat-option>

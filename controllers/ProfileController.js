@@ -154,7 +154,7 @@ exports.updateProfileImage = function(req,res){
          lastName:  Joi.optional(),
          roleName:  Joi.string().required(),
          userEmail:  Joi.string().required(),
-         roleId:    Joi.string().required()
+         //roleId:    Joi.string().required()
 
      });
      //const {value, error} = result;
