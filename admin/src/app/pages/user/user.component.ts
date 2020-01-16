@@ -54,6 +54,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   subject$: ReplaySubject<Player[]> = new ReplaySubject<Player[]>(1);
   data$: Observable<Player[]> = this.subject$.asObservable();
   players: Player[];
+  roles:[];
 
   @Input()
   columns: TableColumn<Player>[] = [
@@ -112,6 +113,14 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
       //this.players = users["result"]["users"];
       this.subject$.next(this.players);
     });
+
+    /*this.userService.getAllRoles().subscribe(users => {
+      this.roles = users["result"];
+      console.log(this.roles);
+      console.log("roles");
+      //this.players = users["result"]["users"];
+      this.subject$.next(this.roles);
+    });*/
 
     this.dataSource = new MatTableDataSource();
 
@@ -188,9 +197,12 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
      * Here we are updating our local array.
      * You would probably make an HTTP request here.
      */
-    //player.userName = player.userName;
-    //player.online_status = '0';
-    this.userService.deleteUser(player).subscribe(user => {
+    console.log(player);
+    console.log(Player);
+   // player.userName = player.userName;
+    player.status = 'inactive';
+    //let userName=player.userName;
+   this.userService.deleteUser(player).subscribe(user => {
     //this.userService.editUser(player).subscribe(user => {
       if(user){
           this.players.splice(this.players.findIndex((existingPlayer) => existingPlayer.id === player.id), 1);

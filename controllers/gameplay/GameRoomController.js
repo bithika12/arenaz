@@ -116,7 +116,6 @@ io.on('connection', function (socket) {
         async.waterfall([
             dartProcess(req),
             updateRoom,
-            //roomClosed,
             gameOverProcess,
             userNextStartDart,
 
@@ -158,6 +157,26 @@ io.on('connection', function (socket) {
                 console.log('dart error' + err);
                 io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"Something went wrong!"));
             });*/
+
+    });
+
+
+    /**
+     * @desc This function is used for fetch turn after dart throw
+     * @param {String} accesstoken
+     * @param {String} roomName
+     * @param {String} score
+     */
+    socket.on('throwDartComplete', function (req) {
+        //req.socketId = socket.id;
+        inmRoom.findNextUserDart({roomName: req.roomName}).then(function (roomDetails) {
+            if (roomDetails) {
+                io.to(req.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                //clearTimeout(waitingDartInterval[reqobj.roomName]);
+            }
+        }).catch(err => {
+            //reject(err);
+        });
 
     });
 

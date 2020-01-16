@@ -6,13 +6,14 @@ var async = require('async');
 /** Import Model **/
  var User  = require('../models/User');
 
-
+ const Joi = require('joi');
 
 
 /* UTILS PACKAGE*/
 const validateInput = require('../utils/ParamsValidation');
 const response     = require('../utils/ResponseManeger');
-
+ const appRoot = require('app-root-path');
+ const { fetchHistoryAdmin,userValidChkAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName} = require(appRoot +'/models/FetchHistory');
 /** Route function **/
 
 
@@ -74,8 +75,18 @@ exports.updateProfile = function (req,res){
      }
      let updateObj ={status:"inactive"};
 
+       userValidChkAdmin(res.userData.email)
+         .then(validResponse => {
+             return updateProfileAdmin({_id: res.userData. _id},updateObj);
+         })
+         .then(resp=>{
+             res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Account deleted ."})
+         })
+         .catch(err=>{
+             res.status(constants.API_ERROR).send(err);
+         });
 
-     async.waterfall([
+     /*async.waterfall([
          updateProfile({_id: res.userData. _id},updateObj)
      ],function (err, result) {
          if(result){
@@ -83,14 +94,102 @@ exports.updateProfile = function (req,res){
          }else{
              res.send(response.error(constants.ERROR_STATUS,err,"Something went wrong!!"));
          }
-     });
+     });*/
 
  }
 exports.updateProfileImage = function(req,res){
   
 }
+//modify profile
+ exports.modifyProfile13 = function (req,res){
 
+     let schema = Joi.object().keys({
+         //userName:  Joi.string().required(),
+         coinNumber: Joi.number().required(),
+         firstName: Joi.optional(),
+         lastName:  Joi.optional(),
+         roleName:  Joi.string().required(),
+         userEmail:  Joi.string().required(),
+         roleId:    Joi.string().required()
 
+     });
+     //const {value, error} = result;
+     const {body} = req;
+     let result = Joi.validate(body, schema);
+     const {value, error} = result;
+     const valid = error == null;
+     if (!valid) {
+         let data = { status: constants.VALIDATION_ERROR, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
+         return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+     }
+     else{
+         let rlId='ObjectId("'+req.body.roleId+'")';
+         let updateObj={
+             firstName:req.body.firstName,
+             lastName:req.body.lastName,
+             startCoin:req.body.coinNumber,
+             roleId:rlId
+
+         };
+         modifyProfileDetails({email:req.body.userEmail},updateObj)
+             /*.then(resp=>{
+                 return modifyProfileDetails({email:req.body.userEmail},updateObj)
+             })*/
+             .then(resp1=>{
+                 console.log("profile have been modified");
+                 res.status(constants.HTTP_OK_STATUS).send({status:constants.HTTP_OK_STATUS,message:"Your profile have been modified."})
+             })
+             .catch(err=>{
+                 res.status(constants.API_ERROR).send(err);
+             });
+     }
+
+ }
+ exports.modifyProfile = function (req,res){
+
+     let schema = Joi.object().keys({
+         //userName:  Joi.string().required(),
+         coinNumber: Joi.number().required(),
+         firstName: Joi.optional(),
+         lastName:  Joi.optional(),
+         roleName:  Joi.string().required(),
+         userEmail:  Joi.string().required(),
+         roleId:    Joi.string().required()
+
+     });
+     //const {value, error} = result;
+     const {body} = req;
+     let result = Joi.validate(body, schema);
+     const {value, error} = result;
+     const valid = error == null;
+     if (!valid) {
+         let data = { status: constants.VALIDATION_ERROR, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
+         return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+     }
+     else{
+
+          fetchRoleName({slug:req.body.roleName})
+             .then(resp=>{
+                 let updateObj={
+                     firstName:req.body.firstName,
+                     lastName:req.body.lastName,
+                     startCoin:req.body.coinNumber,
+                     roleId:resp
+
+                 };
+                 return modifyProfileDetails({email:req.body.userEmail},updateObj)
+                 //res.status(constants.HTTP_OK_STATUS).send({status:constants.HTTP_OK_STATUS,message:"Your profile have been modified."})
+             })
+              .then(resp1=>{
+                  console.log("profile have been modified");
+                  res.status(constants.HTTP_OK_STATUS).send({status:constants.HTTP_OK_STATUS,message:"Your profile have been modified."})
+              })
+             .catch(err=>{
+                 res.status(constants.API_ERROR).send(err);
+             });
+     }
+
+ }
 exports.updatePassword = function (req,res){
     if(!req.body.password ){
        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));

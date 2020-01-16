@@ -42,6 +42,10 @@ User.countUser = function(condObj){
 User.createUser = function(reqObj){
       return new Promise((resolve,reject)=>{
       reqObj.password  =  password.hashPassword(reqObj.password);
+      let startCoin = reqObj.userType =='regular-player'
+              ? 500
+              : 0;
+      reqObj.startCoin=startCoin;
       reqObj.deviceDetails = [{accessToken :  uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];
 
              Role.findOne({ slug: reqObj.userType},{_id: 1,name:1,slug:1}).then(roledetails=> {
@@ -513,7 +517,31 @@ User.resetPassword = function(condObj,updateObj){
  User.findUserListAdmin   =   function(){
      return  new Promise((resolve,reject) => {
          User.find({status:"active"}).then(responses=> {
-             return resolve(responses);
+             let totalArr=[];
+             let noRoleArr=[];
+             responses.map(function(entry1,key) {
+                 if (entry1.roleId) {
+                 Role.findOne({_id: entry1.roleId}, {_id: 1, name: 1, slug: 1}).then(roleResponse => {
+                     totalArr.push({
+                         roleId: roleResponse._id,
+                         roleName: roleResponse.slug,
+                         //roleName: roleResponse.name,
+                         userId:entry1.userId,
+                         userName:entry1.userName,
+                         firstName:entry1.firstName,
+                         lastName:entry1.lastName,
+                         email:entry1.email,
+                         startCoin:entry1.startCoin
+
+                     });
+                     if(key==responses.length-1)
+                     return resolve(totalArr)
+                 }).catch(roleErr => {
+                     reject(roleErr);
+                 });
+                 }
+             })
+             //return resolve(totalArr);
          }).catch(err => {
              return reject(err);
          });

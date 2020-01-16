@@ -46,7 +46,9 @@ var userSchema =  new Schema({
                         sockets          :  [{ socketId: String, status: Number,createdAt : Date, updatedAt:Date}], 
                         createdAt        :  Date,
                         updatedAt        :  Date,
-                        roleId           :  Schema.Types.ObjectId
+                        roleId           :  Schema.Types.ObjectId,
+                        startCoin        :  Number,
+                        loggedIn         :  { type : Number , default  : 0},
                   },{
                      strict:false
                   });

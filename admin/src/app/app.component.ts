@@ -20,6 +20,7 @@ import { Style, StyleService } from '../@vex/services/style.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
   title = 'vex';
 
   constructor(private configService: ConfigService,
@@ -73,7 +74,7 @@ export class AppComponent {
       {
         type: 'link',
         label: 'Dart Module',
-        route: '/tournament',
+        route: '/dart',
         icon: icAssigment
       }
     ];

@@ -13,8 +13,8 @@ const password = require('../utils/PasswordManage');
 /**  Import model **/
 var User  = require('../models/User');
 var Role  = require('../models/Role');
-
-
+const appRoot = require('app-root-path');
+const { fetchHistoryAdmin,userValidChkAdmin} = require(appRoot +'/models/FetchHistory');
 
 // Role.createUser().then((details)=>{
 
@@ -82,7 +82,7 @@ exports.login= function(req,res){
 
 
 exports.logout = function (req,res) {
-    User.removeToken({access_token: req.header("access-token")}).then(function (result) {
+    User.removeToken({access_token: req.header("access_token")}).then(function (result) {
     		if(result) {
     		    res.send({"status": constants.SUCCESS_STATUS, "result":{ }, "message": "Logout successfully"});
     		}else{
@@ -96,12 +96,31 @@ exports.logout = function (req,res) {
 exports.userList = function (req,res) {
     User.findUserListAdmin().then((userdetails)=>{
         res.send(response.generate(constants.SUCCESS_STATUS,
-            userdetails, 'User login successfully !!'));
+            userdetails, 'User List fetched successfully !!'));
     }).catch(err=>{
         res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch user list"));
     })
 };
+//fetch role list
+exports.getRole = function (req,res) {
+    Role.detailsAdmin({status:"active"}).then((roledetails)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            roledetails, 'Role List fetched successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch role list"));
+    })
+};
+ //fetch game list
+exports.getGameList = function (req,res) {
+    userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            return fetchHistoryAdmin(validResponse);
+        })
 
-
-
-
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,result:resp,message:"Game history fetched successfully."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+};

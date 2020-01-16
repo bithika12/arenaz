@@ -29,9 +29,9 @@ exports.forgotPassword= function(req,res) {
         email: Joi.optional(),
         userName: Joi.optional()
     });
+    const {value, error} = result;
     const {body} = req;
     let result = Joi.validate(body, schema);
-    const {value, error} = result;
     const valid = error == null;
     if (!valid) {
         let data = { status: constants.VALIDATION_ERROR, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };

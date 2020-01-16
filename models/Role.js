@@ -28,10 +28,18 @@ Role.details = function(condObj){
     	 reject(err);
     }) 	
   })
-}      	
+}
+ Role.detailsAdmin = function(condObj){
+     return new Promise((resolve,reject)=>{
+         Role.find(condObj,{_id: 1,name:1,slug:1}).then(response=> {
+             resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
 
 
-
-module.exports= Role;
+ module.exports= Role;
 
 

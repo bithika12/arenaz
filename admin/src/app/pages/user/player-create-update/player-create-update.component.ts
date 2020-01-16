@@ -14,6 +14,20 @@ import icLocationCity from '@iconify/icons-ic/twotone-location-city';
 import icEditLocation from '@iconify/icons-ic/twotone-edit-location';
 
 import { UserService } from '../../../../app/pages/services/user.service';
+import {MatSelectChange} from "@angular/material/select";
+import {Tournament} from "../../tournament/interfaces/tournament.model";
+import {Observable, ReplaySubject} from "rxjs";
+import {filter} from "rxjs/operators";
+import {MatTableDataSource} from "@angular/material/table";
+
+export interface Brand {
+  value: string;
+  viewValue: string;
+}
+
+export interface Coin {
+  value: number;
+}
 
 @Component({
   selector: 'vex-player-create-update',
@@ -22,10 +36,27 @@ import { UserService } from '../../../../app/pages/services/user.service';
 })
 export class PlayerCreateUpdateComponent implements OnInit {
 
-  
+  brands: Brand[] = [
+    { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },
+    { value: 'Gucci', viewValue: 'Gucci' },
+    { value: 'Prada', viewValue: 'Prada' },
+    { value: 'Chanel', viewValue: 'Chanel' },
+  ];
+
+  coins: Coin[] = [
+    { value: 50},
+    { value: 100},
+    { value: 200 },
+    { value: 500 },
+  ];
+  subject$: ReplaySubject<Player[]> = new ReplaySubject<Player[]>(1);
+  data$: Observable<Player[]> = this.subject$.asObservable();
+  rolelists= [];
+  Coin=[];
+  coinList=[];
   form: FormGroup;
   mode: 'create' | 'update' = 'create';
-
+  dataSource: MatTableDataSource<Player> | null;
   icMoreVert = icMoreVert;
   icClose = icClose;
 
@@ -47,6 +78,23 @@ export class PlayerCreateUpdateComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.userService.getAllRoles().subscribe(Roles => {
+      console.log(Roles);
+      //roleList: RoleList[] =Roles;
+      this.rolelists = Roles["result"];
+
+      //this.subject$.next(this.rolelists);
+    })
+    this.coinList = [
+      { value: 10},
+      { value: 50},
+      { value: 100},
+      { value: 250 },
+      { value: 500 },
+    ];
+   ////////////////////////////////
+
+    ////////////////////////////
     if (this.defaults) {
       console.log(this.defaults);
       this.mode = 'update';
@@ -57,9 +105,15 @@ export class PlayerCreateUpdateComponent implements OnInit {
     this.form = this.fb.group({
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
-      firstname: [this.defaults.firstname || ''],
-      lastname: [this.defaults.lastname || ''],
-      contact_no: this.defaults.contact_no || ''
+      firstname: [this.defaults.firstName || ''],
+      lastname: [this.defaults.lastName || ''],
+      contact_no: this.defaults.contact_no || '',
+      rolename:[this.defaults.roleName || ''],
+     // rolename:[this.defaults.roleName || ''],
+      roleid:[this.defaults.roleId || ''],
+      coin:[this.defaults.startCoin || ''],
+      username:[this.defaults.userName || ''],
+      useremail:[this.defaults.email || ''],
     });
   }
 
@@ -81,15 +135,15 @@ export class PlayerCreateUpdateComponent implements OnInit {
 
   updatePlayer() {
     const editplayer = this.form.value;
-    
+
     editplayer.id = this.defaults.id;
 
     this.userService.editUser(editplayer).subscribe(User => {
       console.log(User);
       if(User){
-        this.dialogRef.close(editplayer);  
+        this.dialogRef.close(editplayer);
       }
-    });    
+    });
   }
 
   isCreateMode() {
@@ -99,4 +153,21 @@ export class PlayerCreateUpdateComponent implements OnInit {
   isUpdateMode() {
     return this.mode === 'update';
   }
+  changeValue(value) {
+    console.log(value);
+    //console.log(this.peopleForm.get("roleid").value);
+    //console.log()
+    //const index = this.rolelists.findIndex(c => c === row);
+    //console.log(index);
+    //console.log(this.rolelists);
+    this.defaults.roleName = value;
+    //this.subject$.next(this.rolelists);
+  }
+  /*onLabelChange(change: MatSelectChange, row: Tournament) {
+    const index = this.tournaments.findIndex(c => c === row);
+    this.tournaments[index].labels = change.value;
+    this.subject$.next(this.tournaments);
+  }*/
+  //this.rolelists
+
 }

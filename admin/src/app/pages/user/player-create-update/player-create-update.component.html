@@ -7,7 +7,7 @@
         fxFlex="auto">{{ form.get('firstname').value + ' ' + form.get('lastname').value }}</h2>
     <h2 *ngIf="!form.get('firstname').value && !form.get('lastname').value"
         class="headline m-0"
-        fxFlex="auto">New User</h2>
+        fxFlex="auto">User Manage</h2>
 
     <!-- <button [matMenuTriggerFor]="settingsMenu" class="text-secondary" mat-icon-button type="button">
       <mat-icon [icIcon]="icMoreVert"></mat-icon>
@@ -35,6 +35,27 @@
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
+
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Username</mat-label>
+        <input cdkFocusInitial formControlName="username" matInput>
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Email</mat-label>
+        <input cdkFocusInitial formControlName="useremail" matInput>
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
+      <!--<mat-form-field  class="mt-6" fxFlex>
+        <mat-label>Password</mat-label>
+        <input matInput type="password" cdkFocusInitial placeholder="Password" formControlName="password">
+       <mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
+        <mat-error *ngIf="password.hasError('minlength')">Password must have at least {{minPw}} characters</mat-error>
+      </mat-form-field>-->
     </div>
 
     <!-- <mat-form-field>
@@ -60,12 +81,43 @@
       </mat-form-field>
     </div> -->
 
-    <mat-form-field>
+    <!--<mat-form-field>
       <mat-label>Phone Number</mat-label>
       <input formControlName="contact_no" matInput>
 
       <mat-icon [icIcon]="icPhone" class="mr-3" matPrefix></mat-icon>
+    </mat-form-field>-->
+
+    <mat-form-field>
+      <mat-label>Roles</mat-label>
+      <mat-select formControlName="roleid" >
+        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand.slug" >
+        <!--<mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand._id" >-->
+          {{ brand.slug }}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Coins </mat-label>
+      <mat-select formControlName="coin">
+        <mat-option *ngFor="let coin of coinList" [value]="coin.value ===coin ? selected : coin.value" >
+          {{ coin.value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+   <!-- <mat-select #labelSelect="matSelect"
+                (selectionChange)=""
+                [value]="row.labels"
+                class="invisible w-0 h-0 text-sm"
+                fxFlex="0 1 0px"
+                multiple>
+      <mat-option *ngFor="let label of labels" [value]="label">
+        <div [style.background-color]="label.color"
+             class="h-6 w-6 align-middle ltr:mr-2 rtl:ml-2 rounded inline-block"></div>
+        <span>{{ label.text }}</span>
+      </mat-option>
+    </mat-select>-->
 
     <!-- <mat-form-field>
       <mat-label>Notes</mat-label>

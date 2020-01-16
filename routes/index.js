@@ -65,6 +65,11 @@ router.post('/fetch/notifications',fetchNotification.fetchGame);
    //admin/edit-user
   router.post('/admin/delete-user',authetication.authChecker,profileController.disableProfile);
 
+  router.post('/admin/edit-user',authetication.authChecker,profileController.modifyProfile);
 
+  //admin/get-role
+  router.post('/admin/get-role'/*authetication.authChecker*/,adminController.getRole);
 
+  //fetch all game list in admin panel
+  router.post('/admin/game-list'/*authetication.authChecker*/,adminController.getGameList);
 module.exports = router;

@@ -57,4 +57,8 @@ export class AuthService {
         console.log(localStorage.getItem('access_token'));
         return localStorage.getItem('access_token')
     }
+  getEmail() {
+    console.log(localStorage.getItem('email'));
+    return localStorage.getItem('email')
+  }
 }

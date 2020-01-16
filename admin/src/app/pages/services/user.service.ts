@@ -8,31 +8,67 @@ import { AuthService } from '../auth/auth.service';
 export class UserService {
     access_token;
     headers;
-  constructor(private http: HttpClient, public authService: AuthService) {
+  /*constructor(private http: HttpClient, public authService: AuthService) {
             this.access_token = this.authService.getToken();
            console.log(" org :",this.access_token)
            console.log(" located in auth.gaurd access_token :",localStorage.getItem('access_token'))
             this.headers = new  HttpHeaders().set("access_token", this.access_token);
-  }
-   /* constructor(private http: HttpClient) {
+  }*/
+    constructor(private http: HttpClient, public authService: AuthService) {
                this.access_token = this.authService.getToken();
-                this.access_token = 'dflkgnd46598';
+                let userEmail= this.authService.getEmail();
+                //this.access_token = 'dflkgnd46598';
+                //this.access_token='a4525543-00e4-40b4-8fd0-d31d1d400621';
                 this.headers = new  HttpHeaders().set("access_token", this.access_token);
-    }*/
+                //this.headers = new  HttpHeaders().set("access_token", this.access_token);
+                //this.headers = new  HttpHeaders().set("access_token", this.access_token);
+    }
 
     getAllUsers() {
+      console.log('userlist api');
+      console.log(this.headers);
         return this.http.post(`${environment.BASE_URL}admin/users-list`,{headers: this.headers});
     }
 
     editUser(editplayer)
     {
-        return this.http.post(`${environment.BASE_URL}admin/edit-user`,editplayer,{headers: this.headers});
+      let payloadObj=
+      {
+        "coinNumber":editplayer.coin,
+        "firstName":editplayer.firstname,
+        "lastName":editplayer.lastname,
+        "userEmail":editplayer.useremail,
+        "roleName":editplayer.roleid,
+        "roleid":editplayer.roleid,
+      };
+      //payloadObj
+      console.log(editplayer);
+      console.log(payloadObj);
+      /*var headers_object = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'access-token': this.access_token
+      });
+
+      const httpOptions = {
+        headers: headers_object
+      };*/
+      //editplayer
+        return this.http.post(`${environment.BASE_URL}admin/edit-user`,payloadObj,{headers: this.headers});
     }
 
   deleteUser(editplayer)
   {
-    console.log(this.access_token);
-    return this.http.post(`${environment.BASE_URL}admin/delete-user`,editplayer,{headers: this.headers});
+    console.log("pl"+ editplayer.status);
+    console.log("pl"+ editplayer.userName);
+    let options={userName:editplayer.userName}
+    return this.http.post(`${environment.BASE_URL}admin/delete-user`,options,{headers: this.headers});
+  }
+  getAllRoles()
+  {
+     console.log('roles api');
+     console.log(this.headers);
+    //let options={userName:res.userName}
+    return this.http.post(`${environment.BASE_URL}admin/get-role`,{headers: this.headers});
   }
 
 }

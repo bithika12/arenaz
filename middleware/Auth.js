@@ -5,10 +5,10 @@ var User = require('../schema/Schema').userModel;
 /** function check Authentication  Token */
 var auth={}
 auth.authChecker = function(req, res, next) {
-    if(!req.header("access-token")){
+    if(!req.header("access_token")){
        return res.send({"status":constants.PARAMMISSING_STATUS,"error":{},"message":"Access token missing !"});
     }
-    User.checkUserToken({"accessToken":req.header("access-token")}).then(function (userAuthDetails) {
+    User.checkUserToken({"accessToken":req.header("access_token")}).then(function (userAuthDetails) {
        if( userAuthDetails.deviceDetails[0].status == "active"){
            if( userAuthDetails.status == "active" ){            
                 res.userData ={

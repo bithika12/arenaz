@@ -10,16 +10,16 @@ export class TournamentService {
     headers;
   /*constructor(private http: HttpClient, public authService: AuthService) {
             this.access_token = this.authService.getToken();
-            this.headers = new  HttpHeaders().set("access_token", this.access_token);        
-  }*/    
+            this.headers = new  HttpHeaders().set("access_token", this.access_token);
+  }*/
     constructor(private http: HttpClient) {
                 //this.access_token = this.authService.getToken();
                 this.access_token = 'dflkgnd46598';
-                this.headers = new  HttpHeaders().set("access_token", this.access_token);        
+                this.headers = new  HttpHeaders().set("access_token", this.access_token);
     }
 
     getAllTournaments() {
-        return this.http.post(`${environment.BASE_URL}admin/tournaments-list`,{headers: this.headers});        
+        return this.http.post(`${environment.BASE_URL}admin/game-list`,{headers: this.headers});
     }
 
     editTournament(edittournament)
@@ -31,6 +31,6 @@ export class TournamentService {
     {
         return this.http.post(`${environment.BASE_URL}admin/add-tournament`,addtournament,{headers: this.headers});
     }
-    
-        
+
+
 }
