@@ -100,7 +100,7 @@
       <mat-label>Roles</mat-label>
       <mat-select formControlName="roleid" >
 
-        <mat-option *ngFor="let brand of rolelists"  [value]="brand.slug ==rolename ? selected : brand.slug" >
+        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==roleid ? selected : brand._id" >
         <!--<mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand._id" >-->
           {{ brand.slug }}
         </mat-option>

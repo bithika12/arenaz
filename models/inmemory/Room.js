@@ -11,6 +11,7 @@ var room = require(appRoot + '/utils/MemoryDatabaseManger').room;
 //const  Bid            = require('../gameplay/Bid');
 var _ = require("underscore");
 const Math = require('math');
+const logger = require(appRoot + '/utils/LoggerClass');
 /**
  * @desc This function is used for calculate score
  * @param {Object} reqObj
@@ -68,11 +69,13 @@ room.throwDartDetails = function (reqObj) {
                              */
                             if (reqObj.score == 1 || reqObj.score < 0 || calculatedScore < 0) {
                                 //reject({message:"It is bust"});
+                                console.log("It is a bust");
                                 userTurn = 3;
                                 playStatus = 1;
                                 calculatedScore=remainingScore;
                             }
                             if (calculatedScore == 0) {
+                                console.log("win the match");
                                 isWin = 1;
                                 cupNumber = 70;
 
@@ -124,6 +127,7 @@ room.throwDartDetails = function (reqObj) {
                         gameTotalTime:gameSeconds
                     });
                 } else {
+                    console.log("Unable to find room");
                     reject({message: "No room found"});
                 }
             });
@@ -658,18 +662,22 @@ room.findNextUserDart = function (condObj) {
             if (roomDetails) {
                 let users = roomDetails.users;
                 let findIndex = users.findIndex(elemt => (elemt.turn > 0 && elemt.turn < 3)/*||  elemt.turn < 1 *//*roomDetails.dealStartDirection*/);
-
+                  logger.print("***Next turn index "+findIndex);
                 //resolve({ userId  : users[findIndex].userId});
                 if (findIndex == -1) {
+
                     let findIndex1 = users.findIndex(elemt => elemt.turn < 1 /*roomDetails.dealStartDirection*/);
+                    logger.print("***Next turn index "+findIndex1);
                     if (findIndex1 != -1)
                         resolve({userId: users[findIndex1].userId});
                     else
+                        logger.print("***Next user not found");
                         reject({message: "User not found"});
                 } else {
                     resolve({userId: users[findIndex].userId});
                 }
             } else {
+                logger.print("***Room not found while fetch next turn ");
                 reject({});
             }
         })
@@ -747,6 +755,7 @@ room.updateInmemoryRoomMod = function (updateArr) {
                 if (err)
                     reject({message: "Error:Database connection error"})
                 else {
+                    console.log("update memory room successfully after dart thrown");
                     if (updateroomresult > 0)
                         //resolve({roomName : userObj.roomName,userArr:updateArr})
                         resolve({

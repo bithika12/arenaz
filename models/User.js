@@ -524,6 +524,7 @@ User.resetPassword = function(condObj,updateObj){
                  Role.findOne({_id: entry1.roleId}, {_id: 1, name: 1, slug: 1}).then(roleResponse => {
                      totalArr.push({
                          roleId: roleResponse._id,
+                         //roleId: roleResponse._id,
                          roleName: roleResponse.slug,
                          //roleName: roleResponse.name,
                          userId:entry1.userId,

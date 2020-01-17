@@ -86,6 +86,8 @@ io.on('connection', function (socket) {
                         message          : "You are winner",
                         read_unread      : 0
                     }).then(function(notificationdetails){
+                        logger.print("***Game Notification added ");
+                        logger.print("***Game over successfully ");
                         io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
                         io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: reqobj.userId,
@@ -277,11 +279,16 @@ io.on('connection', function (socket) {
 
     function userNextStartDart(reqobj, callback) {
         return new Promise((resolve, reject) => {
+            if (reqobj.isWin) {
+                callback(null, reqobj);
+            }
+            else {
             waitingDartInterval[reqobj.roomName] = setTimeout(() => {
                 nextUserTurnDart(reqobj, 0)
-            }, 2000);
+            }, 3000);
 
             callback(null, reqobj);
+           }
         })
     }
     function userNextStartDart45(reqobj, callback) {
@@ -310,6 +317,7 @@ io.on('connection', function (socket) {
     function nextUserTurnDart(roomObj) {
         inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
             if (roomDetails) {
+                logger.print("***Next turn sent "+roomDetails.userId);
                 io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
                 //clearTimeout(waitingDartInterval[reqobj.roomName]);
             }
