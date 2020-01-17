@@ -75,38 +75,6 @@ io.on('connection', function (socket) {
             clearInterval(this);
         }
     }
-    //gameStatusUpdate
-
-    function gameStatusUpdate(reqobj, callback) {
-        return new Promise((resolve, reject) => {
-            if (reqobj.isWin) {
-                //user update with coin
-                 user.updateUserCoin({userId: reqobj.userId}, {startCoin: reqobj.availableCoin}).then(function (userStatusUpdate) {
-                     callback(null, reqobj);
-                });
-            } else {
-                callback(null, reqobj);
-            }
-        })
-    }
-
-    function gameStatusUpdateOpponent(reqobj, callback) {
-        return new Promise((resolve, reject) => {
-            if (reqobj.isWin) {
-                //user update with coin
-                //reqobj.roomUsers
-                let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
-                let userOppo=reqobj.roomUsers[findIndex].userId;
-                console.log("opponent user"+userOppo);
-                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin}).then(function (userStatusUpdate) {
-                    callback(null, reqobj);
-                });
-            } else {
-                callback(null, reqobj);
-            }
-        })
-    }
-
     function gameOverProcess(reqobj, callback) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
@@ -150,10 +118,6 @@ io.on('connection', function (socket) {
         async.waterfall([
             dartProcess(req),
             updateRoom,
-            //gameOverProcess,
-            //NEWLY ADDED FOR COIN
-            gameStatusUpdate,
-            gameStatusUpdateOpponent,
             gameOverProcess,
             userNextStartDart,
 
@@ -420,7 +384,6 @@ io.on('connection', function (socket) {
                             colorName: req.colorName,
                             raceName: req.raceName,
                             dartName: req.dartname,
-                            roomCoin:req.roomCoin
                         }).then(function (result) {
                             let roomName = result.roomName;
                             userObj = {
@@ -436,14 +399,12 @@ io.on('connection', function (socket) {
                                 raceName: req.raceName,
                                 dartName:req.dartname,
                                 total_no_win: 0,
-                                cupNumber: 0,
-                                roomCoin:req.roomCoin
+                                cupNumber: 0
 
                             };
                             inmRoom.roomJoineeCreation({
                                 roomId: result._id,
-                                roomName: result.roomName,
-                                roomCoin:req.roomCoin
+                                roomName: result.roomName
                             }, {userObj: userObj}).then((joineeDetails) => {
                                 io.to(roomName).emit('enterUser', response.generate(constants.SUCCESS_STATUS, {user: userObj}, "Player enter to the room"));
                                 io.of('/').connected[userSocketId].join(roomName, function () {
@@ -823,6 +784,7 @@ io.on('connection', function (socket) {
             userRoomName = allOnlineUsers[findIndex].roomName;
             if (userRoomName != '') {
                 io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
+
 
                 async.waterfall([
                     playerLeave({roomName: userRoomName, userId: allOnlineUsers[findIndex].userId}),

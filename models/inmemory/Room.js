@@ -38,8 +38,6 @@ room.throwDartDetails = function (reqObj) {
         let playStatus = 0;
         let cupNumber;
         let cupNumberOppo;
-        let availableCoin;
-
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
                 if (result) {
@@ -80,7 +78,6 @@ room.throwDartDetails = function (reqObj) {
                                 console.log("win the match");
                                 isWin = 1;
                                 cupNumber = 70;
-                                availableCoin=elemt.roomCoin;
 
                                 let findIndexOpponent = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
                                 cupNumberOppo = Math.round(((userArr[findIndexOpponent].total / 333) * 100), 0);
@@ -127,8 +124,7 @@ room.throwDartDetails = function (reqObj) {
                         isWin: isWin,
                         playerScore: reqObj.score,
                         cupNumber: cupNumber,
-                        gameTotalTime:gameSeconds,
-                        availableCoin:availableCoin
+                        gameTotalTime:gameSeconds
                     });
                 } else {
                     console.log("Unable to find room");
@@ -400,26 +396,6 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                         resolve({users: insertroomresult.users})
                 })
             } else {
-
-                userArr.push(updateObj.userObj);
-                if (userArr[0]['roomCoin'] != conditionObj.roomCoin) {
-
-                    //add in a new room as coin not match
-                    room.insert({
-                        roomId: conditionObj.roomId,
-                        roomName: conditionObj.roomName,
-                        users: userArr,
-                        totalUser: 1,
-                        createtime: new Date().getTime(),
-                        gametime:""
-                    }, function (err, insertroomresult) {
-                        if (err)
-                            reject(err)
-                        else
-                            resolve({users: insertroomresult.users})
-                    })
-                }
-                else {
                 var roomUser = roomresult.users;
                 console.log("roomUser ", roomUser);
                 console.log("updateObj ", updateObj);
@@ -431,7 +407,7 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                 console.log(" index : ", index);
                 room.update({roomId: conditionObj.roomId},
                     {
-                        $set: {users: roomUser, gametime: new Date().getTime()}/*$pull:  {  users  : { userId:updateObj.userObj.userId}},
+                        $set: {users: roomUser,gametime: new Date().getTime()}/*$pull:  {  users  : { userId:updateObj.userObj.userId}},
 						$push:  {  users  : updateObj.userObj }*/
                     },
 
@@ -443,7 +419,6 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                         }
 
                     });
-               }
             }
 
         });
@@ -541,17 +516,6 @@ room.userLeave = function (condObj, updateObj) {
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
-
-                if(userArr.length ==1){
-                    //userArr[findIndex].isWin=2;
-                    //userArr[findIndexOppo].isWin=2;
-                    userArr[findIndex].status = "inactive";
-                    //playStatus=2;
-                    //isWin=2;
-                    //userArr[findIndexOppo].cupNumber=70;
-                    //userArr[findIndex].cupNumber=70;
-
-                }
 
                 if(userArr.length >1 && gameSeconds <=8){
                     userArr[findIndex].isWin=2;
@@ -804,8 +768,7 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             roomUsers: updateArr.finalArr,
                             playerScore: updateArr.playerScore,
                             cupNumber: updateArr.cupNumber,
-                            gameTotalTime:updateArr.gameTotalTime,
-                            availableCoin:updateArr.availableCoin
+                            gameTotalTime:updateArr.gameTotalTime
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else

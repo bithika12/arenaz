@@ -19,8 +19,6 @@ import {Tournament} from "../../tournament/interfaces/tournament.model";
 import {Observable, ReplaySubject} from "rxjs";
 import {filter} from "rxjs/operators";
 import {MatTableDataSource} from "@angular/material/table";
-import { Router } from '@angular/router';
-import { Location } from '@angular/common';
 
 export interface Brand {
   value: string;
@@ -75,10 +73,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public defaults: any,
               private dialogRef: MatDialogRef<PlayerCreateUpdateComponent>,
               private fb: FormBuilder,
-              private userService:UserService,
-              private router: Router,
-              private location: Location
-
+              private userService:UserService
               ) {
   }
 
@@ -146,9 +141,6 @@ export class PlayerCreateUpdateComponent implements OnInit {
     this.userService.editUser(editplayer).subscribe(User => {
       console.log(User);
       if(User){
-        //this.router.navigate(['/user']);
-        //this.ngOnInit();
-        location.reload();
         this.dialogRef.close(editplayer);
       }
     });
