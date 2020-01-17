@@ -1,6 +1,6 @@
  /**  Import Package**/
 var async = require('async');
-
+ var mongoose = require('mongoose');
  /** Required all module**/
  var constants = require("../config/constants");
 /** Import Model **/
@@ -101,7 +101,7 @@ exports.updateProfileImage = function(req,res){
   
 }
 //modify profile
- exports.modifyProfile13 = function (req,res){
+ exports.modifyProfile = function (req,res){
 
      let schema = Joi.object().keys({
          //userName:  Joi.string().required(),
@@ -123,12 +123,12 @@ exports.updateProfileImage = function(req,res){
          return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
      }
      else{
-         let rlId='ObjectId("'+req.body.roleId+'")';
+         let id1 = mongoose.Types.ObjectId(req.body.roleId);
          let updateObj={
              firstName:req.body.firstName,
              lastName:req.body.lastName,
              startCoin:req.body.coinNumber,
-             roleId:rlId
+             roleId:id1
 
          };
          modifyProfileDetails({email:req.body.userEmail},updateObj)
@@ -145,7 +145,7 @@ exports.updateProfileImage = function(req,res){
      }
 
  }
- exports.modifyProfile = function (req,res){
+ exports.modifyProfileoRG1 = function (req,res){
 
      let schema = Joi.object().keys({
          //userName:  Joi.string().required(),
@@ -154,7 +154,7 @@ exports.updateProfileImage = function(req,res){
          lastName:  Joi.optional(),
          roleName:  Joi.string().required(),
          userEmail:  Joi.string().required(),
-         //roleId:    Joi.string().required()
+         roleId:    Joi.string().required()
 
      });
      //const {value, error} = result;
@@ -167,14 +167,15 @@ exports.updateProfileImage = function(req,res){
          return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
      }
      else{
-
+         let id1 = mongoose.Types.ObjectId(req.body.roleId);
+         console.log(id1);
           fetchRoleName({slug:req.body.roleName})
              .then(resp=>{
                  let updateObj={
                      firstName:req.body.firstName,
                      lastName:req.body.lastName,
                      startCoin:req.body.coinNumber,
-                     roleId:resp
+                     roleId:id1
 
                  };
                  return modifyProfileDetails({email:req.body.userEmail},updateObj)

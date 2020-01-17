@@ -75,6 +75,38 @@ io.on('connection', function (socket) {
             clearInterval(this);
         }
     }
+    //gameStatusUpdate
+
+    function gameStatusUpdate(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+            if (reqobj.isWin) {
+                //user update with coin
+                 user.updateUserCoin({userId: reqobj.userId}, {startCoin: reqobj.availableCoin}).then(function (userStatusUpdate) {
+                     callback(null, reqobj);
+                });
+            } else {
+                callback(null, reqobj);
+            }
+        })
+    }
+
+    function gameStatusUpdateOpponent(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+            if (reqobj.isWin) {
+                //user update with coin
+                //reqobj.roomUsers
+                let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
+                let userOppo=reqobj.roomUsers[findIndex].userId;
+                console.log("opponent user"+userOppo);
+                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin}).then(function (userStatusUpdate) {
+                    callback(null, reqobj);
+                });
+            } else {
+                callback(null, reqobj);
+            }
+        })
+    }
+
     function gameOverProcess(reqobj, callback) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
@@ -118,6 +150,10 @@ io.on('connection', function (socket) {
         async.waterfall([
             dartProcess(req),
             updateRoom,
+            //gameOverProcess,
+            //NEWLY ADDED FOR COIN
+            gameStatusUpdate,
+            gameStatusUpdateOpponent,
             gameOverProcess,
             userNextStartDart,
 

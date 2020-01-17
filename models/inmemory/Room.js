@@ -38,6 +38,8 @@ room.throwDartDetails = function (reqObj) {
         let playStatus = 0;
         let cupNumber;
         let cupNumberOppo;
+        let availableCoin;
+
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
                 if (result) {
@@ -78,6 +80,7 @@ room.throwDartDetails = function (reqObj) {
                                 console.log("win the match");
                                 isWin = 1;
                                 cupNumber = 70;
+                                availableCoin=elemt.roomCoin;
 
                                 let findIndexOpponent = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
                                 cupNumberOppo = Math.round(((userArr[findIndexOpponent].total / 333) * 100), 0);
@@ -124,7 +127,8 @@ room.throwDartDetails = function (reqObj) {
                         isWin: isWin,
                         playerScore: reqObj.score,
                         cupNumber: cupNumber,
-                        gameTotalTime:gameSeconds
+                        gameTotalTime:gameSeconds,
+                        availableCoin:availableCoin
                     });
                 } else {
                     console.log("Unable to find room");
@@ -800,7 +804,8 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             roomUsers: updateArr.finalArr,
                             playerScore: updateArr.playerScore,
                             cupNumber: updateArr.cupNumber,
-                            gameTotalTime:updateArr.gameTotalTime
+                            gameTotalTime:updateArr.gameTotalTime,
+                            availableCoin:updateArr.availableCoin
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else

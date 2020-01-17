@@ -119,7 +119,44 @@ User.updateUserDetails =function(condObj,updateObj){
     });
 }
 
+//user status update
+// updateUserCoin
+ User.updateUserCoin =function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
 
+         User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
+             let updatedCoin=responses.startCoin + updateObj.startCoin;
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });
+         }).catch(err => {
+             return reject(err);
+         });
+
+     });
+ }
+
+ //UPDATE COIN FOR OPPONENT
+ User.updateUserCoinOpponent =function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
+             let updatedCoin=responses.startCoin - updateObj.startCoin;
+             /*if(updatedCoin ==0){
+                 updatedCoin=500;
+             }*/
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });
+         }).catch(err => {
+             return reject(err);
+         });
+
+     });
+ }
 User.listing = function(condObj){
   return  new Promise((resolve,reject) => {
         User.find(condObj,{id: 1,name: 1,total_kill : 1}).limit(20).sort({ total_kill: -1 }).then(responses=> {
@@ -523,6 +560,7 @@ User.resetPassword = function(condObj,updateObj){
                  if (entry1.roleId) {
                  Role.findOne({_id: entry1.roleId}, {_id: 1, name: 1, slug: 1}).then(roleResponse => {
                      totalArr.push({
+
                          roleId: roleResponse._id,
                          //roleId: roleResponse._id,
                          roleName: roleResponse.slug,
