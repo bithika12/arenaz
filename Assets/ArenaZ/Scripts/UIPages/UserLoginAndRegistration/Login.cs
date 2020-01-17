@@ -90,6 +90,8 @@ namespace ArenaZ.LoginUser
 
         private void OnCompleteLogin(UserLogin loggedinProfile)
         {
+            RestManager.AccessToken = loggedinProfile.AccessToken;
+            Debug.Log("OnLogin User Access Token:  " + loggedinProfile.AccessToken);
             Debug.Log("Login Successful: " + loggedinProfile);
             if (Application.platform == RuntimePlatform.Android && PlayerPrefs.GetInt(PlayerprefsValue.AutoLogin.ToString()) == 0)
             {

@@ -178,6 +178,7 @@ namespace socket.io {
         }
 
         public void EmitJson(string eventName, string jsonData) {
+            Debug.Log($"SentData:- \nEventName: {eventName} \nData: {jsonData}");
             EmitJson(eventName, jsonData, null);
         }
 
@@ -323,7 +324,7 @@ namespace socket.io {
                         seperatorLen = 1;
                     }
                     var eventName = pkt.body.Substring(2, seperateIndex - 3);
-                   // Debug.Log($"Whole Packet:  {pkt.body} : {seperateIndex} Event Name : {eventName}");
+                    Debug.Log($"Whole Packet:  {pkt.body} : {seperateIndex} Event Name : {eventName}");
                     if (!_handlers.ContainsKey(eventName)) {
                         Debug.LogWarningFormat("{0} event doesn't have a handler", eventName);
                         break;

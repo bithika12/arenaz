@@ -2,6 +2,7 @@
 using System;
 using socket.io;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace RedApple
 {
@@ -67,14 +68,17 @@ namespace RedApple
         }
 
         public void ThrowDartData(int hitValue, Vector3 point)
-        { 
+        {
+            //string hitPoint = Regex.Replace(point.ToString(), @"\s+", "");
+            string hitPoint = Regex.Replace(point.ToString(), @"\s", "");
+
             ThrowDart throwDart = new ThrowDart
             {
                 AccessToken = User.UserAccessToken,
                 Score = hitValue.ToString(),
                 RoomName = User.RoomName,
-                DartPoint = System.Text.RegularExpressions.Regex.Replace(point.ToString(), @"\s+", "")
-        };
+                DartPoint = hitPoint
+            };
             string throwDartData = DataConverter.SerializeObject(throwDart);
             Debug.Log("Throw Dart Data: " + throwDartData);
             socket.EmitJson(SocketEmitEvents.throwDart.ToString(), throwDartData);

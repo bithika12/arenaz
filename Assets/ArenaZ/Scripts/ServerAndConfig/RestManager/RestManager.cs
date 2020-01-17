@@ -160,8 +160,8 @@ namespace RedApple
 
         private static void addUserAuthHeader(ref WebRequestBuilder builder)
         {
-            builder.Header("access-token", string.Format("Bearer {0}", Instance.userAccessToken));
-            Debug.Log("User Access Token:  " + Instance.userAccessToken);
+            builder.Header("access_token", Instance.userAccessToken);
+            Debug.Log("User Access Token: " + Instance.userAccessToken);
         }
     }
 }

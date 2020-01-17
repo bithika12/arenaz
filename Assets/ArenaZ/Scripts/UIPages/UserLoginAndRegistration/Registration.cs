@@ -101,6 +101,8 @@ namespace ArenaZ.RegistrationUser
 
         private void OnCompleteRegistration(CreateAccount registeredProfile)
         {
+            RestManager.AccessToken = registeredProfile.AccessToken;
+            Debug.Log("OnRegistration User Access Token:  " + registeredProfile.AccessToken);
             Debug.Log("Registered:  " + registeredProfile.UserName);
             if (Application.platform == RuntimePlatform.Android)
             {

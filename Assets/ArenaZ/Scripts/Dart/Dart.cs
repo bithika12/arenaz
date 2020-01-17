@@ -23,21 +23,6 @@ namespace ArenaZ.ShootingObject
             dartRB = GetComponent<Rigidbody>();
         }
 
-        private Vector3 BallisticVelocity(Vector3 hitPosition, float angle)
-        {
-            Debug.Log("Moving in projectile path");
-            dartRB.useGravity = true;
-            Vector3 direction = hitPosition - transform.position; // Need to change this transform position
-            float height = direction.y;
-            direction.y = 0;
-            float dist = direction.magnitude;
-            float radianValue = angle * Mathf.Deg2Rad;
-            direction.y = dist * Mathf.Tan(radianValue);
-            dist += height / Mathf.Tan(radianValue);
-            float vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * radianValue));
-            return vel * direction.normalized;
-        }
-
         private void AddPointsToArray(Vector3 point)
         {
             int pointsNum = points.Length;
@@ -69,11 +54,6 @@ namespace ArenaZ.ShootingObject
             float squareOfInitialV = initialV * initialV;
             Vector3 calculation = (squareOfInitialV * transform.position) + (2 * initialV * time * pointTwo) + (squareOfTime * pointThree);
             return calculation;
-        }
-
-        public void MoveInProjectilePathWithPhysics(Vector3 endPosition, float angle)
-        {
-            dartRB.velocity = BallisticVelocity(endPosition, angle);
         }
     }
 }
