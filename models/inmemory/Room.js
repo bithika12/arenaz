@@ -396,6 +396,26 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                         resolve({users: insertroomresult.users})
                 })
             } else {
+
+                userArr.push(updateObj.userObj);
+                if (userArr[0]['roomCoin'] != conditionObj.roomCoin) {
+
+                    //add in a new room as coin not match
+                    room.insert({
+                        roomId: conditionObj.roomId,
+                        roomName: conditionObj.roomName,
+                        users: userArr,
+                        totalUser: 1,
+                        createtime: new Date().getTime(),
+                        gametime:""
+                    }, function (err, insertroomresult) {
+                        if (err)
+                            reject(err)
+                        else
+                            resolve({users: insertroomresult.users})
+                    })
+                }
+                else {
                 var roomUser = roomresult.users;
                 console.log("roomUser ", roomUser);
                 console.log("updateObj ", updateObj);
@@ -407,7 +427,7 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                 console.log(" index : ", index);
                 room.update({roomId: conditionObj.roomId},
                     {
-                        $set: {users: roomUser,gametime: new Date().getTime()}/*$pull:  {  users  : { userId:updateObj.userObj.userId}},
+                        $set: {users: roomUser, gametime: new Date().getTime()}/*$pull:  {  users  : { userId:updateObj.userObj.userId}},
 						$push:  {  users  : updateObj.userObj }*/
                     },
 
@@ -419,6 +439,7 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                         }
 
                     });
+               }
             }
 
         });
@@ -516,6 +537,17 @@ room.userLeave = function (condObj, updateObj) {
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
+
+                if(userArr.length ==1){
+                    //userArr[findIndex].isWin=2;
+                    //userArr[findIndexOppo].isWin=2;
+                    userArr[findIndex].status = "inactive";
+                    //playStatus=2;
+                    //isWin=2;
+                    //userArr[findIndexOppo].cupNumber=70;
+                    //userArr[findIndex].cupNumber=70;
+
+                }
 
                 if(userArr.length >1 && gameSeconds <=8){
                     userArr[findIndex].isWin=2;

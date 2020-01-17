@@ -48,7 +48,8 @@ room.createRoom = function(condObj){
                                        raceName:condObj.raceName,
                                        dartName:condObj.dartName,
                                        total_no_win:0,
-                                       cupNumber:0}}
+                                       cupNumber:0,
+                                       roomCoin:condObj.roomCoin }}
 
                 console.log(" roomObj",roomObj)
                 Room.create(roomObj).then(responses=> {
@@ -56,23 +57,65 @@ room.createRoom = function(condObj){
                 }).catch(err => {
                     reject(err);
                 });
-            }else{
-                updateObj  ={}
-                Room.updateOne({ "_id":responses[0]._id},
+            }else {
+                if (responses[0].users[0]['roomCoin'] != condObj.roomCoin) {
+                    //add user to a seperate room
+                     let roomObj ={
+                         name : 'RM'+new Date().getTime(),
+                        "status":"open",
+                        users : {userId : condObj.userId ,
+                            status: "active",
+                            total:"100",
+                            score:"100",
+                            isWin:0,
+                            turn:0,
+                            dartPoint:"",
+                            userName:condObj.userName,
+                            colorName:condObj.colorName,
+                            raceName:condObj.raceName,
+                            dartName:condObj.dartName,
+                            total_no_win:0,
+                            cupNumber:0,
+                            roomCoin:condObj.roomCoin }}
+
+                    console.log(" roomObj",roomObj)
+                    Room.create(roomObj).then(responses=> {
+                        resolve({ roomName : responses.name ,_id :responses._id });
+                    }).catch(err => {
+                        reject(err);
+                    });
+                }
+                else {
+                updateObj = {}
+                Room.updateOne({"_id": responses[0]._id},
                     {
-                        $push: { users: { userId: condObj.userId ,
-                                status:"active",total:100,score:100,isWin:0,turn:0,
-                                userName:condObj.userName,colorName:condObj.colorName,raceName:condObj.raceName,dartName:condObj.dartName,total_no_win:0,cupNumber:0 } }
+                        $push: {
+                            users: {
+                                userId: condObj.userId,
+                                status: "active",
+                                total: 100,
+                                score: 100,
+                                isWin: 0,
+                                turn: 0,
+                                userName: condObj.userName,
+                                colorName: condObj.colorName,
+                                raceName: condObj.raceName,
+                                dartName: condObj.dartName,
+                                total_no_win: 0,
+                                cupNumber: 0,
+                                roomCoin: condObj.roomCoin
+                            }
+                        }
                     },
-                    { multi: true }).then(updateRoomDetails=> {
-                    return resolve({ roomName : responses[0].name ,_id :responses[0]._id });
+                    {multi: true}).then(updateRoomDetails => {
+                    return resolve({roomName: responses[0].name, _id: responses[0]._id});
 
                 }).catch(err => {
                     reject(err);
                 });
 
                 // }
-
+              }
             }
         }).catch(err => {
             reject(err);
@@ -277,21 +320,52 @@ room.updateRoomLeave  = function(userObj,updateArr){
 }
 
 room.updateRoomLeaveDisconnect  = function(updateArr){
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve,reject)=> {
 
-        Room.updateOne({name : updateArr.roomName},{ $set: { status:"closed",game_time:updateArr.gameTotalTime,updated_at:Date.now(),users: updateArr.userTotal }},
+        if (updateArr.userTotal.length == 1) {
+            Room.updateOne({name: updateArr.roomName}, {
+                    $set: {
+                        status: "closed",
+                        //game_time: updateArr.gameTotalTime,
+                        updated_at: Date.now(),
+                        users: updateArr.userTotal
+                    }
+                },
+                function (err, updateroomresult) {
+                    if (err)
+                        reject({message: "Error:Database connection error"})
+                    else {
+                        if (updateroomresult.nModified > 0)
+                            resolve(true)
+                        else
+                            reject({message: "Unable to update memory room"});
+                        //resolve({users: reqObj.userId,remainingScore:calculatedScore})
+                    }
+
+                });
+        }
+        else {
+        Room.updateOne({name: updateArr.roomName}, {
+                $set: {
+                    status: "closed",
+                    game_time: updateArr.gameTotalTime,
+                    updated_at: Date.now(),
+                    users: updateArr.userTotal
+                }
+            },
             function (err, updateroomresult) {
                 if (err)
-                    reject({message:"Error:Database connection error"})
+                    reject({message: "Error:Database connection error"})
                 else {
-                    if(updateroomresult.nModified >0)
+                    if (updateroomresult.nModified > 0)
                         resolve(true)
                     else
-                        reject({message:"Unable to update memory room"});
+                        reject({message: "Unable to update memory room"});
                     //resolve({users: reqObj.userId,remainingScore:calculatedScore})
                 }
 
             });
+      }
 
     })
 }

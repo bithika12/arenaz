@@ -384,6 +384,7 @@ io.on('connection', function (socket) {
                             colorName: req.colorName,
                             raceName: req.raceName,
                             dartName: req.dartname,
+                            roomCoin:req.roomCoin
                         }).then(function (result) {
                             let roomName = result.roomName;
                             userObj = {
@@ -399,12 +400,14 @@ io.on('connection', function (socket) {
                                 raceName: req.raceName,
                                 dartName:req.dartname,
                                 total_no_win: 0,
-                                cupNumber: 0
+                                cupNumber: 0,
+                                roomCoin:req.roomCoin
 
                             };
                             inmRoom.roomJoineeCreation({
                                 roomId: result._id,
-                                roomName: result.roomName
+                                roomName: result.roomName,
+                                roomCoin:req.roomCoin
                             }, {userObj: userObj}).then((joineeDetails) => {
                                 io.to(roomName).emit('enterUser', response.generate(constants.SUCCESS_STATUS, {user: userObj}, "Player enter to the room"));
                                 io.of('/').connected[userSocketId].join(roomName, function () {
@@ -784,7 +787,6 @@ io.on('connection', function (socket) {
             userRoomName = allOnlineUsers[findIndex].roomName;
             if (userRoomName != '') {
                 io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
-
 
                 async.waterfall([
                     playerLeave({roomName: userRoomName, userId: allOnlineUsers[findIndex].userId}),
