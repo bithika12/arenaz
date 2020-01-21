@@ -131,7 +131,7 @@ room.throwDartDetails = function (reqObj) {
                         availableCoin:availableCoin
                     });
                 } else {
-                    console.log("Unable to find room");
+                    console.log("Unable to find room"+reqObj.roomName);
                     reject({message: "No room found"});
                 }
             });
