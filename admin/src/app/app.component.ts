@@ -73,8 +73,14 @@ export class AppComponent {
       },
       {
         type: 'link',
-        label: 'Dart Module',
+        label: 'Match Player List',
         route: '/dart',
+        icon: icAssigment
+      },
+      {
+        type: 'link',
+        label: 'Coin Module',
+        route: '/coin',
         icon: icAssigment
       }
     ];

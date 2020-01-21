@@ -2,26 +2,50 @@
 var async = require('async');
 /* Import */
 var constants = require("../config/constants");
-
+var mongoose = require('mongoose');
 /* UTILS PACKAGE*/
 const validateInput = require('../utils/ParamsValidation');
 const response  = require('../utils/ResponseManeger');
 //const jwtTokenManage   = require('../utils/JwtTokenManage');
 
 const password = require('../utils/PasswordManage');
-
+const Joi = require('joi');
 /**  Import model **/
 var User  = require('../models/User');
 var Role  = require('../models/Role');
 const appRoot = require('app-root-path');
-const { fetchHistoryAdmin,userValidChkAdmin} = require(appRoot +'/models/FetchHistory');
-
+const { updateRoomAdmin,fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin} = require(appRoot +'/models/FetchHistory');
+const UserController  = require('../controllers/UserController');
 // Role.createUser().then((details)=>{
 
 // })
 /* Async function*/
 
 
+function checkUniqueEmailUserName(reqObj){
+    return function (callback) {
+        User.totalUser({email : reqObj.email}).then((totalUser) => {
+            if(totalUser == 0) {
+
+                User.totalUser({userName : reqObj.userName}).then((totalUserList) => {
+                    if(totalUserList == 0)
+                        callback (null,reqObj);
+                    else{
+                        callback (constants.UNIQUIE_USERNAME,null);
+                    }
+                }).catch(userNameUniqueErr => {
+                    callback (userNameUniqueErr,null);
+                });
+
+            }
+            else{
+                callback (constants.UNIQUIE_EMAIL,null);
+            }
+        }).catch(emailUniqueErr => {
+            callback (emailUniqueErr,null);
+        });
+    }
+}
 
 function getUserDetails(reqObj){
   return function(callback){
@@ -44,7 +68,13 @@ function getUserDetails(reqObj){
   }
 }
 
-
+function createUserAdmin(reqObj,callback){
+    User.createUserAdmin(reqObj).then((user) => {
+        callback (null,user);
+    }).catch(err => {
+        callback (err,null);
+    });
+}
 
 function updateToken(user,callback){
     console.log(" user",user)
@@ -112,15 +142,222 @@ exports.getRole = function (req,res) {
 };
  //fetch game list
 exports.getGameList = function (req,res) {
+    if (!req.body.userEmail) {
+        return res.send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+    }
+    else {
     userValidChkAdmin(req.body.userEmail)
         .then(validResponse => {
             return fetchHistoryAdmin(validResponse);
         })
 
+        .then(resp => {
+            res.status(constants.HTTP_OK_STATUS).send({
+                status: constants.SUCCESS_STATUS,
+                result: resp,
+                message: "Game history fetched successfully."
+            })
+        })
+        .catch(err => {
+            res.status(constants.API_ERROR).send(err);
+        });
+   }
+};
+
+exports.addUser= function(req,res) {
+
+    let schema = Joi.object().keys({
+        email: Joi.string().max(254).trim().required(),
+        userName: Joi.string().min(3).trim().required(),
+        password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/).trim().required(),
+        roleId: Joi.string().trim().required(),
+        coinNumber: Joi.number().required(),
+        firstName:Joi.string().trim().required(),
+        lastName:Joi.string().trim().required()
+        //password with special character
+        //password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).trim().required()
+    });
+      const {body} = req;
+      let result = Joi.validate(body, schema);
+      const {value, error} = result;
+      const valid = error == null;
+    if (!valid) {
+        let data = {
+            status: constants.VALIDATION_ERROR,
+            result: result.error.name,
+            message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+        };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+        if (!req.body.email || !req.body.userName || !req.body.password) {
+            //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+            return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+        }
+        if (validateInput.email(req.body.email) == false) {
+            return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.ERROR_STATUS, {}, "Invalid Email address. Please try again."));
+        }
+
+
+        var userObj = {
+            email: req.body.email,
+            password: req.body.password,
+            userName: req.body.userName,
+            roleId: mongoose.Types.ObjectId(req.body.roleId),
+            startCoin:req.body.coinNumber,
+            firstName:req.body.firstName,
+            lastName:req.body.lastName
+            //userType: "registered-game-user"
+        }
+        async.waterfall([
+                //checkUnique(userObj),
+                checkUniqueEmailUserName(userObj),
+                //checkRole,
+                createUserAdmin
+
+            ],
+            function (err, result) {
+                if (result) {
+                    //res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId" : result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.deviceDetails[0].accessToken}, 'User register successfully !!'));
+                    res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
+                        "userId": result._id,
+                        "userName": result.userName,
+                        email: result.email,
+                        //score: result.score,
+                        "accessToken": result.deviceDetails[0].accessToken
+                    }, 'You have successfully registered. You will be logged in.'));
+                } else {
+                    if (err == constants.UNIQUIE_EMAIL)
+                        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL, {}, "Email address entered already exists. Please use forgot password to login."));
+                    else if(err == constants.UNIQUIE_USERNAME)
+                        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_USERNAME, {}, "The username you entered already exists. Please re-enter a new one."));
+                    else
+                        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
+                }
+            }
+        );
+    }
+}
+
+exports.getCoinList = function (req,res) {
+    if (!req.body.userEmail) {
+        return res.send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+    }
+    else {
+        userValidChkAdmin(req.body.userEmail)
+            .then(validResponse => {
+                return fetchCoin(validResponse);
+            })
+
+            .then(resp => {
+                res.status(constants.HTTP_OK_STATUS).send({
+                    status: constants.SUCCESS_STATUS,
+                    result: resp,
+                    message: "Coin list fetched successfully."
+                })
+            })
+            .catch(err => {
+                res.status(constants.API_ERROR).send(err);
+            });
+    }
+};
+
+//add coin
+exports.addCoin= function(req,res) {
+
+    let schema = Joi.object().keys({
+        userEmail: Joi.string().max(254).trim().required(),
+        coinNumber: Joi.number().required()
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = {
+            status: constants.VALIDATION_ERROR,
+            result: result.error.name,
+            message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+        };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+        var userObj = {
+            number: req.body.coinNumber
+        }
+         userValidChkAdmin(req.body.userEmail)
+            .then(validResponse => {
+                return addCoin(userObj);
+            })
+            .then(resp=>{
+                res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Coin added ."})
+            })
+            .catch(err=>{
+                res.status(constants.API_ERROR).send(err);
+            });
+    }
+}
+
+//disable room
+exports.disableRoom= function(req,res) {
+
+    if(!req.body.roomName ){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={status:"inactive"};
+
+    userValidChkAdmin(res.userData.email)
+        .then(validResponse => {
+            return updateRoomAdmin({name: req.body.roomName},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
         .then(resp=>{
-            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,result:resp,message:"Game history fetched successfully."})
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Room deleted ."})
         })
         .catch(err=>{
             res.status(constants.API_ERROR).send(err);
         });
-};
+}
+ //disable coin
+ //deleteCoin
+ exports.deleteCoin= function(req,res) {
+
+    if(!req.body.coinId || !req.body.userEmail ){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={status:"inactive"};
+
+    userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            return updateCoinAdmin({_id: mongoose.Types.ObjectId(req.body.coinId)},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Coin deleted ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+}
+ //modify coin
+ //editCoin
+
+ exports.editCoin= function(req,res) {
+
+    if(!req.body.coinId || !req.body.userEmail || !req.body.coinNumber){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={number:req.body.coinNumber};
+
+     userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            return updateCoinAdmin({_id: mongoose.Types.ObjectId(req.body.coinId)},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Coin number modified ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+}

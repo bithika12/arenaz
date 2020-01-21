@@ -119,7 +119,6 @@ export class PlayerCreateUpdateComponent implements OnInit {
       coin:[this.defaults.startCoin || ''],
       username:[this.defaults.userName || ''],
       useremail:[this.defaults.email || ''],
-      password:[this.defaults.password || '']
     });
   }
 
@@ -136,16 +135,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
     if (!player.imageSrc) {
       player.imageSrc = 'assets/img/avatars/1.jpg';
     }
-    this.userService.addUser(player).subscribe(User => {
-      console.log(User);
-      if(User){
-        //this.router.navigate(['/user']);
-        //this.ngOnInit();
-        location.reload();
-        this.dialogRef.close(player);
-      }
-    });
-   // this.dialogRef.close(player);
+    this.dialogRef.close(player);
   }
 
   updatePlayer() {

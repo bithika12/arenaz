@@ -97,6 +97,14 @@ function checkRole(reqObj,callback){
 }
 
 
+
+function createUserAdmin(reqObj,callback){
+    User.createUserAdmin(reqObj).then((user) => {
+        callback (null,user);
+    }).catch(err => {
+        callback (err,null);
+    });
+}
 function createUser(reqObj,callback){
     User.createUser(reqObj).then((user) => {
         callback (null,user);
@@ -165,7 +173,9 @@ exports.registration= function(req,res) {
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
         userName: Joi.string().min(3).trim().required(),
-        password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).trim().required()
+        password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/).trim().required()
+        //password with special character
+        //password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).trim().required()
     });
     const {body} = req;
     let result = Joi.validate(body, schema);

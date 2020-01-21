@@ -77,7 +77,8 @@ exports.updateProfile = function (req,res){
 
        userValidChkAdmin(res.userData.email)
          .then(validResponse => {
-             return updateProfileAdmin({_id: res.userData. _id},updateObj);
+             return updateProfileAdmin({userName: req.body.userName},updateObj);
+             //return updateProfileAdmin({_id: res.userData. _id},updateObj);
          })
          .then(resp=>{
              res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Account deleted ."})

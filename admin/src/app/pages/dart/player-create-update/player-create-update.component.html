@@ -45,7 +45,7 @@
 
       <mat-form-field class="mt-6" fxFlex>
         <mat-label>Email</mat-label>
-        <input cdkFocusInitial formControlName="useremail"  matInput><!-- [readonly]="true"-->
+        <input cdkFocusInitial formControlName="useremail" [readonly]="true" matInput>
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
@@ -132,13 +132,6 @@
       <mat-label>Notes</mat-label>
       <textarea formControlName="notes" matInput></textarea>
     </mat-form-field> -->
-
-    <mat-form-field  class="mt-6" fxFlex>
-      <mat-label>Password</mat-label>
-      <input matInput type="password" cdkFocusInitial placeholder="Password" formControlName="password">
-      <!--<mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
-       <mat-error *ngIf="password.hasError('minlength')">Password must have at least {{minPw}} characters</mat-error>-->
-    </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">

@@ -72,4 +72,17 @@ router.post('/fetch/notifications',fetchNotification.fetchGame);
 
   //fetch all game list in admin panel
   router.post('/admin/game-list'/*authetication.authChecker*/,adminController.getGameList);
+  //user add through admin panel
+    //admin/add-user
+  router.post('/admin/add-user'/*authetication.authChecker*/,adminController.addUser);
+  //fetch coin
+  router.post('/admin/coin-list'/*authetication.authChecker*/,adminController.getCoinList);
+  //add coin
+ router.post('/admin/coin-add'/*authetication.authChecker*/,adminController.addCoin);
+ //admin/delete-game
+ router.post('/admin/delete-game',authetication.authChecker,adminController.disableRoom);
+ //delete-coin
+ router.post('/admin/delete-coin'/*authetication.authChecker*/,adminController.deleteCoin)
+ //admin/edit-coin
+ router.post('/admin/edit-coin'/*authetication.authChecker*/,adminController.editCoin)
 module.exports = router;

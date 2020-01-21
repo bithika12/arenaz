@@ -5,7 +5,7 @@ import { environment } from './../../../environments/environment';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
+export class DartService {
     access_token;
     headers;
   /*constructor(private http: HttpClient, public authService: AuthService) {
@@ -24,10 +24,11 @@ export class UserService {
                 //this.headers = new  HttpHeaders().set("access_token", this.access_token);
     }
 
-    getAllUsers() {
+    getAllGames() {
       console.log('userlist api');
       console.log(this.headers);
-        return this.http.post(`${environment.BASE_URL}admin/users-list`,{headers: this.headers});
+       let payloadObj={userEmail:localStorage.getItem('email')}
+        return this.http.post(`${environment.BASE_URL}admin/game-list`,payloadObj,{headers: this.headers});
     }
 
     editUser(editplayer)
@@ -60,8 +61,8 @@ export class UserService {
   {
     console.log("pl"+ editplayer.status);
     console.log("pl"+ editplayer.userName);
-    let options={userName:editplayer.userName}
-    return this.http.post(`${environment.BASE_URL}admin/delete-user`,options,{headers: this.headers});
+    let options={roomName:editplayer.game_name}
+    return this.http.post(`${environment.BASE_URL}admin/delete-game`,options,{headers: this.headers});
   }
   getAllRoles()
   {
@@ -69,24 +70,6 @@ export class UserService {
      console.log(this.headers);
     //let options={userName:res.userName}
     return this.http.post(`${environment.BASE_URL}admin/get-role`,{headers: this.headers});
-  }
-  addUser(addPlayer){
-    let payloadObj=
-      {
-        "userName":addPlayer.username,
-        "firstName":addPlayer.firstname,
-        "lastName":addPlayer.lastname,
-        "email":addPlayer.useremail,
-        //"roleName":addPlayer.roleid,
-        "roleId":addPlayer.roleid,
-        "coinNumber":addPlayer.coin,
-        "password":addPlayer.password
-      };
-    //payloadObj
-    console.log(addPlayer);
-    console.log(payloadObj);
-    //addplayer
-    return this.http.post(`${environment.BASE_URL}admin/add-user`,payloadObj,{headers: this.headers});
   }
 
 }

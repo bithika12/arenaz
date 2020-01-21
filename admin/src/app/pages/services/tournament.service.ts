@@ -19,7 +19,8 @@ export class TournamentService {
     }
 
     getAllTournaments() {
-        return this.http.post(`${environment.BASE_URL}admin/game-list`,{headers: this.headers});
+        let payloadObj={userEmail:localStorage.getItem('email')}
+        return this.http.post(`${environment.BASE_URL}admin/game-list`,payloadObj,{headers: this.headers});
     }
 
     editTournament(edittournament)

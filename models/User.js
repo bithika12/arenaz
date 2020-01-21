@@ -180,7 +180,7 @@ User.findDetails = function(condObj){
 }
  User.findDetailsAdmin = function(condObj){
      return  new Promise((resolve,reject) => {
-         User.findOne({email: condObj.email,roleId:condObj.roleId},{password:1,firstName:1,email:1,"deviceDetails.accessToken":1,resetOtp:1}).then(responses=> {
+         User.findOne({email: condObj.email,roleId:condObj.roleId,status:"active"},{password:1,firstName:1,email:1,"deviceDetails.accessToken":1,resetOtp:1}).then(responses=> {
              return resolve(responses);
          }).catch(err => {
              return reject(err);
@@ -553,7 +553,8 @@ User.resetPassword = function(condObj,updateObj){
   */
  User.findUserListAdmin   =   function(){
      return  new Promise((resolve,reject) => {
-         User.find({status:"active"}).then(responses=> {
+         User.find().sort({userName:1}).then(responses=> {
+         //User.find({status:"active"}).sort({userName:1}).then(responses=> {
              let totalArr=[];
              let noRoleArr=[];
              responses.map(function(entry1,key) {
@@ -586,6 +587,36 @@ User.resetPassword = function(condObj,updateObj){
          });
      });
  };
+
+ //add user by admin
+ User.createUserAdmin = function(reqObj){
+     return new Promise((resolve,reject)=>{
+         reqObj.password  =  password.hashPassword(reqObj.password);
+         //reqObj.startCoin = reqObj.coinNumber;
+
+         reqObj.deviceDetails = [{accessToken :  uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];
+
+         //Role.findOne({ slug: reqObj.userType},{_id: 1,name:1,slug:1}).then(roledetails=> {
+             //reqObj.roleId = roledetails._id;
+             User.create(reqObj).then(response => {
+                 Notification.createNotification({
+                     //sent_by_user     : req.user_id ,
+                     received_by_user : response._id,
+                     message          : "You are successfully created account",
+                     read_unread      : 0
+                 }).then(function(notificationdetails){
+                     resolve(response);
+                 }).catch(err => {
+                     reject(err);
+                 });
+
+
+             }).catch(err => {
+                 reject(err);
+             })
+         //})
+     })
+ }
 module.exports= User;
 
 

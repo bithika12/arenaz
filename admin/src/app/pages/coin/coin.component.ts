@@ -25,11 +25,12 @@ import { MatSelectChange } from '@angular/material/select';
 import theme from '../../../@vex/utils/tailwindcss';
 
 import { UserService } from '../../../app/pages/services/user.service';
-
+import { CoinService } from '../../../app/pages/services/coin.service';
+import {Location} from "@angular/common";
 @Component({
   selector: 'vex-user',
-  templateUrl: './user.component.html',
-  styleUrls: ['./user.component.scss'],
+  templateUrl: './coin.component.html',
+  styleUrls: ['./coin.component.scss'],
   animations: [
     fadeInUp400ms,
     stagger40ms
@@ -43,7 +44,7 @@ import { UserService } from '../../../app/pages/services/user.service';
     }
   ]
 })
-export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CoinComponent implements OnInit, AfterViewInit, OnDestroy {
 
   layoutCtrl = new FormControl('boxed');
 
@@ -60,16 +61,8 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   columns: TableColumn<Player>[] = [
     { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: true },
     { label: 'Image', property: 'image', type: 'image', visible: false },
-    { label: 'Username', property: 'userName', type: 'text', visible: true, cssClasses: ['font-medium'] },
-    { label: 'First Name', property: 'firstName', type: 'text', visible: true },
-    { label: 'Last Name', property: 'lastName', type: 'text', visible: true },
-    { label: 'Email', property: 'email', type: 'text', visible: true },
-    { label: 'Country', property: 'country', type: 'text', visible: false },
-    { label: 'Contact NO', property: 'contact_no', type: 'text', visible: false },
-    { label: 'Coins', property: 'startCoin', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
-   //{ label: 'VIP Coins', property: 'vip_coins', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
-    { label: 'Player Rank', property: 'player_rank', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
-   // { label: 'Rank Progression', property: 'rank_progression', type: 'text', visible: false, cssClasses: ['text-secondary', 'font-medium'] },
+    { label: 'Image', property: '_id', type: 'text', visible: false },
+    { label: 'Coin Number', property: 'number', type: 'text', visible: true },
     { label: 'Actions', property: 'actions', type: 'button', visible: true }
   ];
   pageSize = 10;
@@ -91,7 +84,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private dialog: MatDialog, private userService:UserService) {
+  constructor(private dialog: MatDialog, private coinService:CoinService,private userService:UserService,private location: Location) {
   }
 
   get visibleColumns() {
@@ -106,10 +99,10 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
 
-    this.userService.getAllUsers().subscribe(users => {
+    this.coinService.getAllCoins().subscribe(users => {
       this.players = users["result"];
-      console.log(this.players);
-      console.log("players");
+      //console.log(this.players);
+      //console.log("players");
       //this.players = users["result"]["users"];
       this.subject$.next(this.players);
     });
@@ -175,6 +168,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
 
         let userObj = {
           id: (!updatedPlayer.id)?this.players[index].id:updatedPlayer.id,
+         // gametime:(!updatedPlayer.username)?this.players[index].username:updatedPlayer.username,
           username: (!updatedPlayer.username)?this.players[index].username:updatedPlayer.username,
           firstname: (!updatedPlayer.firstname)?this.players[index].firstname:updatedPlayer.firstname,
           lastname: (!updatedPlayer.lastname)?this.players[index].lastname:updatedPlayer.lastname,
@@ -182,9 +176,9 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
           country: (!updatedPlayer.country)?this.players[index].country:updatedPlayer.country,
           contact_no: (!updatedPlayer.contact_no)?this.players[index].contact_no:updatedPlayer.contact_no,
           coins: (!updatedPlayer.coins)?this.players[index].coins:updatedPlayer.coins,
-          //vip_coins: (!updatedPlayer.vip_coins)?this.players[index].vip_coins:updatedPlayer.vip_coins,
+          vip_coins: (!updatedPlayer.vip_coins)?this.players[index].vip_coins:updatedPlayer.vip_coins,
           player_rank: (!updatedPlayer.player_rank)?this.players[index].player_rank:updatedPlayer.player_rank,
-          //rank_progression: (!updatedPlayer.rank_progression)?this.players[index].rank_progression:updatedPlayer.rank_progression,
+          rank_progression: (!updatedPlayer.rank_progression)?this.players[index].rank_progression:updatedPlayer.rank_progression,
         };
         this.players[index] = new Player(userObj);
         this.subject$.next(this.players);
@@ -202,11 +196,12 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
    // player.userName = player.userName;
     player.status = 'inactive';
     //let userName=player.userName;
-   this.userService.deleteUser(player).subscribe(user => {
+   this.coinService.deleteUser(player).subscribe(user => {
     //this.userService.editUser(player).subscribe(user => {
       if(user){
           this.players.splice(this.players.findIndex((existingPlayer) => existingPlayer.id === player.id), 1);
           this.selection.deselect(player);
+          location.reload();
           this.subject$.next(this.players);
       }
     });

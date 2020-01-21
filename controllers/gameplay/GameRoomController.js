@@ -405,10 +405,18 @@ io.on('connection', function (socket) {
                 var findIndex = allOnlineUsers.findIndex(function (elemt) {
                     return elemt.userId == req.userId
                 });
+                 console.log("process"+findIndex);
+                 console.log(allOnlineUsers.length);
 
-                if (findIndex == -1 || allOnlineUsers[findIndex].roomName != '') {
-                    io.sockets.to(req.socketId).emit('error', response.generate(constants.ERROR_STATUS, {}, "User cannot join"));
+                if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
+                    io.sockets.to(req.socketId).emit('error',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
+                    console.log("   connectedRoom   :",response.generate( constants.ERROR_STATUS,{},"User cannot join"))
                     callback();
+
+
+                /*if (findIndex == -1 || allOnlineUsers[findIndex].roomName != '') {
+                    io.sockets.to(req.socketId).emit('error', response.generate(constants.ERROR_STATUS, {}, "User cannot join"));
+                    callback();*/
                 } else {
                     //if(findIndex != -1 ){
                     let userSocketId = allOnlineUsers[findIndex].socketId;
@@ -497,7 +505,7 @@ io.on('connection', function (socket) {
                                     }
                                     // Otherwise, send an error message back to the player.
                                     else {
-                                        io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
+                                        //io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
                                         callback();
                                     }
                                     /*}).catch(err=>{
@@ -835,37 +843,38 @@ io.on('connection', function (socket) {
                     //allOnlineUsers.splice(findIndex, 1);
                     if (result) {
 
-                        if (findIndexOpponent != -1 && result.isWin==1) {
+                        if (findIndexOpponent != -1 && result.isWin == 1) {
                             winnerDeclare({
                                 userId: allOnlineUsers[findIndexOpponent].userId,
                                 roomName: userRoomName
                             }).then(function (roomDetails) {
+                                allOnlineUsers.splice(findIndex, 1);
                                 io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                     userId: roomDetails,
                                     roomName: userRoomName,
-                                    gameStatus:"Win"
+                                    gameStatus: "Win"
                                 }, "Game is over"));
                                 logger.print("Room closed");
                             });
-                        }
-                        else if(findIndexOpponent != -1 && result.isWin==2){
+                        } else if (findIndexOpponent != -1 && result.isWin == 2) {
+                            allOnlineUsers.splice(findIndex, 1);
                             io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: result.roomUsers,
                                 roomName: userRoomName,
-                                gameStatus:"Draw"
+                                gameStatus: "Draw"
                             }, "Game is over"));
                             logger.print("Room closed");
-                        }
-                        else{
+                        } else {
+                            allOnlineUsers.splice(findIndex, 1);
                             io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: result.roomUsers,
                                 roomName: userRoomName,
-                                gameStatus:""
+                                gameStatus: ""
                             }, "Game is over"));
                             logger.print("Room closed");
                         }
                         logger.print("Room closed");
-                        allOnlineUsers.splice(findIndex, 1);
+                        //allOnlineUsers.splice(findIndex, 1);
 
                         /*if (allOnlineUsers.length == 1) {
                             io.to(userRoomName).emit('player_leave', response.generate(constants.SUCCESS_STATUS, {user_id: allOnlineUsers[findIndex].id}, "user has been disconnected!!"));
@@ -874,9 +883,10 @@ io.on('connection', function (socket) {
                             io.to(userRoomName).emit('player_leave', response.generate(constants.SUCCESS_STATUS, {user_id: allOnlineUsers[findIndex].id}, "user has been disconnected!!"));
                         }*/
 
-                    } else
+                    } else{
                         logger.print("***DISCONNECT ERROR ", err);
                     io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+                   }
                 });
 
             }

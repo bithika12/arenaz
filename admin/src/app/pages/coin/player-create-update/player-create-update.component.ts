@@ -21,6 +21,7 @@ import {filter} from "rxjs/operators";
 import {MatTableDataSource} from "@angular/material/table";
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { CoinService } from '../../../../app/pages/services/coin.service';
 
 export interface Brand {
   value: string;
@@ -77,7 +78,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
               private fb: FormBuilder,
               private userService:UserService,
               private router: Router,
-              private location: Location
+              private location: Location,
+              private coinService:CoinService,
 
               ) {
   }
@@ -116,10 +118,10 @@ export class PlayerCreateUpdateComponent implements OnInit {
       rolename:[this.defaults.roleName || ''],
      // rolename:[this.defaults.roleName || ''],
       roleid:[this.defaults.roleId || ''],
-      coin:[this.defaults.startCoin || ''],
+      coin:[this.defaults.number || ''],
       username:[this.defaults.userName || ''],
       useremail:[this.defaults.email || ''],
-      password:[this.defaults.password || '']
+      _id:[this.defaults._id || ''],
     });
   }
 
@@ -132,20 +134,14 @@ export class PlayerCreateUpdateComponent implements OnInit {
   }
 
   createPlayer() {
-    const player = this.form.value;
-    if (!player.imageSrc) {
-      player.imageSrc = 'assets/img/avatars/1.jpg';
+    const coins = this.form.value;
+    if (!coins.imageSrc) {
+      coins.imageSrc = 'assets/img/avatars/1.jpg';
     }
-    this.userService.addUser(player).subscribe(User => {
-      console.log(User);
-      if(User){
-        //this.router.navigate(['/user']);
-        //this.ngOnInit();
-        location.reload();
-        this.dialogRef.close(player);
-      }
+    this.coinService.addCoin(coins).subscribe(User => {
+      location.reload();
+      this.dialogRef.close(coins);
     });
-   // this.dialogRef.close(player);
   }
 
   updatePlayer() {
@@ -153,8 +149,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
 
     editplayer.id = this.defaults.id;
 
-    this.userService.editUser(editplayer).subscribe(User => {
-      console.log(User);
+    this.coinService.editUser(editplayer).subscribe(User => {
+      //console.log(User);
       if(User){
         //this.router.navigate(['/user']);
         //this.ngOnInit();

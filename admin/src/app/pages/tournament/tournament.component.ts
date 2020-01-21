@@ -95,13 +95,14 @@ export class TournamentComponent implements OnInit, AfterViewInit, OnDestroy {
    * Example on how to get data and pass it to the table - usually you would want a dedicated service with a HTTP request for this
    * We are simulating this request here.
    */
-  
+
 
   ngOnInit() {
-    
+
     this.tournamentService.getAllTournaments().subscribe(tournaments => {
-      this.tournaments = tournaments["result"]["tournaments"];
-      this.subject$.next(this.tournaments);   
+      console.log(tournaments);
+      this.tournaments = tournaments["result"];
+      this.subject$.next(this.tournaments);
     });
 
     this.dataSource = new MatTableDataSource();
@@ -117,7 +118,7 @@ export class TournamentComponent implements OnInit, AfterViewInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe(value => this.onFilterChange(value));
   }
- 
+
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -153,14 +154,14 @@ export class TournamentComponent implements OnInit, AfterViewInit, OnDestroy {
          * You would probably make an HTTP request here.
          */
         const index = this.tournaments.findIndex((existingTournament) => existingTournament.id === updatedTournament.id);
-        
+
         let tournamentObj = {
           id: (!updatedTournament.id)?this.tournaments[index].id:updatedTournament.id,
           name: (!updatedTournament.name)?this.tournaments[index].name:updatedTournament.name,
           round: (!updatedTournament.round)?this.tournaments[index].round:updatedTournament.round,
           price: (!updatedTournament.price)?this.tournaments[index].price:updatedTournament.price,
           image: (!updatedTournament.image)?this.tournaments[index].image:updatedTournament.image,
-          status: (!updatedTournament.status)?this.tournaments[index].status:updatedTournament.status          
+          status: (!updatedTournament.status)?this.tournaments[index].status:updatedTournament.status
         };
         this.tournaments[index] = new Tournament(tournamentObj);
         this.subject$.next(this.tournaments);
@@ -172,8 +173,8 @@ export class TournamentComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * Here we are updating our local array.
      * You would probably make an HTTP request here.
-     */     
-    tournament.status = '0';    
+     */
+    tournament.status = '0';
     console.log(tournament);
     this.tournamentService.editTournament(tournament).subscribe(tm => {
       if(tm){
@@ -181,7 +182,7 @@ export class TournamentComponent implements OnInit, AfterViewInit, OnDestroy {
           this.selection.deselect(tournament);
           this.subject$.next(this.tournaments);
       }
-    });    
+    });
   }
 
   deleteTournaments(tournaments: Tournament[]) {

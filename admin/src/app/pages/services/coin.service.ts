@@ -5,7 +5,7 @@ import { environment } from './../../../environments/environment';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
+export class CoinService {
     access_token;
     headers;
   /*constructor(private http: HttpClient, public authService: AuthService) {
@@ -21,28 +21,29 @@ export class UserService {
                 //this.access_token='a4525543-00e4-40b4-8fd0-d31d1d400621';
                 this.headers = new  HttpHeaders().set("access_token", this.access_token);
                 //this.headers = new  HttpHeaders().set("access_token", this.access_token);
-                //this.headers = new  HttpHeaders().set("access_token", this.access_token);
+                //this.headers = new  HttpHeaders().set("email", userEmail);
     }
 
-    getAllUsers() {
+    getAllGames() {
       console.log('userlist api');
       console.log(this.headers);
-        return this.http.post(`${environment.BASE_URL}admin/users-list`,{headers: this.headers});
+       let payloadObj={userEmail:localStorage.getItem('email')}
+        return this.http.post(`${environment.BASE_URL}admin/game-list`,payloadObj,{headers: this.headers});
     }
 
     editUser(editplayer)
     {
       let payloadObj=
       {
+        "coinId":editplayer._id,
         "coinNumber":editplayer.coin,
-        "firstName":editplayer.firstname,
-        "lastName":editplayer.lastname,
-        "userEmail":editplayer.useremail,
-        "roleName":editplayer.roleid,
-        "roleId":editplayer.roleid,
+        //"lastName":editplayer.lastname,
+        "userEmail":localStorage.getItem('email'),
+       // "roleName":editplayer.roleid,
+       // "roleId":editplayer.roleid,
       };
       //payloadObj
-      console.log(editplayer);
+      console.log("edit"+editplayer);
       console.log(payloadObj);
       /*var headers_object = new HttpHeaders({
         'Content-Type': 'application/json',
@@ -53,40 +54,32 @@ export class UserService {
         headers: headers_object
       };*/
       //editplayer
-        return this.http.post(`${environment.BASE_URL}admin/edit-user`,payloadObj,{headers: this.headers});
+        return this.http.post(`${environment.BASE_URL}admin/edit-coin`,payloadObj,{headers: this.headers});
     }
 
   deleteUser(editplayer)
   {
     console.log("pl"+ editplayer.status);
     console.log("pl"+ editplayer.userName);
-    let options={userName:editplayer.userName}
-    return this.http.post(`${environment.BASE_URL}admin/delete-user`,options,{headers: this.headers});
+    let options={coinId:editplayer._id,"userEmail":localStorage.getItem('email')}
+    return this.http.post(`${environment.BASE_URL}admin/delete-coin`,options,{headers: this.headers});
   }
-  getAllRoles()
+  getAllCoins()
   {
      console.log('roles api');
      console.log(this.headers);
-    //let options={userName:res.userName}
-    return this.http.post(`${environment.BASE_URL}admin/get-role`,{headers: this.headers});
+    let payloadObj={userEmail:localStorage.getItem('email')}
+    return this.http.post(`${environment.BASE_URL}admin/coin-list`,payloadObj,{headers: this.headers});
   }
-  addUser(addPlayer){
+  //add coin
+  //addCoin
+  addCoin(coinDetails)
+  {
     let payloadObj=
       {
-        "userName":addPlayer.username,
-        "firstName":addPlayer.firstname,
-        "lastName":addPlayer.lastname,
-        "email":addPlayer.useremail,
-        //"roleName":addPlayer.roleid,
-        "roleId":addPlayer.roleid,
-        "coinNumber":addPlayer.coin,
-        "password":addPlayer.password
+        "coinNumber":coinDetails.coin,
+        "userEmail":localStorage.getItem('email')
       };
-    //payloadObj
-    console.log(addPlayer);
-    console.log(payloadObj);
-    //addplayer
-    return this.http.post(`${environment.BASE_URL}admin/add-user`,payloadObj,{headers: this.headers});
+     return this.http.post(`${environment.BASE_URL}admin/coin-add`,payloadObj,{headers: this.headers});
   }
-
 }

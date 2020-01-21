@@ -107,6 +107,12 @@ var notificationSchema = Schema({
     versionKey: false
 });
 
+
+var coinSchema      = new Schema({
+    number : Number,
+    status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
+
+})
 //MODEL DECLARATION
 
 schema.roleModel   = mongoose.model('roles'  , roleSchema);
@@ -115,5 +121,7 @@ schema.avatarModel = mongoose.model('avatar' , avatarSchema);
 schema.userModel   = mongoose.model('users'  , userSchema);
 schema.roomModel   = mongoose.model('rooms'  , roomSchema);
 schema.notificationModel   = mongoose.model('notifications'  , notificationSchema);
+schema.coinModel   = mongoose.model('coins'  , coinSchema);
+
 
 module.exports = schema;
