@@ -43,6 +43,9 @@ room.throwDartDetails = function (reqObj) {
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
                 if (result) {
+                    if(result.game_time!='undefined'){
+                        reject({message: "Game is over"});
+                    }
                     userArr = result.users;
                     let currentTime=new Date().getTime();
                     const diff = currentTime - result.gametime;

@@ -170,9 +170,9 @@ io.on('connection', function (socket) {
                     cupNumber: result.cupNumber
                 }, "Dart thrown"));
 
-
             } else
                 logger.print("***GAME ERROR ", err);
+                io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"User game is over but still on that room!"));
         });
 
 
@@ -433,8 +433,8 @@ io.on('connection', function (socket) {
                             let roomName = result.roomName;
                             userObj = {
                                 userId: req.userId,
-                                score: 100,
-                                total: 100,
+                                score: 333,
+                                total: 333,
                                 status: "active",
                                 isWin: 0,
                                 turn: 0,

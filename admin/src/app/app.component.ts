@@ -82,6 +82,12 @@ export class AppComponent {
         label: 'Coin Module',
         route: '/coin',
         icon: icAssigment
+      },
+      {
+        type: 'link',
+        label: 'Game Module',
+        route: '/game',
+        icon: icAssigment
       }
     ];
   }
