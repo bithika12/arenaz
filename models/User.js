@@ -236,8 +236,17 @@ User.checkUserToken = function(condObj){
          });
      });
  }
-
-
+ //userStatusUpdate
+ User.userStatusUpdate = function(condObj,userstatus){
+     return  new Promise((resolve,reject) => {
+         User.updateOne({_id:condObj.userId},{ $set : {onlineStatus:userstatus} }).then(updatedResponses=> {
+             return resolve(updatedResponses);
+         }).catch(updatedResponsesErr => {
+             //console.log(updatedResponsesErr);
+             return reject(updatedResponsesErr);
+         });
+     });
+ }
 /**UPDATE DEVICE **/
 
 User.updateDeviceToken  = function(condObj){
@@ -535,13 +544,18 @@ User.resetPassword = function(condObj,updateObj){
              return resolve({});
          }else{*/
              let incrementDetails ={ total_no_win : updateObj.total_no_win}
-            // if(updateObj.total_no_win)
-                // incrementDetails.total_no_win = updateObj.total_no_win
-             User.updateOne({ _id :condObj._id},{ $inc : incrementDetails }).then(responses=> {
+          User.findOne({_id :condObj._id },
+             {_id: 1, userName:1, email:1, status:1,total_no_win:1, dartName: {$elemMatch: {dartName: updateObj.dartName,status:1 } } }).then(userDetails=> {
+              let total_win=userDetails.total_no_win+1;
+              let incrementDetails ={ total_no_win : total_win}
+             User.updateOne({_id: condObj._id}, {$inc: incrementDetails}).then(responses => {
                  return resolve(responses);
              }).catch(err => {
                  return reject(err);
-             });
+             })
+
+         });
+
         // }
 
      });

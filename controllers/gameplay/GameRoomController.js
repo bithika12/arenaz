@@ -219,7 +219,31 @@ io.on('connection', function (socket) {
     });
 
     //GAME START
-    function waitingForUser(reqobj) {
+
+    function waitingForUser(reqobj){
+        return function (callback) {
+            var i =  constants.GAME_TIMMER;
+            let timer = setTimeout(function gameStartTimmer(gameStartObj) {
+                var clientsInRoom = io.nsps['/'].adapter.rooms[gameStartObj.roomName];
+                var numClients = clientsInRoom === undefined ? 0 : Object.keys(clientsInRoom.sockets).length;
+                i--;
+                if (numClients > 0) {
+                    if (i === 0 || numClients == 2) {
+                        //req.numClients = numClients;
+                        clearTimeout(this.interval);
+                        callback(null, gameStartObj);
+                    } else {
+                        gameStartObj.i = i
+                        timer = setTimeout(gameStartTimmer, 1000, gameStartObj);
+                    }
+                } else {
+                    console.log("player left");
+                    callback("playergone", null);
+               }
+            }, 1000,reqobj);
+        }
+    }
+    function waitingForUserOrg(reqobj) {
         let count    = 0;
         return function (callback) {
             var i = constants.GAME_TIMMER;
@@ -407,10 +431,10 @@ io.on('connection', function (socket) {
                 });
                  console.log("process"+findIndex);
                  console.log(allOnlineUsers.length);
-
-                if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
-                    io.sockets.to(req.socketId).emit('error',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
-                    console.log("   connectedRoom   :",response.generate( constants.ERROR_STATUS,{},"User cannot join"))
+                if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
+                //if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
+                    io.sockets.to(req.socketId).emit('errorJoin',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
+                    console.log("   connectedRoom   :"+findIndex+allOnlineUsers[findIndex].roomName,response.generate( constants.ERROR_STATUS,{},"User cannot join"))
                     callback();
 
 
@@ -467,7 +491,8 @@ io.on('connection', function (socket) {
                                         callback();
                                         async.waterfall([
                                             waitingForUser({roomName: roomName}),
-                                            gameStart
+                                            gameStart,
+                                            userStatusUpdateAfterGamerequest
                                         ], function (err, result) {
                                             if (result) {
                                                 logger.print("***Done  ", result);
@@ -485,6 +510,7 @@ io.on('connection', function (socket) {
                                         callback();
                                         async.waterfall([
                                             gameStartMod({roomName: roomName}),
+                                            userStatusUpdateAfterGamerequest,
                                             userNextStart
                                         ], function (err, result) {
                                             if (result) {
@@ -506,7 +532,7 @@ io.on('connection', function (socket) {
                                     // Otherwise, send an error message back to the player.
                                     else {
                                         //io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
-                                        callback();
+                                         callback();
                                     }
                                     /*}).catch(err=>{
                                             io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{message:err}));
@@ -635,7 +661,24 @@ io.on('connection', function (socket) {
             callback(null, req)
         });
     }
+    //user status update
+    function userStatusUpdate(req, callback){
 
+        user.userStatusUpdate(req.userId,0).then(function(statusUpdate){
+            callback(null, req)
+        }).catch(err => {
+            callback("", null);
+        })
+    }
+
+    function userStatusUpdateAfterGamerequest(req, callback){
+
+        user.userStatusUpdate(req.userId,1).then(function(statusUpdate){
+            callback(null, req)
+        }).catch(err => {
+            callback("", null);
+        })
+    }
     /**
      * @desc This function is used for color request
      * @param {String} accesstoken
@@ -715,7 +758,7 @@ io.on('connection', function (socket) {
     function winnerDeclare(req) {
         return new Promise((resolve, reject) => {
             user.updatePointDetails({_id: req.userId}, {
-                total_no_win: 1,
+                total_no_win: 1
 
             }).then(function (updateWinningDetails) {
                 //users.rank = users.totalUserKill
@@ -835,7 +878,8 @@ io.on('connection', function (socket) {
                 async.waterfall([
                     playerLeave({roomName: userRoomName, userId: allOnlineUsers[findIndex].userId}),
                     updateRoom,
-                    RoomUpdate
+                    RoomUpdate,
+                    userStatusUpdate
                     // totalPlayerList,
                     // roomClosed,
                     // memoryRoomRemove
@@ -917,7 +961,8 @@ io.on('connection', function (socket) {
             async.waterfall([
                 playerLeaveMod({roomName: req.roomName, userId: req.userId}),
                 updateRoom,
-                RoomUpdate
+                RoomUpdate,
+                userStatusUpdate
                 //totalPlayerList,
                 //roomClosed,
                 //memoryRoomRemove,
@@ -929,7 +974,12 @@ io.on('connection', function (socket) {
                             userId: allOnlineUsers[findIndexOpponent].userId,
                             roomName: req.roomName
                         }).then(function (roomDetails) {
-                            allOnlineUsers.splice(findIndex, 1);
+                            console.log("splice");
+                            console.log(allOnlineUsers.findIndex['userId']);
+                            console.log(allOnlineUsers.findIndex['roomName']);
+                            allOnlineUsers.findIndex['roomName']='';
+                            //allOnlineUsers.splice(findIndex, 1);
+                            console.log("after splice"+allOnlineUsers.findIndex['roomName']);
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: roomDetails,
                                 roomName: req.roomName,
@@ -938,7 +988,13 @@ io.on('connection', function (socket) {
                             logger.print("Room closed");
                         });
                     } else if (findIndexOpponent != -1 && result.isWin == 2) {
-                        allOnlineUsers.splice(findIndex, 1);
+                        console.log("splice");
+                        console.log(allOnlineUsers.findIndex['userId']);
+                        console.log(allOnlineUsers.findIndex['roomName']);
+                        allOnlineUsers.findIndex['roomName']='';
+                        //allOnlineUsers.splice(findIndex, 1);
+                        console.log("after splice"+allOnlineUsers.findIndex['roomName']);
+                        //allOnlineUsers.splice(findIndex, 1);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
@@ -946,7 +1002,13 @@ io.on('connection', function (socket) {
                         }, "Game is over"));
                         logger.print("Room closed");
                     } else {
-                        allOnlineUsers.splice(findIndex, 1);
+                        console.log("splice");
+                        console.log(allOnlineUsers.findIndex['userId']);
+                        console.log(allOnlineUsers.findIndex['roomName']);
+                        allOnlineUsers.findIndex['roomName']='';
+                        //allOnlineUsers.splice(findIndex, 1);
+                        console.log("after splice"+allOnlineUsers.findIndex['roomName']);
+                        //allOnlineUsers.splice(findIndex, 1);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
@@ -958,8 +1020,14 @@ io.on('connection', function (socket) {
                     logger.print("Room closed");
                     //allOnlineUsers.splice(findIndex, 1);
                 } else {
-                    allOnlineUsers.splice(findIndex, 1);
-                    logger.print("***GAME ERROR ", err);
+                    console.log("splice");
+                    console.log(allOnlineUsers.findIndex['userId']);
+                    console.log(allOnlineUsers.findIndex['roomName']);
+                    allOnlineUsers.findIndex['roomName']='';
+                    //allOnlineUsers.splice(findIndex, 1);
+                    console.log("after splice"+allOnlineUsers.findIndex['roomName']);
+                    //allOnlineUsers.splice(findIndex, 1);
+                    logger.print("***LEAVE ERROR ", err);
                 }
             });
         }
