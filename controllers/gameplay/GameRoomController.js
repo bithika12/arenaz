@@ -492,7 +492,7 @@ io.on('connection', function (socket) {
                                         async.waterfall([
                                             waitingForUser({roomName: roomName}),
                                             gameStart,
-                                            userStatusUpdateAfterGamerequest
+                                            //userStatusUpdateAfterGamerequest
                                         ], function (err, result) {
                                             if (result) {
                                                 logger.print("***Done  ", result);
@@ -510,7 +510,7 @@ io.on('connection', function (socket) {
                                         callback();
                                         async.waterfall([
                                             gameStartMod({roomName: roomName}),
-                                            userStatusUpdateAfterGamerequest,
+                                            //userStatusUpdateAfterGamerequest,
                                             userNextStart
                                         ], function (err, result) {
                                             if (result) {
@@ -953,8 +953,8 @@ io.on('connection', function (socket) {
             let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
                 return elemt.socketId != currentSocketId
             });
-            if (io.sockets.sockets[currentSocketId] != undefined)
-                io.sockets.sockets[currentSocketId].leave(req.roomName);
+            //if (io.sockets.sockets[currentSocketId] != undefined)
+               // io.sockets.sockets[currentSocketId].leave(req.roomName);
             io.to(req.roomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: req.userId}, "Player leave from room"));
             //if (allOnlineUsers[findIndexOpponent]){
             if (findIndex != -1) {
