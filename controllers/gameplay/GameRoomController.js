@@ -885,10 +885,15 @@ io.on('connection', function (socket) {
 
                     } else{
                         logger.print("***DISCONNECT ERROR ", err);
-                    io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+                        allOnlineUsers.splice(findIndex, 1);
+                        io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
                    }
                 });
 
+            }
+            else{
+                logger.print("Room closed");
+                allOnlineUsers.splice(findIndex, 1);
             }
         }
     });
@@ -908,6 +913,7 @@ io.on('connection', function (socket) {
                 io.sockets.sockets[currentSocketId].leave(req.roomName);
             io.to(req.roomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: req.userId}, "Player leave from room"));
             //if (allOnlineUsers[findIndexOpponent]){
+            if (findIndex != -1) {
             async.waterfall([
                 playerLeaveMod({roomName: req.roomName, userId: req.userId}),
                 updateRoom,
@@ -918,41 +924,45 @@ io.on('connection', function (socket) {
                 //winnerDeclare({userId: allOnlineUsers[findIndexOpponent].userId})
             ], function (err, result) {
                 if (result) {
-                    if (findIndexOpponent != -1 && result.isWin==1) {
+                    if (findIndexOpponent != -1 && result.isWin == 1) {
                         winnerDeclare({
                             userId: allOnlineUsers[findIndexOpponent].userId,
                             roomName: req.roomName
                         }).then(function (roomDetails) {
+                            allOnlineUsers.splice(findIndex, 1);
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: roomDetails,
                                 roomName: req.roomName,
-                                gameStatus:"Win"
+                                gameStatus: "Win"
                             }, "Game is over"));
                             logger.print("Room closed");
                         });
-                    }
-                    else if(findIndexOpponent != -1 && result.isWin==2){
+                    } else if (findIndexOpponent != -1 && result.isWin == 2) {
+                        allOnlineUsers.splice(findIndex, 1);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
-                            gameStatus:"Draw"
+                            gameStatus: "Draw"
                         }, "Game is over"));
                         logger.print("Room closed");
-                    }
-                    else{
+                    } else {
+                        allOnlineUsers.splice(findIndex, 1);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
-                            gameStatus:""
+                            gameStatus: ""
                         }, "Game is over"));
                         logger.print("Room closed");
                     }
 
                     logger.print("Room closed");
+                    //allOnlineUsers.splice(findIndex, 1);
+                } else {
                     allOnlineUsers.splice(findIndex, 1);
-                } else
                     logger.print("***GAME ERROR ", err);
+                }
             });
+        }
             //}
 
 
