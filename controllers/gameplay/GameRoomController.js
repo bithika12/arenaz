@@ -432,7 +432,9 @@ io.on('connection', function (socket) {
                 });
                  console.log("process"+findIndex);
                  console.log(allOnlineUsers.length);
-                if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
+
+                 //if(allOnlineUsers.length==0)
+                 if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
                 //if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
                     io.sockets.to(req.socketId).emit('errorJoin',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
                     console.log("   connectedRoom   :"+findIndex+allOnlineUsers[findIndex].roomName,response.generate( constants.ERROR_STATUS,{},"User cannot join"))
@@ -885,9 +887,9 @@ io.on('connection', function (socket) {
                     // roomClosed,
                     // memoryRoomRemove
                 ], function (err, result) {
-                    //allOnlineUsers.splice(findIndex, 1);
+                    allOnlineUsers.splice(findIndex, 1);
                     if (result) {
-                        allOnlineUsers=_.without(allOnlineUsers, _.findWhere(allOnlineUsers, {userId: req.userId}));
+                        //allOnlineUsers=_.without(allOnlineUsers, _.findWhere(allOnlineUsers, {userId: req.userId}));
 
                         if (findIndexOpponent != -1 && result.isWin == 1) {
                             winnerDeclare({
@@ -976,6 +978,7 @@ io.on('connection', function (socket) {
                 //winnerDeclare({userId: allOnlineUsers[findIndexOpponent].userId})
             ], function (err, result) {
                 if (result) {
+
                     if (findIndexOpponent != -1 && result.isWin == 1) {
                         winnerDeclare({
                             userId: allOnlineUsers[findIndexOpponent].userId,
@@ -985,6 +988,7 @@ io.on('connection', function (socket) {
                             console.log(allOnlineUsers.findIndex.userId);
                             console.log(allOnlineUsers.findIndex.roomName);
                             allOnlineUsers[findIndex].roomName='';
+                            //allOnlineUsers[findIndex].roomName ='';
                             //allOnlineUsers.splice(findIndex, 1);
                             console.log("after splice"+allOnlineUsers.findIndex.roomName);
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {

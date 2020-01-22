@@ -56,6 +56,7 @@ io.on('connection', function(socket){
 					});
 
 				logger.print("   processGameRequest addUser   ",allOnlineUsers);
+				console.log("   processGameRequest addUser   ",allOnlineUsers);
 				io.sockets.to(socket.id).emit('userConnected',response.generate(constants.SUCCESS_STATUS,{userId:req.userId, userName :req.userName }, "Add user to socket"));
 			}).catch(err=>{
 				io.sockets.to(socket.id).emit('userConnected',response.generate(constants.ERROR_STATUS,{ }, "Error join to  socket"));
