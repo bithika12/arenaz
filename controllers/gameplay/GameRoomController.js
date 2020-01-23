@@ -161,6 +161,9 @@ io.on('connection', function (socket) {
         ], function (err, result) {
             if (result) {
                 logger.print(" throw dart done", req);
+                if(result.playStatus==1){
+                    logger.print("it is bust");
+                }
                 io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                     userId: result.userId,
                     roomName: result.roomName,
@@ -172,30 +175,9 @@ io.on('connection', function (socket) {
                 }, "Dart thrown"));
 
             } else
-                logger.print("***GAME ERROR ", err);
+                logger.print("***Only one user in that room so opponent coin update failed ", err);
                 io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"User game is over but still on that room!"));
         });
-
-
-        /*inmRoom.throwDartDetails(req)
-            .then(roomStatusUpdate => {
-                return inmRoom.updateInmemoryRoom(req,roomStatusUpdate
-                );
-            })
-
-            .then(res => {
-                return nextUserTurnDart(res)
-                return userNextStartDart(res
-                );
-            })
-            .then(resp=>{
-                logger.print(" throw dart done",req);
-                return io.to(req.roomName).emit('gameThrow',response.generate(constants.SUCCESS_STATUS,{ userId : resp.userId,roomName:resp.roomName,remainingScore:resp.remainingScore,dartPoint:resp.dartPoint},"Dart thrown"));
-            })
-            .catch(err=>{
-                console.log('dart error' + err);
-                io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"Something went wrong!"));
-            });*/
 
     });
 
