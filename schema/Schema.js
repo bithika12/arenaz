@@ -48,6 +48,7 @@ var userSchema =  new Schema({
                         updatedAt        :  Date,
                         roleId           :  Schema.Types.ObjectId,
                         startCoin        :  Number,
+                        cupNo            :  { type : Number , default  : 0},
                         loggedIn         :  { type : Number , default  : 0},
                   },{
                      strict:false

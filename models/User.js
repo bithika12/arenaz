@@ -126,7 +126,8 @@ User.updateUserDetails =function(condObj,updateObj){
 
          User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
              let updatedCoin=responses.startCoin + updateObj.startCoin;
-             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+             let updatedCup=responses.cupNo + updateObj.cupNo;
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
                  return reject(updatedResponsesErr);
@@ -143,10 +144,11 @@ User.updateUserDetails =function(condObj,updateObj){
      return  new Promise((resolve,reject) => {
          User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
              let updatedCoin=responses.startCoin - updateObj.startCoin;
+             let updatedCup=responses.cupNo+updateObj.cupNo;
              /*if(updatedCoin ==0){
                  updatedCoin=500;
              }*/
-             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
                  return reject(updatedResponsesErr);

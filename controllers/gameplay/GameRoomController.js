@@ -82,7 +82,7 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
                 //user update with coin
-                 user.updateUserCoin({userId: reqobj.userId}, {startCoin: reqobj.availableCoin}).then(function (userStatusUpdate) {
+                 user.updateUserCoin({userId: reqobj.userId}, {startCoin: reqobj.availableCoin,cupNo:reqobj.cupNumber}).then(function (userStatusUpdate) {
                      callback(null, reqobj);
                 });
             } else {
@@ -99,7 +99,7 @@ io.on('connection', function (socket) {
                 let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
                 let userOppo=reqobj.roomUsers[findIndex].userId;
                 console.log("opponent user"+userOppo);
-                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin}).then(function (userStatusUpdate) {
+                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin,cupNo:reqobj.cupOpponent}).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
             } else {
@@ -167,6 +167,10 @@ io.on('connection', function (socket) {
                     if (result.playStatus == 1) {
                         logger.print("it is bust");
                     }
+                    if(result.isWin==1) {
+                        logger.print("winner cup number" + result.cupNumber);
+                        logger.print("loser cup number" + result.cupOpponent);
+                     }
                     io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                         userId: result.userId,
                         roomName: result.roomName,
@@ -331,6 +335,16 @@ io.on('connection', function (socket) {
     function userNextStartDart(reqobj, callback) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
+                //ROOM EMPTY AFTER WIN
+                let findIndex = allOnlineUsers.findIndex(function (elemt) {
+                    return elemt.userId == reqobj.userId
+                });
+                let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+                    return elemt.userId != reqobj.userId
+                });
+                allOnlineUsers[findIndex].roomName='';
+                allOnlineUsers[findIndexOpponent].roomName='';
+                ///ROOM EMPTY AFTER WIN
                 callback(null, reqobj);
             }
             else {
@@ -980,8 +994,7 @@ io.on('connection', function (socket) {
                             allOnlineUsers[findIndex].roomName='';
                             allOnlineUsers[findIndexOpponent].roomName='';
                             console.log("after splice"+allOnlineUsers.findIndex.roomName);
-                            //allOnlineUsers.splice(findIndex, 1);
-                            //allOnlineUsers.splice(findIndex, 2);
+                            io.sockets.sockets[currentSocketId].leave(req.roomName);
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: roomDetails,
                                 roomName: req.roomName,
@@ -996,8 +1009,7 @@ io.on('connection', function (socket) {
                         allOnlineUsers[findIndex].roomName='';
                         allOnlineUsers[findIndexOpponent].roomName='';
                         console.log("after splice"+allOnlineUsers.findIndex.roomName);
-                       // allOnlineUsers.splice(findIndex, 1);
-                       // allOnlineUsers.splice(findIndex, 2);
+                        io.sockets.sockets[currentSocketId].leave(req.roomName);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
@@ -1011,8 +1023,7 @@ io.on('connection', function (socket) {
                         allOnlineUsers[findIndex].roomName='';
                         allOnlineUsers[findIndexOpponent].roomName='';
                         console.log("after splice"+allOnlineUsers.findIndex.roomName);
-                        //allOnlineUsers.splice(findIndex, 1);
-                        //allOnlineUsers.splice(findIndex, 2);
+                        io.sockets.sockets[currentSocketId].leave(req.roomName);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
@@ -1028,6 +1039,7 @@ io.on('connection', function (socket) {
                     console.log(allOnlineUsers.findIndex.roomName);
                     allOnlineUsers[findIndex].roomName='';
                     allOnlineUsers[findIndexOpponent].roomName='';
+                    io.sockets.sockets[currentSocketId].leave(req.roomName);
                    // allOnlineUsers.splice(findIndex, 1);
                     //allOnlineUsers.splice(findIndex, 2);
                     console.log("after splice"+allOnlineUsers.findIndex.roomName);

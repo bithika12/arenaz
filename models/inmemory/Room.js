@@ -39,6 +39,8 @@ room.throwDartDetails = function (reqObj) {
         let cupNumber;
         let cupNumberOppo;
         let availableCoin;
+        //let findIndexOpponentMod;
+        let cupOpponent;
 
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
@@ -121,7 +123,9 @@ room.throwDartDetails = function (reqObj) {
                     userArr[findIndex].status = "active";
                     userArr[findIndex].cupNumber = cupNumber;
                     //userArr[findIndex].userTurn=userTurnGame;
-
+                    let findIndexOpponentMod = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
+                    if(findIndexOpponentMod!=-1)
+                       cupOpponent=userArr[findIndexOpponentMod].cupNumber;
                     resolve({
                         roomName: reqObj.roomName,
                         users: reqObj.userId,
@@ -134,7 +138,8 @@ room.throwDartDetails = function (reqObj) {
                         playerScore: reqObj.score,
                         cupNumber: cupNumber,
                         gameTotalTime:gameSeconds,
-                        availableCoin:availableCoin
+                        availableCoin:availableCoin,
+                        cupOpponent:cupOpponent
                     });
                 } else {
                     console.log("Unable to find room"+reqObj.roomName);
@@ -552,6 +557,7 @@ room.userLeave = function (condObj, updateObj) {
                     //userArr[findIndex].isWin=2;
                     //userArr[findIndexOppo].isWin=2;
                     userArr[findIndex].status = "inactive";
+
                     //playStatus=2;
                     //isWin=2;
                     //userArr[findIndexOppo].cupNumber=70;
@@ -563,6 +569,7 @@ room.userLeave = function (condObj, updateObj) {
                     userArr[findIndex].isWin=2;
                     userArr[findIndexOppo].isWin=2;
                     userArr[findIndex].status = "inactive";
+
                     //playStatus=2;
                     isWin=2;
                     userArr[findIndexOppo].cupNumber=70;
@@ -644,7 +651,7 @@ room.userLeaveNew = function (condObj, updateObj) {
                 if(findIndexOppo !=-1){
                     userArr[findIndexOppo].isWin = 1;
                     userArr[findIndexOppo].cupNumber=70;
-                    userArr[findIndex].status = "inactive";
+                    userArr[findIndex].status = "leave";
                     playStatus=userArr[findIndex].playStatus;
                     isWin=1;
 
@@ -652,7 +659,7 @@ room.userLeaveNew = function (condObj, updateObj) {
                     cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
                     userArr[findIndex].cupNumber = cupNumberOppo;
                 }
-                userArr[findIndex].status = "inactive";
+                userArr[findIndex].status = "leave";
                 calculatedScore= userArr[findIndex].total;
                 userTurn=userArr[findIndex].turn;
                 dartPnt=userArr[findIndex].dartPoint;
@@ -812,7 +819,8 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             playerScore: updateArr.playerScore,
                             cupNumber: updateArr.cupNumber,
                             gameTotalTime:updateArr.gameTotalTime,
-                            availableCoin:updateArr.availableCoin
+                            availableCoin:updateArr.availableCoin,
+                            cupOpponent:updateArr.cupOpponent
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else
