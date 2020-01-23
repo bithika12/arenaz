@@ -175,7 +175,7 @@ io.on('connection', function (socket) {
                 }, "Dart thrown"));
 
             } else
-                logger.print("***Only one user in that room so opponent coin update failed ", err);
+                logger.print("***May be Only one user in that room so opponent coin update failed ", err);
                 io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"User game is over but still on that room!"));
         });
 
@@ -970,9 +970,10 @@ io.on('connection', function (socket) {
                             console.log(allOnlineUsers.findIndex.userId);
                             console.log(allOnlineUsers.findIndex.roomName);
                             allOnlineUsers[findIndex].roomName='';
-                            //allOnlineUsers[findIndex].roomName ='';
-                            //allOnlineUsers.splice(findIndex, 1);
+                            allOnlineUsers[findIndexOpponent].roomName='';
                             console.log("after splice"+allOnlineUsers.findIndex.roomName);
+                            //allOnlineUsers.splice(findIndex, 1);
+                            //allOnlineUsers.splice(findIndex, 2);
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: roomDetails,
                                 roomName: req.roomName,
@@ -984,10 +985,11 @@ io.on('connection', function (socket) {
                         console.log("splice"+allOnlineUsers);
                         console.log(allOnlineUsers.findIndex.userId);
                         console.log(allOnlineUsers.findIndex.roomName);
-                        allOnlineUsers.findIndex.roomName='';
-                        //allOnlineUsers.splice(findIndex, 1);
+                        allOnlineUsers[findIndex].roomName='';
+                        allOnlineUsers[findIndexOpponent].roomName='';
                         console.log("after splice"+allOnlineUsers.findIndex.roomName);
-                        //allOnlineUsers.splice(findIndex, 1);
+                       // allOnlineUsers.splice(findIndex, 1);
+                       // allOnlineUsers.splice(findIndex, 2);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
@@ -995,13 +997,14 @@ io.on('connection', function (socket) {
                         }, "Game is over"));
                         logger.print("Room closed");
                     } else {
-                        console.log("splice"+allOnlineUsers);
+                        //console.log("splice"+allOnlineUsers);
                         console.log(allOnlineUsers.findIndex.userId);
                         console.log(allOnlineUsers.findIndex.roomName);
-                        allOnlineUsers.findIndex.roomName='';
-                        //allOnlineUsers.splice(findIndex, 1);
+                        allOnlineUsers[findIndex].roomName='';
+                        allOnlineUsers[findIndexOpponent].roomName='';
                         console.log("after splice"+allOnlineUsers.findIndex.roomName);
                         //allOnlineUsers.splice(findIndex, 1);
+                        //allOnlineUsers.splice(findIndex, 2);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                             userId: result.roomUsers,
                             roomName: req.roomName,
@@ -1011,15 +1014,15 @@ io.on('connection', function (socket) {
                     }
 
                     logger.print("Room closed");
-                    //allOnlineUsers.splice(findIndex, 1);
                 } else {
                     console.log("splice"+allOnlineUsers);
                     console.log(allOnlineUsers.findIndex.userId);
                     console.log(allOnlineUsers.findIndex.roomName);
-                    allOnlineUsers.findIndex.roomName='';
-                    //allOnlineUsers.splice(findIndex, 1);
+                    allOnlineUsers[findIndex].roomName='';
+                    allOnlineUsers[findIndexOpponent].roomName='';
+                   // allOnlineUsers.splice(findIndex, 1);
+                    //allOnlineUsers.splice(findIndex, 2);
                     console.log("after splice"+allOnlineUsers.findIndex.roomName);
-                    //allOnlineUsers.splice(findIndex, 1);
                     logger.print("***LEAVE ERROR ", err);
                 }
             });
