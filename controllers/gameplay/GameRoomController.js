@@ -310,6 +310,7 @@ io.on('connection', function (socket) {
     function nextUserTurn(roomObj) {
         inmRoom.findNextUser({roomName: roomObj.roomName}).then(function (roomDetails) {
             if (roomDetails) {
+                logger.print("Next turn sent after game request"+roomDetails.userId);
                 io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
             }
         }).catch(err => {
@@ -961,11 +962,18 @@ io.on('connection', function (socket) {
             let currentSocketId = socket.id;
 
             var findIndex = allOnlineUsers.findIndex(function (elemt) {
+                return elemt.userId == req.userId
+            });
+            let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+                return elemt.userId != req.userId
+            });
+
+            /*var findIndex = allOnlineUsers.findIndex(function (elemt) {
                 return elemt.socketId == currentSocketId
             });
             let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
                 return elemt.socketId != currentSocketId
-            });
+            });*/
             //if (io.sockets.sockets[currentSocketId] != undefined)
                // io.sockets.sockets[currentSocketId].leave(req.roomName);
             io.to(req.roomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: req.userId}, "Player leave from room"));
@@ -985,7 +993,8 @@ io.on('connection', function (socket) {
 
                     if (findIndexOpponent != -1 && result.isWin == 1) {
                         winnerDeclare({
-                            userId: allOnlineUsers[findIndexOpponent].userId,
+                            userId: result.opponentUserId,
+                            //userId: allOnlineUsers[findIndexOpponent].userId,
                             roomName: req.roomName
                         }).then(function (roomDetails) {
                             console.log("splice");

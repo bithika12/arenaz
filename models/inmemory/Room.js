@@ -647,6 +647,7 @@ room.userLeaveNew = function (condObj, updateObj) {
 
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
 
+                let findIndexOppoUserId=userArr[findIndexOppo].userId;
 
                 if(findIndexOppo !=-1){
                     userArr[findIndexOppo].isWin = 1;
@@ -680,7 +681,8 @@ room.userLeaveNew = function (condObj, updateObj) {
                     isWin: isWin,
                     playerScore: playerScore,
                     cupNumber: cupNumber,
-                    gameTotalTime:gameSeconds
+                    gameTotalTime:gameSeconds,
+                    opponentUserId:findIndexOppoUserId
                 });
 
             });
@@ -820,7 +822,8 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             cupNumber: updateArr.cupNumber,
                             gameTotalTime:updateArr.gameTotalTime,
                             availableCoin:updateArr.availableCoin,
-                            cupOpponent:updateArr.cupOpponent
+                            cupOpponent:updateArr.cupOpponent,
+                            opponentUserId:updateArr.opponentUserId
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else
