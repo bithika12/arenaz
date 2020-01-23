@@ -187,7 +187,7 @@ io.on('connection', function (socket) {
             });
 
         }).catch(err => {
-            logger.print("game is over but try to throw dart");
+            logger.print("game is over but try to throw dart"+req.roomName);
             io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {"err": err}, "game is over but try to throw dart"));
         });
 
