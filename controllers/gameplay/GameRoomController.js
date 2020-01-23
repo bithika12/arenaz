@@ -148,35 +148,43 @@ io.on('connection', function (socket) {
      */
     socket.on('throwDart', function (req) {
         req.socketId = socket.id;
-        async.waterfall([
-            dartProcess(req),
-            updateRoom,
-            //gameOverProcess,
-            //NEWLY ADDED FOR COIN
-            gameStatusUpdate,
-            gameStatusUpdateOpponent,
-            gameOverProcess,
-            userNextStartDart,
+        //chk valid dart or not
+        room.findValidDart({roomName: req.roomName}).then(function (roomDetails) {
 
-        ], function (err, result) {
-            if (result) {
-                logger.print(" throw dart done", req);
-                if(result.playStatus==1){
-                    logger.print("it is bust");
-                }
-                io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
-                    userId: result.userId,
-                    roomName: result.roomName,
-                    remainingScore: result.remainingScore,
-                    dartPoint: result.dartPoint,
-                    playStatus: result.playStatus,
-                    playerScore: result.playerScore,
-                    cupNumber: result.cupNumber
-                }, "Dart thrown"));
+            async.waterfall([
+                dartProcess(req),
+                updateRoom,
+                //gameOverProcess,
+                //NEWLY ADDED FOR COIN
+                gameStatusUpdate,
+                gameStatusUpdateOpponent,
+                gameOverProcess,
+                userNextStartDart,
 
-            } else
-                logger.print("***May be Only one user in that room so opponent coin update failed ", err);
-                io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{"err":err},"User game is over but still on that room!"));
+            ], function (err, result) {
+                if (result) {
+                    logger.print(" throw dart done", req);
+                    if (result.playStatus == 1) {
+                        logger.print("it is bust");
+                    }
+                    io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
+                        userId: result.userId,
+                        roomName: result.roomName,
+                        remainingScore: result.remainingScore,
+                        dartPoint: result.dartPoint,
+                        playStatus: result.playStatus,
+                        playerScore: result.playerScore,
+                        cupNumber: result.cupNumber
+                    }, "Dart thrown"));
+
+                } else
+                    logger.print("***May be Only one user in that room so opponent coin update failed ", err);
+                io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {"err": err}, "User game is over but still on that room!"));
+            });
+
+        }).catch(err => {
+            logger.print("game is over but try to throw dart");
+            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {"err": err}, "game is over but try to throw dart"));
         });
 
     });

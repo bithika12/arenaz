@@ -244,7 +244,22 @@ room.storeRoomDetails = function(roomObj){
     { _id: ObjectId("5dee3d0e98e37b319712ac27"), "users._id": ObjectId("5dee3d6398e37b319712ac2a") },
     { $set: { "users.$.score" : 12 } }
 )*/
-
+//valid dart or not
+//findValidDart
+room.findValidDart = function(condObj){
+    return  new Promise((resolve,reject) => {
+        Room.findOne({name:condObj.roomName}, {_id: 1,game_time:1, name:1, score:1, total:1, sockets:1}).then(responses=> {
+            if(responses.game_time){
+                reject({message:"Error:Game is over"})
+            }
+            else{
+                resolve(true);
+            }
+        }).catch(err => {
+            return reject(err);
+        });
+    });
+}
 room.updateRoomDart = function(condObj,updateObj){
     return new Promise((resolve,reject) => {
         Room.updateOne({ "name":condObj.roomName,"users.userId":condObj.userId},updateObj).then(responses=> {
