@@ -770,10 +770,10 @@ io.on('connection', function (socket) {
 
             }).then(function (updateWinningDetails) {
                 //users.rank = users.totalUserKill
-                io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+               /* io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                     userId: req.userId,
                     roomName: req.roomName
-                }, "Game is over"));
+                }, "Game is over"));*/
                 resolve(req.userId)
                 //callback(null, req);
             })
@@ -993,8 +993,8 @@ io.on('connection', function (socket) {
 
                     if (findIndexOpponent != -1 && result.isWin == 1) {
                         winnerDeclare({
+                            //useropponentId: result.opponentUserId,
                             userId: result.opponentUserId,
-                            //userId: allOnlineUsers[findIndexOpponent].userId,
                             roomName: req.roomName
                         }).then(function (roomDetails) {
                             console.log("splice");
