@@ -76,7 +76,7 @@ room.throwDartDetails = function (reqObj) {
                               * or some other number bigger
                               * It is a bust and turn changes
                              */
-                            if (reqObj.score == 1 || reqObj.score < 0 || calculatedScore < 0) {
+                            if (/*reqObj.score == 1 || reqObj.score < 0 ||*/ calculatedScore < 0) {
                                 //reject({message:"It is bust"});
                                 logger.print("It is a bust");
                                 logger.print("set trun to opponent as it is a bust");
@@ -549,9 +549,13 @@ room.userLeave = function (condObj, updateObj) {
                 const diff = currentTime - result.gametime;
                 const gameSeconds = Math.floor(diff / 1000 % 60);
 
+                let userOpponentUserId;
+
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
+                if(findIndexOppo!=-1)
+                  userOpponentUserId=userArr[findIndexOppo].userId;
 
                 if(userArr.length ==1){
                     //userArr[findIndex].isWin=2;
@@ -608,7 +612,8 @@ room.userLeave = function (condObj, updateObj) {
                     isWin: isWin,
                     playerScore: playerScore,
                     cupNumber: cupNumber,
-                    gameTotalTime:gameSeconds
+                    gameTotalTime:gameSeconds,
+                    opponentUserId:userOpponentUserId
                 });
 
     });
