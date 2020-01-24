@@ -31,6 +31,7 @@ public enum Page
     SelfHitScore,
     OpponentHitScore,
     HitScore,
+    GameLoadingPanel,
 }
 
 public enum Race

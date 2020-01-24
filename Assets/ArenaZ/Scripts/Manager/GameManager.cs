@@ -149,6 +149,12 @@ namespace ArenaZ.Manager
         public void LeaveRoom()
         {
             SocketManager.Instance.LeaveRoomRequest();
+
+            cameraController.SetCameraPosition(Player.Self);
+            genericTimer.StopTimer();
+            onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace);
+            if (currentDart != null)
+                StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
         }
 
         private void onGameOver(string data)

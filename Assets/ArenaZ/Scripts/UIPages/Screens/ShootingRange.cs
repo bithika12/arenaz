@@ -28,6 +28,8 @@ namespace ArenaZ.GameMode
         [Space(5)]
         [SerializeField] private Text userName;
 
+        [SerializeField] private GameLoading gameLoading;
+
         public Action<string> setOpponentName;
         public Action<string> setOpponentImage;
 
@@ -75,6 +77,7 @@ namespace ArenaZ.GameMode
 
         private void OnGameStart(string data)
         {
+            gameLoading.HideLoadingScreen();
             UIManager.Instance.HideScreen(Page.PlayerWinPanel.ToString());
             UIManager.Instance.HideScreen(Page.PlayerLoosePanel.ToString());
 
@@ -138,6 +141,7 @@ namespace ArenaZ.GameMode
         private void OnClickStartGameWithCoinValue(int a_Value)
         {
             PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
+            gameLoading.WaitingForOtherPlayer();
             SocketManager.Instance.GameRequest();
         }
     }
