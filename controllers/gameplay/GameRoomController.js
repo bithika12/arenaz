@@ -173,7 +173,7 @@ io.on('connection', function (socket) {
                      }
                     logger.print("user remaining score"+ result.remainingScore);
                     logger.print("user score" +result.playerScore);
-                    
+
                     io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                         userId: result.userId,
                         roomName: result.roomName,
