@@ -171,6 +171,9 @@ io.on('connection', function (socket) {
                         logger.print("winner cup number" + result.cupNumber);
                         logger.print("loser cup number" + result.cupOpponent);
                      }
+                    logger.print("user remaining score"+ result.remainingScore);
+                    logger.print("user score" +result.playerScore);
+                    
                     io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                         userId: result.userId,
                         roomName: result.roomName,
@@ -1095,6 +1098,9 @@ io.on('connection', function (socket) {
                 }
             });
         }
+            else{
+                logger.print("no user index found in leave");
+            }
             //}
 
 
