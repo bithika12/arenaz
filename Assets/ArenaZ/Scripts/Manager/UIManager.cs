@@ -7,6 +7,7 @@ using UnityEngine.U2D;
 using RedApple;
 using System.Text;
 using System.Collections;
+using System.Linq;
 
 namespace ArenaZ.Manager
 {
@@ -15,7 +16,6 @@ namespace ArenaZ.Manager
     /// </summary>
     public class UIManager : Singleton<UIManager>
     {
-       
         //Private Variables
         private Dictionary<string, UIScreen> allPages = new Dictionary<string, UIScreen>();
         private Dictionary<string, TextScreen> textPages = new Dictionary<string, TextScreen>();
@@ -121,6 +121,8 @@ namespace ArenaZ.Manager
         {
             if(_openPages.Count > 0)
             {
+                string screenName = _openPages.Peek();
+                Debug.Log($"HideOpenScreen: {screenName}");
                 HideScreenImmediately(_openPages.Peek());
                 _openPages.Pop();
             }           
@@ -128,11 +130,11 @@ namespace ArenaZ.Manager
 
         public void ShowScreen(string screenName)
         {
-            if (!allPages.ContainsKey(screenName) && allPages[screenName].gameObject.activeInHierarchy)
-            {
+            Debug.Log($"ShowScreen: {screenName}");
+            if (!allPages.ContainsKey(screenName) || allPages[screenName].gameObject.activeInHierarchy)
                 return;
-            }
-            allPages[screenName].ShowGameObjWithAnim();
+            if (allPages.ContainsKey(screenName))
+                allPages[screenName].ShowGameObjWithAnim();
         }
 
         public void ShowCharacterName(string name)
@@ -151,56 +153,54 @@ namespace ArenaZ.Manager
 
         public void HideScreen(string screenName)
         {
-            if (!allPages.ContainsKey(screenName) && !allPages[screenName].gameObject.activeInHierarchy)
-            {
+            Debug.Log($"HideScreen: {screenName}");
+            if (!allPages.ContainsKey(screenName) || !allPages[screenName].gameObject.activeInHierarchy)
                 return;
-            }
-            allPages[screenName].HideGameObjWithAnim();
+            if (allPages.ContainsKey(screenName))
+                allPages[screenName].HideGameObjWithAnim();
         }
 
         public void HideScreenImmediately(string screenName)
         {
-            if (allPages.ContainsKey(screenName) && allPages[screenName].gameObject.activeInHierarchy)
-            {
+            Debug.Log($"HideScreenImmediately: {screenName}");
+            if (!allPages.ContainsKey(screenName))
+                return;
+            if (allPages[screenName].gameObject.activeInHierarchy)
                 allPages[screenName].Hide();
-            }
         }
 
         public void ShowScreenImmediately(string screenName)
         {
-            if (allPages.ContainsKey(screenName) && !allPages[screenName].gameObject.activeInHierarchy)
-            {
+            if (!allPages.ContainsKey(screenName))
+                return;
+            if (!allPages[screenName].gameObject.activeInHierarchy)
                 allPages[screenName].Show();
-            }
         }
 
         public void ToggleScreenWithAnim(string screenName)
         {
+            if (!allPages.ContainsKey(screenName))
+                return;
             if (!allPages[screenName].gameObject.activeSelf)
-            {
                 allPages[screenName].ShowGameObjWithAnim();
-            }
             else
-            {
                 allPages[screenName].HideGameObjWithAnim();
-            }
         }
 
         public void ToggleScreenImmediately(string screenName)
         {
+            if (!allPages.ContainsKey(screenName))
+                return;
             if (!allPages[screenName].gameObject.activeSelf)
-            {
                 allPages[screenName].Show();
-            }
             else
-            {
                 allPages[screenName].Hide();
-            }
         }
 
         public void SetComponent<T>(string screenName, bool value)
         {
-            allPages[screenName].EnableDisableComponent<T>(value);
+            if (allPages.ContainsKey(screenName))
+                allPages[screenName].EnableDisableComponent<T>(value);
         }
 
         public ButtonImage ButtonImageType(string type)
@@ -219,10 +219,9 @@ namespace ArenaZ.Manager
         private bool AddAllUIScreensToDictionary()
         {
             allPages.Clear();
-            foreach (UIScreen screen in FindObjectsOfType<UIScreen>())
-            {
-                allPages.Add(screen.name, screen);
-            }
+            UIScreen[] allScreens = Resources.FindObjectsOfTypeAll(typeof(UIScreen)) as UIScreen[]; //FindObjectsOfType<UIScreen>().ToList();
+            List<UIScreen> screens = allScreens.ToList();
+            screens.ForEach(x => allPages.Add(x.name, x));
             DeactivateAllUI();
             return true;
         }

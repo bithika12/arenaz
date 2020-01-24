@@ -12,4 +12,16 @@ public class UserJoin
     public string RaceName { get; set; }
     [JsonProperty("dartName")]
     public string DartName { get; set; }
+    [JsonProperty("score")]
+    public int Score { get; set; }
+    [JsonProperty("total")]
+    public int Total { get; set; }
+    [JsonProperty("status")]
+    public string Status { get; set; }
+    [JsonProperty("isWin")]
+    public int IsWin { get; set; }
+    [JsonProperty("turn")]
+    public int Turn { get; set; }
+    [JsonProperty("dartPoint")]
+    public string DartPoint { get; set; }
 }

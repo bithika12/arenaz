@@ -24,9 +24,7 @@ public class SceneManagement : Singleton<SceneManagement>
     }
     IEnumerator LoadSceneAtStart()
     {
-      //  Debug.Log("ghhhhhgh");
         yield return new WaitForSeconds(1f);
-        Debug.Log("ghhhhhgh");
         splashObj.SetActive(false);
         LoadScene("LevelSelection");
     }

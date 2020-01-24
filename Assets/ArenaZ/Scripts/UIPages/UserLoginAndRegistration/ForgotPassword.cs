@@ -56,16 +56,13 @@ public class ForgotPassword : MonoBehaviour
         Debug.Log("OnClickForgotPassword");
         if (string.IsNullOrWhiteSpace(forgotPass_userEmail.text) && string.IsNullOrWhiteSpace(forgotPass_userName.text))
         {
-            Debug.Log("Dutoi Null");
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongEmailAndUsername, PopUpduration);
             return;
         }
         else if(!regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
         {
-            Debug.Log("email ta match koreni, username call holo");
             if (string.IsNullOrWhiteSpace(forgotPass_userName.text))
             {
-                Debug.Log("String is null");
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongEmailAndUsername, PopUpduration);
             }
             else
@@ -75,7 +72,6 @@ public class ForgotPassword : MonoBehaviour
         }
         else if(regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
         {
-            Debug.Log("email ta match korlo");
             RestManager.ForgotPassword(true, forgotPass_userEmail.text, OnCompleteForgotPassword, OnErrorForgotPassword);
         }
     }

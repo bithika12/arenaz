@@ -6,7 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.SettingsManagement;
 using ArenaZ.Screens;
-
+using DevCommons.Utility;
+using Newtonsoft.Json;
 
 namespace ArenaZ.RegistrationUser
 {
@@ -29,9 +30,10 @@ namespace ArenaZ.RegistrationUser
         private float PopUpduration;
         RegularExpression checking = new RegularExpression();
 
-        //Public Variables
+        private string password;
 
-        private void Start()
+        //Public Variables
+        private void OnEnable()
         {
             GettingButtonReferences();
             Settings.inputFieldclear += ClearRegInputFieldData;
@@ -94,32 +96,30 @@ namespace ArenaZ.RegistrationUser
             }
             else if (regIf_UserPassword.text.Equals(regIf_UserConfPassword.text))
             {
-                RestManager.UserRegistration(regIf_userEmail.text, regIf_UserName.text, regIf_UserPassword.text, OnCompleteRegistration, OnErrorRegistration);
-                Debug.Log("Mail UserName password:   " + regIf_userEmail.text + regIf_UserName.text + regIf_UserPassword.text + regIf_UserConfPassword.text);
+                password = regIf_UserConfPassword.text;
+                RestManager.UserRegistration(regIf_userEmail.text, regIf_UserName.text, password, OnCompleteRegistration, OnErrorRegistration);
             }
         }
 
         private void OnCompleteRegistration(CreateAccount registeredProfile)
         {
+            Debug.Log($"Registered: {JsonConvert.SerializeObject(registeredProfile)}");
             RestManager.AccessToken = registeredProfile.AccessToken;
-            Debug.Log("OnRegistration User Access Token:  " + registeredProfile.AccessToken);
-            Debug.Log("Registered:  " + registeredProfile.UserName);
-            if (Application.platform == RuntimePlatform.Android)
-            {
-                UIManager.Instance.SaveDetails(PlayerprefsValue.LoginID.ToString(), regIf_userEmail.text);
-                UIManager.Instance.SaveDetails(PlayerprefsValue.Password.ToString(), regIf_UserPassword.text);
-            }
+
+            UserData loginData = new UserData(registeredProfile.Email, password, registeredProfile.AccessToken);
+            FileHandler.SaveToFile<UserData>(loginData, ConstantStrings.USER_SAVE_FILE_KEY);
+
             storeUserData(registeredProfile);
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.successFullyRegisterd, PopUpduration);
             OnClickRegisterPopUpClose();
-            AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName,AccountAccessType.Registration);
+            AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName, AccountAccessType.Registration);
         }
 
         private void storeUserData(CreateAccount userDetails)
         {
-            User.userName = userDetails.UserName;
-            User.userId = userDetails.UserId;
-            User.userEmailId = userDetails.Email;
+            User.UserName = userDetails.UserName;
+            User.UserId = userDetails.UserId;
+            User.UserEmailId = userDetails.Email;
             User.UserAccessToken = userDetails.AccessToken;
         }
 
@@ -178,10 +178,10 @@ namespace ArenaZ.RegistrationUser
                     {
                         return ConstantStrings.doesNotHaveLowerCaseChar;
                     }
-                    if (!checking.hasspecialCharacter.IsMatch(message))
-                    {
-                        return ConstantStrings.doesNotHaveSpecialChar;
-                    }
+                    //if (!checking.hasspecialCharacter.IsMatch(message))
+                    //{
+                    //    return ConstantStrings.doesNotHaveSpecialChar;
+                    //}
                     if (checking.hasSpace.IsMatch(message))
                     {
                         return ConstantStrings.passwordContainedSpace;
@@ -206,4 +206,23 @@ namespace ArenaZ.RegistrationUser
             UIManager.Instance.HideScreen(Page.RegistrationOverlay.ToString());
         }
     }
+}
+
+[System.Serializable]
+public class UserData
+{
+    public UserData()
+    {
+    }
+
+    public UserData(string a_Email, string a_Password, string a_AccessToken)
+    {
+        Email = a_Email;
+        Password = a_Password;
+        AccessToken = a_AccessToken;
+    }
+
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string AccessToken { get; set; }
 }

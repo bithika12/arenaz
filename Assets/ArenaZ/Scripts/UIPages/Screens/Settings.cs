@@ -134,7 +134,6 @@ namespace ArenaZ.SettingsManagement
             UIManager.Instance.showProfilePic?.Invoke((Race.Canines.ToString()));
             UIManager.Instance.setUserName?.Invoke(ConstantStrings.defaultUserName);
             PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
-            PlayerPrefs.SetInt(PlayerprefsValue.AutoLogin.ToString(), 0);
             // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
         }
 
@@ -188,6 +187,7 @@ namespace ArenaZ.SettingsManagement
         {
             TasksAfterLogout();
             UIManager.Instance.ShowScreen(Page.AccountAccessDetailsPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.AccountAccesOverlay.ToString());
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
             UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
         }

@@ -26,7 +26,7 @@ namespace ArenaZ.Screens
         [Header("Scroll Snap")]
         [Space(5)]
         [SerializeField]private HorizontalScrollSnap horizontalScrollSnap;
-        public readonly string[] raceNames = { Race.Canines.ToString(), Race.Kepler.ToString(), Race.Cyborg.ToString(), Race.CyborgSecond.ToString(), Race.Human.ToString(), Race.Ebot.ToString(), Race.KeplerSecond.ToString(),Race.KeplerWoman.ToString() };
+        public readonly string[] raceNames = { Race.Canines.ToString(), Race.Kepler.ToString(), Race.Cyborg.ToString(), Race.CyborgSecond.ToString(), Race.Human.ToString(), Race.Ebot.ToString(), Race.KeplerSecond.ToString(),Race.KeplerFemale.ToString(),Race.KeplerFemaleSecond.ToString(),Race.HumanSecond.ToString() };
         //Public Fields
         public static Action<string> setDart;
 
@@ -62,7 +62,7 @@ namespace ArenaZ.Screens
 
         public void SetColorOnCharacter(string colorName)
         {
-            User.userColor = colorName;
+            User.UserColor = colorName;
             GameObject[] characters = horizontalScrollSnap.ChildObjects;
             for (int i = 0; i < characters.Length; i++)
             {
@@ -113,10 +113,10 @@ namespace ArenaZ.Screens
         private void OnClickArena(GameType type)
         {
             enterArenaMode();
-            User.dartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
-            User.userRace = raceNames[horizontalScrollSnap._currentPage];
-            Debug.Log("DartName:  " + User.dartName);
-            setDart?.Invoke(User.dartName);
+            User.DartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
+            User.UserRace = raceNames[horizontalScrollSnap._currentPage];
+            Debug.Log("DartName:  " + User.DartName);
+            setDart?.Invoke(User.DartName);
             UIManager.Instance.showProfilePic?.Invoke(raceNames[horizontalScrollSnap._currentPage]);
             LevelSelection.Instance.OnSelectionGameplayType(type);
             PlayerPrefs.SetString(PlayerprefsValue.CharacterName.ToString(), raceNames[horizontalScrollSnap._currentPage]);

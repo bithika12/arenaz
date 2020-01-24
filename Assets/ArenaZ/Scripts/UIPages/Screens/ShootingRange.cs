@@ -49,21 +49,21 @@ namespace ArenaZ.GameMode
         private void GettingButtonReferences()
         {
             shootingRangeBackButton.onClick.AddListener(OnClickShootingRangeBack);
-            coinButton10.onClick.AddListener(OnClickStartGameWithCoinValue);
-            coinButton50.onClick.AddListener(OnClickStartGameWithCoinValue);
-            coinButton100.onClick.AddListener(OnClickStartGameWithCoinValue);
-            coinButton250.onClick.AddListener(OnClickStartGameWithCoinValue);
-            coinButton500.onClick.AddListener(OnClickStartGameWithCoinValue);
+            coinButton10.onClick.AddListener(() => OnClickStartGameWithCoinValue(10));
+            coinButton50.onClick.AddListener(() => OnClickStartGameWithCoinValue(50));
+            coinButton100.onClick.AddListener(() => OnClickStartGameWithCoinValue(100));
+            coinButton250.onClick.AddListener(() => OnClickStartGameWithCoinValue(250));
+            coinButton500.onClick.AddListener(() => OnClickStartGameWithCoinValue(500));
         }
 
         private void ReleaseButtonReferences()
         {
-            shootingRangeBackButton.onClick.RemoveListener(OnClickShootingRangeBack);
-            coinButton10.onClick.RemoveListener(OnClickStartGameWithCoinValue);
-            coinButton50.onClick.RemoveListener(OnClickStartGameWithCoinValue);
-            coinButton100.onClick.RemoveListener(OnClickStartGameWithCoinValue);
-            coinButton250.onClick.RemoveListener(OnClickStartGameWithCoinValue);
-            coinButton500.onClick.RemoveListener(OnClickStartGameWithCoinValue);
+            shootingRangeBackButton.onClick.RemoveAllListeners();
+            coinButton10.onClick.RemoveAllListeners();
+            coinButton50.onClick.RemoveAllListeners();
+            coinButton100.onClick.RemoveAllListeners();
+            coinButton250.onClick.RemoveAllListeners();
+            coinButton500.onClick.RemoveAllListeners();
         }
         #endregion
 
@@ -75,13 +75,16 @@ namespace ArenaZ.GameMode
 
         private void OnGameStart(string data)
         {
+            UIManager.Instance.HideScreen(Page.PlayerWinPanel.ToString());
+            UIManager.Instance.HideScreen(Page.PlayerLoosePanel.ToString());
+
             Debug.Log($"Game Start : {data}");
             var gameStartData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
             UserJoin[] users = gameStartData.result.Users;
-            Debug.Log("No. of users:  "+users.Length);
             for (int i = 0; i < users.Length; i++)
             {
-                if (User.userId != users[i].UserId)
+                ScoreData.requiredScore = users[i].Score;
+                if (User.UserId != users[i].UserId)
                 {
                     saveOpponentData(users[i]);
                     setOpponentName?.Invoke(users[i].UserName);
@@ -89,6 +92,7 @@ namespace ArenaZ.GameMode
                     UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString(),Hide.none);
                 }
             }
+            GameManager.Instance.ResetScore();
             GameManager.Instance.GetDartGameObj();
             PlayerMatch.Instance.LoadGameplay();
         }
@@ -106,12 +110,13 @@ namespace ArenaZ.GameMode
         {
             Debug.Log($"User Join : {data}");
             var userJoinData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
+            Debug.Log($"User Join RoomName: {userJoinData.result.RoomName}");
             User.RoomName = userJoinData.result.RoomName;
         }
 
         public void SetDartImage(string dartName)
         {
-            string path = GameResources.dartImageFolderPath + "/" + dartName+User.userColor;
+            string path = GameResources.dartImageFolderPath + "/" + dartName+User.UserColor;
             dartImage.sprite = Resources.Load<Sprite>(path);
         }
 
@@ -130,8 +135,9 @@ namespace ArenaZ.GameMode
             UIManager.Instance.HideOpenScreen();
         }
 
-        private void OnClickStartGameWithCoinValue()
+        private void OnClickStartGameWithCoinValue(int a_Value)
         {
+            PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
             SocketManager.Instance.GameRequest();
         }
     }

@@ -3,11 +3,22 @@ using DG.Tweening;
 using System;
 using ArenaZ.Manager;
 using System.Collections;
+using DG.Tweening;
 
 namespace ArenaZ.ShootingObject
 {
     public class Dart : MonoBehaviour
     {
+        public enum ERotationAxis
+        {
+            X,
+            Y,
+            Z
+        }
+
+        [SerializeField] private Transform dartObj;
+        [SerializeField] private ERotationAxis rotationAxis;
+
         private Rigidbody dartRB;
 
         private float time = 0;
@@ -37,10 +48,21 @@ namespace ArenaZ.ShootingObject
         {
             if (endPosition != Vector3.zero)
             {
+                Vector3 t_RotDirection = new Vector3(0.0f, 0.0f, 0.0f);
+                if (rotationAxis == ERotationAxis.X)
+                    t_RotDirection.x = -360.0f;
+                else if (rotationAxis == ERotationAxis.Z)
+                    t_RotDirection.z = -360.0f;
+
+                dartObj.DOLocalRotate(t_RotDirection, 1.0f, RotateMode.FastBeyond360).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
                 AddPointsToArray(endPosition);
                 transform.DOPath(points, .6f, PathType.CatmullRom)
                          .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
-                         .OnComplete(()=>GameManager.Instance.OnCompletionDartHit(this.gameObject));
+                         .OnComplete(()=> 
+                         {
+                             GameManager.Instance.OnCompletionDartHit(this.gameObject);
+                             dartObj.DOKill();
+                         });
             }
         } 
 

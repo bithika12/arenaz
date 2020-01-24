@@ -1,5 +1,6 @@
 ﻿using ArenaZ.Manager;
 using ArenaZ.SettingsManagement;
+using DevCommons.Utility;
 using RedApple;
 using RedApple.Utils;
 using UnityEngine;
@@ -44,6 +45,8 @@ namespace Arenaz.LogoutUser
 
         private void OnCompleteLogout()
         {
+            FileHandler.DeleteSaveFile(ConstantStrings.USER_SAVE_FILE_KEY);
+            OnClickLogOutAlertClose();
             Settings.Instance.AfterCompleteLogout();
         }
 

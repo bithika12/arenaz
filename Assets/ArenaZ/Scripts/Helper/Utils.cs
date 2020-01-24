@@ -28,7 +28,9 @@ public enum Page
     ComingSoonOverlay,
     PopUpTextAccountAccess,
     PopUpTextSettings,
-    HitScore
+    SelfHitScore,
+    OpponentHitScore,
+    HitScore,
 }
 
 public enum Race
@@ -40,7 +42,9 @@ public enum Race
     Human,
     Ebot,
     KeplerSecond,
-    KeplerWoman
+    KeplerFemale,
+    KeplerFemaleSecond,
+    HumanSecond
 }
 
 public enum ButtonType
@@ -81,7 +85,6 @@ public enum PlayerprefsValue
     LoginID,
     Password,
     Logout,
-    AutoLogin,
     CharacterName
 }
 
@@ -152,13 +155,13 @@ public static class GameResources
 
 public static class User
 {
-    public static string userName;
-    public static string userId;
-    public static string userEmailId;
+    public static string UserName;
+    public static string UserId;
+    public static string UserEmailId;
     public static string UserAccessToken;
-    public static string userRace;
-    public static string dartName;
-    public static string userColor;
+    public static string UserRace;
+    public static string DartName;
+    public static string UserColor;
     public static string RoomName;
 }
 
@@ -169,6 +172,11 @@ public static class Opponent
     public static string opponentRace;
     public static string opponentColor;
     public static string dartName;
+}
+
+public static class ScoreData
+{
+    public static int requiredScore;
 }
 
 public static class ConstantInteger
@@ -185,12 +193,16 @@ public static class ConstantInteger
 
 public static class ConstantStrings
 {
+    public static readonly string USER_SAVE_FILE_KEY = "AD_USER_SAVE.sv";
+    public static readonly string ROOM_VALUE = "Room_Value";
+    public static readonly string ROOM_NAME = "Room_Name";
+
     public const string successFullyRegisterd = "You Have Successfully Registered. You Will Be Logged In.";
     public const string successFullyLoggedOut = "User Loggedout SuccessFully!";
     public const string emailAlreadyExists = "Email address entered already exists. Please use forgot password to login.";
     public const string noInternet = "Please Check Your Internet Connection.";
     public const string successFullyLoggedIn = "User login successfully.";
-    public const string doesNotHaveNumber = "Your password must contain at least number.";
+    public const string doesNotHaveNumber = "Your password must contain at least one number.";
     public const string doesNotHaveChar = "Must Contain Characters.";
     public const string mailIsNotValid = "Invalid Email address. Please try again.";
     public const string passwordIsNotValid = "Invalid Password. Please try again.";

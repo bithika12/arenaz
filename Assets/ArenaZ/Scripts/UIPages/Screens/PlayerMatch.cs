@@ -54,7 +54,10 @@ public class PlayerMatch : Singleton<PlayerMatch>
 
     private IEnumerator LoadGameplayAfterAnim()
     {
-        yield return new WaitForSeconds(animClip.length+1f);
+        float value = animClip.length + 1f;
+        Debug.Log($"-----------------------------LoadGameplayAfterAnimLength: {value}-----------------------------");
+        yield return new WaitForSeconds(value);
+        Debug.Log("-----------------------------LoadGameplayAfterAnim-----------------------------");
         UIManager.Instance.HideScreen(Page.UIPanel.ToString());
         UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(),Hide.none);
     }

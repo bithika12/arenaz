@@ -42,14 +42,28 @@ namespace RedApple
 
         public void GameRequest()
         {
-            AccesToken acToken = new AccesToken
+            int t_RoomCoin = PlayerPrefs.GetInt(ConstantStrings.ROOM_VALUE, 10);
+            GameRequest gameRequest = new GameRequest
             {
-                AccessToken = User.UserAccessToken
+                AccessToken = User.UserAccessToken,
+                RoomCoin = t_RoomCoin,
             };
-            string gameReqJsonData = DataConverter.SerializeObject(acToken);
-            Debug.Log("Game Request");
-            Debug.Log("Access Token: " + gameReqJsonData);
+            string gameReqJsonData = DataConverter.SerializeObject(gameRequest);
+            Debug.Log("Game Request: " + gameReqJsonData);
             socket.EmitJson(SocketEmitEvents.gameRequest.ToString(), gameReqJsonData);
+        }
+
+        public void LeaveRoomRequest()
+        {
+            Debug.Log("RoomName: " + User.RoomName);
+            LeaveRoomRequest leaveRoomRequest = new LeaveRoomRequest
+            {
+                AccessToken = User.UserAccessToken,
+                RoomName = User.RoomName,
+            };
+            string leaveRoomReqJsonData = DataConverter.SerializeObject(leaveRoomRequest);
+            Debug.Log("Leave Room Request: " + leaveRoomReqJsonData);
+            socket.EmitJson(SocketEmitEvents.leave.ToString(), leaveRoomReqJsonData);
         }
 
         public void ColRequest()
@@ -57,9 +71,9 @@ namespace RedApple
             ColorRequest colorRequest = new ColorRequest
             {
                 AccessToken = User.UserAccessToken,
-                Color = User.userColor,
-                CharRace = User.userRace,
-                DartName = User.dartName
+                Color = User.UserColor,
+                CharRace = User.UserRace,
+                DartName = User.DartName
             };
             string colorReqJsonData = DataConverter.SerializeObject(colorRequest);
             Debug.Log("Color Request");
@@ -69,9 +83,9 @@ namespace RedApple
 
         public void ThrowDartData(int hitValue, Vector3 point)
         {
-            //string hitPoint = Regex.Replace(point.ToString(), @"\s+", "");
-            string hitPoint = Regex.Replace(point.ToString(), @"\s", "");
-
+            string hitPoint = Regex.Replace(point.ToString(), @"\s+", "");
+            //string hitPoint = Regex.Replace(point.ToString(), @"\s", "");
+            Debug.Log("RoomName: " + User.RoomName);
             ThrowDart throwDart = new ThrowDart
             {
                 AccessToken = User.UserAccessToken,
@@ -86,6 +100,7 @@ namespace RedApple
 
         public void ThrowDartData(int hitValue, string point)
         {
+            Debug.Log("RoomName: " + User.RoomName);
             ThrowDart throwDart = new ThrowDart
             {
                 AccessToken = User.UserAccessToken,
@@ -144,6 +159,24 @@ public struct AccesToken
 {
     [JsonProperty("accessToken")]
     public string AccessToken { get; set; }
+}
+
+[Serializable]
+public struct GameRequest
+{
+    [JsonProperty("accessToken")]
+    public string AccessToken { get; set; }
+    [JsonProperty("roomCoin")]
+    public int RoomCoin { get; set; }
+}
+
+[Serializable]
+public struct LeaveRoomRequest
+{
+    [JsonProperty("accessToken")]
+    public string AccessToken { get; set; }
+    [JsonProperty("roomName")]
+    public string RoomName { get; set; }
 }
 
 [Serializable]

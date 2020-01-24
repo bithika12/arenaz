@@ -15,35 +15,42 @@ namespace ArenaZ.Manager
     [RequireComponent(typeof(TouchBehaviour))]
     public class GameManager : Singleton<GameManager>
     {
+        public enum Player
+        {
+            Self,
+            Opponent
+        }
+
         // Private Variables
         [SerializeField] private bool projectileMove;
         [SerializeField] private int scorePopUpDuration;
-        [SerializeField] private TextMeshProUGUI txtMeshPro;
+        [SerializeField] private TextMeshProUGUI selfScoreText;
+        [SerializeField] private TextMeshProUGUI opponentScoreText;
         [SerializeField] private Image userImage;
         [SerializeField] private Image opponentImage;
         [SerializeField] private Image userTimerImage;
         [SerializeField] private Image opponentTimerImage;
         [SerializeField] private Text userName;
         [SerializeField] private Text opponentName;
+
+        [SerializeField] private CameraController cameraController;
+
         private bool playerTurn = false;
         private GameObject userDart;
         private GameObject opponentDart;
         private Dart currentDart;
         private TouchBehaviour touchBehaviour;        
-        private Dictionary<string, int> gameScore = new Dictionary<string, int>();
-        private int opponentRemainingScore = ConstantInteger.totalGameScore;
+        //private Dictionary<string, int> gameScore = new Dictionary<string, int>();
         private float timer = ConstantInteger.timerValue;
+
+        private GameSoreData selfGameScoreData;
+        private GameSoreData opponentGameScoreData;
 
         public Action<string> setUserName;
         public Action<string> setUserImage;
 
-        private enum Player
-        {
-            Self,
-            Opponent
-        }
+        public Player PlayerType { get; set; }
 
-        private Player PlayerType;
         private GeneralTimer genericTimer;
 
         // Public Variables      
@@ -55,6 +62,10 @@ namespace ArenaZ.Manager
 
         private void Start()
         {
+            cameraController.SetCameraPosition(Player.Self);
+            selfGameScoreData = new GameSoreData { PlayerType = Player.Self };
+            opponentGameScoreData = new GameSoreData { PlayerType = Player.Opponent };
+
             Input.multiTouchEnabled = false;
             listenSocketEvents();
             touchBehaviour.OnDartMove += DartMove;
@@ -63,7 +74,7 @@ namespace ArenaZ.Manager
             UIManager.Instance.showProfilePic += SetUserProfileImage;
             ShootingRange.Instance.setOpponentName += SetOpponentName;
             ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
-            genericTimer = new GeneralTimer(this,ConstantInteger.timerValue);
+            genericTimer = new GeneralTimer(this, ConstantInteger.timerValue);
         }
 
         private void getDartMaterialColorCode(string colorName)
@@ -106,7 +117,7 @@ namespace ArenaZ.Manager
         public void GetDartGameObj()
         {
             Debug.Log("Spawn Dart At First");
-            string userDartPath = GameResources.dartPrefabFolderPath + "/" + User.dartName;
+            string userDartPath = GameResources.dartPrefabFolderPath + "/" + User.DartName;
             string opponentDartPath = GameResources.dartPrefabFolderPath + "/" + Opponent.dartName;
             userDart = Resources.Load<GameObject>(userDartPath);
             opponentDart = Resources.Load<GameObject>(opponentDartPath);
@@ -135,24 +146,33 @@ namespace ArenaZ.Manager
             playerTurn = false;
         }
 
+        public void LeaveRoom()
+        {
+            SocketManager.Instance.LeaveRoomRequest();
+        }
+
         private void onGameOver(string data)
         {
-            Debug.Log($"OnGameOver : {data}" + "  User Id: " + User.userId);
+            cameraController.SetCameraPosition(Player.Self);
+            genericTimer.StopTimer();
+            Debug.Log($"OnGameOver : {data}" + "  User Id: " + User.UserId);
             var gameOverData = DataConverter.DeserializeObject<ApiResponseFormat<GameOver>>(data);
-            if(gameOverData.Result.UserId == User.userId)
+            if(gameOverData.Result.UserId == User.UserId)
             {
-                onOpenWinloosePopUp(Page.PlayerWinPanel, User.userName, User.userRace);
+                onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace);
             }
             else 
             {
-                onOpenWinloosePopUp(Page.PlayerLoosePanel, User.userName, User.userRace);
+                onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace);
             }
+            if (currentDart != null)
+                StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
         }
 
         private void onOpenWinloosePopUp(Page popUpName,string userName,string userImage)
         {
             UIManager.Instance.ShowScreen(Page.UIPanel.ToString());
-            UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
+            //UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(popUpName.ToString(),Hide.previous);
             UIManager.Instance.ClearOpenPagesContainer();
             setUserName?.Invoke(userName);
@@ -161,11 +181,12 @@ namespace ArenaZ.Manager
 
         private void onNextTurn(string data)
         {
-            Debug.Log($"Next Turn : {data}"+"  User Id: "+User.userId );
+            Debug.Log($"Next Turn : {data}"+"  User Id: "+User.UserId );
             var nextTurnData = DataConverter.DeserializeObject<ApiResponseFormat<NextTurn>>(data);
             playerTurn = true;
-            if (nextTurnData.Result.UserId == User.userId)
+            if (nextTurnData.Result.UserId == User.UserId)
             {
+                cameraController.SetCameraPosition(Player.Self);
                 InstantiateDart(userDart);
                 PlayerType = Player.Self;
                 touchBehaviour.IsShooted = false;
@@ -173,12 +194,12 @@ namespace ArenaZ.Manager
             }
             else
             {
+                cameraController.SetCameraPosition(Player.Opponent);
                 InstantiateDart(opponentDart);
                 PlayerType = Player.Opponent;
                 touchBehaviour.IsShooted = true;
                 genericTimer.StartTimer(onOponnetTimerComplete);
             }
-            updateScoreBoardInEveryTurn(PlayerType);
         }
 
         private void onOponnetTimerComplete()
@@ -203,20 +224,18 @@ namespace ArenaZ.Manager
         {
             Debug.Log($"Dart Throw : {data}");
             var dartThrowData = DataConverter.DeserializeObject<ApiResponseFormat<DartThrow>>(data);
-            if(dartThrowData.Result.UserId != User.userId)
+            if(dartThrowData.Result.UserId != User.UserId)
             {
                 if (!dartThrowData.Result.DartPoint.Contains(ConstantStrings.turnCancelled))
                 {
                     Debug.Log("Opponent Hit Score: " + int.Parse(dartThrowData.Result.PlayerScore));
-                    UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), int.Parse(dartThrowData.Result.PlayerScore).ToString(), scorePopUpDuration);
                     if (int.Parse(dartThrowData.Result.PlayStatus) == 0)
                     {
-                        storeCalculatedgameScore(PlayerType.ToString(), int.Parse(dartThrowData.Result.PlayerScore));
-                        showScore(int.Parse(dartThrowData.Result.PlayerScore));
+                        storeCalculatedgameScore(PlayerType, int.Parse(dartThrowData.Result.PlayerScore));
                     }
                     Vector3 opponenDartHitPoint = getValue(dartThrowData.Result.DartPoint);
                     DartThrow(opponenDartHitPoint, ConstantInteger.shootingAngle);
-                    Debug.Log("Opponent Dart Hit point:  " + opponenDartHitPoint + " " + " IsBust " + dartThrowData.Result.PlayStatus + " Score " + opponentRemainingScore);
+                    //Debug.Log("Opponent Dart Hit point:  " + opponenDartHitPoint + " " + " IsBust " + dartThrowData.Result.PlayStatus + " Score " + opponentRemainingScore);
                 }
             }
         }
@@ -231,12 +250,8 @@ namespace ArenaZ.Manager
                 BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
                 int hitScore = boardBody.HitPointScore * boardBody.ScoreMultiplier;
                 Debug.Log("Player Hit Score:  " + hitScore);
-                UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), hitScore.ToString(), scorePopUpDuration);
-                if (hitScore < gameScore[PlayerType.ToString()])
-                {
-                    storeCalculatedgameScore(Player.Self.ToString(), hitScore);
-                    showScore(hitScore);
-                }
+                if (hitScore < selfGameScoreData.Score)
+                    storeCalculatedgameScore(Player.Self, hitScore);
                 SocketManager.Instance.ThrowDartData(hitScore, touchBehaviour.LastTouchPosition);
             }          
         }
@@ -249,25 +264,33 @@ namespace ArenaZ.Manager
             return newVector;
         }
 
-        private void storeCalculatedgameScore(string key, int hitValue)
+        private void storeCalculatedgameScore(Player a_PlayerType, int a_HitValue)
         {
-            gameScore[key] -= hitValue;
-            Debug.Log("Player : " + key + "Score: " + gameScore[key]);
+            if (a_PlayerType == Player.Self)
+            {
+                selfGameScoreData.Score -= a_HitValue;
+                selfScoreText.text = selfGameScoreData.Score.ToString();
+            }
+            else if (a_PlayerType == Player.Opponent)
+            {
+                opponentGameScoreData.Score -= a_HitValue;
+                opponentScoreText.text = opponentGameScoreData.Score.ToString();
+            }
+            showScore(a_HitValue);
+        }
+
+        public void ResetScore()
+        {
+            selfScoreText.text = ScoreData.requiredScore.ToString();
+            opponentScoreText.text = ScoreData.requiredScore.ToString();
+
+            selfGameScoreData.Score = ScoreData.requiredScore;
+            opponentGameScoreData.Score = ScoreData.requiredScore;
         }
 
         private void showScore(int score)
         {
-            int previousVal = int.Parse(txtMeshPro.text);
-            txtMeshPro.text = (previousVal - score).ToString();
-        }
-
-        private void updateScoreBoardInEveryTurn(Player playerType)
-        {
-            if (!gameScore.ContainsKey(playerType.ToString()))
-            {
-                gameScore.Add(playerType.ToString(), ConstantInteger.totalGameScore);
-            }
-            txtMeshPro.text = gameScore[playerType.ToString()].ToString();
+            UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), score.ToString(), scorePopUpDuration);
         }
 
         private void DartMove(Vector3 dartPosition)
@@ -295,20 +318,13 @@ namespace ArenaZ.Manager
             genericTimer.StopTimer();
             currentDart.TweenthroughPoints(hitPoint);
             Debug.Log("Throw Dart");
-
-            //if (!projectileMove)
-            //{
-            //    resetTimerRelatedValues();
-            //    genericTimer.StopTimer();
-            //    currentDart.TweenthroughPoints(hitPoint);
-            //    Debug.Log("Throw Dart");
-            //}
-            //else
-            //{
-            //    resetTimerRelatedValues();
-            //    genericTimer.StopTimer();
-            //    currentDart.MoveInProjectilePathWithPhysics(hitPoint, angle);
-            //}
         }
+    }
+
+    [System.Serializable]
+    public class GameSoreData
+    {
+        public GameManager.Player PlayerType;
+        public int Score;
     }
 }

@@ -61,7 +61,7 @@ namespace ArenaZ.Screens
         private void OnClickClose()
         {
             UIManager.Instance.ClearOpenPagesContainer();
-            UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
+            //UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.HideScreen(Page.PlayerLoosePanel.ToString());
             UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString(), Hide.none);
             UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(), Hide.none);

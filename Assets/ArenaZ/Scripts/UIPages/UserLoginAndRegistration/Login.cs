@@ -7,6 +7,8 @@ using RedApple.Utils;
 using ArenaZ.SettingsManagement;
 using ArenaZ.Screens;
 using ArenaZ.RegistrationUser;
+using DevCommons.Utility;
+using Newtonsoft.Json;
 
 namespace ArenaZ.LoginUser
 {
@@ -29,20 +31,21 @@ namespace ArenaZ.LoginUser
 
         RegularExpression regExp = new RegularExpression();
 
+        private string password;
+
         private void Awake()
         {
             Debug.Log("Awake Called");
             LoginHandler.userLogin += onClickUserLogin;
         }
 
-        private void Start()
+        private void OnEnable()
         {
             Settings.inputFieldclear += ClearLoginInputFieldData;
-            PlayerPrefs.GetInt(PlayerprefsValue.AutoLogin.ToString(), 0);
             GettingButtonReferences();
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             ReleaseButtonReferences();
         }
@@ -69,7 +72,7 @@ namespace ArenaZ.LoginUser
             logInIf_password.text = null;
         }
 
-        private void onClickUserLogin(string emailID,string password)
+        private void onClickUserLogin(string emailID, string password)
         {
             Debug.Log("Logging in");
             if (GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID) != null)
@@ -84,32 +87,29 @@ namespace ArenaZ.LoginUser
             }
             else
             {
+                this.password = password;
                 RestManager.LoginProfile(emailID, password, OnCompleteLogin, OnErrorLogin);
             }
         }
 
         private void OnCompleteLogin(UserLogin loggedinProfile)
         {
+            Debug.Log($"Login: {JsonConvert.SerializeObject(loggedinProfile)}");
             RestManager.AccessToken = loggedinProfile.AccessToken;
-            Debug.Log("OnLogin User Access Token:  " + loggedinProfile.AccessToken);
-            Debug.Log("Login Successful: " + loggedinProfile);
-            if (Application.platform == RuntimePlatform.Android && PlayerPrefs.GetInt(PlayerprefsValue.AutoLogin.ToString()) == 0)
-            {
-                Debug.Log("Saving UserName and Password");
-                UIManager.Instance.SaveDetails(PlayerprefsValue.LoginID.ToString(), logInIf_userEmail.text);
-                UIManager.Instance.SaveDetails(PlayerprefsValue.Password.ToString(), logInIf_password.text);
-            }
+
+            UserData userData = new UserData(loggedinProfile.Email, password, loggedinProfile.AccessToken);
+            FileHandler.SaveToFile<UserData>(userData, ConstantStrings.USER_SAVE_FILE_KEY);
+
             storeUserData(loggedinProfile);
-            AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName,AccountAccessType.Login);
+            AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName, AccountAccessType.Login);
             OnClickLoginPopUpClose();
         }
 
-
         private void storeUserData(UserLogin userLogin)
         {
-            User.userName = userLogin.UserName;
-            User.userId = userLogin.UserId;
-            User.userEmailId = userLogin.Email;
+            User.UserName = userLogin.UserName;
+            User.UserId = userLogin.UserId;
+            User.UserEmailId = userLogin.Email;
             User.UserAccessToken = userLogin.AccessToken;
         }
 

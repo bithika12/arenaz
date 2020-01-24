@@ -48,7 +48,7 @@ namespace ArenaZ.Screens
 
         #region UI_Functionalities
 
-        public void TasksAfterLogin(string userName,AccountAccessType type)
+        public void TasksAfterLogin(string userName, AccountAccessType type)
         { 
              StartCoroutine(DoTasksAfterLogin(userName,type));
         }
@@ -103,8 +103,6 @@ namespace ArenaZ.Screens
         #endregion
     }
 }
-
-
 
 #region Unused
 //Type userdataType = UserData.GetType();

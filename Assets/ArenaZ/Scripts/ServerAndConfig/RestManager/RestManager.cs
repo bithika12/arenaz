@@ -51,7 +51,6 @@ namespace RedApple
             .FormData(Attributes.NAME, name)
             .FormData(Attributes.PASSWORD, password);
 
-            addUserAuthHeader(ref webRqstBuilder);
             sendWebRequest(webRqstBuilder, onCompletionRegistration, restError);
         }
 
@@ -86,7 +85,6 @@ namespace RedApple
                 .ContentType(ContentTypes.FORM)
                 .FormData(isEmail ? Attributes.EMAIL_ID : Attributes.NAME, emailOrUserName);
 
-            addUserAuthHeader(ref webRqstbuilder);
             sendWebRequest(webRqstbuilder, OnCompleteForgotPassword, restError);
         }
         #endregion

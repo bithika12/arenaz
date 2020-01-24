@@ -4,7 +4,8 @@ public enum SocketEmitEvents
     addUser,
     gameRequest,
     colorRequest,
-    throwDart
+    throwDart,
+    leave,
 }
 
 public enum SocketListenEvents
