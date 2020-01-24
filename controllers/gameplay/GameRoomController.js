@@ -228,17 +228,38 @@ io.on('connection', function (socket) {
                 if (numClients > 0) {
                     if (i === 0 || numClients == 2) {
                         //req.numClients = numClients;
-                        clearTimeout(this.interval);
-                        callback(null, gameStartObj);
+                        //clearTimeout(this.interval);
+                        if(numClients==1 && i==0)
+                        {
+                            //update status room
+                            room.updateRoomAfterWait({roomName : reqobj.roomName}).then(responses=> {
+                                io.sockets.to(reqobj.roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "No opponent found"}));
+                                clearTimeout(this.interval);
+                                callback(null, gameStartObj);
+                            }).catch(err => {
+                                clearTimeout(this.interval);
+                                callback("playergone", null);
+                            });
+
+                        }
+                        else {
+                            clearTimeout(this.interval);
+                            callback(null, gameStartObj);
+                          }
                     } else {
-                        gameStartObj.i = i
-                        timer = setTimeout(gameStartTimmer, 1000, gameStartObj);
+                        if(i==0){
+                            io.sockets.to(reqobj.roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
+                        }
+                        else {
+                            gameStartObj.i = i
+                            timer = setTimeout(gameStartTimmer, 3000, gameStartObj);
+                        }
                     }
                 } else {
                     console.log("player left");
                     callback("playergone", null);
                }
-            }, 1000,reqobj);
+            }, 3000,reqobj);
         }
     }
     function waitingForUserOrg(reqobj) {
@@ -443,8 +464,8 @@ io.on('connection', function (socket) {
                  console.log("req user room"+allOnlineUsers[findIndex].roomName);
 
                  //if(allOnlineUsers.length==0)
-                 if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
-                //if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
+                 //if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
+                if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
                     io.sockets.to(req.socketId).emit('errorJoin',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
                     console.log("   connectedRoom   :"+findIndex+allOnlineUsers[findIndex].roomName,response.generate( constants.ERROR_STATUS,{},"User cannot join"))
                     callback();
@@ -515,7 +536,7 @@ io.on('connection', function (socket) {
                                                 }, "User enter in a room !"));
                                             } else
                                                 logger.print("***GAME START ERROR ", err);
-                                            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
+                                               io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
                                         });
                                     }
                                     if (joineeDetails.users.length === 2) {
@@ -543,7 +564,7 @@ io.on('connection', function (socket) {
                                     }
                                     // Otherwise, send an error message back to the player.
                                     else {
-                                        //io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
+                                       // io.sockets.to(roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
                                          callback();
                                     }
                                     /*}).catch(err=>{
