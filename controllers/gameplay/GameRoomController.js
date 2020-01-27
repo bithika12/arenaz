@@ -230,10 +230,12 @@ io.on('connection', function (socket) {
                         //clearTimeout(this.interval);
                         if(numClients==1 && i==0)
                         {
+                            gameStartObj.status=1;
                             //update status room
                             room.updateRoomAfterWait({roomName : reqobj.roomName}).then(responses=> {
                                 io.sockets.to(reqobj.roomName).emit('noUser', response.generate(constants.ERROR_STATUS, {message: "No opponent found"}));
                                 clearTimeout(this.interval);
+                                //callback(null, 1);
                                 callback(null, gameStartObj);
                             }).catch(err => {
                                 clearTimeout(this.interval);
@@ -530,13 +532,21 @@ io.on('connection', function (socket) {
                                             gameStart,
                                             //userStatusUpdateAfterGamerequest
                                         ], function (err, result) {
+                                            console.log("result print"+result.status);
                                             if (result) {
                                                 logger.print("***Done  ", result);
                                                 //io.sockets.to(roomName).emit('gameStart',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,users :joineeDetails.users },"Game start !"));
-                                                io.sockets.to(socket.id).emit('userJoin', response.generate(constants.SUCCESS_STATUS, {
-                                                    roomName: roomName,
-                                                    users: joineeDetails.users
-                                                }, "User enter in a room !"));
+                                                if (!result.status) {
+                                                    logger.print("wait status found");
+                                                    io.sockets.to(socket.id).emit('userJoin', response.generate(constants.SUCCESS_STATUS, {
+                                                        roomName: roomName,
+                                                        users: joineeDetails.users
+                                                    }, "User enter in a room !"));
+                                                }
+                                                else{
+                                                    logger.print("Room close while no opponent found after 3 sec");
+                                                }
+
                                             } else
                                                 logger.print("***GAME START ERROR ", err);
                                             io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
