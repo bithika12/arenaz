@@ -127,7 +127,8 @@ User.updateUserDetails =function(condObj,updateObj){
          User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
              let updatedCoin=responses.startCoin + updateObj.startCoin;
              let updatedCup=responses.cupNo + updateObj.cupNo;
-             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup} }).then(updatedResponses=> {
+             let total_no_win=responses.total_no_win+1;
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
                  return reject(updatedResponsesErr);
@@ -239,9 +240,9 @@ User.checkUserToken = function(condObj){
      });
  }
  //userStatusUpdate
- User.userStatusUpdate = function(condObj,userstatus){
+ User.userStatusUpdate = function(condObj){
      return  new Promise((resolve,reject) => {
-         User.updateOne({_id:condObj.userId},{ $set : {onlineStatus:userstatus} }).then(updatedResponses=> {
+         User.updateOne({_id:condObj.userId},{ $set : {onlineStatus:condObj.userStatus} }).then(updatedResponses=> {
              return resolve(updatedResponses);
          }).catch(updatedResponsesErr => {
              //console.log(updatedResponsesErr);
@@ -697,6 +698,17 @@ User.resetPassword = function(condObj,updateObj){
                  });
              }
          });
+     });
+ }
+ //online status update
+ User.updateUserOnlineStatus =function(condObj){
+     return  new Promise((resolve,reject) => {
+         User.updateOne({_id:condObj.userId},{ $set : {onlineStatus:1} }).then(updatedResponses=> {
+             return resolve(updatedResponses);
+         }).catch(updatedResponsesErr => {
+             return reject(updatedResponsesErr);
+         });
+
      });
  }
 module.exports= User;

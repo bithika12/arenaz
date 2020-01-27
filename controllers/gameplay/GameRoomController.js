@@ -224,8 +224,7 @@ io.on('connection', function (socket) {
             let timer = setTimeout(function gameStartTimmer(gameStartObj) {
                 var clientsInRoom = io.nsps['/'].adapter.rooms[gameStartObj.roomName];
                 var numClients = clientsInRoom === undefined ? 0 : Object.keys(clientsInRoom.sockets).length;
-                i--;
-                if (numClients > 0) {
+                i--;if (numClients > 0) {
                     if (i === 0 || numClients == 2) {
                         //req.numClients = numClients;
                         //clearTimeout(this.interval);
@@ -252,14 +251,14 @@ io.on('connection', function (socket) {
                         }
                         else {
                             gameStartObj.i = i
-                            timer = setTimeout(gameStartTimmer, 30000, gameStartObj);
+                            timer = setTimeout(gameStartTimmer, 3000, gameStartObj);
                         }
                     }
                 } else {
                     console.log("player left");
                     callback("playergone", null);
                }
-            }, 30000,reqobj);
+            }, 3000,reqobj);
         }
     }
     function waitingForUserOrg(reqobj) {
@@ -478,6 +477,10 @@ io.on('connection', function (socket) {
                     //if(findIndex != -1 ){
                     let userSocketId = allOnlineUsers[findIndex].socketId;
                     if (io.sockets.sockets[userSocketId] != undefined) {
+                        //update user online status
+                        user.updateUserOnlineStatus({
+                            userId: req.userId
+                        }).then(function (statusResult) {
                         //find user already in room
                         room.createRoom({
                             userId: req.userId,
@@ -485,7 +488,7 @@ io.on('connection', function (socket) {
                             colorName: req.colorName,
                             raceName: req.raceName,
                             dartName: req.dartname,
-                            roomCoin:req.roomCoin
+                            roomCoin: req.roomCoin
                         }).then(function (result) {
                             let roomName = result.roomName;
                             userObj = {
@@ -499,16 +502,16 @@ io.on('connection', function (socket) {
                                 userName: req.userName,
                                 colorName: req.colorName,
                                 raceName: req.raceName,
-                                dartName:req.dartname,
+                                dartName: req.dartname,
                                 total_no_win: 0,
                                 cupNumber: 0,
-                                roomCoin:req.roomCoin
+                                roomCoin: req.roomCoin
 
                             };
                             inmRoom.roomJoineeCreation({
                                 roomId: result._id,
                                 roomName: result.roomName,
-                                roomCoin:req.roomCoin
+                                roomCoin: req.roomCoin
                             }, {userObj: userObj}).then((joineeDetails) => {
                                 io.to(roomName).emit('enterUser', response.generate(constants.SUCCESS_STATUS, {user: userObj}, "Player enter to the room"));
                                 io.of('/').connected[userSocketId].join(roomName, function () {
@@ -536,7 +539,7 @@ io.on('connection', function (socket) {
                                                 }, "User enter in a room !"));
                                             } else
                                                 logger.print("***GAME START ERROR ", err);
-                                               io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
+                                            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
                                         });
                                     }
                                     if (joineeDetails.users.length === 2) {
@@ -564,8 +567,8 @@ io.on('connection', function (socket) {
                                     }
                                     // Otherwise, send an error message back to the player.
                                     else {
-                                       // io.sockets.to(roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
-                                         callback();
+                                        // io.sockets.to(roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
+                                        callback();
                                     }
                                     /*}).catch(err=>{
                                             io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{message:err}));
@@ -585,6 +588,14 @@ io.on('connection', function (socket) {
                             io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to create room"}));
                             callback();
                         })
+
+                     }).catch(userStatusUpdateErr => {
+                            logger.print("unable to update user online status");
+                            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to update online status"}));
+                            callback();
+                        })
+
+
                     } else {
                         io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "No socket Id found"}));
                         callback();
@@ -697,7 +708,7 @@ io.on('connection', function (socket) {
     //user status update
     function userStatusUpdate(req, callback){
 
-        user.userStatusUpdate(req.userId,0).then(function(statusUpdate){
+        user.userStatusUpdate({userId:req.userId,userStatus:0}).then(function(statusUpdate){
             callback(null, req)
         }).catch(err => {
             callback("", null);
@@ -925,8 +936,9 @@ io.on('connection', function (socket) {
                 async.waterfall([
                     playerLeave({roomName: userRoomName, userId: allOnlineUsers[findIndex].userId}),
                     updateRoom,
-                    RoomUpdate
-                    //userStatusUpdate
+                    RoomUpdate,
+                    //new add
+                    userStatusUpdate
                     // totalPlayerList,
                     // roomClosed,
                     // memoryRoomRemove
