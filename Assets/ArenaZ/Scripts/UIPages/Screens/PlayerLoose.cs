@@ -39,13 +39,13 @@ namespace ArenaZ.Screens
         private void GettingButtonReferences()
         {
             closeButton.onClick.AddListener(OnClickClose);
-            playAgainButton.onClick.AddListener(onClickPlayAgain);
+            playAgainButton.onClick.AddListener(OnClickClose);
         }
 
         private void ReleaseButtonReferences()
         {
             closeButton.onClick.RemoveListener(OnClickClose);
-            playAgainButton.onClick.RemoveListener(onClickPlayAgain);
+            playAgainButton.onClick.RemoveListener(OnClickClose);
         }
 
         public void SetUserProfileImage(string imageName)
@@ -71,6 +71,5 @@ namespace ArenaZ.Screens
         {
             SocketManager.Instance.GameRequest();
         }
-
     }
 }

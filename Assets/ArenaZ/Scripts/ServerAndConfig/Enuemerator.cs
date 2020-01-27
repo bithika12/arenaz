@@ -6,6 +6,7 @@ public enum SocketEmitEvents
     colorRequest,
     throwDart,
     leave,
+    gameRequestCancel,
 }
 
 public enum SocketListenEvents
@@ -16,5 +17,6 @@ public enum SocketListenEvents
     gameStart,
     nextTurn,
     gameThrow,
-    gameOver
+    gameOver,
+    noUser,
 }

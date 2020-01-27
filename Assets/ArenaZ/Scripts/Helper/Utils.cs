@@ -32,6 +32,7 @@ public enum Page
     OpponentHitScore,
     HitScore,
     GameLoadingPanel,
+    PopupPanel,
 }
 
 public enum Race
@@ -86,7 +87,9 @@ public enum PlayerprefsValue
     LoginID,
     Password,
     Logout,
-    CharacterName
+    CharacterName,
+    SelectedColor,
+    SelectedCharacter,
 }
 
 public enum Hide

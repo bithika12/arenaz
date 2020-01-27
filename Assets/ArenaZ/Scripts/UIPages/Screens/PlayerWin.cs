@@ -39,13 +39,13 @@ namespace ArenaZ.Screens
         private void GettingButtonReferences()
         {
             closeButton.onClick.AddListener(onClickClose);
-            playAgainButton.onClick.AddListener(onClickPlayAgain);
+            playAgainButton.onClick.AddListener(onClickClose);
         }
 
         private void ReleaseButtonReferences()
         {
             closeButton.onClick.RemoveListener(onClickClose);
-            playAgainButton.onClick.RemoveListener(onClickPlayAgain);
+            playAgainButton.onClick.RemoveListener(onClickClose);
         }
 
         public void SetUserProfileImage(string imageName)
@@ -60,6 +60,7 @@ namespace ArenaZ.Screens
 
         private void onClickClose()
         {
+            UIManager.Instance.ClearOpenPagesContainer();
             //UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.HideScreen(Page.PlayerWinPanel.ToString());
             UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString(), Hide.none);
@@ -70,6 +71,5 @@ namespace ArenaZ.Screens
         {
             SocketManager.Instance.GameRequest();
         }
-
     }
 }

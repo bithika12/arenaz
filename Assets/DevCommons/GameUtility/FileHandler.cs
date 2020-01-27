@@ -76,11 +76,11 @@ namespace DevCommons
             }
 
             // Reads a string from key in player prefs
-            public static string ReadFromPlayerPrefs(string key)
+            public static string ReadFromPlayerPrefs(string key, string defaultValue)
             {
                 string value = string.Empty;
                 if (PlayerPrefs.HasKey(key))
-                    value = PlayerPrefs.GetString(key);
+                    value = PlayerPrefs.GetString(key, defaultValue);
                 return value;
             }
 

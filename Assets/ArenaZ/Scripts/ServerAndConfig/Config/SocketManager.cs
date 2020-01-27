@@ -53,9 +53,22 @@ namespace RedApple
             socket.EmitJson(SocketEmitEvents.gameRequest.ToString(), gameReqJsonData);
         }
 
-        public void LeaveRoomRequest()
+        public void GameRequestCancel()
         {
             Debug.Log("RoomName: " + User.RoomName);
+            LeaveRoomRequest leaveRoomRequest = new LeaveRoomRequest
+            {
+                AccessToken = User.UserAccessToken,
+                RoomName = User.RoomName,
+            };
+            string leaveRoomReqJsonData = DataConverter.SerializeObject(leaveRoomRequest);
+            Debug.Log("Game Request Cancel: " + leaveRoomReqJsonData);
+            socket.EmitJson(SocketEmitEvents.gameRequestCancel.ToString(), leaveRoomReqJsonData);
+        }
+
+        public void LeaveRoomRequest()
+        {
+            Debug.Log("Leave RoomName: " + User.RoomName);
             LeaveRoomRequest leaveRoomRequest = new LeaveRoomRequest
             {
                 AccessToken = User.UserAccessToken,

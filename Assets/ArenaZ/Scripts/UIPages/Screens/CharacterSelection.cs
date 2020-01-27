@@ -7,6 +7,7 @@ using ArenaZ.LevelMangement;
 using RedApple;
 using System;
 using System.Text.RegularExpressions;
+using DevCommons.Utility;
 
 namespace ArenaZ.Screens
 {
@@ -30,14 +31,31 @@ namespace ArenaZ.Screens
         //Public Fields
         public static Action<string> setDart;
 
+        public CharacterData SelfCharacterData { get; set; }
+
         private void Start()
         {           
             GettingButtonReferences();
             ShowFirstText();
-            SetColorOnCharacter(UIManager.Instance.StartColorName);
+
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(PageChecker);
             UIManager.Instance.setUserName += SetUserName;
             PlayerColorChooser.setColorAfterChooseColor += SetColorOnCharacter;
+
+            Invoke("LateStart", 1.5f);
+        }
+
+        private void LateStart()
+        {
+            string colorName = FileHandler.ReadFromPlayerPrefs(PlayerprefsValue.SelectedColor.ToString(), UIManager.Instance.StartColorName);
+            Debug.Log("--------------ColorName: " + colorName);
+            SetColorOnCharacter(colorName);
+
+            string characterIdStr = FileHandler.ReadFromPlayerPrefs(PlayerprefsValue.SelectedCharacter.ToString(), "0");
+            int characterId = int.Parse(characterIdStr);
+            Debug.Log("--------------CharacterId: " + characterId);
+            UIManager.Instance.ShowCharacterName(raceNames[characterId]);
+            horizontalScrollSnap.GoToScreen(characterId);
         }
 
         private void OnDestroy()
@@ -63,6 +81,7 @@ namespace ArenaZ.Screens
         public void SetColorOnCharacter(string colorName)
         {
             User.UserColor = colorName;
+            FileHandler.SaveToPlayerPrefs(PlayerprefsValue.SelectedColor.ToString(), colorName);
             GameObject[] characters = horizontalScrollSnap.ChildObjects;
             for (int i = 0; i < characters.Length; i++)
             {
@@ -115,7 +134,8 @@ namespace ArenaZ.Screens
             enterArenaMode();
             User.DartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
             User.UserRace = raceNames[horizontalScrollSnap._currentPage];
-            Debug.Log("DartName:  " + User.DartName);
+            FileHandler.SaveToPlayerPrefs(PlayerprefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
+            Debug.Log("DartName: " + User.DartName + ", UserRace: " + User.UserRace);
             setDart?.Invoke(User.DartName);
             UIManager.Instance.showProfilePic?.Invoke(raceNames[horizontalScrollSnap._currentPage]);
             LevelSelection.Instance.OnSelectionGameplayType(type);
@@ -142,4 +162,20 @@ namespace ArenaZ.Screens
         }
         #endregion
     }
+}
+
+public class CharacterData
+{
+    public CharacterData()
+    {
+    }
+
+    public CharacterData(int a_CharacterId, string a_ColorName)
+    {
+        CharacterId = a_CharacterId;
+        ColorName = a_ColorName;
+    }
+
+    public int CharacterId { get; set; }
+    public string ColorName { get; set; }
 }

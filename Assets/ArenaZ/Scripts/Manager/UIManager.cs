@@ -22,7 +22,7 @@ namespace ArenaZ.Manager
         private Stack<string> _openPages = new Stack<string>();
         private Stack<string> _closedPages = new Stack<string>();
         private string characterName = string.Empty;
-        private string startColorName = ButtonType.DarkGreen.ToString();
+        private string startColorName = ButtonType.DarkBlue.ToString();
         public string StartColorName { get { return startColorName; } private set { } }
 
         [Header("SpriteAtlas")][Space(5)]

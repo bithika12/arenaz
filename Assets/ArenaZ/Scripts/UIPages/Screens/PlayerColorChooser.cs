@@ -66,6 +66,7 @@ namespace ArenaZ.Screens
             string colorName = myButton.GetComponent<ButtonImageChanger>().GetButtonType;
             setColorAfterChooseColor?.Invoke(colorName);
             Debug.Log("Clicked Color Name: " + colorName);
+            UIManager.Instance.ToggleScreenWithAnim(Page.PlayerColorChooser.ToString());
         }
     }
 }

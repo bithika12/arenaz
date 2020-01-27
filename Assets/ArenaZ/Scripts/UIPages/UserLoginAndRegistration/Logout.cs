@@ -53,6 +53,7 @@ namespace Arenaz.LogoutUser
         private void OnErrorLogout(RestUtil.RestCallError obj)
         {
             Debug.Log(obj.Description);
+            OnClickLogOutAlertClose();
         }
 
         private void OnClickLogOutAlertClose()

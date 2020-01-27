@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using ArenaZ.GameMode;
 using System.Collections;
+using ArenaZ.Screens;
 
 namespace ArenaZ.Manager
 {
@@ -34,6 +35,7 @@ namespace ArenaZ.Manager
         [SerializeField] private Text opponentName;
 
         [SerializeField] private CameraController cameraController;
+        [SerializeField] private UiPopup popup;
 
         private bool playerTurn = false;
         private GameObject userDart;
@@ -148,6 +150,16 @@ namespace ArenaZ.Manager
 
         public void LeaveRoom()
         {
+            if (popup != null)
+            {
+                popup.Show("ALERT", "ARE YOU SURE?", OnLeaveRoom,
+                delegate { Debug.Log("Keep Playing."); });
+            }
+        }
+
+        private void OnLeaveRoom()
+        {
+            Debug.Log("---------------Leaving Room---------------");
             SocketManager.Instance.LeaveRoomRequest();
 
             cameraController.SetCameraPosition(Player.Self);
