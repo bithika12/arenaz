@@ -633,6 +633,72 @@ User.resetPassword = function(condObj,updateObj){
          //})
      })
  }
+ //fetch color with email
+
+ User.colorRequestProfile  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({email :condObj.userEmail },
+             {_id: 1, userName:1, email:1, status:1, colorName: {$elemMatch: {colorName: updateObj.colorName,status:1 } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.colorName.length > 0){
+                 return resolve(userDetails);
+             }else{
+                 var  colors = [{colorName : updateObj.colorName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({email :condObj.userEmail},{$set :{ "colorName":colors}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
+
+
+
+ User.nameRequestProfile  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({email :condObj.userEmail },
+             {_id: 1, userName:1, email:1, status:1, dartName: {$elemMatch: {dartName: updateObj.dartName,status:1 } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.dartName.length > 0){
+
+                 return resolve(userDetails);
+             }else{
+
+                 var  colors = [{dartName : updateObj.dartName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({email :condObj.userEmail},{$set :{ "dartName":colors}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
+ User.sageRequestProfile  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({email :condObj.userEmail },
+             {_id: 1, userName:1, email:1, status:1, raceName: {$elemMatch: {raceName: updateObj.raceName,status:1 } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.raceName.length > 0){
+
+                 return resolve(userDetails);
+             }else{
+
+                 var  colors = [{raceName : updateObj.raceName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({email :condObj.userEmail},{$set :{ "raceName":colors}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
 module.exports= User;
 
 

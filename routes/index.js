@@ -41,6 +41,8 @@ router.post('/forgot/password',forgotPassword.forgotPassword);
 
 router.post('/game/history',fetchGameHistory.fetchGame);
 
+router.post('/add/details',profileController.colorReg);
+
 router.post('/fetch/notifications',fetchNotification.fetchGame);
 
 

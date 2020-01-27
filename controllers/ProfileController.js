@@ -1,5 +1,6 @@
  /**  Import Package**/
 var async = require('async');
+ const appRoot = require('app-root-path');
  var mongoose = require('mongoose');
  /** Required all module**/
  var constants = require("../config/constants");
@@ -7,12 +8,12 @@ var async = require('async');
  var User  = require('../models/User');
 
  const Joi = require('joi');
-
+ let user = require(appRoot + '/models/User');
 
 /* UTILS PACKAGE*/
 const validateInput = require('../utils/ParamsValidation');
 const response     = require('../utils/ResponseManeger');
- const appRoot = require('app-root-path');
+
  const { fetchHistoryAdmin,userValidChkAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName} = require(appRoot +'/models/FetchHistory');
 /** Route function **/
 
@@ -209,8 +210,45 @@ exports.updatePassword = function (req,res){
 
 }
 
+//colorChange api
+
+ exports.colorReg = function (req,res){
+     let schema = Joi.object().keys({
+         userEmail: Joi.string().required(),
+         colorName: Joi.string().required(),
+         raceName:  Joi.string().required(),
+         dartName:  Joi.string().required()
+   });
+
+     const {body} = req;
+     let result = Joi.validate(body, schema);
+     const {value, error} = result;
+     const valid = error == null;
+     if (!valid) {
+         let data = { status: constants.VALIDATION_ERROR, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
+         return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+     }
+     else{
+           user.colorRequestProfile({userEmail: req.body.userEmail}, {"colorName": req.body.colorName})
+             .then(colorUpdate => {
+                 return user.sageRequestProfile({userEmail: req.body.userEmail}, {"raceName": req.body.raceName}
+                 );
+             })
+             .then(raceUpdate => {
+                 return user.nameRequestProfile({userEmail: req.body.userEmail}, {"dartName": req.body.dartName}
+                 );
+             })
+             .then(resp => {
+                 res.send(response.generate(constants.SUCCESS_STATUS,{}, 'User details updated successfully !!'));
+              })
+             .catch(err => {
+                 console.log(err);
+                 res.send(response.error(constants.ERROR_STATUS,err,"Unable to update user details!!"));
+             });
+     }
 
 
+ }
 
 
 

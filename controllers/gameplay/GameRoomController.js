@@ -252,14 +252,14 @@ io.on('connection', function (socket) {
                         }
                         else {
                             gameStartObj.i = i
-                            timer = setTimeout(gameStartTimmer, 3000, gameStartObj);
+                            timer = setTimeout(gameStartTimmer, 30000, gameStartObj);
                         }
                     }
                 } else {
                     console.log("player left");
                     callback("playergone", null);
                }
-            }, 3000,reqobj);
+            }, 30000,reqobj);
         }
     }
     function waitingForUserOrg(reqobj) {
@@ -1127,6 +1127,28 @@ io.on('connection', function (socket) {
 
         }
     })
+
+
+    /**
+     * @desc This function is used for color request coin cancel
+     * @param {String} accesstoken
+     * @param {String} coinNumber
+     */
+
+    socket.on('coinCancel', function (req) {
+        return new Promise((resolve, reject) => {
+        room.updateRoomAfterWait({roomName: req.roomName}).then(responses => {
+            logger.print("Coin canceled");
+            io.sockets.to(socket.id).emit('CANCELED', response.generate(constants.ERROR_STATUS, {message: "Coin is canceled"}));
+        }).catch(err => {
+            logger.print("error while cancel coin");
+            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+
+        });
+
+     })
+
+    });
 
 
 });
