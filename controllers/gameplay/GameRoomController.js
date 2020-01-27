@@ -233,7 +233,7 @@ io.on('connection', function (socket) {
                         {
                             //update status room
                             room.updateRoomAfterWait({roomName : reqobj.roomName}).then(responses=> {
-                                io.sockets.to(reqobj.roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "No opponent found"}));
+                                io.sockets.to(reqobj.roomName).emit('noUser', response.generate(constants.ERROR_STATUS, {message: "No opponent found"}));
                                 clearTimeout(this.interval);
                                 callback(null, gameStartObj);
                             }).catch(err => {
@@ -248,7 +248,7 @@ io.on('connection', function (socket) {
                           }
                     } else {
                         if(i==0){
-                            io.sockets.to(reqobj.roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
+                            io.sockets.to(reqobj.roomName).emit('noUser', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
                         }
                         else {
                             gameStartObj.i = i
@@ -1135,7 +1135,7 @@ io.on('connection', function (socket) {
      * @param {String} coinNumber
      */
 
-    socket.on('coinCancel', function (req) {
+    socket.on('gameRequestCancel', function (req) {
         return new Promise((resolve, reject) => {
         room.updateRoomAfterWait({roomName: req.roomName}).then(responses => {
             logger.print("Coin canceled");
