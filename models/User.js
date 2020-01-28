@@ -749,7 +749,7 @@ User.resetPassword = function(condObj,updateObj){
                      colorName: responses.colorName[0]['colorName'],
                      raceName: responses.raceName[0]['raceName'],
                      dartName: responses.dartName[0]['dartName'],
-                     characterName: responses.characterName[0]['characterName']
+                     characterId: responses.characterName[0]['characterName']
 
 
                  });
