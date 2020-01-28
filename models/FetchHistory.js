@@ -351,4 +351,16 @@ const updateCoinAdmin =(condObj,updateObj) =>{
 
     });
 }
-module.exports = { updateCoinAdmin,updateRoomAdmin,addCoin,fetchHistory,userValidChk,userValidChkAdmin,fetchHistoryAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin };
+//fetch active users
+//fetchActiveUsers
+const fetchUserList =(condObj) =>{
+    return  new Promise((resolve,reject) => {
+        User.find({ onlineStatus: 1},{_id: 1,userName:1,email:1,firstName:1,lastName:1}).then(roledetails=> {
+            return resolve(roledetails);
+        }).catch(err => {
+            return reject(err);
+        });
+
+    });
+}
+module.exports = { fetchUserList,updateCoinAdmin,updateRoomAdmin,addCoin,fetchHistory,userValidChk,userValidChkAdmin,fetchHistoryAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin };

@@ -14,7 +14,7 @@ const Joi = require('joi');
 var User  = require('../models/User');
 var Role  = require('../models/Role');
 const appRoot = require('app-root-path');
-const { updateRoomAdmin,fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin} = require(appRoot +'/models/FetchHistory');
+const { fetchUserList,updateRoomAdmin,fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
 // Role.createUser().then((details)=>{
 
@@ -356,6 +356,26 @@ exports.disableRoom= function(req,res) {
         })
         .then(resp=>{
             res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Coin number modified ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+}
+//fetch online users
+
+ exports.fetchActiveUser= function(req,res) {
+
+    if(!req.body.userEmail){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            return fetchUserList(req.body.userEmail);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            console.log(resp);
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,result:resp,message:"Active user fetched ."})
         })
         .catch(err=>{
             res.status(constants.API_ERROR).send(err);

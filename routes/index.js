@@ -68,7 +68,9 @@ router.post('/fetch/notifications',fetchNotification.fetchGame);
   router.post('/admin/delete-user',authetication.authChecker,profileController.disableProfile);
 
   router.post('/admin/edit-user',authetication.authChecker,profileController.modifyProfile);
-
+  //fetch active user
+   //fetchActiveUser
+  router.post('/admin/active-user'/*,authetication.authChecker*/,adminController.fetchActiveUser);
   //admin/get-role
   router.post('/admin/get-role'/*authetication.authChecker*/,adminController.getRole);
 
