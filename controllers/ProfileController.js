@@ -222,6 +222,7 @@ exports.updatePassword = function (req,res){
    });
 
      const {body} = req;
+     console.log(req.body);
      let result = Joi.validate(body, schema);
      const {value, error} = result;
      const valid = error == null;
