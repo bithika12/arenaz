@@ -35,6 +35,7 @@ var userSchema =  new Schema({
                         colorName        :  [{ colorName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         raceName         :  [{ raceName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         dartName         :  [{ dartName: String, status: Number,createdAt : Date, updatedAt:Date}],
+                        characterName      :  [{ characterName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
                         loginType        :  {  type : String ,enum :["normal","social"],default :'normal'},
                         status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},

@@ -656,7 +656,29 @@ User.resetPassword = function(condObj,updateObj){
      });
  }
 
+//dartRequestProfile
 
+ User.characterRequestProfile  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({email :condObj.userEmail },
+             {_id: 1, userName:1, email:1, status:1, characterName: {$elemMatch: {characterName: updateObj.characterName,status:1 } } }).then(userDetails=> {
+
+             if(userDetails && userDetails.characterName.length > 0){
+
+                 return resolve(userDetails);
+             }else{
+
+                 var  colors = [{characterName : updateObj.characterName,status:1,createdAt : currentDay,updatedAt : currentDay}];
+                 User.updateOne({email :condObj.userEmail},{$set :{ "characterName":colors}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
 
  User.nameRequestProfile  = function(condObj,updateObj){
      return  new Promise((resolve,reject) => {
@@ -709,6 +731,39 @@ User.resetPassword = function(condObj,updateObj){
              return reject(updatedResponsesErr);
          });
 
+     });
+ }
+
+ User.checkColorMod = function(condObj){
+     return  new Promise((resolve,reject) => {
+         User.findOne({email:condObj.email},
+             {/*_id: 1,name:1,email:1,status:1,userName:1,*/
+                 colorName:{$elemMatch: {status: 1}},
+                 raceName:{$elemMatch: {status: 1}},
+                 dartName:{$elemMatch: {status: 1}},
+                 characterName:{$elemMatch: {status: 1}},
+             })
+             .then(responses=> {
+                 let totalArr=[];
+                 totalArr.push({
+                     colorName: responses.colorName[0]['colorName'],
+                     raceName: responses.raceName[0]['raceName'],
+                     dartName: responses.dartName[0]['dartName'],
+                     characterName: responses.characterName[0]['characterName']
+
+
+                 });
+                 /*responses.map(function(entry) {
+                     totalArr.push({
+                         colorName: entry.colorName[0]['colorName']
+
+
+                     });
+                 });*/
+                 return resolve(totalArr);
+             }).catch(err => {
+             return reject(err);
+         });
      });
  }
 module.exports= User;

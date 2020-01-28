@@ -217,7 +217,8 @@ exports.updatePassword = function (req,res){
          userEmail: Joi.string().required(),
          colorName: Joi.string().required(),
          raceName:  Joi.string().required(),
-         dartName:  Joi.string().required()
+         dartName:  Joi.string().required(),
+         characterId:  Joi.string().required(),
    });
 
      const {body} = req;
@@ -238,6 +239,10 @@ exports.updatePassword = function (req,res){
                  return user.nameRequestProfile({userEmail: req.body.userEmail}, {"dartName": req.body.dartName}
                  );
              })
+               .then(nameUpdate => {
+                   return user.characterRequestProfile({userEmail: req.body.userEmail}, {"characterName": req.body.characterId}
+                   );
+               })
              .then(resp => {
                  res.send(response.generate(constants.SUCCESS_STATUS,{}, 'User details updated successfully !!'));
               })
@@ -249,6 +254,43 @@ exports.updatePassword = function (req,res){
 
 
  }
+
+ //GET COLOR
+   //getColorReg
+ exports.getColorReg = function (req,res) {
+
+     let schema = Joi.object().keys({
+         userEmail: Joi.string().required()
+     });
+
+     const {body} = req;
+     let result = Joi.validate(body, schema);
+     const {value, error} = result;
+     const valid = error == null;
+     if (!valid) {
+         let data = {
+             status: constants.VALIDATION_ERROR,
+             result: result.error.name,
+             message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+         };
+         return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+     }
+     else {
+     User.checkColorMod({email: req.body.userEmail}).then((userDetails) => {
+         if (userDetails) {
+             //res.send(userDetails);
+             res.send(response.generate(constants.SUCCESS_STATUS,userDetails, 'User details updated successfully !!'));
+         }
+         else {
+             res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch user details!!"));
+         }
+     })
+
+   }
+
+
+ }
+
 
 
 
