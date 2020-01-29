@@ -280,7 +280,7 @@ exports.updatePassword = function (req,res){
      User.checkColorMod({email: req.body.userEmail}).then((userDetails) => {
          if (userDetails) {
              //res.send(userDetails);
-             res.send(response.generate(constants.SUCCESS_STATUS,userDetails, 'User details updated successfully !!'));
+             res.send(response.generate(constants.SUCCESS_STATUS,userDetails, 'User details fetched successfully !!'));
          }
          else {
              res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch user details!!"));

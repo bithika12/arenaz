@@ -745,14 +745,20 @@ User.resetPassword = function(condObj,updateObj){
              })
              .then(responses=> {
                  let totalArr=[];
-                 totalArr.push({
+                 let resObj={
+                     colorName: responses.colorName[0]['colorName'],
+                     raceName: responses.raceName[0]['raceName'],
+                     dartName: responses.dartName[0]['dartName'],
+                     characterId: responses.characterName[0]['characterName']
+                 };
+                 /*totalArr.push({
                      colorName: responses.colorName[0]['colorName'],
                      raceName: responses.raceName[0]['raceName'],
                      dartName: responses.dartName[0]['dartName'],
                      characterId: responses.characterName[0]['characterName']
 
 
-                 });
+                 });*/
                  /*responses.map(function(entry) {
                      totalArr.push({
                          colorName: entry.colorName[0]['colorName']
@@ -760,7 +766,7 @@ User.resetPassword = function(condObj,updateObj){
 
                      });
                  });*/
-                 return resolve(totalArr);
+                 return resolve(resObj);
              }).catch(err => {
              return reject(err);
          });
