@@ -495,8 +495,10 @@ io.on('connection', function (socket) {
                             let roomName = result.roomName;
                             userObj = {
                                 userId: req.userId,
-                                score: 333,
-                                total: 333,
+                                //score: 333,
+                                //total: 333,
+                                score: 199,
+                                total: 199,
                                 status: "active",
                                 isWin: 0,
                                 turn: 0,
