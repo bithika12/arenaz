@@ -549,8 +549,9 @@ User.resetPassword = function(condObj,updateObj){
              let incrementDetails ={ total_no_win : updateObj.total_no_win}
           User.findOne({_id :condObj._id },
              {_id: 1, userName:1, email:1, status:1,total_no_win:1, dartName: {$elemMatch: {dartName: updateObj.dartName,status:1 } } }).then(userDetails=> {
-              let total_win=userDetails.total_no_win+1;
+              let total_win=parseInt(userDetails.total_no_win)+1;
               let incrementDetails ={ total_no_win : total_win}
+              console.log("totalwin"+ incrementDetails);
              User.updateOne({_id: condObj._id}, {$inc: incrementDetails}).then(responses => {
                  return resolve(responses);
              }).catch(err => {
