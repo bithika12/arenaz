@@ -1045,6 +1045,7 @@ io.on('connection', function (socket) {
 
 
     socket.on('leave', function (req) {
+        console.log("leave called");
         if (req.userId && req.roomName) {
             let currentSocketId = socket.id;
 
@@ -1063,7 +1064,7 @@ io.on('connection', function (socket) {
             });*/
             //if (io.sockets.sockets[currentSocketId] != undefined)
                // io.sockets.sockets[currentSocketId].leave(req.roomName);
-            io.to(req.roomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: req.userId}, "Player leave from room"));
+            //io.to(req.roomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: req.userId}, "Player leave from room"));
             //if (allOnlineUsers[findIndexOpponent]){
             if (findIndex != -1) {
             async.waterfall([
