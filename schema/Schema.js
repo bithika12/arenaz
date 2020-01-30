@@ -39,7 +39,7 @@ var userSchema =  new Schema({
                         onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
                         loginType        :  {  type : String ,enum :["normal","social"],default :'normal'},
                         status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
-                        total_no_win     :  Number,
+                        total_no_win     :  { type : Number , default  : 0},
                         isPlaying        :  {  type : String , enum: ['yes','no'] , default : 'no'},
                         socialLogin      :  [{ loginBy : String , uniqueLoginId : String }],
                         resetOtp         :  [{ otp : String     , token :String, status: {type:String , enum: ['active','inactive'] , default : 'inactive'},createdAt : Date,updatedAt:Date}],    
