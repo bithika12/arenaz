@@ -43,6 +43,11 @@ const childrenRoutes: VexRoutes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/game/game.module').then(m => m.DartModule),
   },
+  {
+    path: 'online',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/online/online.module').then(m => m.OnlineModule),
+  },
 ];
 const routes: Routes = [
   {

@@ -647,12 +647,15 @@ room.userLeaveNew = function (condObj, updateObj) {
                 const diff = currentTime - result.gametime;
                 const gameSeconds = Math.floor(diff / 1000 % 60);
                 let cupNumberOppo;
+                let opponentCoin;
+                let userCoin;
 
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
 
                 let findIndexOppoUserId=userArr[findIndexOppo].userId;
+
 
                 if(findIndexOppo !=-1){
                     userArr[findIndexOppo].isWin = 1;
@@ -664,6 +667,9 @@ room.userLeaveNew = function (condObj, updateObj) {
                     cupNumberOppo = Math.round(((userArr[findIndexOppo].total / 333) * 100), 0);
                     cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
                     userArr[findIndex].cupNumber = cupNumberOppo;
+
+                    ///////coin set///////
+                    opponentCoin=userArr[findIndexOppo].roomCoin;
                 }
                 userArr[findIndex].status = "leave";
                 calculatedScore= userArr[findIndex].total;
@@ -673,7 +679,7 @@ room.userLeaveNew = function (condObj, updateObj) {
                 //isWin=userArr[findIndex].isWin;
                 playerScore=userArr[findIndex].score;
                 cupNumber=userArr[findIndex].cupNumber;
-
+                userCoin=userArr[findIndex].roomCoin;
                 //userArr[findIndexOppo].isWin = 1;
                 resolve({
                     roomName: condObj.roomName,
@@ -687,7 +693,10 @@ room.userLeaveNew = function (condObj, updateObj) {
                     playerScore: playerScore,
                     cupNumber: cupNumber,
                     gameTotalTime:gameSeconds,
-                    opponentUserId:findIndexOppoUserId
+                    opponentUserId:findIndexOppoUserId,
+                    opponentCup:cupNumberOppo,
+                    opponentCoin:opponentCoin,
+                    userCoin:userCoin
                 });
 
             });

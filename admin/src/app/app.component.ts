@@ -88,6 +88,12 @@ export class AppComponent {
         label: 'Game Module',
         route: '/game',
         icon: icAssigment
+      },
+      {
+        type: 'link',
+        label: 'Online User Module',
+        route: '/online',
+        icon: icAssigment
       }
     ];
   }

@@ -253,14 +253,14 @@ io.on('connection', function (socket) {
                         }
                         else {
                             gameStartObj.i = i
-                            timer = setTimeout(gameStartTimmer, 3000, gameStartObj);
+                            timer = setTimeout(gameStartTimmer, 30000, gameStartObj);
                         }
                     }
                 } else {
                     console.log("player left");
                     callback("playergone", null);
                }
-            }, 3000,reqobj);
+            }, 30000,reqobj);
         }
     }
     function waitingForUserOrg(reqobj) {
@@ -1075,6 +1075,11 @@ io.on('connection', function (socket) {
                 //winnerDeclare({userId: allOnlineUsers[findIndexOpponent].userId})
             ], function (err, result) {
                 if (result) {
+                    console.log("new field"+result.opponentCup);
+                    console.log("opponent coin"+result.opponentCoin);
+                    console.log("user coin"+result.userCoin);
+                    //console.log("opponent cup"+result.opponentCup);
+
 
                     if (findIndexOpponent != -1 && result.isWin == 1) {
                         winnerDeclare({
@@ -1157,7 +1162,7 @@ io.on('connection', function (socket) {
      * @param {String} coinNumber
      */
 
-    socket.on('gameRequestCancel', function (req) {
+     socket.on('gameRequestCancel', function (req) {
         return new Promise((resolve, reject) => {
         room.updateRoomAfterWait({roomName: req.roomName}).then(responses => {
             logger.print("Coin canceled");
