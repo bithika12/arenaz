@@ -37,9 +37,9 @@ const fetchHistory = userId => {
                     let entusers=entry.users;
                     chart.push({
                         game_time: entry.game_time,
-                        updated_at: entry.updated_at,
+                        //updated_at: entry.updated_at,
                         last_time:timeWithCurrent,
-                        values: entusers.map(function(entry1) {
+                        gameDetails: entusers.map(function(entry1) {
                             if(entry1.userId==userId){
                                 if(entry1.isWin==1)
                                     gameStatus='VICTORY';
