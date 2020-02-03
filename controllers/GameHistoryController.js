@@ -45,7 +45,8 @@ exports.fetchGame= function(req,res) {
             })
 
             .then(resp=>{
-                res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,result:resp,message:"Game history fetched successfully."})
+                let obj={matchDetails:resp}
+                res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,result:obj,message:"Game history fetched successfully."})
             })
             .catch(err=>{
                 res.status(constants.API_ERROR).send(err);

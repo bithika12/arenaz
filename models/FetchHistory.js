@@ -3,6 +3,7 @@ const appRoot = require('app-root-path');
 const Room = require(appRoot + '/models/Room');
 var Rooms = require('../schema/Schema').roomModel;
 var Coins = require('../schema/Schema').coinModel;
+var underscore  = require('underscore');
 
 
 const Constants = require(appRoot + '/config/constants');
@@ -33,6 +34,7 @@ const fetchHistory = userId => {
                     let currentTime=new Date().getTime();
                     const diff = currentTime - updatedTime;
                     let timeWithCurrent = Math.floor(diff / 1000 % 60);
+                    let gameCoin;
 
                     let entusers=entry.users;
                     chart.push({
@@ -41,24 +43,40 @@ const fetchHistory = userId => {
                         last_time:timeWithCurrent,
                         gameDetails: entusers.map(function(entry1) {
                             if(entry1.userId==userId){
-                                if(entry1.isWin==1)
-                                    gameStatus='VICTORY';
-                                else if(entry1.isWin==2)
-                                    gameStatus='DRAW';
-                                else if(entry1.isWin==0)
-                                    gameStatus='DEFEAT';
+                                if(entry1.isWin==1) {
+                                    gameStatus = 'VICTORY';
+                                    gameCoin = entry1.roomCoin * 2;
+                                }
+                                else if(entry1.isWin==2) {
+                                    gameStatus = 'DRAW';
+                                    gameCoin = entry1.roomCoin;
+                                }
+                                else if(entry1.isWin==0) {
+                                    gameStatus = 'DEFEAT';
+                                    gameCoin = entry1.roomCoin;
+                                }
                             }
                             return {
-                                gameResult:gameStatus,
+                                //gameResult:gameStatus,
                                 userId: entry1.userId,
                                 userName: entry1.userName,
                                 userScore:entry1.total,
-                                cupNumber:entry1.cupNumber};
+                                cupNumber:entry1.cupNumber,
+                                colorName:entry1.colorName,
+                                raceName:entry1.raceName,
+                                coinNumber:entry1.roomCoin,
+                               // gameCoin:gameCoin,
+                                gameResult:entry1.isWin
+                            };
                         })
                     });
                 });
 
-                console.log(chart);
+                //let res={details:chart};
+                //let obj = _.extend({}, chart);
+               // console.log(obj);
+
+                //console.log(chart);
                 resolve(chart);
             }
             else{
