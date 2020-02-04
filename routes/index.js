@@ -30,7 +30,7 @@ router.get('/', function(req, res, next) {
   const fetchNotification= require(appRoot + '/controllers/FetchNotificationController');
 
 
-/**  LOGIN ROUTING **/
+   /**  LOGIN ROUTING **/
   router.post('/registration',userController.registration);
   //router.post('/socal-login',userController.socialLogin);
   router.post('/login',userController.login);

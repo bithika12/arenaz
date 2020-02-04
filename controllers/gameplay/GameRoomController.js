@@ -537,6 +537,10 @@ io.on('connection', function (socket) {
                                             console.log("result print"+result.status);
                                             if (result) {
                                                 logger.print("***Done  ", result);
+                                                io.sockets.to(socket.id).emit('userJoined', response.generate(constants.SUCCESS_STATUS, {
+                                                    roomName: roomName,
+                                                    users: joineeDetails.users
+                                                }, "User enter in a room !"));
                                                 //io.sockets.to(roomName).emit('gameStart',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,users :joineeDetails.users },"Game start !"));
                                                 if (!result.status) {
                                                     logger.print("wait status found");
