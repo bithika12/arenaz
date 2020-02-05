@@ -5,6 +5,7 @@ const Constants = require(appRoot + '/config/constants');
 var fs = require('fs');
 var handlebars = require('handlebars');
 const User = require(appRoot + '/models/User');
+const Notifications = require(appRoot + '/models/Notification');
 
 
 /**
@@ -17,7 +18,10 @@ const fetchNotification = userId => {
     return new Promise((resolve, reject) => {
 
      //fetch notifications
+        Notifications.notifications1({received_by_user:userId}).then(function (responseParams) {
+            resolve(responseParams)
 
+        });
     });
 };
 /**
