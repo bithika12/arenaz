@@ -48,7 +48,7 @@ router.post('/add/details',profileController.colorReg);
 router.post('/get/details',profileController.getColorReg);
 router.post('/fetch/notifications',fetchNotification.fetchGame);
 //leaderboard api
-router.post('/user/leaderboard',userLeaderBoard.fetchDetails);
+//.post('/user/leaderboard',userLeaderBoard.fetchDetails);
 
 
 
