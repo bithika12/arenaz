@@ -11,7 +11,6 @@ namespace ArenaZ.Screens
         {
             characterImage.sprite = null;
             string path = GameResources.characterImageFolderPath + "/" + transform.name + colorName;
-            Debug.Log("PathName: " + path);
             characterImage.sprite = Resources.Load<Sprite>(path);
         }
 	}

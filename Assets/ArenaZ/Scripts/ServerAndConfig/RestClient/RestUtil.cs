@@ -87,7 +87,6 @@ namespace RedApple.Utils
                     yield return new WaitForEndOfFrame();
                 }
                 while (currentCall == null && callQueue.Count == 0);
-
                 currentCall = callQueue.Dequeue();
                 currentCall.Request = currentCall.Builder.Build();
                 #if LOADING

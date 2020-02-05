@@ -54,7 +54,7 @@ namespace ArenaZ.ShootingObject
                 else if (rotationAxis == ERotationAxis.Z)
                     t_RotDirection.z = -360.0f;
 
-                dartObj.DOLocalRotate(t_RotDirection, 1.0f, RotateMode.FastBeyond360).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
+                dartObj.DOLocalRotate(t_RotDirection, 0.7f, RotateMode.FastBeyond360).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
                 AddPointsToArray(endPosition);
                 transform.DOPath(points, .6f, PathType.CatmullRom)
                          .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
@@ -64,7 +64,7 @@ namespace ArenaZ.ShootingObject
                              dartObj.DOKill();
                          });
             }
-        } 
+        }
 
         private Vector3 CalculateQuadraticBeizerCurve(float time,Vector3 pointThree)
         {

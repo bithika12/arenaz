@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace RedApple.Api.Data
 {
@@ -12,5 +13,17 @@ namespace RedApple.Api.Data
         public string Email { get; set; }
         [JsonProperty("accessToken")]
         public string AccessToken { get; set; }
+    }
+
+    public class UserSelectionDetails
+    {
+        [JsonProperty("colorName")]
+        public string ColorName { get; set; }
+        [JsonProperty("raceName")]
+        public string RaceName { get; set; }
+        [JsonProperty("characterId")]
+        public string CharacterId { get; set; }
+        [JsonProperty("dartName")]
+        public string DartName { get; set; }
     }
 }

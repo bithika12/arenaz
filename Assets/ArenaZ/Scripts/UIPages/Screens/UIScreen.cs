@@ -27,13 +27,13 @@ namespace ArenaZ.Screens
 
         public void Show()
         {
-            Debug.Log($"Show: {this.name}");
+            //Debug.Log($"Show: {this.name}");
             gameObject.SetActive(true);
         }
 
         public void Hide()
         {
-            Debug.Log($"Hide: {this.name}");
+            //Debug.Log($"Hide: {this.name}");
             gameObject.SetActive(false);
         }
 

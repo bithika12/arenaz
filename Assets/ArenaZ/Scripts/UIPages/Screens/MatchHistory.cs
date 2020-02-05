@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
-using ArenaZ.Screens;
 
 public class MatchHistory : MonoBehaviour
 {

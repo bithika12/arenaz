@@ -27,7 +27,7 @@ namespace UnityEngine.UI.Extensions
         internal bool _settled = true;
         internal Vector3 _startPosition = new Vector3();
         [Tooltip("The currently active page")]
-        internal int _currentPage;
+        internal int _currentPage = 0;
         internal int _previousPage;
         internal int _halfNoVisibleItems;
         internal bool _moveStarted;

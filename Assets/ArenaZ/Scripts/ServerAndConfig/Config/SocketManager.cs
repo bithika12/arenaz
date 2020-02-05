@@ -30,6 +30,7 @@ namespace RedApple
         #region Socket Emit
         public void AddUser()
         {
+            return;
             AccesToken acToken = new AccesToken
             {
                 AccessToken = User.UserAccessToken
@@ -126,7 +127,6 @@ namespace RedApple
             Debug.LogError("Throw Dart Data: " + throwDartData);
             socket.EmitJson(SocketEmitEvents.throwDart.ToString(), throwDartData);
         }
-
         #endregion
 
         #region Socket Callbacks

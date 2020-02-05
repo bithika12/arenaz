@@ -3,6 +3,7 @@ using RedApple.Utils.Rest;
 using RedApple.Api;
 using RedApple.Api.Data;
 using UnityEngine;
+using Newtonsoft.Json;
 using RestUtil = RedApple.Utils.RestUtil;
 using RestError = RedApple.Utils.RestUtil.RestCallError;
 
@@ -89,6 +90,36 @@ namespace RedApple
         }
         #endregion
 
+        public static void SaveUserSelection(string email_id, UserSelectionDetails userSelectionDetails, Action onCompletionSaveData, Action<RestError> restError)
+        {
+            Debug.Log($"User Email: {email_id}, Data: {JsonConvert.SerializeObject(userSelectionDetails)}");
+            Debug.Log("URL: " + getApiUrl(Urls.SAVE_SELECTION_DETAILS));
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.SAVE_SELECTION_DETAILS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, email_id)
+                .FormData(Attributes.COLOR_NAME, userSelectionDetails.ColorName)
+                .FormData(Attributes.RACE_NAME, userSelectionDetails.RaceName)
+                .FormData(Attributes.CHARACTER_ID, userSelectionDetails.CharacterId)
+                .FormData(Attributes.DART_NAME, userSelectionDetails.DartName);
+
+            sendWebRequest(webRqstBuilder, onCompletionSaveData, restError);
+        }
+
+        public static void GetUserSelection(string email_id, Action<UserSelectionDetails> onCompletionGetData, Action<RestError> restError)
+        {
+            Debug.Log($"User Email: {email_id}");
+            Debug.Log("URL: " + getApiUrl(Urls.GET_SELECTION_DETAILS));
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.GET_SELECTION_DETAILS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, email_id);
+
+            sendWebRequest(webRqstBuilder, onCompletionGetData, restError);
+        }
+
         public static void GetCountryDetails(Action<CountryData> OnCompleteteCountryDetailsFetch,Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
@@ -97,6 +128,17 @@ namespace RedApple
                 .ContentType(ContentTypes.FORM);
 
             sendWebRequestForCountryDetails(webRqstBuilder, OnCompleteteCountryDetailsFetch, restError);
+        }
+
+        public static void GetGameHistory(string a_UserEmail, Action<GameHistoryMatchDetails> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.GET_GAME_HISTORY))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
         }
 
         private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
@@ -111,8 +153,15 @@ namespace RedApple
             Instance.restUtil.Send(builder,
                 handler =>
                 {
-                    var response = DataConverter.DeserializeObject<ApiResponseFormat<T>>(handler.text);
-                    onCompletion?.Invoke(response.Result);
+                    try
+                    {
+                        var response = DataConverter.DeserializeObject<ApiResponseFormat<T>>(handler.text);
+                        onCompletion?.Invoke(response.Result);
+                    } catch(Exception e)
+                    {
+
+                    }
+                    
                 },
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));
         }

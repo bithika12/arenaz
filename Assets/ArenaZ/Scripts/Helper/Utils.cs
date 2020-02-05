@@ -35,7 +35,7 @@ public enum Page
     PopupPanel,
 }
 
-public enum Race
+public enum ERace
 {
     Canines,
     Kepler,
@@ -82,12 +82,27 @@ public enum ButtonType
     None
 }
 
-public enum PlayerprefsValue
+public enum EColor
+{
+    None = 0,
+    DarkBlue,
+    DarkGreen,
+    Grey,
+    LightBlue,
+    LightGreen,
+    Orange,
+    Red,
+    Teal,
+    White,
+    Yellow,
+}
+
+public enum PlayerPrefsValue
 {
     LoginID,
     Password,
     Logout,
-    CharacterName,
+    SelectedRace,
     SelectedColor,
     SelectedCharacter,
 }
@@ -148,6 +163,13 @@ public enum SceneType
     Loading,
     LevelSelection,
     Gameplay
+}
+
+public enum EWinningStatus
+{
+    Defeat = 0,
+    Victory = 1,
+    Draw = 2
 }
 
 public static class GameResources

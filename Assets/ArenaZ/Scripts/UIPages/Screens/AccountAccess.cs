@@ -20,6 +20,8 @@ namespace ArenaZ.Screens
         [Space(5)]
         [SerializeField] private int delayToOpenCharacterUI;
 
+        [SerializeField] private CharacterSelection characterSelection;
+
         private void Start()
         {
             GettingButtonReferences();
@@ -67,7 +69,7 @@ namespace ArenaZ.Screens
             yield return new WaitForSeconds(delay);
             UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(),true);
             Settings.Instance.LogInLogOutButtonNameSet(ConstantStrings.logout);
-            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 0);
+            PlayerPrefs.SetInt(PlayerPrefsValue.Logout.ToString(), 0);
             OpenCharacterUI();
             UIManager.Instance.setUserName?.Invoke(userName);
             CharacterSelection.Instance.ResetCharacterScroller(userName);
@@ -99,6 +101,8 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.HideScreen(Page.AccountAccessDetailsPanel.ToString());
             UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
+
+            characterSelection.Invoke("Initialize", 1.5f);
         }
         #endregion
     }

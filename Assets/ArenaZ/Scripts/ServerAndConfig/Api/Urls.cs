@@ -52,5 +52,10 @@
         public const string ASSETSTORE_AVILABLE_TIERS = "assetstore/available-tiers";
 
         public const string TEMP_PARTICIPATION_NOTIFICATION = "sessions/{0}/participants/{1}";
+
+        public const string SAVE_SELECTION_DETAILS = "add/details";
+        public const string GET_SELECTION_DETAILS = "get/details";
+
+        public const string GET_GAME_HISTORY = "game/history";
     }
 }

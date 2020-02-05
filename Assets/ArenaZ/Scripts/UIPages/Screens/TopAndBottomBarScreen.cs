@@ -54,7 +54,7 @@ namespace ArenaZ.Screens
            // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
             UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.previous);
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
-            if (PlayerPrefs.GetInt(PlayerprefsValue.Logout.ToString())==0)
+            if (PlayerPrefs.GetInt(PlayerPrefsValue.Logout.ToString())==0)
             {
                 CharacterSelection.Instance.SetProfilePicOnClick();
             }

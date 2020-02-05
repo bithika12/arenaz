@@ -8,6 +8,10 @@ using RedApple;
 using System;
 using System.Text.RegularExpressions;
 using DevCommons.Utility;
+using RedApple.Api.Data;
+using Newtonsoft.Json;
+using RedApple.Utils;
+using System.Linq;
 
 namespace ArenaZ.Screens
 {
@@ -27,7 +31,7 @@ namespace ArenaZ.Screens
         [Header("Scroll Snap")]
         [Space(5)]
         [SerializeField]private HorizontalScrollSnap horizontalScrollSnap;
-        public readonly string[] raceNames = { Race.Canines.ToString(), Race.Kepler.ToString(), Race.Cyborg.ToString(), Race.CyborgSecond.ToString(), Race.Human.ToString(), Race.Ebot.ToString(), Race.KeplerSecond.ToString(),Race.KeplerFemale.ToString(),Race.KeplerFemaleSecond.ToString(),Race.HumanSecond.ToString() };
+        public readonly string[] raceNames = { ERace.Canines.ToString(), ERace.Kepler.ToString(), ERace.Cyborg.ToString(), ERace.CyborgSecond.ToString(), ERace.Human.ToString(), ERace.Ebot.ToString(), ERace.KeplerSecond.ToString(),ERace.KeplerFemale.ToString(),ERace.KeplerFemaleSecond.ToString(),ERace.HumanSecond.ToString() };
         //Public Fields
         public static Action<string> setDart;
 
@@ -42,26 +46,75 @@ namespace ArenaZ.Screens
             UIManager.Instance.setUserName += SetUserName;
             PlayerColorChooser.setColorAfterChooseColor += SetColorOnCharacter;
 
-            Invoke("LateStart", 1.5f);
+            //Invoke("Initialize", 1.5f);
         }
 
-        private void LateStart()
+        public void Initialize()
         {
-            string colorName = FileHandler.ReadFromPlayerPrefs(PlayerprefsValue.SelectedColor.ToString(), UIManager.Instance.StartColorName);
-            Debug.Log("--------------ColorName: " + colorName);
-            SetColorOnCharacter(colorName);
+            Debug.Log("Initialize CS");
+            RestManager.GetUserSelection(User.UserEmailId, OnGetUserSelection, OnErrorGetSelectionData);
 
-            string characterIdStr = FileHandler.ReadFromPlayerPrefs(PlayerprefsValue.SelectedCharacter.ToString(), "0");
-            int characterId = int.Parse(characterIdStr);
-            Debug.Log("--------------CharacterId: " + characterId);
-            UIManager.Instance.ShowCharacterName(raceNames[characterId]);
-            horizontalScrollSnap.GoToScreen(characterId);
+            string colorName = FileHandler.ReadFromPlayerPrefs(PlayerPrefsValue.SelectedColor.ToString(), UIManager.Instance.StartColorName);
+            //Debug.Log("--------------ColorName: " + colorName);
+            //SetColorOnCharacter(colorName);
+
+            //string characterIdStr = FileHandler.ReadFromPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), "0");
+            //int characterId = int.Parse(characterIdStr);
+            //Debug.Log("--------------CharacterId: " + characterId);
+            //UIManager.Instance.ShowCharacterName(raceNames[characterId]);
+            //horizontalScrollSnap.GoToScreen(characterId);
+        }
+
+        private void OnGetUserSelection(UserSelectionDetails userSelectionDetails)
+        {
+            Debug.Log($"------------------------------------US: {JsonConvert.SerializeObject(userSelectionDetails)}");
+            if (userSelectionDetails != null)
+            {
+                Debug.Log("Got data.");
+
+                string colorName = string.IsNullOrEmpty(userSelectionDetails.ColorName) ? UIManager.Instance.StartColorName : userSelectionDetails.ColorName;
+                Debug.Log("--------------ColorName: " + colorName);
+                SetColorOnCharacter(colorName);
+
+                string characterIdStr = string.IsNullOrEmpty(userSelectionDetails.CharacterId) ? "0" : userSelectionDetails.CharacterId;
+                int characterId = int.Parse(characterIdStr);
+                Debug.Log("--------------CharacterId: " + characterId);
+                UIManager.Instance.ShowCharacterName(raceNames[characterId]);
+                horizontalScrollSnap.GoToScreen(characterId);
+
+                FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), characterIdStr);
+                FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[characterId]);
+            }
+            else
+            {
+                LoadDefaultData();
+            }
+        }
+
+        private void OnErrorGetSelectionData(RestUtil.RestCallError obj)
+        {
+            Debug.Log("Get Data Error: " + obj.Description);
+            LoadDefaultData();
+        }
+
+        private void LoadDefaultData()
+        {
+            Debug.Log("--------------ColorName: " + UIManager.Instance.StartColorName);
+            SetColorOnCharacter(UIManager.Instance.StartColorName);
+
+            Debug.Log("--------------CharacterId: " + 0);
+            UIManager.Instance.ShowCharacterName(raceNames[0]);
+            horizontalScrollSnap.GoToScreen(0);
+
+            FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), "0");
+            FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[0]);
         }
 
         private void OnDestroy()
         {
             ReleaseButtonReferences();
         }
+
         #region Button_References
         private void GettingButtonReferences()
         {
@@ -81,7 +134,7 @@ namespace ArenaZ.Screens
         public void SetColorOnCharacter(string colorName)
         {
             User.UserColor = colorName;
-            FileHandler.SaveToPlayerPrefs(PlayerprefsValue.SelectedColor.ToString(), colorName);
+            FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedColor.ToString(), colorName);
             GameObject[] characters = horizontalScrollSnap.ChildObjects;
             for (int i = 0; i < characters.Length; i++)
             {
@@ -99,7 +152,7 @@ namespace ArenaZ.Screens
         {
             for (int i = 0; i < raceNames.Length; i++)
             {
-                if (raceNames[i] == PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()))
+                if (raceNames[i] == PlayerPrefs.GetString(PlayerPrefsValue.SelectedRace.ToString()))
                 {
                     horizontalScrollSnap.GoToScreen(i);
                 }
@@ -109,19 +162,18 @@ namespace ArenaZ.Screens
 
         public void SetProfilePicOnClick()
         {
-            if (PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()) != string.Empty)
-            {
-                UIManager.Instance.showProfilePic?.Invoke(PlayerPrefs.GetString(PlayerprefsValue.CharacterName.ToString()));
-            }
+            string t_SelectedRace = FileHandler.ReadFromPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString());
+            string t_SelectedColor = FileHandler.ReadFromPlayerPrefs(PlayerPrefsValue.SelectedColor.ToString());
+
+            if (!string.IsNullOrEmpty(t_SelectedRace) && !string.IsNullOrEmpty(t_SelectedColor))
+                UIManager.Instance.showProfilePic?.Invoke(t_SelectedRace, t_SelectedColor);
             else
-            {
-                UIManager.Instance.showProfilePic?.Invoke(Race.Canines.ToString());
-            }
+                UIManager.Instance.showProfilePic?.Invoke(ERace.Canines.ToString(), EColor.DarkBlue.ToString());
         }
 
         private void ShowFirstText()
         {
-            UIManager.Instance.ShowCharacterName(Race.Canines.ToString());
+            UIManager.Instance.ShowCharacterName(ERace.Canines.ToString());
         }
 
         public void PageChecker(int pageNo)
@@ -134,13 +186,29 @@ namespace ArenaZ.Screens
             enterArenaMode();
             User.DartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
             User.UserRace = raceNames[horizontalScrollSnap._currentPage];
-            FileHandler.SaveToPlayerPrefs(PlayerprefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
-            Debug.Log("DartName: " + User.DartName + ", UserRace: " + User.UserRace);
+            Debug.Log($"DartName: {User.DartName}, UserRace: {User.UserRace}");
+
+            FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
+            FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[horizontalScrollSnap._currentPage]);
+
+            UserSelectionDetails userSelectionDetails = new UserSelectionDetails
+            {
+                ColorName = string.IsNullOrEmpty(User.UserColor) ? UIManager.Instance.StartColorName : User.UserColor,
+                RaceName = string.IsNullOrEmpty(User.UserRace) ? ERace.Canines.ToString() : User.UserRace,
+                CharacterId = horizontalScrollSnap._currentPage.ToString(),
+                DartName = User.DartName
+            };
+            RestManager.SaveUserSelection(User.UserEmailId, userSelectionDetails, delegate { Debug.Log("User selection data is saved."); }, OnErrorSetSelectionData);
+
             setDart?.Invoke(User.DartName);
-            UIManager.Instance.showProfilePic?.Invoke(raceNames[horizontalScrollSnap._currentPage]);
+            SetProfilePicOnClick();
             LevelSelection.Instance.OnSelectionGameplayType(type);
-            PlayerPrefs.SetString(PlayerprefsValue.CharacterName.ToString(), raceNames[horizontalScrollSnap._currentPage]);
             SocketManager.Instance.ColRequest();
+        }
+
+        private void OnErrorSetSelectionData(RestUtil.RestCallError obj)
+        {
+            Debug.Log("Set Data Error: " + obj.Description);
         }
 
         private string GetTruncatedString(string characterString)

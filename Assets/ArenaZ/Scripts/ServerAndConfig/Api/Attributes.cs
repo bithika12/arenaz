@@ -55,5 +55,11 @@
         public const string VISIBILITY = "visibility";
 
         public const string STATUS = "status";
+
+        public const string USER_EMAIL = "userEmail";
+        public const string COLOR_NAME = "colorName";
+        public const string RACE_NAME = "raceName";
+        public const string CHARACTER_ID = "characterId";
+        public const string DART_NAME = "dartName";
     }
 }

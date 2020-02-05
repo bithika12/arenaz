@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using ArenaZ.GameMode;
 using System.Collections;
 using ArenaZ.Screens;
+using DevCommons.Utility;
+using DG.Tweening;
 
 namespace ArenaZ.Manager
 {
@@ -23,19 +25,28 @@ namespace ArenaZ.Manager
         }
 
         // Private Variables
-        [SerializeField] private bool projectileMove;
-        [SerializeField] private int scorePopUpDuration;
-        [SerializeField] private TextMeshProUGUI selfScoreText;
-        [SerializeField] private TextMeshProUGUI opponentScoreText;
-        [SerializeField] private Image userImage;
-        [SerializeField] private Image opponentImage;
+
+        [Header("User")]
+        [SerializeField] private Image userPic;
         [SerializeField] private Image userTimerImage;
-        [SerializeField] private Image opponentTimerImage;
         [SerializeField] private Text userName;
+        [SerializeField] private TextMeshProUGUI userScoreText;
+
+        [Header("Opponent")]
+        [SerializeField] private Image opponentPic;
+        [SerializeField] private Image opponentTimerImage;
         [SerializeField] private Text opponentName;
+        [SerializeField] private TextMeshProUGUI opponentScoreText;
+
+        [Header("Others")]
+        [SerializeField] private int scorePopUpDuration;
 
         [SerializeField] private CameraController cameraController;
         [SerializeField] private UiPopup popup;
+
+        [SerializeField] private GameObject winPopup;
+        [SerializeField] private GameObject loosePopup;
+        [SerializeField] private Vector3 wonPopupOriginalScale = new Vector3();
 
         private bool playerTurn = false;
         private GameObject userDart;
@@ -49,7 +60,7 @@ namespace ArenaZ.Manager
         private GameSoreData opponentGameScoreData;
 
         public Action<string> setUserName;
-        public Action<string> setUserImage;
+        public Action<string, string> setUserImage;
 
         public Player PlayerType { get; set; }
 
@@ -101,14 +112,28 @@ namespace ArenaZ.Manager
             this.userName.text = userName;
         }
 
-        private void SetUserProfileImage(string imageName)
+        public void SetUserProfileImage(string race, string color)
         {
-            userImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.rounded);
+            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+            if (t_CharacterPicData != null)
+            {
+                userPic.sprite = t_CharacterPicData.ProfilePic;
+            }
         }
 
-        private void SetOpponentProfileImage(string imageName)
+        public void SetOpponentProfileImage(string race, string color)
         {
-            opponentImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.rounded);
+            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+            if (t_CharacterPicData != null)
+            {
+                opponentPic.sprite = t_CharacterPicData.ProfilePic;
+            }
         }
 
         private void SetOpponentName(string opponentName)
@@ -164,7 +189,8 @@ namespace ArenaZ.Manager
 
             cameraController.SetCameraPosition(Player.Self);
             genericTimer.StopTimer();
-            onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace);
+            displayPopup(false);
+            //onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
             if (currentDart != null)
                 StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
         }
@@ -177,24 +203,65 @@ namespace ArenaZ.Manager
             var gameOverData = DataConverter.DeserializeObject<ApiResponseFormat<GameOver>>(data);
             if(gameOverData.Result.UserId == User.UserId)
             {
-                onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace);
+                displayPopup(true);
+                //onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
             }
             else 
             {
-                onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace);
+                displayPopup(false);
+                //onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
             }
+
             if (currentDart != null)
+            {
                 StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
+            }
         }
 
-        private void onOpenWinloosePopUp(Page popUpName,string userName,string userImage)
+        private void onOpenWinloosePopUp(Page popUpName, string userName, string race, string color)
         {
             UIManager.Instance.ShowScreen(Page.UIPanel.ToString());
             //UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(popUpName.ToString(),Hide.previous);
             UIManager.Instance.ClearOpenPagesContainer();
             setUserName?.Invoke(userName);
-            setUserImage?.Invoke(userImage);
+            setUserImage?.Invoke(race, color);
+        }
+
+        private void displayPopup(bool a_Won)
+        {
+            if (a_Won)
+            {
+                winPopup.transform.localScale = Vector3.zero;
+                winPopup.SetActive(true);
+
+                Sequence t_Sequence = DOTween.Sequence();
+                t_Sequence.Append(winPopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce));
+                t_Sequence.AppendInterval(1.0f);
+                t_Sequence.AppendCallback(() => onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor));
+
+                //winPopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce).OnComplete(() => 
+                //onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor));
+
+                loosePopup.transform.localScale = Vector3.zero;
+                loosePopup.SetActive(false);
+            }
+            else
+            {
+                loosePopup.transform.localScale = Vector3.zero;
+                loosePopup.SetActive(true);
+
+                Sequence t_Sequence = DOTween.Sequence();
+                t_Sequence.Append(winPopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce));
+                t_Sequence.AppendInterval(1.0f);
+                t_Sequence.AppendCallback(() => onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor));
+
+                //loosePopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce).OnComplete(() =>
+                //onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor));
+
+                winPopup.transform.localScale = Vector3.zero;
+                winPopup.SetActive(false);
+            }
         }
 
         private void onNextTurn(string data)
@@ -287,7 +354,7 @@ namespace ArenaZ.Manager
             if (a_PlayerType == Player.Self)
             {
                 selfGameScoreData.Score -= a_HitValue;
-                selfScoreText.text = selfGameScoreData.Score.ToString();
+                userScoreText.text = selfGameScoreData.Score.ToString();
             }
             else if (a_PlayerType == Player.Opponent)
             {
@@ -299,7 +366,7 @@ namespace ArenaZ.Manager
 
         public void ResetScore()
         {
-            selfScoreText.text = ScoreData.requiredScore.ToString();
+            userScoreText.text = ScoreData.requiredScore.ToString();
             opponentScoreText.text = ScoreData.requiredScore.ToString();
 
             selfGameScoreData.Score = ScoreData.requiredScore;

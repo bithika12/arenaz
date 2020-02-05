@@ -2,21 +2,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using RedApple;
+using DevCommons.Utility;
 
 namespace ArenaZ.Screens 
 {
 	public class PlayerWin : MonoBehaviour
 	{
-        [Header("Images")]
-        [Space(5)]
-        [SerializeField] private Image winnerProfileImage;
+        [Header("User Image")]
+        [SerializeField] private Image userFrame;
+        [SerializeField] private Image userPic;
 
         [Header("Text")]
-        [Space(5)]
         [SerializeField] private Text WinnerUserName;
 
         [Header("Button")]
-        [Space(5)]
         [SerializeField] private Button closeButton;
         [SerializeField] private Button playAgainButton;
 
@@ -48,9 +47,22 @@ namespace ArenaZ.Screens
             playAgainButton.onClick.RemoveListener(onClickClose);
         }
 
-        public void SetUserProfileImage(string imageName)
+        public void SetUserProfileImage(string race, string color)
         {
-            winnerProfileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Medium);
+            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+            SquareFrameData t_FrameData = DataHandler.Instance.GetSquareFrameData(t_Color);
+            if (t_FrameData != null)
+            {
+                userFrame.sprite = t_FrameData.FramePic;
+            }
+
+            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+            if (t_CharacterPicData != null)
+            {
+                userPic.sprite = t_CharacterPicData.ProfilePic;
+            }
         }
 
         public void SetUserName(string userName)

@@ -1,4 +1,5 @@
 using ArenaZ.Manager;
+using DevCommons.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,12 @@ namespace ArenaZ
         private CameraData selfCameraData = new CameraData();
         [SerializeField]
         private CameraData opponentCameraData = new CameraData();
+
+        //private void Awake()
+        //{
+        //    FileHandler.DeleteSaveFile(ConstantStrings.USER_SAVE_FILE_KEY);
+        //    FileHandler.ClearPlayerPrefs();
+        //}
 
         public void SetCameraPosition(GameManager.Player playerType)
         {

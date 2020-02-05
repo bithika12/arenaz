@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using RedApple;
+using DevCommons.Utility;
 
 namespace ArenaZ.LevelMangement
 {
@@ -23,22 +24,42 @@ namespace ArenaZ.LevelMangement
         [Space(5)]
         [SerializeField] private GameObject comingSoonPopUp;
 
-        [Header("Buttons")]
-        [Space(5)]
-        [SerializeField] private Image profileImage;
+        [Header("User Image")]
+        [SerializeField] private Image userFrame;
+        [SerializeField] private Image userPic;
+
         private GameType gamePlayType;
 
         private void Start()
         {
             GettingButtonReferences();
             UIManager.Instance.setUserName += SetUserName;
-            UIManager.Instance.showProfilePic += SetProfileImage;
+            UIManager.Instance.showProfilePic += SetUserProfileImage;
         }
 
         private void OnDestroy()
         {
             ReleaseButtonReferences();           
         }
+
+        public void SetUserProfileImage(string race, string color)
+        {
+            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+            SquareFrameData t_FrameData = DataHandler.Instance.GetSquareFrameData(t_Color);
+            if (t_FrameData != null)
+            {
+                userFrame.sprite = t_FrameData.FramePic;
+            }
+
+            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+            if (t_CharacterPicData != null)
+            {
+                userPic.sprite = t_CharacterPicData.ProfilePic;
+            }
+        }
+
         #region Button_References
         private void GettingButtonReferences()
         {
@@ -62,11 +83,6 @@ namespace ArenaZ.LevelMangement
         public void OnSelectionGameplayType(GameType gameType)
         {
             gamePlayType = gameType;
-        }
-
-        public void SetProfileImage(string imageName)
-        {
-            profileImage.sprite = UIManager.Instance.GetProfile(imageName,ProfilePicType.Small);
         }
 
         public void SetUserName(string userName)

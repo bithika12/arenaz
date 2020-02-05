@@ -6,6 +6,7 @@ using RedApple;
 using System;
 using ArenaZ.Screens;
 using ArenaZ.Data;
+using DevCommons.Utility;
 
 namespace ArenaZ.SettingsManagement
 {
@@ -27,9 +28,7 @@ namespace ArenaZ.SettingsManagement
         [SerializeField] private Sprite MuteSFXSprite;
         [SerializeField] private Image MusicImage;
         [SerializeField] private Image SFXImage;
-        [SerializeField] private Image profileImage;
         [SerializeField] private Image selectedColorImage;
-
 
         [Header("Text Fields")]
         [Space(5)]
@@ -55,6 +54,10 @@ namespace ArenaZ.SettingsManagement
         [Space(5)]
         [SerializeField] private float LogOutPopUpCloseduration;
 
+        [Header("User Image")]
+        [SerializeField] private Image userFrame;
+        [SerializeField] private Image userPic;
+
         private bool IsMusicMute = false;
         private bool IsSFXMute = false;
       //  private FacebookLogin facebookLogin;
@@ -70,7 +73,7 @@ namespace ArenaZ.SettingsManagement
             UpdateButtonsOnStart();
             GettingButtonReferences();
             UIManager.Instance.setUserName += SetUserName;
-            UIManager.Instance.showProfilePic += SetProfileImage;
+            UIManager.Instance.showProfilePic += SetUserProfileImage;
             PlayerColorChooser.setColorAfterChooseColor += setSelectedColorImage;
             UIManager.Instance.ShowScreen(Page.LoggedInText.ToString());
         }
@@ -127,19 +130,32 @@ namespace ArenaZ.SettingsManagement
 
         private void TasksAfterLogout()
         {
-            UIManager.Instance.DeleteDetails(PlayerprefsValue.LoginID.ToString());
-            UIManager.Instance.DeleteDetails(PlayerprefsValue.Password.ToString());
+            UIManager.Instance.DeleteDetails(PlayerPrefsValue.LoginID.ToString());
+            UIManager.Instance.DeleteDetails(PlayerPrefsValue.Password.ToString());
             UIManager.Instance.SetComponent<Text>(Page.LoggedInText.ToString(), false);
             LogInLogOutButtonNameSet(ConstantStrings.login);
-            UIManager.Instance.showProfilePic?.Invoke((Race.Canines.ToString()));
+            UIManager.Instance.showProfilePic?.Invoke(ERace.Canines.ToString(), EColor.DarkBlue.ToString());
             UIManager.Instance.setUserName?.Invoke(ConstantStrings.defaultUserName);
-            PlayerPrefs.SetInt(PlayerprefsValue.Logout.ToString(), 1);
+            PlayerPrefs.SetInt(PlayerPrefsValue.Logout.ToString(), 1);
             // UIManager.Instance.ShowPopWithText(Page.PopUpTextSettings.ToString(), successFullyLoggedOut, PopUpduration);
         }
 
-        private void SetProfileImage(string imageName)
+        public void SetUserProfileImage(string race, string color)
         {
-            profileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Small);
+            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+            SquareFrameData t_FrameData = DataHandler.Instance.GetSquareFrameData(t_Color);
+            if (t_FrameData != null)
+            {
+                userFrame.sprite = t_FrameData.FramePic;
+            }
+
+            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+            if (t_CharacterPicData != null)
+            {
+                userPic.sprite = t_CharacterPicData.ProfilePic;
+            }
         }
 
         private void SetUserName(string userName)
@@ -171,7 +187,7 @@ namespace ArenaZ.SettingsManagement
 
         private void OnClickLogInLogOut()
         {
-            if (PlayerPrefs.GetInt(PlayerprefsValue.Logout.ToString()) == 0)
+            if (PlayerPrefs.GetInt(PlayerPrefsValue.Logout.ToString()) == 0)
             {
                 Debug.Log("Logged Out");
                 UIManager.Instance.ShowScreen(Page.LogOutAlertOverlay.ToString(),Hide.none);

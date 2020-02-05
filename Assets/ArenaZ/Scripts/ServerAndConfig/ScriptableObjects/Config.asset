@@ -21,11 +21,10 @@ MonoBehaviour:
     SocketListenEvents:
     - userConnected
     - colorGet
-    - userJoin
     - gameStart
+    - userJoined
     - nextTurn
     - gameThrow
     - gameOver
     - noUser
-    - userJoin
     - connectedRoom

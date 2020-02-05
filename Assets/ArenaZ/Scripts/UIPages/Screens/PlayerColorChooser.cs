@@ -11,7 +11,6 @@ namespace ArenaZ.Screens
         [SerializeField] private Button lightBlueButton;
         [SerializeField] private Button yellowButton;
         [SerializeField] private Button whiteButton;
-        [SerializeField] private Button blackButton;
         [SerializeField] private Button redButton;
         [SerializeField] private Button greyButton;
         [SerializeField] private Button darkBlueButton;
@@ -37,7 +36,6 @@ namespace ArenaZ.Screens
             lightBlueButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(lightBlueButton));
             yellowButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(yellowButton));
             whiteButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(whiteButton));
-            blackButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(blackButton));
             redButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(redButton));
             greyButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(greyButton));
             darkBlueButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(darkBlueButton));
@@ -52,7 +50,6 @@ namespace ArenaZ.Screens
             lightBlueButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(lightBlueButton));
             yellowButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(yellowButton));
             whiteButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(whiteButton));
-            blackButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(blackButton));
             redButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(redButton));
             greyButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(greyButton));
             darkBlueButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(darkBlueButton));

@@ -76,7 +76,7 @@ namespace DevCommons
             }
 
             // Reads a string from key in player prefs
-            public static string ReadFromPlayerPrefs(string key, string defaultValue)
+            public static string ReadFromPlayerPrefs(string key, string defaultValue = "")
             {
                 string value = string.Empty;
                 if (PlayerPrefs.HasKey(key))

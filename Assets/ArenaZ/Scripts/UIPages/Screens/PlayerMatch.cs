@@ -4,12 +4,19 @@ using ArenaZ.Manager;
 using System.Collections;
 using RedApple;
 using ArenaZ.GameMode;
+using System.Collections.Generic;
+using ArenaZ;
+using DevCommons.Utility;
 
 public class PlayerMatch : Singleton<PlayerMatch>
 {
-    [Header("Images")][Space(5)]
-    [SerializeField] private Image userProfileImage;
-    [SerializeField] private Image enemyProfileImage;
+    [Header("User Image")]
+    [SerializeField] private Image userFrame;
+    [SerializeField] private Image userPic;
+
+    [Header("Opponent Image")]
+    [SerializeField] private Image opponentFrame;
+    [SerializeField] private Image opponentPic;
 
     [Header("Text")][Space(5)]
     [SerializeField] private Text userName;
@@ -17,7 +24,6 @@ public class PlayerMatch : Singleton<PlayerMatch>
 
     [Header("Text")][Space(5)]
     [SerializeField] private AnimationClip animClip;
-
 
     private void Start()
     {
@@ -27,9 +33,22 @@ public class PlayerMatch : Singleton<PlayerMatch>
         ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
     }
 
-    public void SetUserProfileImage(string imageName)
+    public void SetUserProfileImage(string race, string color)
     {
-        userProfileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Medium);
+        ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+        EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+        SquareFrameData t_FrameData = DataHandler.Instance.GetSquareFrameData(t_Color);
+        if (t_FrameData != null)
+        {
+            userFrame.sprite = t_FrameData.FramePic;
+        }
+
+        CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+        if (t_CharacterPicData != null)
+        {
+            userPic.sprite = t_CharacterPicData.ProfilePic;
+        }
     }
 
     public void SetUserName(string userName)
@@ -37,9 +56,22 @@ public class PlayerMatch : Singleton<PlayerMatch>
         this.userName.text = userName;
     }
 
-    public void SetOpponentProfileImage(string imageName)
+    public void SetOpponentProfileImage(string race, string color)
     {
-        enemyProfileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Medium);
+        ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+        EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+        SquareFrameData t_FrameData = DataHandler.Instance.GetSquareFrameData(t_Color);
+        if (t_FrameData != null)
+        {
+            opponentFrame.sprite = t_FrameData.FramePic;
+        }
+
+        CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+        if (t_CharacterPicData != null)
+        {
+            opponentPic.sprite = t_CharacterPicData.ProfilePic;
+        }
     }
 
     public void SetOpponentName(string OpponentName)

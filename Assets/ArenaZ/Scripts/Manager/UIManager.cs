@@ -35,7 +35,7 @@ namespace ArenaZ.Manager
         [SerializeField] private ProfileImage[] ProfilePic = new ProfileImage[7];
 
         //Public Variables
-        public Action<string> showProfilePic;
+        public Action<string, string> showProfilePic;
         public Action<string> setUserName;
 
         protected override void Awake()
@@ -122,7 +122,7 @@ namespace ArenaZ.Manager
             if(_openPages.Count > 0)
             {
                 string screenName = _openPages.Peek();
-                Debug.Log($"HideOpenScreen: {screenName}");
+                //Debug.Log($"HideOpenScreen: {screenName}");
                 HideScreenImmediately(_openPages.Peek());
                 _openPages.Pop();
             }           
@@ -130,7 +130,7 @@ namespace ArenaZ.Manager
 
         public void ShowScreen(string screenName)
         {
-            Debug.Log($"ShowScreen: {screenName}");
+            //Debug.Log($"ShowScreen: {screenName}");
             if (!allPages.ContainsKey(screenName) || allPages[screenName].gameObject.activeInHierarchy)
                 return;
             if (allPages.ContainsKey(screenName))
@@ -153,7 +153,7 @@ namespace ArenaZ.Manager
 
         public void HideScreen(string screenName)
         {
-            Debug.Log($"HideScreen: {screenName}");
+            //Debug.Log($"HideScreen: {screenName}");
             if (!allPages.ContainsKey(screenName) || !allPages[screenName].gameObject.activeInHierarchy)
                 return;
             if (allPages.ContainsKey(screenName))
@@ -162,7 +162,7 @@ namespace ArenaZ.Manager
 
         public void HideScreenImmediately(string screenName)
         {
-            Debug.Log($"HideScreenImmediately: {screenName}");
+            //Debug.Log($"HideScreenImmediately: {screenName}");
             if (!allPages.ContainsKey(screenName))
                 return;
             if (allPages[screenName].gameObject.activeInHierarchy)

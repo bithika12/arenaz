@@ -5,6 +5,7 @@ using RedApple;
 using RedApple.Api.Data;
 using System;
 using ArenaZ.Screens;
+using DevCommons.Utility;
 
 namespace ArenaZ.GameMode
 {
@@ -19,19 +20,20 @@ namespace ArenaZ.GameMode
         [SerializeField] private Button coinButton250;
         [SerializeField] private Button coinButton500;
 
+        [Header("User Image")]
+        [SerializeField] private Image userFrame;
+        [SerializeField] private Image userPic;
+
         [Header("Images")]
-        [Space(5)]
-        [SerializeField] private Image profileImage;
         [SerializeField] private Image dartImage;
 
         [Header("Text")]
-        [Space(5)]
         [SerializeField] private Text userName;
 
         [SerializeField] private GameLoading gameLoading;
 
         public Action<string> setOpponentName;
-        public Action<string> setOpponentImage;
+        public Action<string, string> setOpponentImage;
 
         private void Start()
         {
@@ -39,7 +41,7 @@ namespace ArenaZ.GameMode
             ListenSocketEvents();
             CharacterSelection.setDart += SetDartImage;
             UIManager.Instance.setUserName += SetUserName;
-            UIManager.Instance.showProfilePic += SetProfileImage;
+            UIManager.Instance.showProfilePic += SetUserProfileImage;
         }
 
         private void OnDestroy()
@@ -71,7 +73,7 @@ namespace ArenaZ.GameMode
 
         private void ListenSocketEvents()
         {
-            SocketListener.Listen(SocketListenEvents.userJoin.ToString(), OnUserJoin);
+            SocketListener.Listen(SocketListenEvents.userJoined.ToString(), OnUserJoin);
             SocketListener.Listen(SocketListenEvents.noUser.ToString(), OnNoUser);
             SocketListener.Listen(SocketListenEvents.gameStart.ToString(), OnGameStart);
         }
@@ -84,6 +86,8 @@ namespace ArenaZ.GameMode
 
             Debug.Log($"Game Start : {data}");
             var gameStartData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
+            User.RoomName = gameStartData.result.RoomName;
+            Debug.Log($"User Join RoomName: {User.RoomName}");
             UserJoin[] users = gameStartData.result.Users;
             for (int i = 0; i < users.Length; i++)
             {
@@ -92,7 +96,7 @@ namespace ArenaZ.GameMode
                 {
                     saveOpponentData(users[i]);
                     setOpponentName?.Invoke(users[i].UserName);
-                    setOpponentImage?.Invoke(users[i].RaceName);
+                    setOpponentImage?.Invoke(users[i].RaceName, users[i].ColorName);
                     UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString(),Hide.none);
                 }
             }
@@ -112,9 +116,9 @@ namespace ArenaZ.GameMode
 
         private void OnUserJoin(string data)
         {
-            Debug.Log($"User Join: {data}");
+            Debug.Log($"User Joined: {data}");
             var userJoinData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
-            Debug.Log($"User Join RoomName: {userJoinData.result.RoomName}");
+            Debug.Log($"User Joined RoomName: {userJoinData.result.RoomName}");
             User.RoomName = userJoinData.result.RoomName;
         }
 
@@ -126,13 +130,27 @@ namespace ArenaZ.GameMode
 
         public void SetDartImage(string dartName)
         {
-            string path = GameResources.dartImageFolderPath + "/" + dartName+User.UserColor;
+            string path = GameResources.dartImageFolderPath + "/" + dartName + User.UserColor;
+            Debug.Log($"2D Dart Path: {path}");
             dartImage.sprite = Resources.Load<Sprite>(path);
         }
 
-        public void SetProfileImage(string imageName)
+        public void SetUserProfileImage(string race, string color)
         {
-            profileImage.sprite = UIManager.Instance.GetProfile(imageName, ProfilePicType.Medium);
+            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+            SquareFrameData t_FrameData = DataHandler.Instance.GetSquareFrameData(t_Color);
+            if (t_FrameData != null)
+            {
+                userFrame.sprite = t_FrameData.FramePic;
+            }
+
+            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+            if (t_CharacterPicData != null)
+            {
+                userPic.sprite = t_CharacterPicData.ProfilePic;
+            }
         }
 
         public void SetUserName(string userName)

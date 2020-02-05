@@ -46,6 +46,8 @@ namespace Arenaz.LogoutUser
         private void OnCompleteLogout()
         {
             FileHandler.DeleteSaveFile(ConstantStrings.USER_SAVE_FILE_KEY);
+            FileHandler.ClearPlayerPrefs();
+
             OnClickLogOutAlertClose();
             Settings.Instance.AfterCompleteLogout();
         }
