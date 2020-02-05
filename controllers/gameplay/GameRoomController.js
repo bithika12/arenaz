@@ -619,6 +619,7 @@ io.on('connection', function (socket) {
                 }
 
             }).catch(err => {
+                console.log("eror while fetch socket");
                 io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
                 callback();
             })

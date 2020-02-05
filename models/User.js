@@ -210,7 +210,19 @@ User.findDetails = function(condObj){
              dartName:{$elemMatch: {status: 1}},
              characterName:{$elemMatch: {status: 1}}
          }).then(responses=> {
-             return resolve(responses);
+             let chart=[];
+
+             responses.map(function(key,entry) {
+                chart.push({
+                    userRank:key+1,
+                    userName:entry.userName,
+                    cupNumber:entry.cupNumber,
+                    colorName:entry.cupNo,
+                    raceName:entry1.raceName
+
+                });
+             });
+             return resolve(chart);
          }).catch(err => {
              return reject(err);
          });
@@ -250,8 +262,10 @@ User.checkUserToken = function(condObj){
  User.getUserSocketDetails = function(condObj){
      return  new Promise((resolve,reject) => {
          User.findOne({_id:condObj.userId}, {_id: 1, userName:1, email:1, status:1, sockets:1}).then(responses=> {
+             console.log("success for fetching socket");
              return resolve({_id :responses._id ,userName : responses.userName, socketId :  responses.sockets[responses.sockets.length -1]._id });
          }).catch(err => {
+             console.log("user socket details not found while call game request");
              return reject({message:err});
          });
      });
