@@ -200,6 +200,23 @@ User.findDetails = function(condObj){
          });
      });
  }
+ //findLeaderboard
+ User.findLeaderboard = function(condObj){
+     console.log(" condObj",)
+     return  new Promise((resolve,reject) => {
+         User.find({status: "active"},{cupNo:1,userName:1,
+             colorName:{$elemMatch: {status: 1}},
+             raceName:{$elemMatch: {status: 1}},
+             dartName:{$elemMatch: {status: 1}},
+             characterName:{$elemMatch: {status: 1}}
+         }).then(responses=> {
+             return resolve(responses);
+         }).catch(err => {
+             return reject(err);
+         });
+     });
+ }
+
 
 
 /*******   CHECK USER TOKEN   *******/

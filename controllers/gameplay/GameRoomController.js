@@ -253,14 +253,14 @@ io.on('connection', function (socket) {
                         }
                         else {
                             gameStartObj.i = i
-                            timer = setTimeout(gameStartTimmer, 30000, gameStartObj);
+                            timer = setTimeout(gameStartTimmer, 3000, gameStartObj);
                         }
                     }
                 } else {
                     console.log("player left");
                     callback("playergone", null);
                }
-            }, 30000,reqobj);
+            }, 3000,reqobj);
         }
     }
     function waitingForUserOrg(reqobj) {

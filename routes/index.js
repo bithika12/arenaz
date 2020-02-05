@@ -28,9 +28,11 @@ router.get('/', function(req, res, next) {
 
   const fetchGameHistory = require(appRoot + '/controllers/GameHistoryController');
   const fetchNotification= require(appRoot + '/controllers/FetchNotificationController');
+  const userLeaderBoard= require(appRoot + '/controllers/userLeaderBoardController');
 
 
-   /**  LOGIN ROUTING **/
+
+/**  LOGIN ROUTING **/
   router.post('/registration',userController.registration);
   //router.post('/socal-login',userController.socialLogin);
   router.post('/login',userController.login);
@@ -45,6 +47,9 @@ router.post('/add/details',profileController.colorReg);
 
 router.post('/get/details',profileController.getColorReg);
 router.post('/fetch/notifications',fetchNotification.fetchGame);
+//leaderboard api
+router.post('/user/leaderboard',userLeaderBoard.fetchDetails);
+
 
 
  /* FORGET PASSWORD RESET PASSWORD*/

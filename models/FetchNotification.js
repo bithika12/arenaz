@@ -44,4 +44,18 @@ const userValidChk = userEmail => {
         });
     });
 };
-module.exports = { fetchNotification,userValidChk };
+//user leaderboard
+const fetchDetails = userEmail => {
+
+    return new Promise((resolve, reject) => {
+
+        User.findLeaderboard().then(function (responseParams) {
+            let usrId = responseParams._id+"";
+            resolve(usrId)
+
+        }).catch(function (fetchHistoryErr) {
+            reject({status:Constants.API_ERROR,message:fetchHistoryErr});
+        });
+    });
+};
+module.exports = { fetchNotification,userValidChk,fetchDetails };
