@@ -48,7 +48,7 @@ router.post('/add/details',profileController.colorReg);
 router.post('/get/details',profileController.getColorReg);
 router.post('/fetch/notifications',fetchNotification.fetchGame);
 //leaderboard api
-//.post('/user/leaderboard',userLeaderBoard.fetchDetails);
+router.post('/user/board',userLeaderBoard.fetchGame);
 
 
 
@@ -92,7 +92,9 @@ router.post('/fetch/notifications',fetchNotification.fetchGame);
  //admin/delete-game
  router.post('/admin/delete-game',authetication.authChecker,adminController.disableRoom);
  //delete-coin
- router.post('/admin/delete-coin'/*authetication.authChecker*/,adminController.deleteCoin)
+ router.post('/admin/delete-coin'/*authetication.authChecker*/,adminController.deleteCoin);
  //admin/edit-coin
- router.post('/admin/edit-coin'/*authetication.authChecker*/,adminController.editCoin)
+ router.post('/admin/edit-coin'/*authetication.authChecker*/,adminController.editCoin);
+ ///user/leaderboard
+
 module.exports = router;

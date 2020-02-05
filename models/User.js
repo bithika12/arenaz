@@ -211,14 +211,27 @@ User.findDetails = function(condObj){
              characterName:{$elemMatch: {status: 1}}
          }).then(responses=> {
              let chart=[];
-
-             responses.map(function(key,entry) {
+             let colorName;
+             let raceName;
+             responses.map(function(entry,key) {
+                 if(!entry.colorName.length){
+                     colorName='';
+                 }
+                 else{
+                     colorName=entry.colorName[0]['colorName'];
+                 }
+                 if(!entry.raceName.length){
+                     raceName='';
+                 }
+                 else{
+                     raceName=entry.colorName[0]['colorName'];
+                 }
                 chart.push({
                     userRank:key+1,
                     userName:entry.userName,
-                    cupNumber:entry.cupNumber,
-                    colorName:entry.cupNo,
-                    raceName:entry1.raceName
+                    cupNumber:entry.cupNo,
+                    colorName:colorName,
+                    raceName:raceName
 
                 });
              });

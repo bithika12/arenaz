@@ -50,8 +50,8 @@ const fetchDetails = userEmail => {
     return new Promise((resolve, reject) => {
 
         User.findLeaderboard().then(function (responseParams) {
-            let usrId = responseParams._id+"";
-            resolve(usrId)
+            //let usrId = responseParams._id+"";
+            resolve(responseParams)
 
         }).catch(function (fetchHistoryErr) {
             reject({status:Constants.API_ERROR,message:fetchHistoryErr});
