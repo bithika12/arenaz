@@ -43,6 +43,7 @@ io.on('connection', function(socket){
 
 	socket.on('addUser', function(req){
 		if (req.userId) {
+			console.log("socket id update while call add user"+socket.id);
 			user.updateSocketDetails({ "userId"    :req.userId},{"socketId"  :socket.id}).then((updateSocket)=>{
 				var findIndex = allOnlineUsers.findIndex(function(elemt) {return elemt.userId == req.userId });
 				if(findIndex != -1){

@@ -261,6 +261,7 @@ User.checkUserToken = function(condObj){
  }
  User.getUserSocketDetails = function(condObj){
      return  new Promise((resolve,reject) => {
+         console.log("userId"+condObj.userId);
          User.findOne({_id:condObj.userId}, {_id: 1, userName:1, email:1, status:1, sockets:1}).then(responses=> {
              console.log("success for fetching socket");
              return resolve({_id :responses._id ,userName : responses.userName, socketId :  responses.sockets[responses.sockets.length -1]._id });
