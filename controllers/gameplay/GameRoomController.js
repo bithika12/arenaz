@@ -555,7 +555,7 @@ io.on('connection', function (socket) {
 
                                             } else
                                                 logger.print("***GAME START ERROR ", err);
-                                            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
+                                            io.sockets.to(socket.id).emit('error1', response.generate(constants.ERROR_STATUS, {message: err}));
                                         });
                                     }
                                     if (joineeDetails.users.length === 2) {
@@ -591,10 +591,10 @@ io.on('connection', function (socket) {
                                             callback();
                                         })*/
 
-                                }).catch(err => {
+                                })/*.catch(err => {
                                     io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
                                     callback();
-                                })
+                                })*/
 
                             }).catch(err => {
                                 io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
