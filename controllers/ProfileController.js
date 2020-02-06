@@ -219,6 +219,8 @@ exports.updatePassword = function (req,res){
          raceName:  Joi.string().required(),
          dartName:  Joi.string().required(),
          characterId:  Joi.string().required(),
+         countryName: Joi.string().required(),
+         languageName: Joi.string().required(),
    });
 
      const {body} = req;
@@ -242,6 +244,15 @@ exports.updatePassword = function (req,res){
              })
                .then(nameUpdate => {
                    return user.characterRequestProfile({userEmail: req.body.userEmail}, {"characterName": req.body.characterId}
+                   );
+               })
+               .then(characterUpdate => {
+                   return user.countryRequestProfile({userEmail: req.body.userEmail}, {"countryName": req.body.countryName}
+                   );
+               })
+               //languageRequestProfile
+               .then(countryUpdate => {
+                   return user.languageRequestProfile({userEmail: req.body.userEmail}, {"languageName": req.body.languageName}
                    );
                })
              .then(resp => {

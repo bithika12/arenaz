@@ -651,9 +651,9 @@ room.userLeaveNew = function (condObj, updateObj) {
                 let userCoin;
 
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
-
+                //here opponent is winner
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
-
+                //winner user id
                 let findIndexOppoUserId=userArr[findIndexOppo].userId;
 
 
@@ -694,7 +694,8 @@ room.userLeaveNew = function (condObj, updateObj) {
                     cupNumber: cupNumber,
                     gameTotalTime:gameSeconds,
                     opponentUserId:findIndexOppoUserId,
-                    opponentCup:cupNumberOppo,
+                    opponentCup:userArr[findIndexOppo].cupNumber,
+                    //opponentCup:cupNumberOppo,
                     opponentCoin:opponentCoin,
                     userCoin:userCoin
                 });
@@ -813,6 +814,7 @@ room.updateInmemoryRoom = function (userObj, updateArr) {
 
 room.updateInmemoryRoomMod = function (updateArr) {
     return new Promise((resolve, reject) => {
+        console.log("816 inmpre1"+updateArr.opponentCup);
 
         room.update({roomName: updateArr.roomName}, {$set: {gameTotalTime:updateArr.gameTotalTime,users: updateArr.finalArr}},
 
@@ -835,9 +837,10 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             playerScore: updateArr.playerScore,
                             cupNumber: updateArr.cupNumber,
                             gameTotalTime:updateArr.gameTotalTime,
-                            availableCoin:updateArr.availableCoin,
-                            cupOpponent:updateArr.cupOpponent,
-                            opponentUserId:updateArr.opponentUserId
+                            availableCoin:updateArr.userCoin,
+                            opponentCup:updateArr.opponentCup,
+                            opponentUserId:updateArr.opponentUserId,
+                            opponentCoin:updateArr.opponentCoin
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else

@@ -125,7 +125,13 @@ User.updateUserDetails =function(condObj,updateObj){
      return  new Promise((resolve,reject) => {
 
          User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
+             console.log("user cup number"+responses.cupNo);
+             console.log("user coin"+responses.startCoin);
+             console.log("update cup"+updateObj.cupNo);
+             console.log("update coin"+updateObj.startCoin);
              let updatedCoin=responses.startCoin + updateObj.startCoin;
+             console.log("win coin"+updatedCoin);
+             //console.log("")
              let updatedCup=responses.cupNo + updateObj.cupNo;
              let total_no_win=responses.total_no_win+1;
              User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win} }).then(updatedResponses=> {
@@ -703,7 +709,63 @@ User.resetPassword = function(condObj,updateObj){
  }
 
 //dartRequestProfile
+ //countryRequestProfile
 
+ User.countryRequestProfile  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({email :condObj.userEmail },
+             {_id: 1, userName:1, email:1, status:1, countryName: 1 }).then(userDetails=> {
+
+             if(userDetails && userDetails.countryName.length > 0){
+                 if(userDetails.countryName==updateObj.countryName) {
+                     return resolve(userDetails);
+                 }
+                 else{
+                     User.updateOne({email :condObj.userEmail},{$set :{ "countryName":updateObj.countryName}}).then(responses=> {
+                         return resolve(responses);
+                     }).catch(err => {
+                         reject(err);
+                     });
+                 }
+             }else{
+                 User.updateOne({email :condObj.userEmail},{$set :{ "countryName":updateObj.countryName}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
+
+ User.languageRequestProfile  = function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+         let currentDay = moment().format('YYYY-MM-DD');
+         User.findOne({email :condObj.userEmail },
+             {_id: 1, userName:1, email:1, status:1, languageName: 1 }).then(userDetails=> {
+
+             if(userDetails && userDetails.languageName.length > 0){
+                 if(userDetails.languageName==updateObj.languageName) {
+                     return resolve(userDetails);
+                 }
+                 else{
+                     User.updateOne({email :condObj.userEmail},{$set :{ "languageName":updateObj.languageName}}).then(responses=> {
+                         return resolve(responses);
+                     }).catch(err => {
+                         reject(err);
+                     });
+                 }
+             }else{
+                 User.updateOne({email :condObj.userEmail},{$set :{ "languageName":updateObj.languageName}}).then(responses=> {
+                     return resolve(responses);
+                 }).catch(err => {
+                     reject(err);
+                 });
+             }
+         });
+     });
+ }
  User.characterRequestProfile  = function(condObj,updateObj){
      return  new Promise((resolve,reject) => {
          let currentDay = moment().format('YYYY-MM-DD');
@@ -784,6 +846,8 @@ User.resetPassword = function(condObj,updateObj){
      return  new Promise((resolve,reject) => {
          User.findOne({email:condObj.email},
              {/*_id: 1,name:1,email:1,status:1,userName:1,*/
+                 countryName:1,
+                 languageName:1,
                  colorName:{$elemMatch: {status: 1}},
                  raceName:{$elemMatch: {status: 1}},
                  dartName:{$elemMatch: {status: 1}},
@@ -792,6 +856,8 @@ User.resetPassword = function(condObj,updateObj){
              .then(responses=> {
                  let totalArr=[];
                  let resObj={
+                     countryName:responses.countryName,
+                     languageName:responses.languageName,
                      colorName: responses.colorName[0]['colorName'],
                      raceName: responses.raceName[0]['raceName'],
                      dartName: responses.dartName[0]['dartName'],
