@@ -24,4 +24,8 @@ public class UserJoin
     public int Turn { get; set; }
     [JsonProperty("dartPoint")]
     public string DartPoint { get; set; }
+    [JsonProperty("total_no_win")]
+    public int TotalNoWin { get; set; }
+    [JsonProperty("roomCoin")]
+    public int RoomCoin { get; set; }
 }

@@ -141,6 +141,28 @@ namespace RedApple
             sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
         }
 
+        public static void FetchNotifications(string a_UserEmail, Action<MessageDetails> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FETCH_NOTIFICATIONS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        public static void FetchLeaderboard(string a_UserEmail, Action<LeaderboardDetails> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FETCH_LEADERBOARD))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
         private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
         {
             Instance.restUtil.Send(builder, handler => { onCompletion?.Invoke(); },

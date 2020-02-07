@@ -46,7 +46,7 @@ namespace ArenaZ.Screens
             UIManager.Instance.setUserName += SetUserName;
             PlayerColorChooser.setColorAfterChooseColor += SetColorOnCharacter;
 
-            //Invoke("Initialize", 1.5f);
+            Invoke("Initialize", 1.5f);
         }
 
         public void Initialize()

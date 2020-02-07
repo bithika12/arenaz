@@ -3,6 +3,7 @@ using System;
 using socket.io;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using DevCommons.Utility;
 
 namespace RedApple
 {
@@ -30,7 +31,6 @@ namespace RedApple
         #region Socket Emit
         public void AddUser()
         {
-            return;
             AccesToken acToken = new AccesToken
             {
                 AccessToken = User.UserAccessToken

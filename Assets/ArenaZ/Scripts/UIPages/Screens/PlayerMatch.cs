@@ -92,5 +92,6 @@ public class PlayerMatch : Singleton<PlayerMatch>
         Debug.Log("-----------------------------LoadGameplayAfterAnim-----------------------------");
         UIManager.Instance.HideScreen(Page.UIPanel.ToString());
         UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(),Hide.none);
+        GameManager.Instance.InitializeOnGameStartSequences();
     }
 }

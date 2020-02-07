@@ -10,21 +10,21 @@ namespace DevCommons
     {
         public class Cell<T> : MonoBehaviour
         {
-            public Button _customButton;
+            [SerializeField]protected Button m_CustomButton;
 
             protected T m_CellData;
-            protected Action<object> m_OnClickCallback;
+            protected Action<T> m_OnClickCallback;
 
             private void Awake()
             {
-                if (_customButton == null)
+                if (m_CustomButton == null)
                 {
                     Button button = GetComponent<Button>();
                     if (button != null)
                         button.onClick.AddListener(OnClick);
                 }
                 else
-                    _customButton.onClick.AddListener(OnClick);
+                    m_CustomButton.onClick.AddListener(OnClick);
             }
 
             protected virtual void OnClick()
@@ -32,18 +32,18 @@ namespace DevCommons
                 m_OnClickCallback?.Invoke(m_CellData);
             }
 
-            public virtual void InitializeCell(T cellData, Action<object> onClickCallback = null)
+            public virtual void InitializeCell(T cellData, Action<T> onClickCallback = null)
             {
                 m_CellData = cellData;
                 m_OnClickCallback = onClickCallback;
             }
 
-            public virtual void InitializeCallback(Action<object> onClickCallback = null)
+            public virtual void InitializeCallback(Action<T> onClickCallback = null)
             {
                 m_OnClickCallback = onClickCallback;
             }
 
-            public virtual void UpdateCell(T cellData, Action<object> onClickCallback = null)
+            public virtual void UpdateCell(T cellData, Action<T> onClickCallback = null)
             {
                 m_CellData = cellData;
                 m_OnClickCallback = onClickCallback;

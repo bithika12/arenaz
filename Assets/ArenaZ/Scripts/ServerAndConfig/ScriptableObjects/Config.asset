@@ -22,9 +22,9 @@ MonoBehaviour:
     - userConnected
     - colorGet
     - gameStart
-    - userJoined
     - nextTurn
     - gameThrow
     - gameOver
     - noUser
     - connectedRoom
+    - userJoined

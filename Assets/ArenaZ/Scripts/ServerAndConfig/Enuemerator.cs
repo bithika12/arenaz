@@ -19,4 +19,5 @@ public enum SocketListenEvents
     gameThrow,
     gameOver,
     noUser,
+    connectedRoom,
 }

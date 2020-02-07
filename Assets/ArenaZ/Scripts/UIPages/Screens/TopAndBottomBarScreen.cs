@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using ArenaZ.Manager;
-using ArenaZ.Mail;
 using RedApple;
 using System.Collections.Generic;
 using System;
@@ -62,8 +61,7 @@ namespace ArenaZ.Screens
 
         private void MailButtonClicked()
         {
-            UIManager.Instance.ShowScreen(Page.MailboxPanel.ToString(),Hide.previous);
-            MailboxManager.Instance.DeactivateScreenIfActivated();
+            UIManager.Instance.ShowScreen(Page.MailboxPanel.ToString(), Hide.previous);
         }
 
         private void HistoryButtonClicked()

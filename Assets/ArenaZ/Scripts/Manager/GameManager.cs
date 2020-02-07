@@ -12,12 +12,20 @@ using System.Collections;
 using ArenaZ.Screens;
 using DevCommons.Utility;
 using DG.Tweening;
+using System.Linq;
 
 namespace ArenaZ.Manager
 {
     [RequireComponent(typeof(TouchBehaviour))]
     public class GameManager : Singleton<GameManager>
     {
+        public enum EGameState
+        {
+            Idle,
+            JustStartedPlaying,
+            Playing,
+        }
+
         public enum Player
         {
             Self,
@@ -56,17 +64,27 @@ namespace ArenaZ.Manager
         //private Dictionary<string, int> gameScore = new Dictionary<string, int>();
         private float timer = ConstantInteger.timerValue;
 
+        private EGameState gameState = EGameState.Idle;
+
         private GameSoreData selfGameScoreData;
         private GameSoreData opponentGameScoreData;
+
+        [SerializeField] private ScoreGraphic scoreGraphic;
+        [SerializeField] private AlarmClock alarmClock;
+
+        [Header("Hit Particle")]
+        [SerializeField] private GameObject hitParticleParent;
+        [SerializeField] private ParticleSystem hitParticleSystem;
+
+        private GeneralTimer genericTimer;
 
         public Action<string> setUserName;
         public Action<string, string> setUserImage;
 
         public Player PlayerType { get; set; }
 
-        private GeneralTimer genericTimer;
-
-        // Public Variables      
+        private Player lastPlayerType;
+        private bool firstTime = false;
 
         protected override void Awake()
         {
@@ -105,6 +123,22 @@ namespace ArenaZ.Manager
         private void setDartColor(string colorName, GameObject dartGameObj)
         {
             // dartGameObj.GetComponent<MeshRenderer>().material.color = 
+        }
+
+        public void InitializeOnGameStartSequences()
+        {
+            Debug.Log("Playing For First Time");
+            gameState = EGameState.JustStartedPlaying;
+            firstTime = true;
+            ClearFakeDarts();
+
+            StartCoroutine(PastFiveSecond());
+        }
+
+        private IEnumerator PastFiveSecond()
+        {
+            yield return new WaitForSeconds(5.0f);
+            gameState = EGameState.Playing;
         }
 
         private void SetUserName(string userName)
@@ -165,6 +199,11 @@ namespace ArenaZ.Manager
             }
         }
 
+        private void onTimeEnding()
+        {
+            alarmClock.Show();
+        }
+
         private void resetTimerRelatedValues()
         {
             timer = ConstantInteger.timerValue;
@@ -189,10 +228,16 @@ namespace ArenaZ.Manager
 
             cameraController.SetCameraPosition(Player.Self);
             genericTimer.StopTimer();
-            displayPopup(false);
-            //onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
+
+            if (gameState == EGameState.JustStartedPlaying)
+                onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
+            else if (gameState == EGameState.Playing)
+                displayPopup(false);
+
             if (currentDart != null)
                 StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
+            gameState = EGameState.Idle;
+            ClearFakeDarts();
         }
 
         private void onGameOver(string data)
@@ -201,25 +246,27 @@ namespace ArenaZ.Manager
             genericTimer.StopTimer();
             Debug.Log($"OnGameOver : {data}" + "  User Id: " + User.UserId);
             var gameOverData = DataConverter.DeserializeObject<ApiResponseFormat<GameOver>>(data);
-            if(gameOverData.Result.UserId == User.UserId)
+
+            if (gameState == EGameState.JustStartedPlaying)
+                onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
+            else if (gameState == EGameState.Playing)
             {
-                displayPopup(true);
-                //onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
-            }
-            else 
-            {
-                displayPopup(false);
-                //onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
+                if (gameOverData.Result.UserId == User.UserId)
+                    displayPopup(true);
+                else
+                    displayPopup(false);
             }
 
             if (currentDart != null)
-            {
                 StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
-            }
+
+            gameState = EGameState.Idle;
+            ClearFakeDarts();
         }
 
         private void onOpenWinloosePopUp(Page popUpName, string userName, string race, string color)
         {
+            Debug.Log($"OnEndGame PageName: {popUpName.ToString()}");
             UIManager.Instance.ShowScreen(Page.UIPanel.ToString());
             //UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(popUpName.ToString(),Hide.previous);
@@ -232,35 +279,37 @@ namespace ArenaZ.Manager
         {
             if (a_Won)
             {
+                loosePopup.transform.localScale = Vector3.zero;
+                loosePopup.SetActive(false);
+
                 winPopup.transform.localScale = Vector3.zero;
                 winPopup.SetActive(true);
 
                 Sequence t_Sequence = DOTween.Sequence();
                 t_Sequence.Append(winPopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce));
                 t_Sequence.AppendInterval(1.0f);
-                t_Sequence.AppendCallback(() => onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor));
-
-                //winPopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce).OnComplete(() => 
-                //onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor));
-
-                loosePopup.transform.localScale = Vector3.zero;
-                loosePopup.SetActive(false);
+                t_Sequence.AppendCallback(() => 
+                {
+                    winPopup.SetActive(false);
+                    onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor); 
+                });
             }
             else
             {
+                winPopup.transform.localScale = Vector3.zero;
+                winPopup.SetActive(false);
+
                 loosePopup.transform.localScale = Vector3.zero;
                 loosePopup.SetActive(true);
 
                 Sequence t_Sequence = DOTween.Sequence();
                 t_Sequence.Append(winPopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce));
                 t_Sequence.AppendInterval(1.0f);
-                t_Sequence.AppendCallback(() => onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor));
-
-                //loosePopup.transform.DOScale(wonPopupOriginalScale, 0.5f).SetEase(Ease.InBounce).OnComplete(() =>
-                //onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor));
-
-                winPopup.transform.localScale = Vector3.zero;
-                winPopup.SetActive(false);
+                t_Sequence.AppendCallback(() => 
+                {
+                    loosePopup.SetActive(false);
+                    onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
+                });
             }
         }
 
@@ -285,6 +334,20 @@ namespace ArenaZ.Manager
                 touchBehaviour.IsShooted = true;
                 genericTimer.StartTimer(onOponnetTimerComplete);
             }
+
+            if (firstTime)
+            {
+                firstTime = false;
+                lastPlayerType = PlayerType;
+            }
+            else
+            {
+                if (lastPlayerType != PlayerType)
+                {
+                    lastPlayerType = PlayerType;
+                    ClearFakeDarts();
+                }
+            }
         }
 
         private void onOponnetTimerComplete()
@@ -299,6 +362,7 @@ namespace ArenaZ.Manager
         {
             // Call Drat Throw Event WIth ZERO values
             Debug.Log("On Player Timer complete");
+            alarmClock.Show();
             SocketManager.Instance.ThrowDartData(0, ConstantStrings.turnCancelled);
             StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
             resetTimerRelatedValues();
@@ -328,17 +392,43 @@ namespace ArenaZ.Manager
         public void OnCompletionDartHit(GameObject dartGameObj)
         {
             Debug.Log("On Completion Dart Hit");
+            InstantiateFakeDart(dartGameObj);
             StartCoroutine(destroyDartAfterACertainTime(1, dartGameObj));
             if (PlayerType == Player.Self)
             {
                 Debug.Log("Player...");
                 BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
                 int hitScore = boardBody.HitPointScore * boardBody.ScoreMultiplier;
+                scoreGraphic.ShowScore(boardBody.HitPointScore, boardBody.ScoreMultiplier);
                 Debug.Log("Player Hit Score:  " + hitScore);
                 if (hitScore < selfGameScoreData.Score)
                     storeCalculatedgameScore(Player.Self, hitScore);
+                else
+                    scoreGraphic.ScoreDenied();
                 SocketManager.Instance.ThrowDartData(hitScore, touchBehaviour.LastTouchPosition);
-            }          
+            }
+
+            PlayDartHitParticle(dartGameObj.transform.position);
+        }
+
+        List<GameObject> fakeDarts = new List<GameObject>();
+        private void InstantiateFakeDart(GameObject dartGameObj)
+        {
+            Debug.Log("Instantiate FakeDart");
+            GameObject t_Go = Instantiate(dartGameObj, dartGameObj.transform.position, dartGameObj.transform.rotation);
+            Dart t_Dart = t_Go.GetComponent<Dart>();
+            if (t_Dart != null)
+                Destroy(t_Dart);
+            fakeDarts.Add(t_Go);
+        }
+
+        private void ClearFakeDarts()
+        {
+            if (fakeDarts.Any())
+            {
+                fakeDarts.ForEach(x => Destroy(x));
+                fakeDarts.Clear();
+            }
         }
 
         private Vector3 getValue(string vectorValue)
@@ -380,12 +470,14 @@ namespace ArenaZ.Manager
 
         private void DartMove(Vector3 dartPosition)
         {
-            currentDart.transform.position = dartPosition;
+            if (currentDart != null)
+                currentDart.transform.position = dartPosition;
         }
 
         public void InstantiateDart(GameObject dartGameObj)
         {
             currentDart = Instantiate(dartGameObj, Vector3.zero,Quaternion.identity).GetComponent<Dart>();
+            currentDart.DoFlash();
             Debug.Log("Current Dart: " + currentDart.name);
         }
 
@@ -401,8 +493,16 @@ namespace ArenaZ.Manager
         {
             resetTimerRelatedValues();
             genericTimer.StopTimer();
+            currentDart.StopFlash();
             currentDart.TweenthroughPoints(hitPoint);
             Debug.Log("Throw Dart");
+        }
+
+        private void PlayDartHitParticle(Vector3 a_Position)
+        {
+            hitParticleSystem.Stop();
+            hitParticleParent.transform.position = new Vector3(a_Position.x, a_Position.y, hitParticleParent.transform.position.z);
+            hitParticleSystem.Play();
         }
     }
 

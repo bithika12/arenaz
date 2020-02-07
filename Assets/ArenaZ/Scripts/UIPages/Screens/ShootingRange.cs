@@ -73,7 +73,7 @@ namespace ArenaZ.GameMode
 
         private void ListenSocketEvents()
         {
-            SocketListener.Listen(SocketListenEvents.userJoined.ToString(), OnUserJoin);
+            SocketListener.Listen(SocketListenEvents.connectedRoom.ToString(), OnConnectedRoom);
             SocketListener.Listen(SocketListenEvents.noUser.ToString(), OnNoUser);
             SocketListener.Listen(SocketListenEvents.gameStart.ToString(), OnGameStart);
         }
@@ -114,12 +114,12 @@ namespace ArenaZ.GameMode
             Opponent.dartName = joinedUser.DartName;
         }
 
-        private void OnUserJoin(string data)
+        private void OnConnectedRoom(string data)
         {
-            Debug.Log($"User Joined: {data}");
-            var userJoinData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
-            Debug.Log($"User Joined RoomName: {userJoinData.result.RoomName}");
-            User.RoomName = userJoinData.result.RoomName;
+            Debug.Log($"Connected Room: {data}");
+            var t_Data = DataConverter.DeserializeObject<GamePlayDataFormat<UserConnectedDetails>>(data);
+            Debug.Log($"ConnectedRoom RoomName: {t_Data.result.RoomName}");
+            User.RoomName = t_Data.result.RoomName;
         }
 
         private void OnNoUser(string data)

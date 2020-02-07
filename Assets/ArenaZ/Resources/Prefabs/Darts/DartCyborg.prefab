@@ -203,6 +203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dartObj: {fileID: 1835560138463219405}
   rotationAxis: 2
+  bodyMaterial: {fileID: 2100000, guid: f72c61ce41b997446931c2efbbb761a0, type: 2}
 --- !u!54 &6630298064900759321
 Rigidbody:
   m_ObjectHideFlags: 0

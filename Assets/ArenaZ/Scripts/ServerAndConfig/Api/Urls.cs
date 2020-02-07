@@ -57,5 +57,7 @@
         public const string GET_SELECTION_DETAILS = "get/details";
 
         public const string GET_GAME_HISTORY = "game/history";
+        public const string FETCH_NOTIFICATIONS = "fetch/notifications";
+        public const string FETCH_LEADERBOARD = "user/board";
     }
 }

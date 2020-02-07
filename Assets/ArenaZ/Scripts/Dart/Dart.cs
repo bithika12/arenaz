@@ -9,6 +9,12 @@ namespace ArenaZ.ShootingObject
 {
     public class Dart : MonoBehaviour
     {
+        public enum EFlashState
+        {
+            Idle,
+            Flashing,
+        }
+
         public enum ERotationAxis
         {
             X,
@@ -18,6 +24,10 @@ namespace ArenaZ.ShootingObject
 
         [SerializeField] private Transform dartObj;
         [SerializeField] private ERotationAxis rotationAxis;
+
+        [SerializeField] private Material bodyMaterial;
+
+        private EFlashState flashState = EFlashState.Idle;
 
         private Rigidbody dartRB;
 
@@ -39,7 +49,7 @@ namespace ArenaZ.ShootingObject
             int pointsNum = points.Length;
             for (int i = 1; i < pointsNum + 1; i++)
             {
-                time = i / (float)pointsNum;               
+                time = i / (float)pointsNum;
                 points[i - 1] = CalculateQuadraticBeizerCurve(time, point);
             }
         }
@@ -58,7 +68,7 @@ namespace ArenaZ.ShootingObject
                 AddPointsToArray(endPosition);
                 transform.DOPath(points, .6f, PathType.CatmullRom)
                          .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
-                         .OnComplete(()=> 
+                         .OnComplete(() =>
                          {
                              GameManager.Instance.OnCompletionDartHit(this.gameObject);
                              dartObj.DOKill();
@@ -66,7 +76,7 @@ namespace ArenaZ.ShootingObject
             }
         }
 
-        private Vector3 CalculateQuadraticBeizerCurve(float time,Vector3 pointThree)
+        private Vector3 CalculateQuadraticBeizerCurve(float time, Vector3 pointThree)
         {
             Vector3 pointTwo = (transform.position + pointThree) / 2;
             pointTwo.y += _screenMiddleOffset;
@@ -77,5 +87,43 @@ namespace ArenaZ.ShootingObject
             Vector3 calculation = (squareOfInitialV * transform.position) + (2 * initialV * time * pointTwo) + (squareOfTime * pointThree);
             return calculation;
         }
-    }
+
+        Tween tween;
+        public void DoFlash()
+        {
+            float t_Intensity = 0;
+            tween = DOTween.To(() => t_Intensity, x => 
+            { 
+                t_Intensity = x;
+                SetMaterialEmissionIntensity(bodyMaterial, t_Intensity);
+            }, 1.0f, 1.0f).SetLoops(-1, LoopType.Yoyo);
+        }
+
+        public void StopFlash()
+        {
+            if (tween != null)
+            {
+                tween.Kill();
+                SetMaterialEmissionIntensity(bodyMaterial, 0.0f);
+            }
+        }
+
+        public void ChangeColor(Color color)
+        {
+
+        }
+
+        private void SetMaterialEmissionIntensity(Material mat, float intensity)
+        {
+            // get the material at this path
+            Color color = mat.GetColor("_Color");
+
+            // for some reason, the desired intensity value (set in the UI slider) needs to be modified slightly for proper internal consumption
+            float adjustedIntensity = intensity - (0.4169F);
+
+            // redefine the color with intensity factored in - this should result in the UI slider matching the desired value
+            color *= Mathf.Pow(2.0F, adjustedIntensity);
+            mat.SetColor("_EmissionColor", color);
+        }
+    } 
 }
