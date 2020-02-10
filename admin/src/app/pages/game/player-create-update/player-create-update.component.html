@@ -2,12 +2,12 @@
   <div fxLayout="row" fxLayoutAlign="start center" mat-dialog-title>
     <!-- <img *ngIf="form.get('imageSrc').value" [src]="form.get('imageSrc').value" class="avatar mr-5"> -->
 
-    <h2 *ngIf="form.get('firstname').value || form.get('lastname').value"
+    <h2 *ngIf="form.get('name').value || form.get('name').value"
         class="headline m-0"
-        fxFlex="auto">{{ form.get('firstname').value + ' ' + form.get('lastname').value }}</h2>
-    <h2 *ngIf="!form.get('firstname').value && !form.get('lastname').value"
+        fxFlex="auto">{{ form.get('name').value + ' ' + form.get('name').value }}</h2>
+    <h2 *ngIf="!form.get('name').value && !form.get('name').value"
         class="headline m-0"
-        fxFlex="auto">Coin Manage</h2>
+        fxFlex="auto">Game Manage</h2>
 
     <!-- <button [matMenuTriggerFor]="settingsMenu" class="text-secondary" mat-icon-button type="button">
       <mat-icon [icIcon]="icMoreVert"></mat-icon>
@@ -23,8 +23,20 @@
   <mat-dialog-content fxLayout="column">
     <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="24px">
       <mat-form-field class="mt-6" fxFlex>
-        <mat-label>Coin Number</mat-label>
-        <input cdkFocusInitial formControlName="coin" matInput>
+        <mat-label>Game Name</mat-label>
+        <input cdkFocusInitial formControlName="name" matInput>
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Game Score</mat-label>
+        <input cdkFocusInitial formControlName="score" matInput>
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Game Details</mat-label>
+        <input cdkFocusInitial formControlName="details" matInput>
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
@@ -37,7 +49,7 @@
 
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close type="button">CANCEL</button>
-    <button *ngIf="isCreateMode()" color="primary" mat-button type="submit">ADD COIN</button>
+    <button *ngIf="isCreateMode()" color="primary" mat-button type="submit">ADD GAME</button>
     <button *ngIf="isUpdateMode()" color="primary" mat-button type="submit">UPDATE USER</button>
   </mat-dialog-actions>
 </form>

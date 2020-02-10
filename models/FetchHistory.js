@@ -12,6 +12,8 @@ var handlebars = require('handlebars');
 const User = require(appRoot + '/models/User');
 const Role = require(appRoot + '/models/Role');
 const Coin = require(appRoot + '/models/Coin');
+const Match = require(appRoot + '/models/Game');
+
 //const Room = require(appRoot + '/models/Room');
 /**
  * @desc fetch game history
@@ -381,4 +383,48 @@ const fetchUserList =(condObj) =>{
 
     });
 }
-module.exports = { fetchUserList,updateCoinAdmin,updateRoomAdmin,addCoin,fetchHistory,userValidChk,userValidChkAdmin,fetchHistoryAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin };
+//fetchMatches
+const fetchMatches =(condObj) =>{
+    return  new Promise((resolve,reject) => {
+        Match.find({status:"active"},{_id: 1,name:1,score:1,details:1}).then(response=> {
+            resolve(response)
+        }).catch(err=>{
+            reject(err);
+        })
+
+    });
+}
+//addMatch
+const addMatch =(updateObj) =>{
+    return  new Promise((resolve,reject) => {
+
+        Match.find({name:updateObj.name},{_id: 1,name:1}).then(res=> {
+            if(res.length){
+                reject({message:"Already added"});
+            }
+            else{
+                Match.create(updateObj).then(response => {
+                    return resolve(response);
+                }).catch(err => {
+                    return reject(err);
+                });
+            }
+        }).catch(err=>{
+            reject(err);
+        })
+
+    });
+}
+//updateGameAdmin
+const updateGameAdmin =(condObj,updateObj) =>{
+    return  new Promise((resolve,reject) => {
+        Match.updateOne(condObj,{ $set : updateObj }).then(responses=> {
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+
+    });
+}
+
+module.exports = { updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateCoinAdmin,updateRoomAdmin,addCoin,fetchHistory,userValidChk,userValidChkAdmin,fetchHistoryAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin };

@@ -26,6 +26,8 @@ import theme from '../../../@vex/utils/tailwindcss';
 
 import { UserService } from '../../../app/pages/services/user.service';
 import { CoinService } from '../../../app/pages/services/coin.service';
+import { GameService } from '../../../app/pages/services/game.service';
+
 import {Location} from "@angular/common";
 @Component({
   selector: 'vex-user',
@@ -62,7 +64,10 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: true },
     { label: 'Image', property: 'image', type: 'image', visible: false },
     { label: 'Image', property: '_id', type: 'text', visible: false },
-    { label: 'Coin Number', property: 'number', type: 'text', visible: true },
+    { label: 'Game Name', property: 'name', type: 'text', visible: true },
+    { label: 'Game Id', property: 'id', type: 'text', visible: true },
+    { label: 'Game Score', property: 'score', type: 'text', visible: true },
+    { label: 'Game Details', property: 'details', type: 'text', visible: true },
     { label: 'Actions', property: 'actions', type: 'button', visible: true }
   ];
   pageSize = 10;
@@ -84,7 +89,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private dialog: MatDialog, private coinService:CoinService,private userService:UserService,private location: Location) {
+  constructor(private dialog: MatDialog, private gameService:GameService,private coinService:CoinService,private userService:UserService,private location: Location) {
   }
 
   get visibleColumns() {
@@ -99,7 +104,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
 
-    this.coinService.getAllCoins().subscribe(users => {
+    this.gameService.getAllGames().subscribe(users => {
       this.players = users["result"];
       //console.log(this.players);
       //console.log("players");
@@ -196,7 +201,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
    // player.userName = player.userName;
     player.status = 'inactive';
     //let userName=player.userName;
-   this.coinService.deleteUser(player).subscribe(user => {
+   this.gameService.deleteGame(player).subscribe(user => {
     //this.userService.editUser(player).subscribe(user => {
       if(user){
           this.players.splice(this.players.findIndex((existingPlayer) => existingPlayer.id === player.id), 1);

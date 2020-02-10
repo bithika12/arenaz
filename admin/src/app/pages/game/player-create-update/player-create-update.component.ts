@@ -21,7 +21,7 @@ import {filter} from "rxjs/operators";
 import {MatTableDataSource} from "@angular/material/table";
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { CoinService } from '../../../../app/pages/services/coin.service';
+import { GameService } from '../../../../app/pages/services/game.service';
 
 export interface Brand {
   value: string;
@@ -79,13 +79,13 @@ export class PlayerCreateUpdateComponent implements OnInit {
               private userService:UserService,
               private router: Router,
               private location: Location,
-              private coinService:CoinService,
+              private gameService:GameService,
 
               ) {
   }
 
   ngOnInit() {
-    this.userService.getAllRoles().subscribe(Roles => {
+    this.gameService.getAllGames().subscribe(Roles => {
       console.log(Roles);
       //roleList: RoleList[] =Roles;
       this.rolelists = Roles["result"];
@@ -112,15 +112,15 @@ export class PlayerCreateUpdateComponent implements OnInit {
     this.form = this.fb.group({
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
-      firstname: [this.defaults.firstName || ''],
-      lastname: [this.defaults.lastName || ''],
-      contact_no: this.defaults.contact_no || '',
-      rolename:[this.defaults.roleName || ''],
+      name: [this.defaults.name || ''],
+      score: [this.defaults.score || ''],
+      details: this.defaults.details || '',
+      //rolename:[this.defaults.roleName || ''],
      // rolename:[this.defaults.roleName || ''],
-      roleid:[this.defaults.roleId || ''],
-      coin:[this.defaults.number || ''],
-      username:[this.defaults.userName || ''],
-      useremail:[this.defaults.email || ''],
+      //roleid:[this.defaults.roleId || ''],
+      //coin:[this.defaults.number || ''],
+      //username:[this.defaults.userName || ''],
+      //useremail:[this.defaults.email || ''],
       _id:[this.defaults._id || ''],
     });
   }
@@ -138,7 +138,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
     if (!coins.imageSrc) {
       coins.imageSrc = 'assets/img/avatars/1.jpg';
     }
-    this.coinService.addCoin(coins).subscribe(User => {
+    this.gameService.addGame(coins).subscribe(User => {
       location.reload();
       this.dialogRef.close(coins);
     });
@@ -149,7 +149,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
 
     editplayer.id = this.defaults.id;
 
-    this.coinService.editUser(editplayer).subscribe(User => {
+    this.gameService.editUser(editplayer).subscribe(User => {
       //console.log(User);
       if(User){
         //this.router.navigate(['/user']);

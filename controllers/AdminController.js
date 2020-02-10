@@ -14,7 +14,8 @@ const Joi = require('joi');
 var User  = require('../models/User');
 var Role  = require('../models/Role');
 const appRoot = require('app-root-path');
-const { fetchUserList,updateRoomAdmin,fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin} = require(appRoot +'/models/FetchHistory');
+const { updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
+    fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
 // Role.createUser().then((details)=>{
 
@@ -376,6 +377,108 @@ exports.disableRoom= function(req,res) {
         .then(resp=>{
             console.log(resp);
             res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,result:resp,message:"Active user fetched ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+}
+//get game list
+exports.getMatchesList = function (req,res) {
+    if (!req.body.userEmail) {
+        return res.send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+    }
+    else {
+        userValidChkAdmin(req.body.userEmail)
+            .then(validResponse => {
+                return fetchMatches(validResponse);
+            })
+
+            .then(resp => {
+                res.status(constants.HTTP_OK_STATUS).send({
+                    status: constants.SUCCESS_STATUS,
+                    result: resp,
+                    message: "Game list fetched successfully."
+                })
+            })
+            .catch(err => {
+                res.status(constants.API_ERROR).send(err);
+            });
+    }
+};
+//addMatches
+exports.addMatches= function(req,res) {
+
+    let schema = Joi.object().keys({
+        userEmail: Joi.string().max(254).trim().required(),
+        name: Joi.string().required(),
+        score:Joi.string().required(),
+        details:Joi.string().required(),
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = {
+            status: constants.VALIDATION_ERROR,
+            result: result.error.name,
+            message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+        };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+        var userObj = {
+            name: req.body.name,
+            score:req.body.score,
+            details:req.body.details,
+        }
+        userValidChkAdmin(req.body.userEmail)
+            .then(validResponse => {
+                return addMatch(userObj);
+            })
+            .then(resp=>{
+                res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Game added ."})
+            })
+            .catch(err=>{
+                res.status(constants.API_ERROR).send(err);
+            });
+    }
+}
+
+exports.editMatches= function(req,res) {
+
+    if(!req.body.name || !req.body.userEmail || !req.body.score || !req.body.details || !req.body.gameId){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={name:req.body.name,score:req.body.score,details:req.body.details};
+
+    userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            return updateGameAdmin({_id: mongoose.Types.ObjectId(req.body.gameId)},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Game modified ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+}
+//deleteMatch
+exports.deleteMatch= function(req,res) {
+
+    if(!req.body.gameId || !req.body.userEmail ){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={status:"inactive"};
+
+    userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            return updateGameAdmin({_id: mongoose.Types.ObjectId(req.body.gameId)},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Game deleted ."})
         })
         .catch(err=>{
             res.status(constants.API_ERROR).send(err);

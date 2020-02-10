@@ -215,7 +215,7 @@ User.findDetails = function(condObj){
              raceName:{$elemMatch: {status: 1}},
              dartName:{$elemMatch: {status: 1}},
              characterName:{$elemMatch: {status: 1}}
-         }).then(responses=> {
+         }).sort({ cupNo: -1 }).then(responses=> {
              let chart=[];
              let colorName;
              let raceName;

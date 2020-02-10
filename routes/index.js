@@ -95,6 +95,15 @@ router.post('/user/board',userLeaderBoard.fetchGame);
  router.post('/admin/delete-coin'/*authetication.authChecker*/,adminController.deleteCoin);
  //admin/edit-coin
  router.post('/admin/edit-coin'/*authetication.authChecker*/,adminController.editCoin);
+
+ //game list
+router.post('/admin/fetch-game'/*authetication.authChecker*/,adminController.getMatchesList);
+//admin/match-add
+router.post('/admin/match-add'/*authetication.authChecker*/,adminController.addMatches);
+router.post('/admin/match-edit'/*authetication.authChecker*/,adminController.editMatches);
+router.post('/admin/delete-match'/*authetication.authChecker*/,adminController.deleteMatch);
+
+
  ///user/leaderboard
 
 module.exports = router;

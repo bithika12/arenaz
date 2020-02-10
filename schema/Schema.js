@@ -117,6 +117,13 @@ var coinSchema      = new Schema({
     status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
 
 })
+//
+var gameSchema      = new Schema({
+    name : String,
+    score: String,
+    details:String,
+    status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
+})
 //MODEL DECLARATION
 
 schema.roleModel   = mongoose.model('roles'  , roleSchema);
@@ -126,6 +133,7 @@ schema.userModel   = mongoose.model('users'  , userSchema);
 schema.roomModel   = mongoose.model('rooms'  , roomSchema);
 schema.notificationModel   = mongoose.model('notifications'  , notificationSchema);
 schema.coinModel   = mongoose.model('coins'  , coinSchema);
+schema.gameModel   = mongoose.model('games'  , gameSchema);
 
 
 module.exports = schema;
