@@ -51,8 +51,8 @@ var userSchema =  new Schema({
                         startCoin        :  Number,
                         cupNo            :  { type : Number , default  : 0},
                         loggedIn         :  { type : Number , default  : 0},
-                        countryName      :  String,
-                        languageName     :  String
+                        countryName      :  { type : String , default  : ''},
+                        languageName     :  { type : String , default  : ''},
                   },{
                      strict:false
                   });

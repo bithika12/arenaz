@@ -858,10 +858,10 @@ User.resetPassword = function(condObj,updateObj){
                  let resObj={
                      countryName:responses.countryName,
                      languageName:responses.languageName,
-                     colorName: responses.colorName[0]['colorName'],
-                     raceName: responses.raceName[0]['raceName'],
-                     dartName: responses.dartName[0]['dartName'],
-                     characterId: responses.characterName[0]['characterName']
+                     colorName: (!responses.colorName.length ? '' : responses.colorName[0]['colorName']),
+                     raceName: (!responses.raceName.length ? '' : responses.raceName[0]['raceName']),
+                     dartName: (!responses.dartName.length ? '' : responses.dartName[0]['dartName']),
+                     characterId: (!responses.characterName.length ? '' : responses.characterName[0]['characterName'])
                  };
                  /*totalArr.push({
                      colorName: responses.colorName[0]['colorName'],
