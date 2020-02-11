@@ -155,6 +155,8 @@ User.updateUserDetails =function(condObj,updateObj){
              /*if(updatedCoin ==0){
                  updatedCoin=500;
              }*/
+             console.log("opponent cup"+updatedCup);
+             console.log("opponent coin"+updatedCoin);
              User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {

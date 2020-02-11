@@ -94,12 +94,13 @@ io.on('connection', function (socket) {
     function gameStatusUpdateOpponent(reqobj, callback) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
+                console.log("12"+reqobj.opponentCup);
                 //user update with coin
                 //reqobj.roomUsers
                 let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
                 let userOppo=reqobj.roomUsers[findIndex].userId;
                 console.log("opponent user"+userOppo);
-                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin,cupNo:reqobj.cupOpponent}).then(function (userStatusUpdate) {
+                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin,cupNo:reqobj.opponentCup/*reqobj.cupOpponent*/}).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
             } else {
@@ -1104,7 +1105,7 @@ io.on('connection', function (socket) {
                 updateRoom,
                 RoomUpdate,
                 gameStatusUpdateLeaveMod,
-                gameStatusUpdateOpponentLeaveMod
+                gameStatusUpdateOpponentLeaveMod  
 
             ], function (err, result) {
                 if (result) {
