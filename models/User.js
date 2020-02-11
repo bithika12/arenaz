@@ -214,7 +214,8 @@ User.findDetails = function(condObj){
              colorName:{$elemMatch: {status: 1}},
              raceName:{$elemMatch: {status: 1}},
              dartName:{$elemMatch: {status: 1}},
-             characterName:{$elemMatch: {status: 1}}
+             characterName:{$elemMatch: {status: 1}},
+             countryName:1
          }).sort({ cupNo: -1 }).then(responses=> {
              let chart=[];
              let colorName;
@@ -237,7 +238,8 @@ User.findDetails = function(condObj){
                     userName:entry.userName,
                     cupNumber:entry.cupNo,
                     colorName:colorName,
-                    raceName:raceName
+                    raceName:raceName,
+                    countryName:entry.countryName
 
                 });
              });
@@ -622,7 +624,8 @@ User.resetPassword = function(condObj,updateObj){
   */
  User.findUserListAdmin   =   function(){
      return  new Promise((resolve,reject) => {
-         User.find().sort({userName:1}).then(responses=> {
+         User.find().sort({cupNo:-1}).then(responses=> {
+         //User.find().sort({userName:1}).then(responses=> {
          //User.find({status:"active"}).sort({userName:1}).then(responses=> {
              let totalArr=[];
              let noRoleArr=[];
@@ -640,7 +643,9 @@ User.resetPassword = function(condObj,updateObj){
                          firstName:entry1.firstName,
                          lastName:entry1.lastName,
                          email:entry1.email,
-                         startCoin:entry1.startCoin
+                         startCoin:entry1.startCoin,
+                         userRank:key+1,
+                         cupNumber:entry1.cupNo
 
                      });
                      if(key==responses.length-1)

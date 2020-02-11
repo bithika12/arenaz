@@ -51,6 +51,7 @@ export class AuthService {
          this.isLoggedIn = false;
          })
     );
+    console.log("logout");
   }
 
   getToken() {

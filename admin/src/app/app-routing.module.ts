@@ -5,12 +5,12 @@ import { VexRoutes } from '../@vex/interfaces/vex-route.interface';
 import { AuthGuard } from '../app/pages/auth/auth.guard';
 
 const childrenRoutes: VexRoutes = [
- /* {
+  {
     path: '',
     canActivate: [AuthGuard],
     redirectTo: 'dashboards/analytics',
     pathMatch: 'full',
-  },*/
+  },
   {
     path: 'dashboards/analytics',
     canActivate: [AuthGuard],
