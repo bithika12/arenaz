@@ -953,6 +953,10 @@ io.on('connection', function (socket) {
             }
         }
     });
+    socket.on('disconnecting', function (req) {
+        let currentSocketId = socket.id;
+        logger.print("socket id while disconnecting"+ " " +currentSocketId)
+    })
 
     socket.on('disconnect', function (req) {
         let currentSocketId = socket.id;
