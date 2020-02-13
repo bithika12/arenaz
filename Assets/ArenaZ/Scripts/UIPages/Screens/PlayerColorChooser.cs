@@ -1,7 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 using ArenaZ.Manager;
+using System.Collections.Generic;
+using DevCommons.Utility;
 
 namespace ArenaZ.Screens 
 {
@@ -17,6 +20,9 @@ namespace ArenaZ.Screens
         [SerializeField] private Button orangeButton;
         [SerializeField] private Button lightGreenButton;
         [SerializeField] private Button tealButton;
+
+        [SerializeField] private Image selectedColorImage;
+        [SerializeField] private List<ColorButtonData> colorButtonDatas = new List<ColorButtonData>();
 
         public static Action<string> setColorAfterChooseColor;
 
@@ -65,5 +71,23 @@ namespace ArenaZ.Screens
             Debug.Log("Clicked Color Name: " + colorName);
             UIManager.Instance.ToggleScreenWithAnim(Page.PlayerColorChooser.ToString());
         }
+
+        public void SetSelectedColor(string a_Color)
+        {
+            EColor t_Color = EColor.DarkBlue;
+            if (t_Color.TryParse(a_Color, out t_Color))
+            {
+                ColorButtonData t_Data = colorButtonDatas.Where(x => x.ColorType.Equals(t_Color)).First();
+                selectedColorImage.sprite = t_Data.ColorImage;
+            }
+        }
     }
 }
+
+[System.Serializable]
+public class ColorButtonData
+{
+    public EColor ColorType = EColor.DarkBlue;
+    public Sprite ColorImage;
+}
+

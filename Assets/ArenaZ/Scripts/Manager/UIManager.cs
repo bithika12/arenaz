@@ -22,7 +22,7 @@ namespace ArenaZ.Manager
         private Stack<string> _openPages = new Stack<string>();
         private Stack<string> _closedPages = new Stack<string>();
         private string characterName = string.Empty;
-        private string startColorName = ButtonType.DarkBlue.ToString();
+        private string startColorName = EColor.DarkBlue.ToString();
         public string StartColorName { get { return startColorName; } private set { } }
 
         [Header("SpriteAtlas")][Space(5)]
@@ -177,14 +177,23 @@ namespace ArenaZ.Manager
                 allPages[screenName].Show();
         }
 
-        public void ToggleScreenWithAnim(string screenName)
+        public void ToggleScreenWithAnim(string screenName, Action<bool> callback = null)
         {
             if (!allPages.ContainsKey(screenName))
+            {
+                callback?.Invoke(false);
                 return;
+            }
             if (!allPages[screenName].gameObject.activeSelf)
+            {
                 allPages[screenName].ShowGameObjWithAnim();
+                callback?.Invoke(true);
+            }
             else
+            {
                 allPages[screenName].HideGameObjWithAnim();
+                callback?.Invoke(false);
+            }
         }
 
         public void ToggleScreenImmediately(string screenName)

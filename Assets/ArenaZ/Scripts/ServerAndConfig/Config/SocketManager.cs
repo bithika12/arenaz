@@ -95,7 +95,7 @@ namespace RedApple
             socket.EmitJson(SocketEmitEvents.colorRequest.ToString(), colorReqJsonData);
         }
 
-        public void ThrowDartData(int hitValue, Vector3 point)
+        public void ThrowDartData(int socreValue, int hitValue, int multiplierValue, Vector3 point)
         {
             string hitPoint = Regex.Replace(point.ToString(), @"\s+", "");
             //string hitPoint = Regex.Replace(point.ToString(), @"\s", "");
@@ -103,7 +103,9 @@ namespace RedApple
             ThrowDart throwDart = new ThrowDart
             {
                 AccessToken = User.UserAccessToken,
-                Score = hitValue.ToString(),
+                Score = socreValue.ToString(),
+                HitScore = hitValue,
+                ScoreMultiplier = multiplierValue,
                 RoomName = User.RoomName,
                 DartPoint = hitPoint
             };
@@ -215,4 +217,8 @@ public struct ThrowDart
     public string RoomName { get; set; }
     [JsonProperty("dartPoint")]
     public string DartPoint { get; set; }
+    [JsonProperty("hitScore")]
+    public int HitScore { get; set; }
+    [JsonProperty("scoreMultiplier")]
+    public int ScoreMultiplier { get; set; }
 }

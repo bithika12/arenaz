@@ -12,6 +12,7 @@ using RedApple.Api.Data;
 using Newtonsoft.Json;
 using RedApple.Utils;
 using System.Linq;
+using ArenaZ.SettingsManagement;
 
 namespace ArenaZ.Screens
 {
@@ -30,12 +31,18 @@ namespace ArenaZ.Screens
 
         [Header("Scroll Snap")]
         [Space(5)]
-        [SerializeField]private HorizontalScrollSnap horizontalScrollSnap;
+        [SerializeField] private HorizontalScrollSnap horizontalScrollSnap;
+
         public readonly string[] raceNames = { ERace.Canines.ToString(), ERace.Kepler.ToString(), ERace.Cyborg.ToString(), ERace.CyborgSecond.ToString(), ERace.Human.ToString(), ERace.Ebot.ToString(), ERace.KeplerSecond.ToString(),ERace.KeplerFemale.ToString(),ERace.KeplerFemaleSecond.ToString(),ERace.HumanSecond.ToString() };
         //Public Fields
         public static Action<string> setDart;
 
         public CharacterData SelfCharacterData { get; set; }
+
+        [Header("Others")]
+        [Space(5)]
+        [SerializeField] private Settings settings;
+        [SerializeField] private PlayerColorChooser playerColorChooser;
 
         private void Start()
         {           
@@ -71,6 +78,12 @@ namespace ArenaZ.Screens
             if (userSelectionDetails != null)
             {
                 Debug.Log("Got data.");
+                User.UserCountry = userSelectionDetails.CountryName;
+                User.UserLanguage = userSelectionDetails.LanguageName;
+
+                CountryPicData t_Data = DataHandler.Instance.GetCountryPicData(string.IsNullOrEmpty(User.UserCountry) ? "in" : User.UserCountry);
+                if (t_Data != null)
+                    settings.UpdateCountryDetails(t_Data.CountryId, t_Data.CountryPic);
 
                 string colorName = string.IsNullOrEmpty(userSelectionDetails.ColorName) ? UIManager.Instance.StartColorName : userSelectionDetails.ColorName;
                 Debug.Log("--------------ColorName: " + colorName);
@@ -81,6 +94,7 @@ namespace ArenaZ.Screens
                 Debug.Log("--------------CharacterId: " + characterId);
                 UIManager.Instance.ShowCharacterName(raceNames[characterId]);
                 horizontalScrollSnap.GoToScreen(characterId);
+                playerColorChooser.SetSelectedColor(userSelectionDetails.ColorName);
 
                 FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), characterIdStr);
                 FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[characterId]);
@@ -191,19 +205,26 @@ namespace ArenaZ.Screens
             FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
             FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[horizontalScrollSnap._currentPage]);
 
-            UserSelectionDetails userSelectionDetails = new UserSelectionDetails
-            {
-                ColorName = string.IsNullOrEmpty(User.UserColor) ? UIManager.Instance.StartColorName : User.UserColor,
-                RaceName = string.IsNullOrEmpty(User.UserRace) ? ERace.Canines.ToString() : User.UserRace,
-                CharacterId = horizontalScrollSnap._currentPage.ToString(),
-                DartName = User.DartName
-            };
-            RestManager.SaveUserSelection(User.UserEmailId, userSelectionDetails, delegate { Debug.Log("User selection data is saved."); }, OnErrorSetSelectionData);
+            SaveUserData();
 
             setDart?.Invoke(User.DartName);
             SetProfilePicOnClick();
             LevelSelection.Instance.OnSelectionGameplayType(type);
             SocketManager.Instance.ColRequest();
+        }
+
+        private void SaveUserData()
+        {
+            UserSelectionDetails userSelectionDetails = new UserSelectionDetails
+            {
+                ColorName = string.IsNullOrEmpty(User.UserColor) ? UIManager.Instance.StartColorName : User.UserColor,
+                RaceName = string.IsNullOrEmpty(User.UserRace) ? ERace.Canines.ToString() : User.UserRace,
+                CountryName = string.IsNullOrEmpty(User.UserCountry) ? "in" : User.UserCountry,
+                LanguageName = "English",
+                CharacterId = horizontalScrollSnap._currentPage.ToString(),
+                DartName = User.DartName
+            };
+            RestManager.SaveUserSelection(User.UserEmailId, userSelectionDetails, delegate { Debug.Log("User selection data is saved."); }, OnErrorSetSelectionData);
         }
 
         private void OnErrorSetSelectionData(RestUtil.RestCallError obj)

@@ -33,6 +33,7 @@ public enum Page
     HitScore,
     GameLoadingPanel,
     PopupPanel,
+    RegionPopup,
 }
 
 public enum ERace
@@ -171,6 +172,20 @@ public enum EWinningStatus
     Victory = 1,
     Draw = 2
 }
+public enum EAudioClip
+{
+    GameplayBg,
+    AudienceCheering,
+    DartHit,
+    DartMiss,
+    Timeout,
+    Intro,
+    Lose,
+    NumberDisplay,
+    WindowChange,
+    Win,
+    Lost,
+}
 
 public static class GameResources
 {
@@ -186,6 +201,8 @@ public static class User
     public static string UserEmailId;
     public static string UserAccessToken;
     public static string UserRace;
+    public static string UserCountry;
+    public static string UserLanguage;
     public static string DartName;
     public static string UserColor;
     public static string RoomName;

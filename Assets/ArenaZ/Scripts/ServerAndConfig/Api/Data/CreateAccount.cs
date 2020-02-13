@@ -25,5 +25,9 @@ namespace RedApple.Api.Data
         public string CharacterId { get; set; }
         [JsonProperty("dartName")]
         public string DartName { get; set; }
+        [JsonProperty("countryName")]
+        public string CountryName { get; set; }
+        [JsonProperty("languageName")]
+        public string LanguageName { get; set; }
     }
 }

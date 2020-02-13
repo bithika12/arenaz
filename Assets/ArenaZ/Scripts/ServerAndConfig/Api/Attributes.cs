@@ -61,5 +61,7 @@
         public const string RACE_NAME = "raceName";
         public const string CHARACTER_ID = "characterId";
         public const string DART_NAME = "dartName";
+        public const string COUNTRY_NAME = "countryName";
+        public const string LANGUAGE_NAME = "languageName";
     }
 }

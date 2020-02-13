@@ -81,7 +81,9 @@ public class LeaderboardData
     [JsonProperty("colorName")]
     public string ColorName { get; set; }
     [JsonProperty("raceName")]
-    public string RaceName { get; set; }
+    public string RaceName { get; set; }    
+    [JsonProperty("countryName")]
+    public string CountryName { get; set; }
 }
 
 [System.Serializable]

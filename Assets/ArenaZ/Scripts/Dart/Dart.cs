@@ -27,6 +27,9 @@ namespace ArenaZ.ShootingObject
 
         [SerializeField] private Material bodyMaterial;
 
+        [SerializeField] private AudioClip dartThrownHit;
+        [SerializeField] private AudioClip dartThrownMiss;
+
         private EFlashState flashState = EFlashState.Idle;
 
         private Rigidbody dartRB;
@@ -66,7 +69,7 @@ namespace ArenaZ.ShootingObject
 
                 dartObj.DOLocalRotate(t_RotDirection, 0.7f, RotateMode.FastBeyond360).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
                 AddPointsToArray(endPosition);
-                transform.DOPath(points, .6f, PathType.CatmullRom)
+                transform.DOPath(points, 0.6f, PathType.CatmullRom)
                          .SetEase(Ease.Linear).SetLookAt(1, Vector3.forward)
                          .OnComplete(() =>
                          {

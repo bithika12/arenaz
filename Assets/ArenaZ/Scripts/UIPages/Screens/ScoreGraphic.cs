@@ -1,7 +1,9 @@
+using DevCommons.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ArenaZ
 {
@@ -25,10 +27,10 @@ namespace ArenaZ
 
             if (a_HitPointScore > 0)
             {
-                if (a_ScoreMultiplier > 0)
+                if (a_ScoreMultiplier > 1)
                 {
                     InstantiateHelper(a_HitPointScore, false);
-                    Instantiate(numberCross);
+                    InstantiateSprites(numberCross, false);
                     InstantiateHelper(a_ScoreMultiplier, true);
                 }
                 else
@@ -42,11 +44,13 @@ namespace ArenaZ
             }
 
             UpdateRect(contentHolder, (activeScoreGraphics.Count * 3.5f), 3.5f);
+            AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.NumberDisplay).Clip, oneShot = true });
             StartCoroutine(ClearScoreboard(1.5f));
         }
 
         public void ScoreDenied()
         {
+            AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Lost).Clip, oneShot = true });
             StartCoroutine(ShowCrossAndBust());
         }
 
@@ -55,6 +59,7 @@ namespace ArenaZ
             cross.SetActive(true);
             yield return new WaitForSeconds(0.5f);
             cross.SetActive(false);
+            StartCoroutine(ClearScoreboard());
             bust.SetActive(true);
             yield return new WaitForSeconds(0.5f);
             bust.SetActive(false);
@@ -65,34 +70,38 @@ namespace ArenaZ
             List<int> t_Digits = GetDigits(a_Value);
             for (int i = 0; i < t_Digits.Count; i++)
             {
-                Debug.Log($"Score Digit: {t_Digits[i]}");
                 ScoreGraphicData t_ScoreGraphicData = scoreGraphicDatas.Where(x => x.GraphicValue == t_Digits[i]).FirstOrDefault();
-                Debug.Log($"Score Fetched Digit: {t_ScoreGraphicData.GraphicValue}");
-                Instantiate(t_ScoreGraphicData.GraphicSprite, a_UpdateRect);
+                InstantiateSprites(t_ScoreGraphicData.GraphicSprite, a_UpdateRect);
             }
         }
 
-        private void Instantiate(Sprite a_GraphicSprite, bool a_UpdateRect)
+        private void InstantiateSprites(Sprite a_GraphicSprite, bool a_UpdateRect)
         {
             GameObject t_Go = Instantiate(numberPrototype, contentHolder);
+            t_Go.GetComponent<Image>().sprite = a_GraphicSprite;
             t_Go.SetActive(true);
 
             if (a_UpdateRect)
             {
                 UpdateRect(t_Go.transform, 3, 3);
             }
-
             activeScoreGraphics.Add(t_Go);
         }
 
         private void UpdateRect(Transform a_ObjTransform, float a_Width, float a_Height)
         {
-            RectTransform t_RectTransform = a_ObjTransform.GetComponent<RectTransform>();
-            Rect t_Rect = t_RectTransform.rect;
-            t_RectTransform.rect.Set(t_Rect.x, t_Rect.y, a_Width, a_Height);
+            Debug.Log("UpdateRect");
+            a_ObjTransform.GetComponent<RectTransform>().sizeDelta = new Vector2(a_Width, a_Height);
         }
 
-        private IEnumerator ClearScoreboard(float a_Delay = 0.0f)
+        public void HideCrossAndBust()
+        {
+            StopAllCoroutines();
+            cross.SetActive(false);
+            bust.SetActive(false);
+        }
+
+        public IEnumerator ClearScoreboard(float a_Delay = 0.0f)
         {
             yield return new WaitForSeconds(a_Delay);
             if (activeScoreGraphics.Any())

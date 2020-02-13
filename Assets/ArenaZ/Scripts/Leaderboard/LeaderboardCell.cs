@@ -28,10 +28,11 @@ public class LeaderboardCell : Cell<LeaderboardData>
             userName.text = cellData.Name;
 
             SetUserProfileImage(cellData.RaceName, cellData.ColorName);
+            SetCountryImage(cellData.CountryName);
         }
     }
 
-    public void SetUserProfileImage(string a_Race, string a_Color)
+    private void SetUserProfileImage(string a_Race, string a_Color)
     {
         try
         {
@@ -48,6 +49,22 @@ public class LeaderboardCell : Cell<LeaderboardData>
             if (t_CharacterPicData != null)
             {
                 userPic.sprite = t_CharacterPicData.ProfilePic;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.Message);
+        }
+    }
+
+    private void SetCountryImage(string a_CountryId)
+    {
+        try
+        {
+            CountryPicData t_CountryPicData = DataHandler.Instance.GetCountryPicData(a_CountryId);
+            if (t_CountryPicData != null)
+            {
+                userCountry.sprite = t_CountryPicData.CountryPic;
             }
         }
         catch (Exception e)

@@ -1,3 +1,4 @@
+using DevCommons.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,8 @@ namespace ArenaZ
                 Debug.Log("Show Clock");
                 animationState = EAnimation.Playing;
                 clock.SetActive(true);
+
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Timeout).Clip, oneShot = true });
 
                 Animator t_Animator = clock.GetComponent<Animator>();
                 t_Animator.Play("Jerk");

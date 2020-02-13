@@ -56,6 +56,8 @@ namespace ArenaZ.Manager
         [SerializeField] private GameObject loosePopup;
         [SerializeField] private Vector3 wonPopupOriginalScale = new Vector3();
 
+        private AudioPlayer gameplayBGAudioPlayer;
+
         private bool playerTurn = false;
         private GameObject userDart;
         private GameObject opponentDart;
@@ -85,6 +87,9 @@ namespace ArenaZ.Manager
 
         private Player lastPlayerType;
         private bool firstTime = false;
+        private int throwCount;
+
+        private int roundEndScore = 0;
 
         protected override void Awake()
         {
@@ -131,6 +136,7 @@ namespace ArenaZ.Manager
             gameState = EGameState.JustStartedPlaying;
             firstTime = true;
             ClearFakeDarts();
+            StartBGMusic();
 
             StartCoroutine(PastFiveSecond());
         }
@@ -214,6 +220,7 @@ namespace ArenaZ.Manager
 
         public void LeaveRoom()
         {
+            Debug.LogWarning("LeaveRoom");
             if (popup != null)
             {
                 popup.Show("ALERT", "ARE YOU SURE?", OnLeaveRoom,
@@ -236,8 +243,10 @@ namespace ArenaZ.Manager
 
             if (currentDart != null)
                 StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
+
             gameState = EGameState.Idle;
             ClearFakeDarts();
+            StopBGMusic();
         }
 
         private void onGameOver(string data)
@@ -262,6 +271,21 @@ namespace ArenaZ.Manager
 
             gameState = EGameState.Idle;
             ClearFakeDarts();
+            StopBGMusic();
+        }
+
+        private void StartBGMusic()
+        {
+            gameplayBGAudioPlayer = AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameplayBg).Clip, loop = true });
+        }
+
+        private void StopBGMusic()
+        {
+            if (gameplayBGAudioPlayer != null)
+            {
+                gameplayBGAudioPlayer.Destroy();
+                gameplayBGAudioPlayer = null;
+            }
         }
 
         private void onOpenWinloosePopUp(Page popUpName, string userName, string race, string color)
@@ -277,6 +301,8 @@ namespace ArenaZ.Manager
 
         private void displayPopup(bool a_Won)
         {
+            scoreGraphic.HideCrossAndBust();
+            StartCoroutine(scoreGraphic.ClearScoreboard());
             if (a_Won)
             {
                 loosePopup.transform.localScale = Vector3.zero;
@@ -291,7 +317,8 @@ namespace ArenaZ.Manager
                 t_Sequence.AppendCallback(() => 
                 {
                     winPopup.SetActive(false);
-                    onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor); 
+                    onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
+                    AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Win).Clip, oneShot = true });
                 });
             }
             else
@@ -309,6 +336,7 @@ namespace ArenaZ.Manager
                 {
                     loosePopup.SetActive(false);
                     onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
+                    AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Lose).Clip, oneShot = true });
                 });
             }
         }
@@ -344,6 +372,8 @@ namespace ArenaZ.Manager
             {
                 if (lastPlayerType != PlayerType)
                 {
+                    throwCount = 0;
+                    AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.WindowChange).Clip, oneShot = true });
                     lastPlayerType = PlayerType;
                     ClearFakeDarts();
                 }
@@ -380,7 +410,13 @@ namespace ArenaZ.Manager
                     Debug.Log("Opponent Hit Score: " + int.Parse(dartThrowData.Result.PlayerScore));
                     if (int.Parse(dartThrowData.Result.PlayStatus) == 0)
                     {
-                        storeCalculatedgameScore(PlayerType, int.Parse(dartThrowData.Result.PlayerScore));
+                        int t_Score = int.Parse(dartThrowData.Result.PlayerScore);
+                        storeCalculatedgameScore(PlayerType, t_Score);
+                        if (t_Score > 0)
+                            roundEndScore += t_Score;
+                        else
+                            roundEndScore = 0;
+                        scoreGraphic.ShowScore(dartThrowData.Result.HitScore, dartThrowData.Result.ScoreMultiplier);
                     }
                     Vector3 opponenDartHitPoint = getValue(dartThrowData.Result.DartPoint);
                     DartThrow(opponenDartHitPoint, ConstantInteger.shootingAngle);
@@ -391,21 +427,45 @@ namespace ArenaZ.Manager
 
         public void OnCompletionDartHit(GameObject dartGameObj)
         {
+            throwCount++;
+            if (throwCount == 3)
+            {
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.AudienceCheering).Clip, oneShot = true });
+                scoreGraphic.ShowScore(roundEndScore, 0);
+                throwCount = 0;
+                roundEndScore = 0;
+            }
+
             Debug.Log("On Completion Dart Hit");
-            InstantiateFakeDart(dartGameObj);
             StartCoroutine(destroyDartAfterACertainTime(1, dartGameObj));
+
+            BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
+            if (boardBody.name.Contains("Outside"))
+            {
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.DartMiss).Clip, oneShot = true });
+            }
+            else
+            {
+                InstantiateFakeDart(dartGameObj);
+            }
+
             if (PlayerType == Player.Self)
             {
                 Debug.Log("Player...");
-                BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
                 int hitScore = boardBody.HitPointScore * boardBody.ScoreMultiplier;
                 scoreGraphic.ShowScore(boardBody.HitPointScore, boardBody.ScoreMultiplier);
                 Debug.Log("Player Hit Score:  " + hitScore);
-                if (hitScore < selfGameScoreData.Score)
+                if (hitScore <= selfGameScoreData.Score)
+                {
+                    roundEndScore += hitScore;
                     storeCalculatedgameScore(Player.Self, hitScore);
+                }
                 else
+                {
+                    roundEndScore = 0;
                     scoreGraphic.ScoreDenied();
-                SocketManager.Instance.ThrowDartData(hitScore, touchBehaviour.LastTouchPosition);
+                }
+                SocketManager.Instance.ThrowDartData(hitScore, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
             }
 
             PlayDartHitParticle(dartGameObj.transform.position);
@@ -451,7 +511,8 @@ namespace ArenaZ.Manager
                 opponentGameScoreData.Score -= a_HitValue;
                 opponentScoreText.text = opponentGameScoreData.Score.ToString();
             }
-            showScore(a_HitValue);
+            //StartCoroutine(showScore(a_HitValue));
+            //showScore(a_HitValue);
         }
 
         public void ResetScore()
@@ -463,8 +524,9 @@ namespace ArenaZ.Manager
             opponentGameScoreData.Score = ScoreData.requiredScore;
         }
 
-        private void showScore(int score)
+        private IEnumerator showScore(int score)
         {
+            yield return new WaitForSeconds(0.75f);
             UIManager.Instance.ShowPopWithText(Page.HitScore.ToString(), score.ToString(), scorePopUpDuration);
         }
 
@@ -493,8 +555,12 @@ namespace ArenaZ.Manager
         {
             resetTimerRelatedValues();
             genericTimer.StopTimer();
-            currentDart.StopFlash();
-            currentDart.TweenthroughPoints(hitPoint);
+            if (currentDart != null)
+            {
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.DartHit).Clip, oneShot = true });
+                currentDart.StopFlash();
+                currentDart.TweenthroughPoints(hitPoint);
+            }
             Debug.Log("Throw Dart");
         }
 

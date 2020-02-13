@@ -75,7 +75,7 @@ namespace DevCommons
         [System.Serializable]
         public class AudioPlayerData
         {
-            public bool oneShot = true;
+            public bool oneShot = false;
             public bool loop = false;
             public AudioClip audioClip = null;
             public float volume = 1.0f;

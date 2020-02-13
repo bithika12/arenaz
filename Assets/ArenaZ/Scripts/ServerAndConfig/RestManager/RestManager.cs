@@ -102,7 +102,9 @@ namespace RedApple
                 .FormData(Attributes.COLOR_NAME, userSelectionDetails.ColorName)
                 .FormData(Attributes.RACE_NAME, userSelectionDetails.RaceName)
                 .FormData(Attributes.CHARACTER_ID, userSelectionDetails.CharacterId)
-                .FormData(Attributes.DART_NAME, userSelectionDetails.DartName);
+                .FormData(Attributes.DART_NAME, userSelectionDetails.DartName)
+                .FormData(Attributes.COUNTRY_NAME, userSelectionDetails.CountryName)
+                .FormData(Attributes.LANGUAGE_NAME, userSelectionDetails.LanguageName);
 
             sendWebRequest(webRqstBuilder, onCompletionSaveData, restError);
         }

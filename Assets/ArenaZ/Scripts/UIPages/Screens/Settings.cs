@@ -49,6 +49,7 @@ namespace ArenaZ.SettingsManagement
         [SerializeField] private Button languageButton;
         [SerializeField] private Button deleteAccountButton;
         [SerializeField] private Button playerColorButton;
+        [SerializeField] private Button regionButton;
 
         [Header("Integer and Floating Point")]
         [Space(5)]
@@ -57,6 +58,11 @@ namespace ArenaZ.SettingsManagement
         [Header("User Image")]
         [SerializeField] private Image userFrame;
         [SerializeField] private Image userPic;
+
+        [Header("Region Data")]
+        [SerializeField] private RegionDataLoader regionDataLoader;
+        [SerializeField] private Text countryName;
+        [SerializeField] private Image countryPic;
 
         private bool IsMusicMute = false;
         private bool IsSFXMute = false;
@@ -71,14 +77,19 @@ namespace ArenaZ.SettingsManagement
         {
            // facebookLogin = GetComponent<FacebookLogin>();
             UpdateButtonsOnStart();
-            GettingButtonReferences();
+            
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetUserProfileImage;
             PlayerColorChooser.setColorAfterChooseColor += setSelectedColorImage;
             UIManager.Instance.ShowScreen(Page.LoggedInText.ToString());
         }
 
-        private void OnDestroy()
+        private void OnEnable()
+        {
+            GettingButtonReferences();
+        }
+
+        private void OnDisable()
         {
             ReleaseButtonReferences();
         }
@@ -87,10 +98,9 @@ namespace ArenaZ.SettingsManagement
         private void GettingButtonReferences()
         {
             closeButton.onClick.AddListener(OnClickClose);
-
             logOutButton.onClick.AddListener(OnClickLogInLogOut);
-
             playerColorButton.onClick.AddListener(onClickPlayerColor);
+            regionButton.onClick.AddListener(onClickRegion);
 
             MusicToggle.onValueChanged.AddListener(delegate
             {
@@ -106,10 +116,9 @@ namespace ArenaZ.SettingsManagement
         private void ReleaseButtonReferences()
         {
             closeButton.onClick.RemoveListener(OnClickClose);
-
             logOutButton.onClick.RemoveListener(OnClickLogInLogOut);
-
             playerColorButton.onClick.RemoveListener(onClickPlayerColor);
+            regionButton.onClick.RemoveListener(onClickRegion);
 
             MusicToggle.onValueChanged.RemoveListener(delegate
             {
@@ -179,9 +188,35 @@ namespace ArenaZ.SettingsManagement
             UIManager.Instance.ToggleScreenWithAnim(Page.PlayerColorChooser.ToString());
         }
 
+        private void onClickRegion()
+        {
+            UIManager.Instance.ToggleScreenWithAnim(Page.RegionPopup.ToString(), success => 
+            {
+                if (success)
+                {
+                    regionDataLoader.PopulateRegions(obj =>
+                    {
+                        if (obj != null)
+                        {
+                            User.UserCountry = obj.CountryId;
+                            UpdateCountryDetails(obj.CountryId, obj.CountryPic);
+                            UIManager.Instance.HideScreen(Page.RegionPopup.ToString());
+                        }
+                    });
+                }
+            });
+        }
+
+        public void UpdateCountryDetails(string a_CountryId, Sprite a_CountryPic)
+        {
+            countryName.text = a_CountryId;
+            countryPic.sprite = a_CountryPic;
+        }
+
         private void OnClickClose()
         {
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
+            UIManager.Instance.HideScreenImmediately(Page.RegionPopup.ToString());
             UIManager.Instance.HideScreen(Page.SettingsPanel.ToString());
         }
 

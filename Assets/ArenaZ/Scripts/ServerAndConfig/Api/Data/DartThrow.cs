@@ -12,6 +12,10 @@ public class DartThrow
     public string DartPoint { get; set; }
     [JsonProperty("playerScore")]
     public string PlayerScore { get; set; }
+    [JsonProperty("hitScore")]
+    public int HitScore { get; set; }
+    [JsonProperty("scoreMultiplier")]
+    public int ScoreMultiplier { get; set; }
     [JsonProperty("playStatus")]
     public string PlayStatus { get; set; }   
 }
