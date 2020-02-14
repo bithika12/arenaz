@@ -200,7 +200,7 @@ io.on('connection', function (socket) {
                         logger.print("winner cup number" + result.cupNumber);
                         logger.print("loser cup number" + result.cupOpponent);
                      }
-                    logger.print("user remaining score"+ result.remainingScore);
+                    logger.print("1111user remaining score"+ result.remainingScore);
                     logger.print("user score" +result.playerScore);
 
                     io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
