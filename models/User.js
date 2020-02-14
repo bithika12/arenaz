@@ -855,6 +855,8 @@ User.resetPassword = function(condObj,updateObj){
              {/*_id: 1,name:1,email:1,status:1,userName:1,*/
                  countryName:1,
                  languageName:1,
+                 startCoin:1,
+                 cupNo:1,
                  colorName:{$elemMatch: {status: 1}},
                  raceName:{$elemMatch: {status: 1}},
                  dartName:{$elemMatch: {status: 1}},
@@ -865,6 +867,8 @@ User.resetPassword = function(condObj,updateObj){
                  let resObj={
                      countryName:responses.countryName,
                      languageName:responses.languageName,
+                     userCoin:responses.startCoin,
+                     userCup:responses.cupNo,
                      colorName: (!responses.colorName.length ? '' : responses.colorName[0]['colorName']),
                      raceName: (!responses.raceName.length ? '' : responses.raceName[0]['raceName']),
                      dartName: (!responses.dartName.length ? '' : responses.dartName[0]['dartName']),

@@ -229,7 +229,9 @@ exports.registration= function(req,res) {
                     "userName": result.userName,
                     email: result.email,
                     score: result.score,
-                    "accessToken": result.deviceDetails[0].accessToken
+                    "accessToken": result.deviceDetails[0].accessToken,
+                    "userCoin":500,
+                    "userCup":0
                 }, 'You have successfully registered. You will be logged in.'));
             } else {
                 if (err == constants.UNIQUIE_EMAIL)
@@ -353,7 +355,9 @@ exports.login= function(req,res) {
                             "userName": result.userName,
                             email: result.email,
                             score: result.score,
-                            "accessToken": result.get('accessToken')
+                            "accessToken": result.get('accessToken'),
+                            "userCoin":result.startCoin,
+                            "userCup":result.cupNo
                         }, 'User login successfully !!'));
                     } else {
                         //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Invalid password!!"));
