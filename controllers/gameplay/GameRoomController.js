@@ -176,7 +176,7 @@ io.on('connection', function (socket) {
      */
     socket.on('throwDart', function (req) {
         req.socketId = socket.id;
-        //chk valid dart or not
+        //chk valid dart o.r not
         room.findValidDart({roomName: req.roomName}).then(function (roomDetails) {
 
             async.waterfall([
@@ -858,7 +858,11 @@ io.on('connection', function (socket) {
                     userId: req.userId,
                     roomName: req.roomName
                 }, "Game is over"));*/
-                resolve(req.userId)
+               let userArr=[];
+               let obj={userId:req.userId};
+               userArr.push(obj);
+                resolve(userArr)
+                //resolve(req.userId)
                 //callback(null, req);
             }).catch(err => {
                 reject(err);
