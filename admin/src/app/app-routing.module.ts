@@ -26,11 +26,11 @@ const childrenRoutes: VexRoutes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/dart/dart.module').then(m => m.DartModule),
   },
-  {
+  /*{
     path: 'tournament',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/tournament/tournament.module').then(m => m.TournamentModule),
-  },
+  },*/
   //coin
 
   {

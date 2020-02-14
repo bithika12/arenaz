@@ -100,21 +100,21 @@
       <mat-label>Roles</mat-label>
       <mat-select formControlName="roleid" >
 
-        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==roleid ? selected : brand._id" >
-        <!--<mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand._id" >-->
+        <!--<mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==roleid ? selected : brand._id" >
+
           {{ brand.slug }}
-        </mat-option>
+        </mat-option>-->
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field>
+    <!--<mat-form-field>
       <mat-label>Coins </mat-label>
       <mat-select formControlName="coin">
         <mat-option *ngFor="let coin of coinList" [value]="coin.value ===coin ? selected : coin.value" >
           {{ coin.value }}
         </mat-option>
       </mat-select>
-    </mat-form-field>
+    </mat-form-field>-->
    <!-- <mat-select #labelSelect="matSelect"
                 (selectionChange)=""
                 [value]="row.labels"

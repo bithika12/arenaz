@@ -59,7 +59,7 @@ export class DartComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input()
   columns: TableColumn<Player>[] = [
-    { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: true },
+    { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: false },
     { label: 'Image', property: 'image', type: 'image', visible: false },
     { label: 'Game Id', property: 'game_name', type: 'text', visible: true },
     //{ label: 'Game Time', property: 'game_time', type: 'text', visible: true },

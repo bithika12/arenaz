@@ -59,7 +59,7 @@ export class OnlineComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input()
   columns: TableColumn<Player>[] = [
-    { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: true },
+    { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: false },
     { label: 'Image', property: 'image', type: 'image', visible: false },
     { label: 'Image', property: '_id', type: 'text', visible: false },
     { label: 'First Name', property: 'firstName', type: 'text', visible: true },

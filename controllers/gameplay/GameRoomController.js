@@ -191,6 +191,7 @@ io.on('connection', function (socket) {
 
             ], function (err, result) {
                 if (result) {
+                    console.log("redds"+req.roomName);
                     logger.print(" throw dart done", req);
                     if (result.playStatus == 1) {
                         logger.print("it is bust");
@@ -209,7 +210,9 @@ io.on('connection', function (socket) {
                         dartPoint: result.dartPoint,
                         playStatus: result.playStatus,
                         playerScore: result.playerScore,
-                        cupNumber: result.cupNumber
+                        cupNumber: result.cupNumber,
+                        hitScore:req.hitScore,
+                        scoreMultiplier:req.scoreMultiplier
                     }, "Dart thrown"));
 
                 } else

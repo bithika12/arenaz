@@ -15,7 +15,7 @@ import icEditLocation from '@iconify/icons-ic/twotone-edit-location';
 
 import { UserService } from '../../../../app/pages/services/user.service';
 import {MatSelectChange} from "@angular/material/select";
-import {Tournament} from "../../tournament/interfaces/tournament.model";
+//import {Tournament} from "../../tournament/interfaces/tournament.model";
 import {Observable, ReplaySubject} from "rxjs";
 import {filter} from "rxjs/operators";
 import {MatTableDataSource} from "@angular/material/table";
