@@ -571,7 +571,7 @@ io.on('connection', function (socket) {
                                             gameStart,
                                             //userStatusUpdateAfterGamerequest
                                         ], function (err, result) {
-                                            console.log("result print"+result.status);
+                                            //console.log("result print"+result.status);
                                             if (result) {
                                                 logger.print("***Done  ", result);
                                                 io.sockets.to(socket.id).emit('userJoined', response.generate(constants.SUCCESS_STATUS, {
