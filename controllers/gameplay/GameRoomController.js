@@ -1337,5 +1337,24 @@ io.on('connection', function (socket) {
 
     });
 
+    socket.onclose = function(reason){
+        console.log("close event fired");
+        console.log(socket.adapter.sids[socket.id]);
+        Object.getPrototypeOf(this).onclose.call(this,reason);
+
+        /* Delay of 1 seconds to remove from all rooms and disconnect the id */
+        setTimeout(function() {
+            if (!this.connected) return this;
+            debug('closing socket - reason %s', reason);
+            this.leaveAll();
+            this.nsp.remove(this);
+            this.client.remove(this);
+            this.connected = false;
+            this.disconnected = true;
+            delete this.nsp.connected[this.id];
+            this.emit('disconnect', reason);
+        }, 60 * 1000);
+    }
+
 
 });
