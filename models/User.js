@@ -271,7 +271,7 @@ User.checkUserToken = function(condObj){
  User.checkUserTokenMod = function(condObj){
      return  new Promise((resolve,reject) => {
          User.findOne({"deviceDetails.accessToken":condObj.accessToken},
-             {_id: 1,name:1,email:1,status:1,userName:1,deviceDetails: {$elemMatch: {accessToken: condObj.accessToken}},
+             {_id: 1,name:1,email:1,status:1,startCoin:1,cupNo:1,userName:1,deviceDetails: {$elemMatch: {accessToken: condObj.accessToken}},
                  colorName:{$elemMatch: {status: 1}},
                  raceName:{$elemMatch: {status: 1}},
                  dartName:{$elemMatch: {status: 1}}})

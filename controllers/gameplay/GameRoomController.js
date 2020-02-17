@@ -521,7 +521,8 @@ io.on('connection', function (socket) {
                             colorName: req.colorName,
                             raceName: req.raceName,
                             dartName: req.dartname,
-                            roomCoin: req.roomCoin
+                            roomCoin: req.roomCoin,
+                            totalCupWin:req.cupNumbers
                         }).then(function (result) {
                             let roomName = result.roomName;
                             userObj = {
@@ -540,7 +541,8 @@ io.on('connection', function (socket) {
                                 dartName: req.dartname,
                                 total_no_win: 0,
                                 cupNumber: 0,
-                                roomCoin: req.roomCoin
+                                roomCoin: req.roomCoin,
+                                totalCupWin:req.cupNumbers
 
                             };
                             inmRoom.roomJoineeCreation({
@@ -597,6 +599,7 @@ io.on('connection', function (socket) {
                                             userNextStart
                                         ], function (err, result) {
                                             if (result) {
+
                                                 io.sockets.to(socket.id).emit('userJoin', response.generate(constants.SUCCESS_STATUS, {
                                                     roomName: roomName,
                                                     users: joineeDetails.users
@@ -1022,7 +1025,8 @@ io.on('connection', function (socket) {
                                 io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                     userId: roomDetails,
                                     roomName: userRoomName,
-                                    gameStatus: "Win"
+                                    gameStatus: "Lose"
+                                    //gameStatus: "Win"
                                 }, "Game is over"));
                                 logger.print("Room closed");
                             });
@@ -1142,7 +1146,8 @@ io.on('connection', function (socket) {
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: roomDetails,
                                 roomName: req.roomName,
-                                gameStatus: "Win"
+                                gameStatus: "Lose"
+                                //gameStatus: "Win"
                             }, "Game is over"));
                             logger.print("Room closed");
                         });

@@ -69,7 +69,7 @@ var userSchema =  new Schema({
 var roomSchema = new Schema({
     name          : String,
     status        : String,
-    users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,dartName:String,userName:String,cupNumber:Number,roomCoin:Number}],
+    users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,dartName:String,userName:String,cupNumber:Number,roomCoin:Number,totalCupWin:Number}],
     //users        : [{userId:String, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String}],
     created_at: {
         type: Date,
