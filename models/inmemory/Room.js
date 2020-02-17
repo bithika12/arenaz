@@ -143,7 +143,8 @@ room.throwDartDetails = function (reqObj) {
                         cupOpponent:cupOpponent,
                         //new add
                         userCoin:availableCoin,
-                        opponentCup:cupOpponent
+                        opponentCup:cupOpponent,
+                        opponentUserId:userArr[findIndexOppo].userId
                     });
                 } else {
                     console.log("Unable to find room"+reqObj.roomName);

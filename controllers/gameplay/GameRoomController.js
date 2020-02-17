@@ -151,9 +151,13 @@ io.on('connection', function (socket) {
                         logger.print("***Game over successfully ");
                         io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
                         io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                            userId: reqobj.userId,
+                           // userId: reqobj.userId,
+                            firstUserId: reqobj.userId,
+                            firstUserGameStatus: "Win",
+                            secondUserId:reqobj.opponentUserId,
+                            secondUserGameStatus: "Lose",
                             roomName: reqobj.roomName,
-                            gameStatus:"Win"
+                            //gameStatus:"Win"
                         }, "Game is over"));
                         callback(null, reqobj);
                     });
@@ -1023,10 +1027,14 @@ io.on('connection', function (socket) {
                                     allOnlineUsers[findIndex].roomName='';
 
                                 io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                                    userId: result.userId,
+                                    //userId: result.userId,
+                                    firstUserId: result.userId,
+                                    firstUserGameStatus: "Lose",
+                                    secondUserId:result.opponentUserId,
+                                    secondUserGameStatus: "Win",
                                     //userId: roomDetails,
                                     roomName: userRoomName,
-                                    gameStatus: "Lose"
+                                    //gameStatus: "Lose"
                                     //gameStatus: "Win"
                                 }, "Game is over"));
                                 logger.print("Room closed");
@@ -1041,10 +1049,14 @@ io.on('connection', function (socket) {
                                 allOnlineUsers[findIndex].roomName='';
 
                             io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                                userId: result.userId,
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "Draw",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "Draw",
                                 //userId: result.roomUsers,
                                 roomName: userRoomName,
-                                gameStatus: "Draw"
+                               // gameStatus: "Draw"
                             }, "Game is over"));
                             logger.print("Room closed");
                         } else {
@@ -1055,10 +1067,14 @@ io.on('connection', function (socket) {
                             else
                                 allOnlineUsers[findIndex].roomName='';
                             io.sockets.to(socket.id).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                                userId: result.userId,
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "",
                                 //userId: result.roomUsers,
                                 roomName: userRoomName,
-                                gameStatus: ""
+                                //gameStatus: ""
                             }, "Game is over"));
                             /*io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 userId: result.roomUsers,
@@ -1147,10 +1163,13 @@ io.on('connection', function (socket) {
                             console.log("after splice"+allOnlineUsers.findIndex.roomName);
                             io.sockets.sockets[currentSocketId].leave(req.roomName);
                             io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                                userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "Lose",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "Win",
                                // userId: roomDetails,
                                 roomName: req.roomName,
-                                gameStatus: "Lose"
+
                                 //gameStatus: "Win"
                             }, "Game is over"));
                             logger.print("Room closed");
@@ -1164,10 +1183,13 @@ io.on('connection', function (socket) {
                         console.log("after splice"+allOnlineUsers.findIndex.roomName);
                         io.sockets.sockets[currentSocketId].leave(req.roomName);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                            userId: result.userId,
+                            firstUserId: result.userId,
+                            firstUserGameStatus: "Draw",
+                            secondUserId:result.opponentUserId,
+                            secondUserGameStatus: "Draw",
                             //userId: result.roomUsers,
                             roomName: req.roomName,
-                            gameStatus: "Draw"
+                            //gameStatus: "Draw"
                         }, "Game is over"));
                         logger.print("Room closed");
                     } else {
@@ -1179,10 +1201,13 @@ io.on('connection', function (socket) {
                         console.log("after splice"+allOnlineUsers.findIndex.roomName);
                         io.sockets.sockets[currentSocketId].leave(req.roomName);
                         io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
-                            userId: result.userId,
+                            firstUserId: result.userId,
+                            firstUserGameStatus: "",
+                            secondUserId:result.opponentUserId,
+                            secondUserGameStatus: "",
                             //userId: result.roomUsers,
                             roomName: req.roomName,
-                            gameStatus: ""
+                            //gameStatus: ""
                         }, "Game is over"));
                         logger.print("Room closed");
                     }
