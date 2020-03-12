@@ -15,12 +15,25 @@ namespace ArenaZ.Screens
         [SerializeField] private Button mailButton;
         [SerializeField] private Button settingButton;
 
+        [SerializeField] private Text userCoinCount;
+        [SerializeField] private Text userCupCount;
+
         public int count = 0;
 
         private void Start()
         {
             GettingButtonReferences();
+            UIManager.Instance.setCoinAndCup += refreshValues;
         }
+
+        private void refreshValues(string coinCount, string cupCount)
+        {
+            if (userCoinCount != null)
+                userCoinCount.text = coinCount;
+            if (userCupCount != null)
+                userCupCount.text = cupCount;
+        }
+
         private void OnDestroy()
         {
             ReleaseButtonReferences();

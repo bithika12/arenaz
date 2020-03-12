@@ -19,6 +19,9 @@ namespace ArenaZ.Screens
         [SerializeField] private Button closeButton;
         [SerializeField] private Button playAgainButton;
 
+        [Header("Others")]
+        [SerializeField] private Text coinText;
+
         private void Start()
         {
             GameManager.Instance.setUserName += SetUserName;
@@ -28,6 +31,7 @@ namespace ArenaZ.Screens
         private void OnEnable()
         {
             GettingButtonReferences();
+            DisplayCoinAmount();
         }
 
         private void OnDisable()
@@ -45,6 +49,12 @@ namespace ArenaZ.Screens
         {
             closeButton.onClick.RemoveListener(onClickClose);
             playAgainButton.onClick.RemoveListener(onClickClose);
+        }
+
+        private void DisplayCoinAmount()
+        {
+            int vlaue = PlayerPrefs.GetInt(ConstantStrings.ROOM_VALUE, 0);
+            coinText.text = "+" + vlaue;
         }
 
         public void SetUserProfileImage(string race, string color)
@@ -75,7 +85,7 @@ namespace ArenaZ.Screens
             UIManager.Instance.ClearOpenPagesContainer();
             //UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.HideScreen(Page.PlayerWinPanel.ToString());
-            UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString(), Hide.none);
+            //UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString(), Hide.none);
             UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(), Hide.none);
         }
 

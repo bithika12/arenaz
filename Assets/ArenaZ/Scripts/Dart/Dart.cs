@@ -26,18 +26,15 @@ namespace ArenaZ.ShootingObject
         [SerializeField] private ERotationAxis rotationAxis;
 
         [SerializeField] private Material bodyMaterial;
+        [SerializeField] private ParticleSystem rippleParticle;
 
         [SerializeField] private AudioClip dartThrownHit;
         [SerializeField] private AudioClip dartThrownMiss;
 
         private EFlashState flashState = EFlashState.Idle;
-
         private Rigidbody dartRB;
-
         private float time = 0;
-
         private Vector3[] points = new Vector3[ConstantInteger.totalDartPointsForProjectileMove];
-
         private readonly float _screenMiddleOffset = 4.5f; // Y axis
 
         public static Action GetGameObj;
@@ -94,21 +91,30 @@ namespace ArenaZ.ShootingObject
         Tween tween;
         public void DoFlash()
         {
-            float t_Intensity = 0;
-            tween = DOTween.To(() => t_Intensity, x => 
-            { 
-                t_Intensity = x;
-                SetMaterialEmissionIntensity(bodyMaterial, t_Intensity);
-            }, 1.0f, 1.0f).SetLoops(-1, LoopType.Yoyo);
+            InvokeRepeating(nameof(playParticle), 1.5f, 1.5f);
+            //float t_Intensity = 0;
+            //tween = DOTween.To(() => t_Intensity, x => 
+            //{ 
+            //    t_Intensity = x;
+            //    SetMaterialEmissionIntensity(bodyMaterial, t_Intensity);
+            //}, 1.0f, 1.0f).SetLoops(-1, LoopType.Yoyo);
         }
 
         public void StopFlash()
         {
-            if (tween != null)
-            {
-                tween.Kill();
-                SetMaterialEmissionIntensity(bodyMaterial, 0.0f);
-            }
+            CancelInvoke(nameof(playParticle));
+            //if (tween != null)
+            //{
+            //    tween.Kill();
+            //    SetMaterialEmissionIntensity(bodyMaterial, 0.0f);
+            //}
+        }
+
+        private void playParticle()
+        {
+            if (rippleParticle.isPlaying)
+                rippleParticle.Stop();
+            rippleParticle.Play();
         }
 
         public void ChangeColor(Color color)

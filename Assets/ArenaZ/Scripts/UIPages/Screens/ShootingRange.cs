@@ -6,6 +6,10 @@ using RedApple.Api.Data;
 using System;
 using ArenaZ.Screens;
 using DevCommons.Utility;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using DG.Tweening;
+using Coffee.UIExtensions;
 
 namespace ArenaZ.GameMode
 {
@@ -29,11 +33,18 @@ namespace ArenaZ.GameMode
 
         [Header("Text")]
         [SerializeField] private Text userName;
+        [SerializeField] private Text userCoinCount;
+        [SerializeField] private Text userCupCount;
+
+        [Header("UI Effects")]
+        [SerializeField] private List<UIShiny> uiEffects = new List<UIShiny>();
+        [SerializeField] private List<Transform> uiButtons = new List<Transform>();
 
         [SerializeField] private GameLoading gameLoading;
 
         public Action<string> setOpponentName;
         public Action<string, string> setOpponentImage;
+        public Action<string, string> setCupCount;
 
         private void Start()
         {
@@ -42,6 +53,29 @@ namespace ArenaZ.GameMode
             CharacterSelection.setDart += SetDartImage;
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetUserProfileImage;
+            UIManager.Instance.setCoinAndCup += refreshValues;
+        }
+
+        private void OnEnable()
+        {
+            dartImage.transform.DOLocalMoveY(-630.0f, 1.0f).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo);
+            InvokeRepeating("PlayShinyEffect", 1.0f, UnityEngine.Random.Range(3.0f, 5.0f));
+            InvokeRepeating("ScaleSize", 4.0f, UnityEngine.Random.Range(4.0f, 6.0f));
+        }
+
+        private void OnDisable()
+        {
+            dartImage.transform.DOKill();
+            CancelInvoke("PlayShinyEffect");
+            CancelInvoke("ScaleSize");
+        }
+
+        private void refreshValues(string coinCount, string cupCount)
+        {
+            if (userCoinCount != null)
+                userCoinCount.text = coinCount;
+            if (userCupCount != null)
+                userCupCount.text = cupCount;
         }
 
         private void OnDestroy()
@@ -78,6 +112,26 @@ namespace ArenaZ.GameMode
             SocketListener.Listen(SocketListenEvents.gameStart.ToString(), OnGameStart);
         }
 
+        private void PlayShinyEffect()
+        {
+            int t_RandIndex = UnityEngine.Random.Range(0, uiEffects.Count);
+            float t_EffectVal = 0;
+            Tween tween = DOTween.To(() => t_EffectVal, x =>
+            {
+                t_EffectVal = x;
+                uiEffects[t_RandIndex].effectFactor = t_EffectVal;
+            }, 1, 2.0f).SetEase(Ease.InSine).OnComplete(() =>
+            {
+                uiEffects[t_RandIndex].effectFactor = 0;
+            });
+        }
+
+        private void ScaleSize()
+        {
+            int t_RandIndex = UnityEngine.Random.Range(0, uiButtons.Count);
+            uiButtons[t_RandIndex].DOScale(1.1f, 0.5f).SetEase(Ease.InSine).SetLoops(6, LoopType.Yoyo);
+        }
+
         private void OnGameStart(string data)
         {
             gameLoading.HideLoadingScreen();
@@ -86,20 +140,31 @@ namespace ArenaZ.GameMode
 
             Debug.Log($"Game Start : {data}");
             var gameStartData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
+            Debug.LogWarning($"----OnJoinRoom: {JsonConvert.SerializeObject(gameStartData)}");
             User.RoomName = gameStartData.result.RoomName;
             Debug.Log($"User Join RoomName: {User.RoomName}");
             UserJoin[] users = gameStartData.result.Users;
+
+            string selfCup = "";
+            string opponentCup = "";
+
             for (int i = 0; i < users.Length; i++)
             {
                 ScoreData.requiredScore = users[i].Score;
                 if (User.UserId != users[i].UserId)
                 {
+                    opponentCup = users[i].TotalCupWin.ToString();
                     saveOpponentData(users[i]);
                     setOpponentName?.Invoke(users[i].UserName);
                     setOpponentImage?.Invoke(users[i].RaceName, users[i].ColorName);
                     UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString(),Hide.none);
                 }
+                else
+                {
+                    selfCup = users[i].TotalCupWin.ToString();
+                }
             }
+            setCupCount?.Invoke(selfCup, opponentCup);
             GameManager.Instance.ResetScore();
             GameManager.Instance.GetDartGameObj();
             PlayerMatch.Instance.LoadGameplay();
@@ -160,7 +225,9 @@ namespace ArenaZ.GameMode
 
         private void OnClickShootingRangeBack()
         {
-            UIManager.Instance.HideOpenScreen();
+            //UIManager.Instance.HideOpenScreen();
+            UIManager.Instance.HideScreen(Page.ShootingrangePanel.ToString());
+            UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString());
         }
 
         private void OnClickStartGameWithCoinValue(int a_Value)

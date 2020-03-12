@@ -33,15 +33,22 @@ namespace ArenaZ.Manager
 
         [Header("Profile Image")][Space(5)]
         [SerializeField] private ProfileImage[] ProfilePic = new ProfileImage[7];
+        [SerializeField] private GameObject uiPanel;
 
         //Public Variables
         public Action<string, string> showProfilePic;
         public Action<string> setUserName;
+        public Action<string, string> setCoinAndCup;
 
         protected override void Awake()
         {
             AddAllTextScreensToDictionary();
             AddAllUIScreensToDictionary();
+        }
+
+        public void ShowUiPanel(bool a_Show)
+        {
+            uiPanel.SetActive(a_Show);
         }
 
         private void Start()
@@ -50,6 +57,7 @@ namespace ArenaZ.Manager
         }
         private void enableGameStartPages()
         {
+            //ShowUiPanel(true);
             ShowScreen(Page.UIPanel.ToString());
             ShowScreen(Page.TopAndBottomBarPanel.ToString());
             ShowScreen(Page.AccountAccessDetailsPanel.ToString());

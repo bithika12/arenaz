@@ -4,13 +4,23 @@ using socket.io;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using DevCommons.Utility;
+using System.Collections.Generic;
+using ArenaZ.Manager;
 
 namespace RedApple
 {
     public class SocketManager : Singleton<SocketManager>
     {
+        public enum ESocketState
+        {
+            None,
+            Connected,
+            Disconnected,
+        }
+
         public static Socket socket;
         public static event Action<string, string> onListen;
+        private ESocketState socketState = ESocketState.None;
 
         private void Start()
         {
@@ -135,6 +145,7 @@ namespace RedApple
 
         private void OnConnected()
         {
+            socketState = ESocketState.Connected;
             Debug.LogWarning("SocketConnected : " + socket);
             SocketListener.ActivateListener();
             AddEvents();
@@ -142,22 +153,29 @@ namespace RedApple
 
         private void OnReConnected(int val)
         {
+            socketState = ESocketState.Connected;
             Debug.LogWarning("SocketReConnected : " + val);
         }
 
         private void OnConnectedError(Exception error)
         {
+            socketState = ESocketState.Disconnected;
             Debug.LogError("ConnectedError");
+            //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
         }
 
         private void OnDisconnected()
         {
+            socketState = ESocketState.Disconnected;
             Debug.LogError("Disconnected");
+            //Invoke(nameof(chectSocketConnection), 2.5f);
         }
 
         private void OnTimeout()
         {
+            socketState = ESocketState.Disconnected;
             Debug.LogError("Timeout");
+            //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
         }
 
         private void AddEvents()
@@ -166,6 +184,12 @@ namespace RedApple
             Config.SocketConfig.SocketListenEvents.ForEach(evt => socket.On(evt, onListen));
         }
         #endregion
+
+        private void chectSocketConnection()
+        {
+            if (socketState == ESocketState.Disconnected)
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+        }
     }
 }
 
@@ -221,4 +245,26 @@ public struct ThrowDart
     public int HitScore { get; set; }
     [JsonProperty("scoreMultiplier")]
     public int ScoreMultiplier { get; set; }
+}
+
+[System.Serializable]
+public class GameOverResponse
+{
+    [JsonProperty("firstUserId")]
+    public string FirstUserId;
+    [JsonProperty("firstUserGameStatus")]
+    public string FirstUserGameStatus;
+    [JsonProperty("secondUserId")]
+    public string SecondUserId;
+    [JsonProperty("secondUserGameStatus")]
+    public string SecondUserGameStatus;
+    [JsonProperty("roomName")]
+    public string RoomName;
+}
+
+[System.Serializable]
+public class SocketUserData
+{
+    [JsonProperty("userId")]
+    public string UserId;
 }

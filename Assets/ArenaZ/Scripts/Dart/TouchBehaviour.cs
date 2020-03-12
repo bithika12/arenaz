@@ -157,7 +157,7 @@ namespace ArenaZ.Behaviour
                 Debug.Log("Dart Shoot");
                 if (hit.transform.tag == GameobjectTag.DartBoard.ToString())
                 {
-                    Debug.Log("Hit kora gameObject er name:  " + hit.transform.gameObject.name);
+                    Debug.Log("Dart Hit GameObject Name: " + hit.transform.gameObject.name);
                     OnDartThrow?.Invoke(hit.point, ConstantInteger.shootingAngle);
                     dartHitObj = hit.transform.gameObject as GameObject;
                     dartHitPos = hit.point;

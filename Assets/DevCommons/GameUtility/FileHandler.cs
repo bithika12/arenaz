@@ -7,12 +7,6 @@ namespace DevCommons
 {
     namespace Utility
     {
-        public enum EFileHandlerPathType
-        {
-            DataPath,
-            PersistantDataPath,
-        }
-
         public class FileHandler
         {
             // Reads a object from file in specified path

@@ -19,6 +19,8 @@ namespace ArenaZ.LevelMangement
         [Header("Text Fields")]
         [Space(5)]
         [SerializeField] private Text userName;
+        [SerializeField] private Text userCoinCount;
+        [SerializeField] private Text userCupCount;
 
         [Header("GameObjects")]
         [Space(5)]
@@ -35,6 +37,15 @@ namespace ArenaZ.LevelMangement
             GettingButtonReferences();
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetUserProfileImage;
+            UIManager.Instance.setCoinAndCup += refreshValues;
+        }
+
+        private void refreshValues(string coinCount, string cupCount)
+        {
+            if (userCoinCount != null)
+                userCoinCount.text = coinCount;
+            if (userCupCount != null)
+                userCupCount.text = cupCount;
         }
 
         private void OnDestroy()
@@ -96,10 +107,12 @@ namespace ArenaZ.LevelMangement
         {
             if (gamePlayType == GameType.normal)
             {
+                UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
                 UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(),Hide.none);
             }
             else
             {
+                UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
                 UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(),Hide.none);
             }
         }
@@ -116,7 +129,8 @@ namespace ArenaZ.LevelMangement
 
         private void OnClickBack()
         {
-            UIManager.Instance.HideOpenScreen();
+            //UIManager.Instance.HideOpenScreen();
+            UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
             UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
         }

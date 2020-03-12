@@ -49,7 +49,6 @@ public class SceneManagement : Singleton<SceneManagement>
 	}
 
 	#region LoadScene
-
 	public void LoadScene(string sceneName)
 	{
         loaderImage.fillAmount = 0;
@@ -72,9 +71,5 @@ public class SceneManagement : Singleton<SceneManagement>
         System.GC.Collect();
         loaderImage.DOFillAmount(1, 0.5f).OnUpdate(() => loadingText.text = loadingString+ (int)(loaderImage.fillAmount * 100) + "%...");	
 	}	
- 
 	#endregion
-
-
-	
 }

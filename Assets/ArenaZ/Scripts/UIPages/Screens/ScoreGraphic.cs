@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace ArenaZ
 {
@@ -23,6 +24,7 @@ namespace ArenaZ
 
         public void ShowScore(int a_HitPointScore, int a_ScoreMultiplier)
         {
+            Debug.Log($"Score HitPointScore: {a_HitPointScore}, ScoreMultiplier: {a_ScoreMultiplier}");
             bg.SetActive(true);
 
             if (a_HitPointScore > 0)
@@ -43,7 +45,7 @@ namespace ArenaZ
                 InstantiateHelper(0, false);
             }
 
-            UpdateRect(contentHolder, (activeScoreGraphics.Count * 3.5f), 3.5f);
+            UpdateRect(contentHolder, (activeScoreGraphics.Count * 300.0f), 300.0f);
             AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.NumberDisplay).Clip, oneShot = true });
             StartCoroutine(ClearScoreboard(1.5f));
         }
@@ -57,11 +59,11 @@ namespace ArenaZ
         private IEnumerator ShowCrossAndBust()
         {
             cross.SetActive(true);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1.0f);
             cross.SetActive(false);
             StartCoroutine(ClearScoreboard());
             bust.SetActive(true);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(2.5f);
             bust.SetActive(false);
         }
 
@@ -71,6 +73,7 @@ namespace ArenaZ
             for (int i = 0; i < t_Digits.Count; i++)
             {
                 ScoreGraphicData t_ScoreGraphicData = scoreGraphicDatas.Where(x => x.GraphicValue == t_Digits[i]).FirstOrDefault();
+                Debug.Log("Score Sprite Value: " + t_ScoreGraphicData.GraphicValue);
                 InstantiateSprites(t_ScoreGraphicData.GraphicSprite, a_UpdateRect);
             }
         }
@@ -83,8 +86,9 @@ namespace ArenaZ
 
             if (a_UpdateRect)
             {
-                UpdateRect(t_Go.transform, 3, 3);
+                UpdateRect(t_Go.transform, 260.0f, 260.0f);
             }
+            t_Go.transform.DOPunchScale(new Vector3(0.5f, 0.5f, 0.5f), 0.5f);
             activeScoreGraphics.Add(t_Go);
         }
 

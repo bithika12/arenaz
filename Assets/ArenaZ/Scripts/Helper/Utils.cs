@@ -34,6 +34,9 @@ public enum Page
     GameLoadingPanel,
     PopupPanel,
     RegionPopup,
+    WinningPopupPanel,
+    LoosingPopupPanel,
+    InternetConnectionLostPanel,
 }
 
 public enum ERace
@@ -187,6 +190,13 @@ public enum EAudioClip
     Lost,
 }
 
+public enum EGameOverStatus
+{
+    Lose,
+    Win, 
+    Draw,
+}
+
 public static class GameResources
 {
     public const string characterImageFolderPath = "Characters";
@@ -206,6 +216,8 @@ public static class User
     public static string DartName;
     public static string UserColor;
     public static string RoomName;
+    public static int UserCoin;
+    public static int UserCup;
 }
 
 public static class Opponent

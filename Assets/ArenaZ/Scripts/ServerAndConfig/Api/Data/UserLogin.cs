@@ -12,5 +12,9 @@ namespace RedApple.Api.Data
         public string Email { get; set; }
         [JsonProperty("accessToken")]
         public string AccessToken { get; set; }
+        [JsonProperty("userCoin")]
+        public int UserCoin { get; set; }
+        [JsonProperty("userCup")]
+        public int UserCup { get; set; }
     }
 }

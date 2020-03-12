@@ -16,6 +16,8 @@ namespace ArenaZ
 
         [SerializeField] private List<AudioClipData> audioClipDatas = new List<AudioClipData>();
 
+        public int SelectedRoomCost { get; set; } = 0;
+
         public List<CountryPicData> CountryPicDatas { get => countryPicDatas; }
 
         public SquareFrameData GetSquareFrameData(EColor a_ColorId)

@@ -1,11 +1,21 @@
 fileFormatVersion: 2
 guid: 2800fc87add4e2c4abf665604821ac60
 ModelImporter:
-  serializedVersion: 26
+  serializedVersion: 19300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert2
+    second: {fileID: 2100000, guid: e6c88fb484b74224ea712e91c9fc96ee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert3
+    second: {fileID: 2100000, guid: 143602d9a8c8c8947aa05afd14e53efd, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -31,7 +41,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
@@ -69,7 +79,6 @@ ModelImporter:
     normalSmoothingSource: 0
   referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
     serializedVersion: 3
     human: []
@@ -87,8 +96,10 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 

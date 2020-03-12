@@ -49,7 +49,6 @@ namespace ArenaZ.Screens
         #endregion
 
         #region UI_Functionalities
-
         public void TasksAfterLogin(string userName, AccountAccessType type)
         { 
              StartCoroutine(DoTasksAfterLogin(userName,type));
@@ -72,6 +71,7 @@ namespace ArenaZ.Screens
             PlayerPrefs.SetInt(PlayerPrefsValue.Logout.ToString(), 0);
             OpenCharacterUI();
             UIManager.Instance.setUserName?.Invoke(userName);
+            UIManager.Instance.setCoinAndCup?.Invoke(User.UserCoin.ToString(), User.UserCup.ToString());
             CharacterSelection.Instance.ResetCharacterScroller(userName);
             SocketManager.Instance.AddUser();
         }

@@ -18,11 +18,15 @@ public class PlayerMatch : Singleton<PlayerMatch>
     [SerializeField] private Image opponentFrame;
     [SerializeField] private Image opponentPic;
 
-    [Header("Text")][Space(5)]
+    [Header("Names")][Space(5)]
     [SerializeField] private Text userName;
     [SerializeField] private Text enemyName;
 
-    [Header("Text")][Space(5)]
+    [Header("Cups")][Space(5)]
+    [SerializeField] private Text userCup;
+    [SerializeField] private Text opponentCup;
+
+    [Header("Others")][Space(5)]
     [SerializeField] private AnimationClip animClip;
 
     private void Start()
@@ -31,6 +35,8 @@ public class PlayerMatch : Singleton<PlayerMatch>
         UIManager.Instance.showProfilePic += SetUserProfileImage;
         ShootingRange.Instance.setOpponentName += SetOpponentName;
         ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
+
+        ShootingRange.Instance.setCupCount += setCupCount;
     }
 
     public void SetUserProfileImage(string race, string color)
@@ -47,8 +53,15 @@ public class PlayerMatch : Singleton<PlayerMatch>
         CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
         if (t_CharacterPicData != null)
         {
+            //userPic.material.SetTexture("_MainTex", t_CharacterPicData.ProfilePic.texture);
             userPic.sprite = t_CharacterPicData.ProfilePic;
         }
+    }
+
+    private void setCupCount(string selfCupCount, string opponentCupCount)
+    {
+        userCup.text = selfCupCount;
+        opponentCup.text = opponentCupCount;
     }
 
     public void SetUserName(string userName)
@@ -70,6 +83,7 @@ public class PlayerMatch : Singleton<PlayerMatch>
         CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
         if (t_CharacterPicData != null)
         {
+            //opponentPic.material.SetTexture("_MainTex", t_CharacterPicData.ProfilePic.texture);
             opponentPic.sprite = t_CharacterPicData.ProfilePic;
         }
     }
@@ -86,10 +100,12 @@ public class PlayerMatch : Singleton<PlayerMatch>
 
     private IEnumerator LoadGameplayAfterAnim()
     {
+        GameManager.Instance.CameraControllerRef.SetFocus(true);
         float value = animClip.length + 1f;
         Debug.Log($"-----------------------------LoadGameplayAfterAnimLength: {value}-----------------------------");
         yield return new WaitForSeconds(value);
         Debug.Log("-----------------------------LoadGameplayAfterAnim-----------------------------");
+        //UIManager.Instance.ShowUiPanel(false);
         UIManager.Instance.HideScreen(Page.UIPanel.ToString());
         UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(),Hide.none);
         GameManager.Instance.InitializeOnGameStartSequences();

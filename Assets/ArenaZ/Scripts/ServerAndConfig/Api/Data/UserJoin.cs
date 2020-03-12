@@ -28,4 +28,6 @@ public class UserJoin
     public int TotalNoWin { get; set; }
     [JsonProperty("roomCoin")]
     public int RoomCoin { get; set; }
+    [JsonProperty("totalCupWin")]
+    public int TotalCupWin { get; set; }
 }

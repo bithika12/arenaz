@@ -111,6 +111,8 @@ namespace ArenaZ.LoginUser
             User.UserId = userLogin.UserId;
             User.UserEmailId = userLogin.Email;
             User.UserAccessToken = userLogin.AccessToken;
+            User.UserCoin = userLogin.UserCoin;
+            User.UserCup = userLogin.UserCup;
         }
 
         private void OnErrorLogin(RestUtil.RestCallError restError)
