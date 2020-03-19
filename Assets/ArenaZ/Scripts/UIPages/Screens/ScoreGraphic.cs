@@ -57,7 +57,7 @@ namespace ArenaZ
 
             updateRect(contentHolder, (activeScoreGraphics.Count * 300.0f), 300.0f);
             AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.NumberDisplay).Clip, oneShot = true });
-            StartCoroutine(ClearScoreboard(1.0f));
+            StartCoroutine(ClearScoreboard(0.75f));
         }
         
         public void ScoreDenied()
@@ -125,30 +125,27 @@ namespace ArenaZ
                 {
                     EMoveTowards t_MoveTowards = EMoveTowards.None;
                     Enum.TryParse(activeScoreGraphics[i].name, out t_MoveTowards);
-                    moveTowards(activeScoreGraphics[i], t_MoveTowards, () =>
+
+                    ScoreElement t_ScoreElement = activeScoreGraphics[i].GetComponent<ScoreElement>();
+                    if (t_ScoreElement != null)
                     {
-                        Destroy(activeScoreGraphics[i]);
-                        activeScoreGraphics.RemoveAt(i);
-                    });
+                        if (t_MoveTowards == EMoveTowards.None)
+                            t_ScoreElement.PlayCloseAnimation(onCompleteCloseAnimation);
+                        else if (t_MoveTowards == EMoveTowards.User)
+                            t_ScoreElement.PlayMoveTowardsAnimation(userTarget, EMoveTowards.User, onCompleteCloseAnimation);
+                        else if (t_MoveTowards == EMoveTowards.Opponent)
+                            t_ScoreElement.PlayMoveTowardsAnimation(opponentTarget, EMoveTowards.Opponent, onCompleteCloseAnimation);
+                    }
                 }
-                activeScoreGraphics.Clear();
             }
             cross.SetActive(false);
             bg.SetActive(false);
         }
 
-        private void moveTowards(GameObject a_Object, EMoveTowards a_MoveTowards, Action a_OnComplete)
+        private void onCompleteCloseAnimation(GameObject t_Obj)
         {
-            if (a_MoveTowards == EMoveTowards.None)
-                a_Object.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBounce).OnComplete(() => a_OnComplete?.Invoke());
-            else if (a_MoveTowards == EMoveTowards.User)
-                a_Object.transform.SetParent(userTarget.transform);
-            else if (a_MoveTowards == EMoveTowards.Opponent)
-                a_Object.transform.SetParent(opponentTarget.transform);
-
-            a_Object.GetComponent<Image>().DOFade(0.0f, 1.5f).OnComplete(() => a_OnComplete?.Invoke());
-            a_Object.GetComponent<RectTransform>().DOScale(0.0f, 1.25f);
-            a_Object.GetComponent<RectTransform>().DOAnchorPos(Vector3.zero, 1.0f);
+            Destroy(t_Obj);
+            activeScoreGraphics.Remove(t_Obj);
         }
 
         private List<int> getDigits(int a_Value)

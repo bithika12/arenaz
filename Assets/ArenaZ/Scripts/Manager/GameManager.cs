@@ -441,6 +441,10 @@ namespace ArenaZ.Manager
                 if (lastPlayerType != PlayerType)
                 {
                     throwCount = 0;
+
+                    AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.AudienceCheering).Clip, oneShot = true });
+                    updateAndShowTotalScore();
+
                     AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.WindowChange).Clip, oneShot = true });
                     lastPlayerType = PlayerType;
                     ClearFakeDarts();
@@ -494,25 +498,35 @@ namespace ArenaZ.Manager
             }
         }
 
+        private IEnumerator displayUserScoreWithDelay(int a_HitValue, int a_MultiplierValue, int a_Score)
+        {
+            scoreGraphic.ShowScore(a_HitValue, a_MultiplierValue, ScoreGraphic.EMoveTowards.None);
+            yield return new WaitForSeconds(1.25f);
+            if (a_MultiplierValue > 1)
+                scoreGraphic.ShowScore(a_Score, 0, ScoreGraphic.EMoveTowards.None);
+        }
+
         private IEnumerator displayOpponentScoreWithDelay(int a_HitValue, int a_MultiplierValue, int a_Score)
         {
             yield return new WaitForSeconds(1.5f);
             scoreGraphic.ShowScore(a_HitValue, a_MultiplierValue, ScoreGraphic.EMoveTowards.None);
             yield return new WaitForSeconds(1.25f);
-            scoreGraphic.ShowScore(a_Score, 0, ScoreGraphic.EMoveTowards.None);
+            if (a_MultiplierValue > 1)
+                scoreGraphic.ShowScore(a_Score, 0, ScoreGraphic.EMoveTowards.None);
         }
 
         public void OnCompletionDartHit(GameObject dartGameObj)
         {
-            throwCount++;
-            if (throwCount == 3)
-            {
-                Debug.LogWarning("3 darts are thrown!");
-                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.AudienceCheering).Clip, oneShot = true });
-                StartCoroutine(DisplayTotalScore(roundEndScore, PlayerType == Player.Self ? ScoreGraphic.EMoveTowards.User : PlayerType == Player.Opponent ? ScoreGraphic.EMoveTowards.Opponent : ScoreGraphic.EMoveTowards.None));
-                throwCount = 0;
-                //roundEndScore = 0;
-            }
+            //throwCount++;
+            //if (throwCount == 3)
+            //{
+            //    Debug.LogWarning("3 darts are thrown!");
+            //    AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.AudienceCheering).Clip, oneShot = true });
+            //    updateAndShowTotalScore();
+            //    //StartCoroutine(DisplayTotalScore(roundEndScore, PlayerType == Player.Self ? ScoreGraphic.EMoveTowards.User : PlayerType == Player.Opponent ? ScoreGraphic.EMoveTowards.Opponent : ScoreGraphic.EMoveTowards.None));
+            //    throwCount = 0;
+            //    //roundEndScore = 0;
+            //}
 
             Debug.Log("On Completion Dart Hit");
             StartCoroutine(destroyDartAfterACertainTime(1, dartGameObj));
@@ -551,11 +565,21 @@ namespace ArenaZ.Manager
             PlayDartHitParticle(dartGameObj.transform.position);
         }
 
-        private IEnumerator displayUserScoreWithDelay(int a_HitValue, int a_MultiplierValue, int a_Score)
+        private void updateAndShowTotalScore()
         {
-            scoreGraphic.ShowScore(a_HitValue, a_MultiplierValue, ScoreGraphic.EMoveTowards.None);
-            yield return new WaitForSeconds(1.25f);
-            scoreGraphic.ShowScore(a_Score, 0, ScoreGraphic.EMoveTowards.None);
+            //if (PlayerType == Player.Self)
+            //    countDownScore(userScoreText, selfGameScoreData.Score);
+            //else if (PlayerType == Player.Opponent)
+            //    countDownScore(opponentScoreText, opponentGameScoreData.Score);
+
+            StartCoroutine(DisplayTotalScore(roundEndScore, PlayerType == Player.Self ? ScoreGraphic.EMoveTowards.User : ScoreGraphic.EMoveTowards.Opponent));
+            roundEndScore = 0;
+        }
+
+        private void countDownScore(TextMeshProUGUI a_TextMeshPro, int a_Score)
+        {
+            int t_CurrentScore = int.Parse(a_TextMeshPro.text);
+            DOTween.To(() => t_CurrentScore, x => a_TextMeshPro.text = x.ToString(), a_Score, 0.5f).OnComplete(() => a_TextMeshPro.text = a_Score.ToString());
         }
 
         private IEnumerator DisplayTotalScore(int a_TotalScore, ScoreGraphic.EMoveTowards a_MoveTowards)
@@ -570,6 +594,7 @@ namespace ArenaZ.Manager
         private IEnumerator showTotalScore(int a_TotalScore, ScoreGraphic.EMoveTowards a_MoveTowards)
         {
             yield return new WaitForSeconds(2.0f);
+            Debug.LogError($"GameManager: ScoreMT: {a_MoveTowards}");
             scoreGraphic.ShowScore(a_TotalScore, 0, a_MoveTowards);
         }
 
@@ -606,12 +631,12 @@ namespace ArenaZ.Manager
             if (a_PlayerType == Player.Self)
             {
                 selfGameScoreData.Score -= a_HitValue;
-                //userScoreText.text = selfGameScoreData.Score.ToString();
+                userScoreText.text = selfGameScoreData.Score.ToString();
             }
             else if (a_PlayerType == Player.Opponent)
             {
                 opponentGameScoreData.Score -= a_HitValue;
-                //opponentScoreText.text = opponentGameScoreData.Score.ToString();
+                opponentScoreText.text = opponentGameScoreData.Score.ToString();
             }
             //StartCoroutine(showScore(a_HitValue));
             //showScore(a_HitValue);
@@ -679,6 +704,11 @@ namespace ArenaZ.Manager
             hitParticleSystem.Stop();
             hitParticleParent.transform.position = new Vector3(a_Position.x, a_Position.y, hitParticleParent.transform.position.z);
             hitParticleSystem.Play();
+        }
+
+        public void PlayButtonClickSound()
+        {
+            AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.ButtonClick).Clip, oneShot = true });
         }
     }
 
