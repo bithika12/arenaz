@@ -102,6 +102,7 @@ namespace ArenaZ.ShootingObject
 
         public void StopFlash()
         {
+            rippleParticle.Stop();
             CancelInvoke(nameof(playParticle));
             //if (tween != null)
             //{
@@ -112,8 +113,7 @@ namespace ArenaZ.ShootingObject
 
         private void playParticle()
         {
-            if (rippleParticle.isPlaying)
-                rippleParticle.Stop();
+            rippleParticle.Stop();
             rippleParticle.Play();
         }
 

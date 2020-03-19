@@ -22,7 +22,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: bird fly
   m_Shader: {fileID: 4800000, guid: e4ae9a1447f888e4b8754eda64dff814, type: 3}
-  m_ShaderKeywords: CLIPPINGMODE_INSIDE
+  m_ShaderKeywords: CLIPPINGMODE_INSIDE USE_CLIPPING_MASK
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

@@ -188,6 +188,9 @@ public enum EAudioClip
     WindowChange,
     Win,
     Lost,
+    ButtonClick,
+    MainMenu,
+    PlayerSkinSelection,
 }
 
 public enum EGameOverStatus

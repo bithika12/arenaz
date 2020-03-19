@@ -2,6 +2,8 @@
 /// Sourced from - http://forum.unity3d.com/threads/scripts-useful-4-6-scripts-collection.264161/page-2#post-1945602
 /// Updated by ddreaper - removed dependency on a custom ScrollRect script. Now implements drag interfaces and standard Scroll Rect.
 
+using ArenaZ;
+using DevCommons.Utility;
 using System;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -304,7 +306,7 @@ namespace UnityEngine.UI.Extensions
             if (_currentPage < _screens - 1 || _isInfinate)
             {
                 if (!_lerp) StartScreenChange();
-
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true });
                 _lerp = true;
                 CurrentPage = _currentPage + 1;
                 GetPositionforPage(_currentPage, ref _lerp_target);
@@ -319,7 +321,7 @@ namespace UnityEngine.UI.Extensions
             if (_currentPage > 0 || _isInfinate)
             {
                 if (!_lerp) StartScreenChange();
-
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true });
                 _lerp = true;
                 CurrentPage = _currentPage - 1;
                 GetPositionforPage(_currentPage, ref _lerp_target);

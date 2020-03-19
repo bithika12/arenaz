@@ -2,6 +2,7 @@ using DevCommons.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 namespace ArenaZ
 {
@@ -24,6 +25,9 @@ namespace ArenaZ
                 animationState = EAnimation.Playing;
                 clock.SetActive(true);
 
+                clock.transform.localScale = Vector3.zero;
+                clock.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InBounce);
+
                 AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Timeout).Clip, oneShot = true });
 
                 Animator t_Animator = clock.GetComponent<Animator>();
@@ -39,7 +43,11 @@ namespace ArenaZ
             Debug.Log("Hide Clock");
             animationState = EAnimation.Idle;
             clock.GetComponent<Animator>().Play("Idle");
-            clock.SetActive(false);
+            clock.transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBounce).OnComplete(() =>
+            {
+                clock.transform.localScale = Vector3.zero;
+                clock.SetActive(false);
+            });
         }
     }
 }

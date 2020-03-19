@@ -56,6 +56,7 @@ namespace ArenaZ.Manager
         [SerializeField] private GameObject loosePopup;
         [SerializeField] private Vector3 wonPopupOriginalScale = new Vector3();
 
+        private AudioPlayer mainMenuBGAudioPlayer;
         private AudioPlayer gameplayBGAudioPlayer;
 
         private bool playerTurn = false;
@@ -116,6 +117,8 @@ namespace ArenaZ.Manager
             ShootingRange.Instance.setOpponentName += SetOpponentName;
             ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
             genericTimer = new GeneralTimer(this, ConstantInteger.timerValue);
+
+            startMainMenuBGMusic();
         }
 
         private void getDartMaterialColorCode(string colorName)
@@ -142,7 +145,7 @@ namespace ArenaZ.Manager
             //    Destroy(currentDart);
             firstTime = true;
             ClearFakeDarts();
-            StartBGMusic();
+            startGamplayBGMusic();
 
             StartCoroutine(PastFiveSecond());
         }
@@ -232,11 +235,6 @@ namespace ArenaZ.Manager
             }
         }
 
-        private void onTimeEnding()
-        {
-            alarmClock.Show();
-        }
-
         private void resetTimerRelatedValues()
         {
             timer = ConstantInteger.timerValue;
@@ -270,7 +268,7 @@ namespace ArenaZ.Manager
 
             gameState = EGameState.Idle;
             ClearFakeDarts();
-            StopBGMusic();
+            stopGamplayBGMusic();
             onSwitchTurn(Player.None);
         }
 
@@ -296,7 +294,7 @@ namespace ArenaZ.Manager
             gameState = EGameState.Idle;
             onSwitchTurn(Player.None);
             ClearFakeDarts();
-            StopBGMusic();
+            stopGamplayBGMusic();
         }
 
         private void DisplayAppropriateGameOverScreen(string a_GameOverStatus)
@@ -315,18 +313,34 @@ namespace ArenaZ.Manager
             }
         }
 
-        private void StartBGMusic()
+        private void startMainMenuBGMusic()
         {
+            mainMenuBGAudioPlayer = AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.MainMenu).Clip, loop = true });
+        }
+
+        private void stopMainMenuBGMusic()
+        {
+            if (mainMenuBGAudioPlayer != null)
+            {
+                mainMenuBGAudioPlayer.Destroy();
+                mainMenuBGAudioPlayer = null;
+            }
+        }
+
+        private void startGamplayBGMusic()
+        {
+            stopMainMenuBGMusic();
             gameplayBGAudioPlayer = AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameplayBg).Clip, loop = true });
         }
 
-        private void StopBGMusic()
+        private void stopGamplayBGMusic()
         {
             if (gameplayBGAudioPlayer != null)
             {
                 gameplayBGAudioPlayer.Destroy();
                 gameplayBGAudioPlayer = null;
             }
+            startMainMenuBGMusic();
         }
 
         private void onOpenWinloosePopUp(Page popUpName, string userName, string race, string color)
@@ -437,6 +451,7 @@ namespace ArenaZ.Manager
         private void onOponnetTimerComplete()
         {
             Debug.Log("On Opponent timer Complete");
+            alarmClock.Show();
             resetTimerRelatedValues();
             genericTimer.StopTimer();
             StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
@@ -470,7 +485,7 @@ namespace ArenaZ.Manager
                             roundEndScore += t_Score;
                         else
                             roundEndScore = 0;
-                        StartCoroutine(displayScoreWithDelay(dartThrowData.Result.HitScore, dartThrowData.Result.ScoreMultiplier));
+                        StartCoroutine(displayOpponentScoreWithDelay(dartThrowData.Result.HitScore, dartThrowData.Result.ScoreMultiplier, t_Score));
                     }
                     Vector3 opponenDartHitPoint = getValue(dartThrowData.Result.DartPoint);
                     DartThrow(opponenDartHitPoint, ConstantInteger.shootingAngle);
@@ -479,10 +494,12 @@ namespace ArenaZ.Manager
             }
         }
 
-        private IEnumerator displayScoreWithDelay(int a_HitValue, int a_MultiplierValue)
+        private IEnumerator displayOpponentScoreWithDelay(int a_HitValue, int a_MultiplierValue, int a_Score)
         {
             yield return new WaitForSeconds(1.5f);
-            scoreGraphic.ShowScore(a_HitValue, a_MultiplierValue);
+            scoreGraphic.ShowScore(a_HitValue, a_MultiplierValue, ScoreGraphic.EMoveTowards.None);
+            yield return new WaitForSeconds(1.25f);
+            scoreGraphic.ShowScore(a_Score, 0, ScoreGraphic.EMoveTowards.None);
         }
 
         public void OnCompletionDartHit(GameObject dartGameObj)
@@ -492,7 +509,7 @@ namespace ArenaZ.Manager
             {
                 Debug.LogWarning("3 darts are thrown!");
                 AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.AudienceCheering).Clip, oneShot = true });
-                StartCoroutine(DisplayTotalScore(roundEndScore));
+                StartCoroutine(DisplayTotalScore(roundEndScore, PlayerType == Player.Self ? ScoreGraphic.EMoveTowards.User : PlayerType == Player.Opponent ? ScoreGraphic.EMoveTowards.Opponent : ScoreGraphic.EMoveTowards.None));
                 throwCount = 0;
                 //roundEndScore = 0;
             }
@@ -515,7 +532,7 @@ namespace ArenaZ.Manager
                     hitScore = boardBody.HitPointScore * boardBody.ScoreMultiplier;
 
                 Debug.Log($"HitPointScore: {boardBody.HitPointScore} ScoreMultiplier: {boardBody.ScoreMultiplier}");
-                scoreGraphic.ShowScore(boardBody.HitPointScore, boardBody.ScoreMultiplier);
+                StartCoroutine(displayUserScoreWithDelay(boardBody.HitPointScore, boardBody.ScoreMultiplier, hitScore));
                 Debug.Log("Player Hit Score:  " + hitScore);
                 if (hitScore <= selfGameScoreData.Score)
                 {
@@ -534,19 +551,26 @@ namespace ArenaZ.Manager
             PlayDartHitParticle(dartGameObj.transform.position);
         }
 
-        private IEnumerator DisplayTotalScore(int a_TotalScore)
+        private IEnumerator displayUserScoreWithDelay(int a_HitValue, int a_MultiplierValue, int a_Score)
         {
-            yield return new WaitForSeconds(2.0f);
+            scoreGraphic.ShowScore(a_HitValue, a_MultiplierValue, ScoreGraphic.EMoveTowards.None);
+            yield return new WaitForSeconds(1.25f);
+            scoreGraphic.ShowScore(a_Score, 0, ScoreGraphic.EMoveTowards.None);
+        }
+
+        private IEnumerator DisplayTotalScore(int a_TotalScore, ScoreGraphic.EMoveTowards a_MoveTowards)
+        {
+            yield return new WaitForSeconds(3.0f);
             scoreGraphic.HideCrossAndBust();
             StartCoroutine(scoreGraphic.ClearScoreboard());
             Debug.Log("Score TotalScore: " + a_TotalScore);
-            StartCoroutine(showTotalScore(a_TotalScore));
+            StartCoroutine(showTotalScore(a_TotalScore, a_MoveTowards));
         }
 
-        private IEnumerator showTotalScore(int a_TotalScore)
+        private IEnumerator showTotalScore(int a_TotalScore, ScoreGraphic.EMoveTowards a_MoveTowards)
         {
             yield return new WaitForSeconds(2.0f);
-            scoreGraphic.ShowScore(a_TotalScore, 0);
+            scoreGraphic.ShowScore(a_TotalScore, 0, a_MoveTowards);
         }
 
         private void InstantiateFakeDart(GameObject dartGameObj)
@@ -582,12 +606,12 @@ namespace ArenaZ.Manager
             if (a_PlayerType == Player.Self)
             {
                 selfGameScoreData.Score -= a_HitValue;
-                userScoreText.text = selfGameScoreData.Score.ToString();
+                //userScoreText.text = selfGameScoreData.Score.ToString();
             }
             else if (a_PlayerType == Player.Opponent)
             {
                 opponentGameScoreData.Score -= a_HitValue;
-                opponentScoreText.text = opponentGameScoreData.Score.ToString();
+                //opponentScoreText.text = opponentGameScoreData.Score.ToString();
             }
             //StartCoroutine(showScore(a_HitValue));
             //showScore(a_HitValue);
