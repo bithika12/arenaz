@@ -32,7 +32,8 @@ io.on('connection', function(socket){
 				packet[1].colorName = (!userDetails.colorName[0])?"":userDetails.colorName[0]['colorName'];
 				packet[1].raceName = (!userDetails.raceName[0])?"":userDetails.raceName[0]['raceName'];
 				packet[1].dartname = (!userDetails.dartName[0])?"":userDetails.dartName[0]['dartName'];
-				packet[1].cupNumbers = (!userDetails.cupNo)?"":userDetails.cupNo;
+				packet[1].cupNumbers = (!userDetails.cupNo)?0:userDetails.cupNo;
+				//packet[1].cupNumbers = (!userDetails.cupNo)?"":userDetails.cupNo;
 				//packet[1].colorName = (!userDetails.colorName[0]['colorName'])?"":userDetails.colorName[0]['colorName'];
 				//packet[1].raceName = (!userDetails.raceName[0]['raceName'])?"":userDetails.raceName[0]['raceName'];
               return next(); 
