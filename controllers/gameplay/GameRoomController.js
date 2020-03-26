@@ -370,8 +370,24 @@ io.on('connection', function (socket) {
     function nextUserTurn(roomObj) {
         inmRoom.findNextUser({roomName: roomObj.roomName}).then(function (roomDetails) {
             if (roomDetails) {
-                logger.print("Next turn sent after game request"+roomDetails.userId);
-                io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                //new code 26 th mar//
+                 var i = 3;
+                logger.print("  ************  first turn loop start");
+                let timer = setTimeout(function gameStartTimmer1(gameStartObj1) {
+                    i--;
+                    if (i === 0) {
+                        console.log("first turn i turn 0 "+roomDetails.userId+gameStartObj1.roomName);
+                        clearTimeout(this.interval);
+                        logger.print("Next turn sent after game request"+roomDetails.userId);
+                        io.to(gameStartObj1.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                    } else {
+                        gameStartObj1.i = i
+                        timer = setTimeout(gameStartTimmer1, 1000, gameStartObj1);
+                    }
+                }, 1000, roomObj);
+                //new code///////////
+                //logger.print("Next turn sent after game request"+roomDetails.userId);
+                //io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
             }
         }).catch(err => {
         });
