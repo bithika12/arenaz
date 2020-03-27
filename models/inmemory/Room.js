@@ -30,7 +30,7 @@ room.throwDartDetails = function (reqObj) {
         let newArr3 = [];
         let userTurn;
         let dartPnt;
-        let remainingScore;
+        let remainingScore=0;
         let isWin;
         let userTurnOppnt;
         let userTurnGame;
@@ -76,7 +76,11 @@ room.throwDartDetails = function (reqObj) {
                               * or some other number bigger
                               * It is a bust and turn changes
                              */
-                            if (/*reqObj.score == 1 || reqObj.score < 0 ||*/ calculatedScore < 0) {
+                             //hitScore,
+                             //scoreMultiplier
+
+                            if (/*reqObj.score == 1 || reqObj.score < 0 ||*/ 
+                                calculatedScore < 0) {
                                 //reject({message:"It is bust"});
                                 logger.print("It is a bust");
                                 logger.print("set trun to opponent as it is a bust");
