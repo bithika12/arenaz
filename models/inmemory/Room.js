@@ -39,8 +39,11 @@ room.throwDartDetails = function (reqObj) {
         let cupNumber;
         let cupNumberOppo;
         let availableCoin;
+        let userScore;
         //let findIndexOpponentMod;
         let cupOpponent;
+        let userTotalScore=0;
+        let userRemainScore=0;
 
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
@@ -69,8 +72,25 @@ room.throwDartDetails = function (reqObj) {
                             dartPnt = reqObj.dartPoint;
                             isWin = elemt.isWin;
 
+                            //new code on 30 th march 2020//
+                            userScore=reqObj.score+elemt.score;
+                            console.log("total user score"+userScore);
+                            
+                            userTotalScore=remainingScore-userScore;
+                            console.log("userTotalScore"+userTotalScore);
+                            if(userTurn ==3){
+
+                             userRemainScore=remainingScore-userScore;
+                             console.log("userRemainScore"+userRemainScore);
+                            }
+                            else{
+                               userRemainScore=remainingScore; 
+                               console.log("userRemainScore"+userRemainScore);
+                            }
+                            //new code on 30 th march 2020//
 
                             calculatedScore = remainingScore - reqObj.score;
+
                             /*
                               * If user score is 10 but user hits 21
                               * or some other number bigger
@@ -80,7 +100,7 @@ room.throwDartDetails = function (reqObj) {
                              //scoreMultiplier
 
                             if (/*reqObj.score == 1 || reqObj.score < 0 ||*/ 
-                                calculatedScore < 0) {
+                                calculatedScore < 0 || userTotalScore<0) {
                                 //reject({message:"It is bust"});
                                 logger.print("It is a bust");
                                 logger.print("set trun to opponent as it is a bust");
@@ -133,13 +153,15 @@ room.throwDartDetails = function (reqObj) {
                     resolve({
                         roomName: reqObj.roomName,
                         users: reqObj.userId,
-                        remainingScore: calculatedScore,
+                        remainingScore: userRemainScore,
+                        //remainingScore: calculatedScore,
                         finalArr: userArr,
                         userTurn: userTurn,
                         dartPoint: dartPnt,
                         playStatus: playStatus,
                         isWin: isWin,
-                        playerScore: reqObj.score,
+                        playerScore: userScore,
+                        //playerScore: reqObj.score,
                         cupNumber: cupNumber,
                         gameTotalTime:gameSeconds,
                         availableCoin:availableCoin,
