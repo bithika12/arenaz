@@ -80,7 +80,7 @@ room.throwDartDetails = function (reqObj) {
                             //console.log("userScore1"+userScore1);
                             if(userTurn ==1){
                              roundScore=0; 
-                             //elemt.score=0;                            
+                             elemt.score=0;                            
                             }
                             else{
                                 roundScore=elemt.roundscore;
