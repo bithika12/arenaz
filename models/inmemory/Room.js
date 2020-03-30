@@ -44,6 +44,7 @@ room.throwDartDetails = function (reqObj) {
         let cupOpponent;
         let userTotalScore=0;
         let userRemainScore=0;
+        let roundScore=0;
 
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
@@ -77,7 +78,15 @@ room.throwDartDetails = function (reqObj) {
                             console.log("elemt.score"+elemt.score);
                             //userScore1=Math.sum(reqObj.score,elemt.score);
                             //console.log("userScore1"+userScore1);
-
+                            if(userTurn ==1){
+                             roundScore=0;                             
+                            }
+                            else{
+                                roundScore=elemt.roundscore;
+                            }
+                            
+                            roundScore=parseInt(reqObj.score) + parseInt(roundScore);
+                            
                             userScore=parseInt(reqObj.score) + parseInt(elemt.score);
                             console.log("total user score" +userScore);
                             
@@ -143,6 +152,7 @@ room.throwDartDetails = function (reqObj) {
                      }*/
 
                     let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
+                    userArr[findIndex].roundscore = roundScore;
                     userArr[findIndex].score = userScore;
                     //userArr[findIndex].score = reqObj.score;
                     userArr[findIndex].total = userRemainScore;

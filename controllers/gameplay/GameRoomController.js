@@ -550,6 +550,7 @@ io.on('connection', function (socket) {
                                 //score: 333,
                                 //total: 333,
                                 score: 0,
+                                roundscore:0,
                                 //score: 199,
                                 total: 199,
                                 status: "active",
