@@ -79,7 +79,8 @@ room.throwDartDetails = function (reqObj) {
                             //userScore1=Math.sum(reqObj.score,elemt.score);
                             //console.log("userScore1"+userScore1);
                             if(userTurn ==1){
-                             roundScore=0;                             
+                             roundScore=0; 
+                             elemt.score=0;                            
                             }
                             else{
                                 roundScore=elemt.roundscore;
@@ -187,7 +188,8 @@ room.throwDartDetails = function (reqObj) {
                         //new add
                         userCoin:availableCoin,
                         opponentCup:cupOpponent,
-                        opponentUserId:userArr[findIndexOpponentMod].userId
+                        opponentUserId:userArr[findIndexOpponentMod].userId,
+                        roundScore:roundScore
                     });
                 } else {
                     console.log("Unable to find room"+reqObj.roomName);
