@@ -75,11 +75,11 @@ room.throwDartDetails = function (reqObj) {
                             //new code on 30 th march 2020//
                             console.log("user1 acore"+reqObj.score);
                             console.log("elemt.score"+elemt.score);
-                            userScore1=Math.sum(reqObj.score,elemt.score);
-                            console.log("userScore1"+userScore1);
+                            //userScore1=Math.sum(reqObj.score,elemt.score);
+                            //console.log("userScore1"+userScore1);
 
-                            userScore=reqObj.score+elemt.score;
-                            console.log("total user score"+userScore);
+                            userScore=parseInt(reqObj.score) + parseInt(elemt.score);
+                            console.log("total user score" +userScore);
                             
                             userTotalScore=remainingScore-userScore;
                             console.log("userTotalScore"+userTotalScore);
