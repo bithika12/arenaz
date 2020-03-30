@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var app = express();
 var server = require('http').Server(app);
-
+//var timeout = express.timeout;
 //var  radisConfig = require('./config/radisConfig');
 
 //var io = require('socket.io')(server);
@@ -20,6 +20,7 @@ var socket = require('./controllers/gameplay/SocketModule');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+//app.use(timeout(120000));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

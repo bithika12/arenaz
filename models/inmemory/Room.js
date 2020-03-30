@@ -91,6 +91,7 @@ room.throwDartDetails = function (reqObj) {
                             userScore=parseInt(reqObj.score) + parseInt(elemt.score);
                             console.log("total user score" +userScore);
                             
+                            console.log("remaining score"+remainingScore);
                             userTotalScore=remainingScore-userScore;
                             console.log("userTotalScore"+userTotalScore);
                             if(userTurn ==3){
@@ -114,9 +115,7 @@ room.throwDartDetails = function (reqObj) {
                              //hitScore,
                              //scoreMultiplier
 
-                            if (/*reqObj.score == 1 || reqObj.score < 0 ||*/ 
-                                /*calculatedScore < 0 || */
-                                userTotalScore<0) {
+                            if (userTotalScore < 0) {
                                 //reject({message:"It is bust"});
                                 logger.print("It is a bust");
                                 logger.print("set trun to opponent as it is a bust");
