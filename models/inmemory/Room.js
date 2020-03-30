@@ -104,7 +104,7 @@ room.throwDartDetails = function (reqObj) {
                             }
                             //new code on 30 th march 2020//
 
-                            calculatedScore = remainingScore - reqObj.score;
+                            //calculatedScore = remainingScore - reqObj.score;
 
                             /*
                               * If user score is 10 but user hits 21
@@ -115,14 +115,18 @@ room.throwDartDetails = function (reqObj) {
                              //scoreMultiplier
 
                             if (/*reqObj.score == 1 || reqObj.score < 0 ||*/ 
-                                calculatedScore < 0 || userTotalScore<0) {
+                                /*calculatedScore < 0 || */
+                                userTotalScore<0) {
                                 //reject({message:"It is bust"});
                                 logger.print("It is a bust");
                                 logger.print("set trun to opponent as it is a bust");
                                 userTurn = 3;
                                 playStatus = 1;
-                                calculatedScore=remainingScore;
+                                //calculatedScore=remainingScore;
+                                userRemainScore=remainingScore; 
                             }
+                            calculatedScore = remainingScore - reqObj.score;
+
                             if (calculatedScore == 0) {
                                 logger.print("win the match");
                                 isWin = 1;
