@@ -138,8 +138,10 @@ room.throwDartDetails = function (reqObj) {
                      }*/
 
                     let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
-                    userArr[findIndex].score = reqObj.score;
-                    userArr[findIndex].total = calculatedScore;
+                    userArr[findIndex].score = userScore;
+                    //userArr[findIndex].score = reqObj.score;
+                    userArr[findIndex].total = userRemainScore;
+                    //userArr[findIndex].total = calculatedScore;
                     userArr[findIndex].turn = userTurn;
                     userArr[findIndex].dartPoint = dartPnt;
                     userArr[findIndex].isWin = isWin;
