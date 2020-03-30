@@ -80,7 +80,7 @@ room.throwDartDetails = function (reqObj) {
                             //console.log("userScore1"+userScore1);
                             if(userTurn ==1){
                              roundScore=0; 
-                             elemt.score=0;                            
+                             //elemt.score=0;                            
                             }
                             else{
                                 roundScore=elemt.roundscore;
@@ -862,6 +862,48 @@ room.updateInmemoryRoom = function (userObj, updateArr) {
     })
 }
 
+room.updateInmemoryRoomMod12 = function (updateArr) {
+    return new Promise((resolve, reject) => {
+        console.log("816 inmpre1"+updateArr.opponentCup);
+
+        room.update({roomName: updateArr.roomName}, {$set: {gameTotalTime:updateArr.gameTotalTime,users: updateArr.finalArr}},
+
+            //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},
+            function (err, updateroomresult) {
+                if (err)
+                    reject({message: "Error:Database connection error"})
+                else {
+                    console.log("update memory room successfully after dart thrown");
+                    if (updateroomresult > 0)
+                        //resolve({roomName : userObj.roomName,userArr:updateArr})
+                        resolve({
+                            roomName: updateArr.roomName,
+                            userId: updateArr.users,
+                            remainingScore: updateArr.remainingScore,
+                            dartPoint: updateArr.dartPoint,
+                            playStatus: updateArr.playStatus,
+                            isWin: updateArr.isWin,
+                            roomUsers: updateArr.finalArr,
+                            playerScore: updateArr.playerScore,
+                            cupNumber: updateArr.cupNumber,
+                            gameTotalTime:updateArr.gameTotalTime,
+                            availableCoin:updateArr.userCoin,
+                            opponentCup:updateArr.opponentCup,
+                            opponentUserId:updateArr.opponentUserId,
+                            opponentCoin:updateArr.opponentCoin,
+                            roundScore:updateArr.roundScore
+                        })
+                    //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
+                    else
+                        reject({message: "Unable to update memory room"});
+                    //resolve({users: reqObj.userId,remainingScore:calculatedScore})
+                }
+
+            });
+
+    })
+}
+
 room.updateInmemoryRoomMod = function (updateArr) {
     return new Promise((resolve, reject) => {
         console.log("816 inmpre1"+updateArr.opponentCup);
@@ -890,7 +932,8 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             availableCoin:updateArr.userCoin,
                             opponentCup:updateArr.opponentCup,
                             opponentUserId:updateArr.opponentUserId,
-                            opponentCoin:updateArr.opponentCoin
+                            opponentCoin:updateArr.opponentCoin,
+                            //roundScore:updateArr.roundScore
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else

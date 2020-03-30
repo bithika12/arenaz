@@ -58,6 +58,17 @@ io.on('connection', function (socket) {
 		}
 	}
 
+
+    function updateRoomModified(reqobj,callback){
+        inmRoom.updateInmemoryRoomMod12(reqobj).then(function(roomDetails){
+          console.log("roomdetails",roomDetails)
+            callback(null, roomDetails);
+        }).catch(err=>{
+            callback("err", null);
+        })
+
+    }
+
     function updateRoom(reqobj,callback){
 		inmRoom.updateInmemoryRoomMod(reqobj).then(function(roomDetails){
           console.log("roomdetails",roomDetails)
@@ -185,7 +196,8 @@ io.on('connection', function (socket) {
 
             async.waterfall([
                 dartProcess(req),
-                updateRoom,
+                updateRoomModified
+                //updateRoom,
                 //gameOverProcess,
                 //NEWLY ADDED FOR COIN
                 gameStatusUpdate,
@@ -216,7 +228,8 @@ io.on('connection', function (socket) {
                         playerScore: result.playerScore,
                         cupNumber: result.cupNumber,
                         hitScore:req.hitScore,
-                        scoreMultiplier:req.scoreMultiplier
+                        scoreMultiplier:req.scoreMultiplier,
+                        roundScore:result.roundScore
                     }, "Dart thrown"));
 
                 } else
