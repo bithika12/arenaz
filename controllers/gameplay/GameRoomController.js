@@ -196,7 +196,7 @@ io.on('connection', function (socket) {
 
             async.waterfall([
                 dartProcess(req),
-                updateRoomModified
+                updateRoomModified,
                 //updateRoom,
                 //gameOverProcess,
                 //NEWLY ADDED FOR COIN
