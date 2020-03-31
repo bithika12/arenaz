@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using DG.Tweening;
 using Coffee.UIExtensions;
+using System.Linq;
+using System.Collections;
 
 namespace ArenaZ.GameMode
 {
@@ -41,9 +43,9 @@ namespace ArenaZ.GameMode
         [SerializeField] private List<Transform> uiButtons = new List<Transform>();
 
         [SerializeField] private GameLoading gameLoading;
-
-        public Action<string> setOpponentName;
-        public Action<string, string> setOpponentImage;
+        public Action<List<UserJoin>> setUsersData;
+        public Action<string, string, string> setUserImage;
+        public Action<string, string, string> setOpponentImage;
         public Action<string, string> setCupCount;
 
         private void Start()
@@ -140,6 +142,7 @@ namespace ArenaZ.GameMode
 
             Debug.Log($"Game Start : {data}");
             var gameStartData = DataConverter.DeserializeObject<GamePlayDataFormat<UserJoin>>(data);
+            Debug.LogWarning($"----UserId: {User.UserId}");
             Debug.LogWarning($"----OnJoinRoom: {JsonConvert.SerializeObject(gameStartData)}");
             User.RoomName = gameStartData.result.RoomName;
             Debug.Log($"User Join RoomName: {User.RoomName}");
@@ -147,21 +150,23 @@ namespace ArenaZ.GameMode
 
             string selfCup = "";
             string opponentCup = "";
-
+            setUsersData?.Invoke(users.ToList());
             for (int i = 0; i < users.Length; i++)
             {
-                ScoreData.requiredScore = users[i].Score;
-                if (User.UserId != users[i].UserId)
+                ScoreData.requiredScore = users[i].Total;
+                
+
+                if (User.UserId.Equals(users[i].UserId))
                 {
-                    opponentCup = users[i].TotalCupWin.ToString();
-                    saveOpponentData(users[i]);
-                    setOpponentName?.Invoke(users[i].UserName);
-                    setOpponentImage?.Invoke(users[i].RaceName, users[i].ColorName);
-                    UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString(),Hide.none);
+                    setUserImage?.Invoke(users[i].UserName, users[i].RaceName, users[i].ColorName);
+                    selfCup = users[i].TotalCupWin.ToString();
                 }
                 else
                 {
-                    selfCup = users[i].TotalCupWin.ToString();
+                    opponentCup = users[i].TotalCupWin.ToString();
+                    saveOpponentData(users[i]);
+                    setOpponentImage?.Invoke(users[i].UserName, users[i].RaceName, users[i].ColorName);
+                    UIManager.Instance.ShowScreen(Page.PlayerMatchPanel.ToString(), Hide.none);
                 }
             }
             setCupCount?.Invoke(selfCup, opponentCup);
@@ -236,5 +241,18 @@ namespace ArenaZ.GameMode
             gameLoading.WaitingForOtherPlayer();
             SocketManager.Instance.GameRequest();
         }
+
+        //private IEnumerator LeaveAndJoinRoomRequest()
+        //{
+        //    float t_Delay = 0.0f;
+        //    if (GameManager.Instance.GameStatus == GameManager.EGameStatus.Playing)
+        //    {
+        //        t_Delay = 1.0f;
+        //        Debug.Log("---------------Leaving Room---------------");
+        //        SocketManager.Instance.LeaveRoomRequest();
+        //    }
+        //    yield return new WaitForSeconds(t_Delay);
+        //    SocketManager.Instance.GameRequest();
+        //}
     }
 }

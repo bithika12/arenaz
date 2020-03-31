@@ -10,6 +10,7 @@ namespace ArenaZ.LevelMangement
     {
         [Header("Buttons")]
         [Space(5)]
+        [SerializeField] private Button settingsButton;
         [SerializeField] private Button shootingRangeButton;
         [SerializeField] private Button speedRaceButton;
         [SerializeField] private Button bunkerDefenseButton;
@@ -74,6 +75,7 @@ namespace ArenaZ.LevelMangement
         #region Button_References
         private void GettingButtonReferences()
         {
+            settingsButton.onClick.AddListener(SettingButtonClicked);
             shootingRangeButton.onClick.AddListener(OnClickShootingRange);
             speedRaceButton.onClick.AddListener(OnClickSpeedRaceAndBunkerDef);
             bunkerDefenseButton.onClick.AddListener(OnClickSpeedRaceAndBunkerDef);
@@ -83,6 +85,7 @@ namespace ArenaZ.LevelMangement
 
         private void ReleaseButtonReferences()
         {
+            settingsButton.onClick.RemoveListener(SettingButtonClicked);
             shootingRangeButton.onClick.RemoveListener(OnClickShootingRange);
             speedRaceButton.onClick.RemoveListener(OnClickSpeedRaceAndBunkerDef);
             bunkerDefenseButton.onClick.RemoveListener(OnClickSpeedRaceAndBunkerDef);
@@ -90,6 +93,14 @@ namespace ArenaZ.LevelMangement
             backButton.onClick.RemoveListener(OnClickBack);
         }
         #endregion
+
+        private void SettingButtonClicked()
+        {
+            // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
+            UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.none);
+            UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
+            UIManager.Instance.HideScreenImmediately(Page.RegionPopup.ToString());
+        }
 
         public void OnSelectionGameplayType(GameType gameType)
         {

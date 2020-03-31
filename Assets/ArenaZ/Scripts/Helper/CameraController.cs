@@ -73,7 +73,6 @@ namespace ArenaZ
 
                 //transform.position = selfCameraData.CameraPosition;
                 //transform.eulerAngles = selfCameraData.CameraRotation;
-                Debug.Log($"CameraData: {a_PlayerType.ToString()}");
             }
             else if (a_PlayerType == GameManager.Player.Opponent)
             {
@@ -82,7 +81,6 @@ namespace ArenaZ
 
                 //transform.position = opponentCameraData.CameraPosition;
                 //transform.eulerAngles = opponentCameraData.CameraRotation;
-                Debug.Log($"CameraData: {a_PlayerType.ToString()}");
             }
         }
     }

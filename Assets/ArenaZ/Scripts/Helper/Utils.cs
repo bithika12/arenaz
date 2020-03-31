@@ -37,6 +37,7 @@ public enum Page
     WinningPopupPanel,
     LoosingPopupPanel,
     InternetConnectionLostPanel,
+    GameplayUIPanel,
 }
 
 public enum ERace
@@ -223,6 +224,12 @@ public static class User
     public static int UserCup;
 }
 
+public static class SettingData
+{
+    public static float BGMVolume = 1.0f;
+    public static float SFXVolume = 1.0f;
+}
+
 public static class Opponent
 {
     public static string opponentName;
@@ -274,6 +281,8 @@ public static class ConstantStrings
     public const string passwordContainedSpace = "Password Doesn't Contain Any Space.";
     public const string loginEmailPasswordBlank = "The Email Address And Password You Entered Is Incorrect. Please Try Again.";
     public const string userNameBlank = "Your Username Is Incorrect. Please try Again.";
+    public const string userNameSpecialCharacter = "Your Username can't have Special Characters.";
+    public const string userNameLimitOverflow = "Username maximum limit is 13 characters";
     public const string wrongConfPassword = "Your password and confirmation of password must match.";
     public const string wrongEmailAndUsername = "The credentials you entered is not correct. Please try again or contact support.";
     public const string rightEmailAndUserName = "Your login credentials have been emailed to you.";

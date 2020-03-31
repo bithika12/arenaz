@@ -7,7 +7,7 @@ public class DartThrow
     [JsonProperty("userId")]
     public string UserId { get; set; }
     [JsonProperty("remainingScore")]
-    public string RemainingScore { get; set; }
+    public int RemainingScore { get; set; }
     [JsonProperty("dartPoint")]
     public string DartPoint { get; set; }
     [JsonProperty("playerScore")]
@@ -16,6 +16,8 @@ public class DartThrow
     public int HitScore { get; set; }
     [JsonProperty("scoreMultiplier")]
     public int ScoreMultiplier { get; set; }
+    [JsonProperty("roundScore")]
+    public int RoundScore { get; set; }
     [JsonProperty("playStatus")]
-    public string PlayStatus { get; set; }   
+    public string PlayStatus { get; set; }
 }

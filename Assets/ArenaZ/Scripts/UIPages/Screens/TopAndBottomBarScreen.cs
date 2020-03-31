@@ -9,7 +9,10 @@ namespace ArenaZ.Screens
 {
     public class TopAndBottomBarScreen : Singleton<TopAndBottomBarScreen>
     {
-        [Header("Buttons")]
+        [Header("Top Buttons")]
+        [SerializeField] private Button topSettingsBtn;
+
+        [Header("Bottom Buttons")]
         [SerializeField] private Button historyButton;
         [SerializeField] private Button infoButton;
         [SerializeField] private Button mailButton;
@@ -41,6 +44,7 @@ namespace ArenaZ.Screens
         #region Button_References
         private void GettingButtonReferences()
         {
+            topSettingsBtn.onClick.AddListener(SettingButtonClicked);
             historyButton.onClick.AddListener(HistoryButtonClicked);
             mailButton.onClick.AddListener(MailButtonClicked);
             settingButton.onClick.AddListener(SettingButtonClicked);
@@ -49,6 +53,7 @@ namespace ArenaZ.Screens
 
         private void ReleaseButtonReferences()
         {
+            topSettingsBtn.onClick.RemoveListener(SettingButtonClicked);
             historyButton.onClick.RemoveListener(HistoryButtonClicked);
             mailButton.onClick.RemoveListener(MailButtonClicked);
             settingButton.onClick.RemoveListener(SettingButtonClicked);

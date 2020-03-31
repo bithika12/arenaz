@@ -131,6 +131,14 @@ namespace ArenaZ.RegistrationUser
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), obj.Description, PopUpduration);
         }
 
+        private bool withinLimit(string message, int limit)
+        {
+            if (message.Length <= limit)
+                return true;
+            else
+                return false;
+        }
+
         private string GetMessageWhenFaultCheckOnRegistration(string message, Checking type)
         {
             switch (type)
@@ -148,6 +156,14 @@ namespace ArenaZ.RegistrationUser
                     if(!checking.hasMinimum3Chars.IsMatch(message))
                     {
                         return ConstantStrings.doesNotHaveMinThreeChar;
+                    }
+                    if (checking.hasspecialCharacter.IsMatch(message))
+                    {
+                        return ConstantStrings.userNameSpecialCharacter;
+                    }
+                    if (!withinLimit(message, 13))
+                    {
+                        return ConstantStrings.userNameLimitOverflow;
                     }
                     break;
                 case Checking.EmailID:

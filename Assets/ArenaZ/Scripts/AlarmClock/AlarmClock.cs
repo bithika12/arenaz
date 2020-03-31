@@ -21,14 +21,13 @@ namespace ArenaZ
         {
             if (animationState == EAnimation.Idle)
             {
-                Debug.Log("Show Clock");
                 animationState = EAnimation.Playing;
                 clock.SetActive(true);
 
                 clock.transform.localScale = Vector3.zero;
                 clock.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InBounce);
 
-                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Timeout).Clip, oneShot = true });
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Timeout).Clip, oneShot = true, volume = SettingData.SFXVolume });
 
                 Animator t_Animator = clock.GetComponent<Animator>();
                 t_Animator.Play("Jerk");
@@ -40,7 +39,6 @@ namespace ArenaZ
 
         public void Hide()
         {
-            Debug.Log("Hide Clock");
             animationState = EAnimation.Idle;
             clock.GetComponent<Animator>().Play("Idle");
             clock.transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBounce).OnComplete(() =>

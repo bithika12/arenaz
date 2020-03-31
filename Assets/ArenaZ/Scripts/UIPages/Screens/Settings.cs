@@ -36,8 +36,8 @@ namespace ArenaZ.SettingsManagement
 
         [Header("Data Types")]
         [Space(5)]
-        [SerializeField] private float MuteValue = -80.0f;
-        [SerializeField] private float UnmuteValue = 0.0f;
+        [SerializeField] private float MuteValue = 0.0f;
+        [SerializeField] private float UnmuteValue = 1.0f;
 
         [Header("Toggles And Buttons")]
         [Space(5)]
@@ -263,6 +263,7 @@ namespace ArenaZ.SettingsManagement
                 MusicAudioMixer.SetFloat("MusicVolume", MuteValue);
 
                 PlayerPrefs.SetFloat("MusicVolume", MuteValue);
+                SettingData.BGMVolume = MuteValue;
             }
             else if (!IsMusicMute)
             {
@@ -270,8 +271,10 @@ namespace ArenaZ.SettingsManagement
                 MusicAudioMixer.SetFloat("MusicVolume", UnmuteValue);
 
                 PlayerPrefs.SetFloat("MusicVolume", UnmuteValue);
+                SettingData.BGMVolume = UnmuteValue;
             }
-
+            GameManager.Instance.MainMenuBGMusicVolume(SettingData.BGMVolume);
+            GameManager.Instance.GameplayBGMusicVolume(SettingData.BGMVolume);
             Debug.Log("IsMusic is " + IsMusicMute);
         }
 
@@ -286,6 +289,7 @@ namespace ArenaZ.SettingsManagement
                 SFXAudioMixer.SetFloat("SFXVolume", MuteValue);
 
                 PlayerPrefs.SetFloat("SFXVolume", MuteValue);
+                SettingData.SFXVolume = MuteValue;
             }
             else if (!IsSFXMute)
             {
@@ -293,8 +297,9 @@ namespace ArenaZ.SettingsManagement
                 SFXAudioMixer.SetFloat("SFXVolume", UnmuteValue);
 
                 PlayerPrefs.SetFloat("SFXVolume", UnmuteValue);
+                SettingData.SFXVolume = UnmuteValue;
             }
-
+            
             Debug.Log("IsSFX is " + IsSFXMute);
         }
 
@@ -306,6 +311,7 @@ namespace ArenaZ.SettingsManagement
                 MusicAudioMixer.SetFloat("MusicVolume", MuteValue);
                 IsMusicMute = true;
                 MusicToggle.isOn = true;
+                SettingData.BGMVolume = MuteValue;
             }
 
             if (PlayerPrefs.GetFloat("MusicVolume") == UnmuteValue)
@@ -314,6 +320,7 @@ namespace ArenaZ.SettingsManagement
                 MusicAudioMixer.SetFloat("MusicVolume", UnmuteValue);
                 IsMusicMute = false;
                 MusicToggle.isOn = false;
+                SettingData.BGMVolume = UnmuteValue;
             }
 
 
@@ -323,6 +330,7 @@ namespace ArenaZ.SettingsManagement
                 SFXAudioMixer.SetFloat("SFXVolume", MuteValue);
                 IsSFXMute = true;
                 SFXToggle.isOn = true;
+                SettingData.SFXVolume = MuteValue;
             }
 
             if (PlayerPrefs.GetFloat("SFXVolume") == UnmuteValue)
@@ -331,9 +339,11 @@ namespace ArenaZ.SettingsManagement
                 SFXAudioMixer.SetFloat("SFXVolume", UnmuteValue);
                 IsSFXMute = false;
                 SFXToggle.isOn = false;
+                SettingData.SFXVolume = UnmuteValue;
             }
+            GameManager.Instance.MainMenuBGMusicVolume(SettingData.BGMVolume);
+            GameManager.Instance.GameplayBGMusicVolume(SettingData.BGMVolume);
         }
         #endregion
-
     }
 }

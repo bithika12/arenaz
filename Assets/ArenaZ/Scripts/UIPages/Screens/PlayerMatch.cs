@@ -33,7 +33,6 @@ public class PlayerMatch : Singleton<PlayerMatch>
     {
         UIManager.Instance.setUserName += SetUserName;
         UIManager.Instance.showProfilePic += SetUserProfileImage;
-        ShootingRange.Instance.setOpponentName += SetOpponentName;
         ShootingRange.Instance.setOpponentImage += SetOpponentProfileImage;
 
         ShootingRange.Instance.setCupCount += setCupCount;
@@ -69,8 +68,9 @@ public class PlayerMatch : Singleton<PlayerMatch>
         this.userName.text = userName;
     }
 
-    public void SetOpponentProfileImage(string race, string color)
+    public void SetOpponentProfileImage(string name, string race, string color)
     {
+        enemyName.text = name;
         ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
         EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
 
@@ -88,11 +88,6 @@ public class PlayerMatch : Singleton<PlayerMatch>
         }
     }
 
-    public void SetOpponentName(string OpponentName)
-    {
-        this.enemyName.text = OpponentName;
-    }
-
     public void LoadGameplay()
     {
         StartCoroutine(LoadGameplayAfterAnim());
@@ -108,6 +103,7 @@ public class PlayerMatch : Singleton<PlayerMatch>
         //UIManager.Instance.ShowUiPanel(false);
         UIManager.Instance.HideScreen(Page.UIPanel.ToString());
         UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(),Hide.none);
+        UIManager.Instance.ShowScreen(Page.GameplayUIPanel.ToString(), Hide.none);
         GameManager.Instance.InitializeOnGameStartSequences();
     }
 }

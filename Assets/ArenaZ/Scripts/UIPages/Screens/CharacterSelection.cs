@@ -74,10 +74,9 @@ namespace ArenaZ.Screens
 
         private void OnGetUserSelection(UserSelectionDetails userSelectionDetails)
         {
-            Debug.Log($"------------------------------------US: {JsonConvert.SerializeObject(userSelectionDetails)}");
+            Debug.Log($"------------------------------------USD: {JsonConvert.SerializeObject(userSelectionDetails)}");
             if (userSelectionDetails != null)
             {
-                Debug.Log("Got data.");
                 User.UserCountry = userSelectionDetails.CountryName;
                 User.UserLanguage = userSelectionDetails.LanguageName;
 
@@ -86,12 +85,10 @@ namespace ArenaZ.Screens
                     settings.UpdateCountryDetails(t_Data.CountryId, t_Data.CountryPic);
 
                 string colorName = string.IsNullOrEmpty(userSelectionDetails.ColorName) ? UIManager.Instance.StartColorName : userSelectionDetails.ColorName;
-                Debug.Log("--------------ColorName: " + colorName);
                 SetColorOnCharacter(colorName);
 
                 string characterIdStr = string.IsNullOrEmpty(userSelectionDetails.CharacterId) ? "0" : userSelectionDetails.CharacterId;
                 int characterId = int.Parse(characterIdStr);
-                Debug.Log("--------------CharacterId: " + characterId);
                 UIManager.Instance.ShowCharacterName(raceNames[characterId]);
                 horizontalScrollSnap.GoToScreen(characterId);
                 playerColorChooser.SetSelectedColor(userSelectionDetails.ColorName);
@@ -113,10 +110,8 @@ namespace ArenaZ.Screens
 
         private void LoadDefaultData()
         {
-            Debug.Log("--------------ColorName: " + UIManager.Instance.StartColorName);
             SetColorOnCharacter(UIManager.Instance.StartColorName);
 
-            Debug.Log("--------------CharacterId: " + 0);
             UIManager.Instance.ShowCharacterName(raceNames[0]);
             horizontalScrollSnap.GoToScreen(0);
 

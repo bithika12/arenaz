@@ -306,7 +306,7 @@ namespace UnityEngine.UI.Extensions
             if (_currentPage < _screens - 1 || _isInfinate)
             {
                 if (!_lerp) StartScreenChange();
-                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true });
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true, volume = SettingData.SFXVolume });
                 _lerp = true;
                 CurrentPage = _currentPage + 1;
                 GetPositionforPage(_currentPage, ref _lerp_target);
@@ -321,7 +321,7 @@ namespace UnityEngine.UI.Extensions
             if (_currentPage > 0 || _isInfinate)
             {
                 if (!_lerp) StartScreenChange();
-                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true });
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true, volume = SettingData.SFXVolume });
                 _lerp = true;
                 CurrentPage = _currentPage - 1;
                 GetPositionforPage(_currentPage, ref _lerp_target);

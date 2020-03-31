@@ -9,6 +9,12 @@ using ArenaZ.Manager;
 
 namespace RedApple
 {
+    public interface ISocketState
+    {
+        void SocketStatus(SocketManager.ESocketState a_SocketState);
+        void SocketReconnected();
+    }
+
     public class SocketManager : Singleton<SocketManager>
     {
         public enum ESocketState
@@ -21,6 +27,8 @@ namespace RedApple
         public static Socket socket;
         public static event Action<string, string> onListen;
         private ESocketState socketState = ESocketState.None;
+
+        public List<ISocketState> iSocketStateSubscribers = new List<ISocketState>();
 
         private void Start()
         {
@@ -145,6 +153,7 @@ namespace RedApple
 
         private void OnConnected()
         {
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Connected));
             socketState = ESocketState.Connected;
             Debug.LogWarning("SocketConnected : " + socket);
             SocketListener.ActivateListener();
@@ -153,12 +162,18 @@ namespace RedApple
 
         private void OnReConnected(int val)
         {
+            iSocketStateSubscribers.ForEach(x =>
+            {
+                x.SocketStatus(ESocketState.Connected);
+                x.SocketReconnected();
+            });
             socketState = ESocketState.Connected;
             Debug.LogWarning("SocketReConnected : " + val);
         }
 
         private void OnConnectedError(Exception error)
         {
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Disconnected));
             socketState = ESocketState.Disconnected;
             Debug.LogError("ConnectedError");
             //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
@@ -166,6 +181,7 @@ namespace RedApple
 
         private void OnDisconnected()
         {
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Disconnected));
             socketState = ESocketState.Disconnected;
             Debug.LogError("Disconnected");
             //Invoke(nameof(chectSocketConnection), 2.5f);
@@ -173,6 +189,7 @@ namespace RedApple
 
         private void OnTimeout()
         {
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Disconnected));
             socketState = ESocketState.Disconnected;
             Debug.LogError("Timeout");
             //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
