@@ -126,7 +126,7 @@ room.throwDartDetails = function (reqObj) {
                             }
                             calculatedScore = remainingScore - reqObj.score;
 
-                            if (calculatedScore == 0) {
+                            if (userTotalScore == 0) {
                                 logger.print("win the match");
                                 isWin = 1;
                                 cupNumber = 70;
