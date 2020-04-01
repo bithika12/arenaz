@@ -34,8 +34,6 @@ public enum Page
     GameLoadingPanel,
     PopupPanel,
     RegionPopup,
-    WinningPopupPanel,
-    LoosingPopupPanel,
     InternetConnectionLostPanel,
     GameplayUIPanel,
 }

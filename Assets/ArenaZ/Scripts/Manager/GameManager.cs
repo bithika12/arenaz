@@ -727,6 +727,9 @@ namespace ArenaZ.Manager
 
         public void InstantiateDart(GameObject dartGameObj)
         {
+            if (currentDart != null)
+                Destroy(currentDart.gameObject);
+
             currentDart = Instantiate(dartGameObj, Vector3.zero, Quaternion.identity).GetComponent<Dart>();
             //currentDart.transform.localScale = Vector3.zero;
             //currentDart.transform.DOScale(Vector3.one, 1.0f).SetEase(Ease.InBounce);
