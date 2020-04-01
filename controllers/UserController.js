@@ -40,10 +40,13 @@ function checkUnique(reqObj){
 
 function checkUniqueEmailUserName(reqObj){
     return function (callback) {
-        User.totalUser({email : reqObj.email}).then((totalUser) => {
+        User.totalUser({email : reqObj.email,status:"active"}).then((totalUser) => {
+        //User.totalUser({email : reqObj.email}).then((totalUser) => {
             if(totalUser == 0) {
 
-                User.totalUser({userName : reqObj.userName}).then((totalUserList) => {
+                User.totalUser({userName : reqObj.userName,status:"active"}).then((totalUserList) => {
+
+                //User.totalUser({userName : reqObj.userName}).then((totalUserList) => {
                     if(totalUserList == 0)
                         callback (null,reqObj);
                     else{
