@@ -13,7 +13,7 @@ const response     = require('../utils/ResponseManeger');
 let randomstring = require("randomstring");
 /** Import Model **/
 let User  = require('../models/User');
-const { fetchNotification,userValidChk} = require(appRoot +'/models/FetchNotification');
+const { fetchNotification,userValidChk,changeNotificationStatus} = require(appRoot +'/models/FetchNotification');
 
 /**
  * @desc This function is used for forgot password

@@ -70,4 +70,4 @@ const changeNotificationStatus = notificationId => {
         });
     });
 };
-module.exports = { fetchNotification,userValidChk,fetchDetails };
+module.exports = { fetchNotification,userValidChk,fetchDetails,changeNotificationStatus };
