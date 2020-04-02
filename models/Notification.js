@@ -11,7 +11,7 @@ let  Notifications ={};
 Notifications.notifications1 =function(reqObj){
     //console.log(reqObj);return false;
     return new Promise((resolve,reject) => {
-        Notification.find(reqObj,{message:1,created_at:1}).then(responses => {
+        Notification.find(reqObj,{message:1,created_at:1,read_unread:1,_id:1}).then(responses => {
             //console.log("notis",responses);
             //let new_time = moment(responses.created_at).format('YYYY-MM-DD HH:mm:ss');
 
@@ -23,6 +23,8 @@ Notifications.notifications1 =function(reqObj){
                 message: entry.message,
                 cretaedTime:new_time,
                 type: "message",
+                read_status:entry.read_unread,
+                notification_id:entry._id,
                 description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
 
             });
