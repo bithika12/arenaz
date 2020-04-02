@@ -895,6 +895,16 @@ User.resetPassword = function(condObj,updateObj){
          });
      });
  }
+
+ User.disableAccount  = function(condObj){
+    return  new Promise((resolve,reject) => {
+        User.updateOne({"deviceDetails.accessToken":condObj.accessToken},{ $set : {status:"inactive"} }).then(responses=> {                
+          return resolve(responses);
+      }).catch(err => {
+          return reject(err);
+      });  
+    });
+}
 module.exports= User;
 
 

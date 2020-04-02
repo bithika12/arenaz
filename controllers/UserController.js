@@ -549,5 +549,16 @@ function getUserDetailsMod(reqObj){
     }
 }
 
-
+//deleteAccount
+exports.deleteAccount = function (req,res) {
+    User.disableAccount({accessToken: req.header("access_token")}).then(function (result) {
+        if(result) {
+            res.status(constants.HTTP_OK_STATUS).send({"status": constants.SUCCESS_STATUS, "result":{ }, "message": "Account deleted successfully"});
+        }else{
+            res.status(constants.BAD_REQUEST_STATUS).send({"status": constants.ERROR_STATUS, "result": {}, "message": "Something went Wrong!!"});
+        }
+    }).catch(err => {
+        res.status(constants.BAD_REQUEST_STATUS).send({"status":constants.ERROR_STATUS,"result":err,"message":"Something went Wrong!!"});
+    });
+};
 

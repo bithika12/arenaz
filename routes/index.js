@@ -49,7 +49,7 @@ router.post('/get/details',profileController.getColorReg);
 router.post('/fetch/notifications',fetchNotification.fetchGame);
 //leaderboard api
 router.post('/user/board',userLeaderBoard.fetchGame);
-
+router.post('/delete/account',userController.deleteAccount);
 
 
  /* FORGET PASSWORD RESET PASSWORD*/
