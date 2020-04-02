@@ -36,7 +36,7 @@ Notifications.notifications1 =function(reqObj){
 
 Notifications.updateNotification =function(conditionObj,updateObj){
     return new Promise((resolve,reject) => {
-        Notification.updateMany(conditionObj, {$set: updateObj}).then(responses => {
+        Notification.update(conditionObj, {$set: updateObj}).then(responses => {
             resolve(responses);
         })
     });
