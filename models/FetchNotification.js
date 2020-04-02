@@ -59,10 +59,10 @@ const fetchDetails = userEmail => {
     });
 };
 //changeNotificationStatus
-const changeNotificationStatus = (userId,notificationId) => {
+const changeNotificationStatus = notificationId => {
 
     return new Promise((resolve, reject) => {
-
+       console.log("mongoose.Types.ObjectId(notificationId"+mongoose.Types.ObjectId(notificationId));
      //fetch notifications
         Notifications.updateNotification({_id:mongoose.Types.ObjectId(notificationId)},{read_unread:1}).then(function (responseParams) {
             resolve(responseParams)
