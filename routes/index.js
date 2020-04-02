@@ -50,6 +50,7 @@ router.post('/fetch/notifications',fetchNotification.fetchGame);
 //leaderboard api
 router.post('/user/board',userLeaderBoard.fetchGame);
 router.post('/delete/account',userController.deleteAccount);
+router.post('/change/notification/status',fetchNotification.changeStatus);
 
 
  /* FORGET PASSWORD RESET PASSWORD*/

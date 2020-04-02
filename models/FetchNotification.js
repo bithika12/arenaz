@@ -58,4 +58,16 @@ const fetchDetails = userEmail => {
         });
     });
 };
+//changeNotificationStatus
+const changeNotificationStatus = (userId,notificationId) => {
+
+    return new Promise((resolve, reject) => {
+
+     //fetch notifications
+        Notifications.updateNotification({_id:mongoose.Types.ObjectId(notificationId)},{read_unread:1}).then(function (responseParams) {
+            resolve(responseParams)
+
+        });
+    });
+};
 module.exports = { fetchNotification,userValidChk,fetchDetails };
