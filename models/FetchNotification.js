@@ -6,6 +6,7 @@ var fs = require('fs');
 var handlebars = require('handlebars');
 const User = require(appRoot + '/models/User');
 const Notifications = require(appRoot + '/models/Notification');
+let mongoose = require('mongoose');
 
 
 /**
@@ -60,6 +61,8 @@ const fetchDetails = userEmail => {
 };
 //changeNotificationStatus
 const changeNotificationStatus = notificationId => {
+    console.log("ok");
+    console.log(mongoose.Types.ObjectId(notificationId));
 
     return new Promise((resolve, reject) => {
        console.log("mongoose.Types.ObjectId(notificationId"+mongoose.Types.ObjectId(notificationId));
