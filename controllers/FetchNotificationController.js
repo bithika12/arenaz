@@ -77,6 +77,7 @@ exports.changeStatus= function(req,res) {
     else{
         userValidChk(req.body.userEmail)
             .then(validResponse => {
+                console.log("req.body.notificationId"+req.body.notificationId);
                 return changeNotificationStatus(req.body.notificationId);
             })
 
