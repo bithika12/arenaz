@@ -94,6 +94,7 @@ var notificationSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    subject:String,
     message:String,
     read_unread: {
         type: Number,

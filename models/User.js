@@ -55,6 +55,7 @@ User.createUser = function(reqObj){
                   Notification.createNotification({
                       //sent_by_user     : req.user_id ,
                       received_by_user : response._id,
+                      subject          : "Welcome to Arena Z",
                       message          : "You are successfully created account",
                       read_unread      : 0
                   }).then(function(notificationdetails){
