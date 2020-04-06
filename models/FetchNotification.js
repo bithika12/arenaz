@@ -19,7 +19,12 @@ const fetchNotification = userId => {
     return new Promise((resolve, reject) => {
 
      //fetch notifications
-        Notifications.notifications1({received_by_user:userId}).then(function (responseParams) {
+        Notifications.notifications1({received_by_user:userId,created_at:{
+        $gte: new Date((new Date().getTime() - (15 * 24 * 60 * 60 * 1000)))
+    }
+        }).then(function (responseParams) {
+          //Notifications.notifications1({received_by_user:userId}).then(function (responseParams) {
+
             resolve(responseParams)
 
         });
