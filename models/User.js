@@ -219,7 +219,7 @@ User.findDetails = function(condObj){
              dartName:{$elemMatch: {status: 1}},
              characterName:{$elemMatch: {status: 1}},
              countryName:1
-         }).sort({ cupNo: -1 }).then(responses=> {
+         }).sort({ cupNo: -1 }).limit(20).then(responses=> {
              let chart=[];
              let colorName;
              let raceName;

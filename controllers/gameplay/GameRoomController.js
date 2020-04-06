@@ -155,6 +155,7 @@ io.on('connection', function (socket) {
                     Notification.createNotification({
                         //sent_by_user     : req.user_id ,
                         received_by_user : reqobj.userId,
+                        subject          : "You are winner",
                         message          : "You are winner",
                         read_unread      : 0
                     }).then(function(notificationdetails){
