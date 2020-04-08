@@ -1002,7 +1002,50 @@ io.on('connection', function (socket) {
     socket.on('disconnecting', function (req) {
         let currentSocketId = socket.id;
         logger.print("disconnecting 12222 socket id while disconnecting"+ " " +currentSocketId)
-    })
+    });
+
+    ///////new code//////////////////////////////
+
+    function gameStatusUpdateDisconnect(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+            if (reqobj.isWin) {
+                //user update with coin
+                //console.log("pre"+reqobj.opponentCup);
+                user.updateUserCoin({userId: reqobj.opponentUserId},
+                    {startCoin: reqobj.opponentCoin,cupNo:reqobj.cupNumber}).then(function (userStatusUpdate) {
+                    callback(null, reqobj);
+                });
+                /* user.updateUserCoin({userId: reqobj.opponentUserId},
+                 {startCoin: reqobj.opponentCoin,cupNo:reqobj.cupNumber}).then(function (userStatusUpdate) {
+                     callback(null, reqobj);
+                });*/
+            } else {
+                callback(null, reqobj);
+            }
+        })
+    }
+
+    function gameStatusUpdateOpponentDisconnect(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+            if (reqobj.isWin) {
+                console.log("12"+reqobj.opponentCup);
+                //user update with coin
+                //reqobj.roomUsers
+                //let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
+                //let userOppo=reqobj.roomUsers[findIndex].userId;
+                //console.log("opponent user"+userOppo);
+
+                user.updateUserCoinOpponent({userId: reqobj.userId},
+                    {startCoin: reqobj.opponentCoin,cupNo:reqobj.opponentCup}).then(function (userStatusUpdate) {
+                    callback(null, reqobj);
+                });
+                
+            } else {
+                callback(null, reqobj);
+            }
+        })
+    }
+    //////////////////////////////////////////////////
 
     socket.on('disconnect', function (req) {
         let currentSocketId = socket.id;
@@ -1033,6 +1076,9 @@ io.on('connection', function (socket) {
                     updateRoom,
                     RoomUpdate,
                     //new add
+                    gameStatusUpdateDisconnect,
+                    gameStatusUpdateOpponentDisconnect,
+                    //new/////
                     userStatusUpdate
                     // totalPlayerList,
                     // roomClosed,
@@ -1142,7 +1188,7 @@ io.on('connection', function (socket) {
         }
     });
 
-
+ 
     socket.on('leave', function (req) {
         console.log("leave called");
         if (req.userId && req.roomName) {

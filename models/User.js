@@ -130,11 +130,13 @@ User.updateUserDetails =function(condObj,updateObj){
              console.log("user coin"+responses.startCoin);
              console.log("update cup"+updateObj.cupNo);
              console.log("update coin"+updateObj.startCoin);
-             let updatedCoin=responses.startCoin + updateObj.startCoin;
+             let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin);
              console.log("win coin"+updatedCoin);
+             console.log("responses.total_no_win"+responses.total_no_win);
              //console.log("")
-             let updatedCup=responses.cupNo + updateObj.cupNo;
-             let total_no_win=responses.total_no_win+1;
+             let updatedCup=parseInt(responses.cupNo)+parseInt(updateObj.cupNo);
+             let total_no_win=parseInt(responses.total_no_win)+parseInt(1);
+             console.log("total_no_win12"+total_no_win);
              User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
@@ -152,7 +154,10 @@ User.updateUserDetails =function(condObj,updateObj){
      return  new Promise((resolve,reject) => {
          User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
              let updatedCoin=responses.startCoin - updateObj.startCoin;
-             let updatedCup=responses.cupNo+updateObj.cupNo;
+             let updatedCup=parseInt(responses.cupNo)-parseInt(updateObj.cupNo);
+             if(updatedCup <0)
+                updatedCup=0;
+             //let updatedCup=parseInt(responses.cupNo)+parseInt(updateObj.cupNo);
              /*if(updatedCoin ==0){
                  updatedCoin=500;
              }*/
@@ -219,7 +224,7 @@ User.findDetails = function(condObj){
              dartName:{$elemMatch: {status: 1}},
              characterName:{$elemMatch: {status: 1}},
              countryName:1
-         }).sort({ cupNo: -1 }).limit(20).then(responses=> {
+         }).sort({ cupNo: -1 }).limit(50).then(responses=> {
              let chart=[];
              let colorName;
              let raceName;
@@ -605,14 +610,17 @@ User.resetPassword = function(condObj,updateObj){
              let incrementDetails ={ total_no_win : updateObj.total_no_win}
           User.findOne({_id :condObj._id },
              {_id: 1, userName:1, email:1, status:1,total_no_win:1, dartName: {$elemMatch: {dartName: updateObj.dartName,status:1 } } }).then(userDetails=> {
-              let total_win=parseInt(userDetails.total_no_win)+1;
+              let total_win=parseInt(userDetails.total_no_win);
+
+              //let total_win=parseInt(userDetails.total_no_win)+1;
               let incrementDetails ={ total_no_win : total_win}
               console.log("totalwin"+ incrementDetails);
-             User.updateOne({_id: condObj._id}, {$inc: incrementDetails}).then(responses => {
+              return resolve(true);
+             /*User.updateOne({_id: condObj._id}, {$inc: incrementDetails}).then(responses => {
                  return resolve(responses);
              }).catch(err => {
                  return reject(err);
-             })
+             })*/
 
          });
 
