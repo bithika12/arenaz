@@ -321,7 +321,8 @@ exports.login= function(req,res) {
      * Joi is used for validation
     */
     let schema = Joi.object().keys({
-        email: Joi.string().max(254).trim().required(),
+        //email: Joi.string().max(254).trim().required(),
+        email: Joi.string().max(254).regex(/^(?:[A-Z\d][A-Z\d_-]{5,10}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})$/i).trim().required(),
         password: Joi.string().trim().required()
     });
     const {body} = req;
@@ -534,6 +535,8 @@ exports.logout12 = function (req,res) {
 };
 function getUserDetailsMod(reqObj){
     return function(callback){
+        //chk email or username///
+
         User.findDetails({email:reqObj.email}).then((userDetails)=>{
             if(password.comparePasswordSync(reqObj.password, userDetails.password)){
                 if(userDetails.loggedIn ==1)

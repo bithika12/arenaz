@@ -153,6 +153,9 @@ User.updateUserDetails =function(condObj,updateObj){
  User.updateUserCoinOpponent =function(condObj,updateObj){
      return  new Promise((resolve,reject) => {
          User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
+             console.log("responses.startCoin"+responses.startCoin);
+             console.log("updateObj.startCoin"+updateObj.startCoin);
+
              let updatedCoin=responses.startCoin - updateObj.startCoin;
              let updatedCup=parseInt(responses.cupNo)-parseInt(updateObj.cupNo);
              if(updatedCup <0)
@@ -188,7 +191,11 @@ User.listing = function(condObj){
 User.findDetails = function(condObj){
   console.log(" condObj",)
   return  new Promise((resolve,reject) => {
-        User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
+       User.findOne({$or: [
+    {email: condObj.email},
+    {userName: condObj.email}
+   ]},{deviceDetails:0,resetOtp:0}).then(responses=> {
+        //User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
               return resolve(responses);
         }).catch(err => {
               return reject(err);

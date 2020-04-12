@@ -107,7 +107,8 @@ var notificationSchema = Schema({
     updated_at: {
         type: Date,
         default: Date.now
-    }
+    },
+    status : {  type : String , enum: ['active','inactive','delete'] , default : 'active'}
 },{
     versionKey: false
 });

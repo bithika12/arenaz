@@ -48,6 +48,11 @@ const childrenRoutes: VexRoutes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/online/online.module').then(m => m.OnlineModule),
   },
+  {
+    path: 'mail',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/mail/mail.module').then(m => m.MailModule),
+  }
 ];
 const routes: Routes = [
   {

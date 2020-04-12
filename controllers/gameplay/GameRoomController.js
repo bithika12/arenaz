@@ -27,6 +27,7 @@ let _ = require('underscore');
 }).catch(err=>{
 	console.log("error",err);
 })*/
+var roomMemory = require(appRoot + '/utils/MemoryDatabaseManger').room;
 
 
 io.on('connection', function (socket) {
@@ -60,6 +61,7 @@ io.on('connection', function (socket) {
 
 
     function updateRoomModified(reqobj,callback){
+        console.log("po");
         inmRoom.updateInmemoryRoomMod12(reqobj).then(function(roomDetails){
           console.log("roomdetails",roomDetails)
             callback(null, roomDetails);
@@ -632,7 +634,11 @@ io.on('connection', function (socket) {
                                         async.waterfall([
                                             gameStartMod({roomName: roomName}),
                                             //userStatusUpdateAfterGamerequest,
-                                            userNextStart
+                                            userNextStart,
+                                            //////////////
+                                            gameTimer                                        
+                                            
+                                            
                                         ], function (err, result) {
                                             if (result) {
 
@@ -1464,6 +1470,212 @@ io.on('connection', function (socket) {
             this.emit('disconnect', reason);
         }, 60 * 1000);
     }
+
+
+    /////game start timer logic//////////////////////
+
+    function gameTimer(reqobj, callback) {
+        console.log("game timer start");
+        waitingDartInterval[reqobj.roomName] = setTimeout(() => {
+            gameTimer1(reqobj, 0)
+        }, 1000);
+        callback(null, reqobj);
+    }
+
+    function gameTimer1(roomObj) {
+       // inmRoom.gameTimerStart({roomName: roomObj.roomName}).then(function (roomDetails) {
+            //if (roomDetails) {
+                //new code 26 th mar//
+                 let g = 20;
+                 //let g = 360;
+                //logger.print("  ************  first turn loop start");
+                let timer2 = setTimeout(function gameStartTimmer2(gameStartObj2) {
+                    if(g===20){
+                    //if(g===360){    
+                      
+                       console.log("game time start");
+                      io.to(roomObj.roomName).emit('gameTimer',
+                      response.generate(constants.SUCCESS_STATUS, {}, "Your game time start"));
+
+
+                    }
+
+                    g--;
+
+                    if(g===10){
+                      console.log(g);
+                      
+                      console.log("only 10 sec remaining");                      
+
+                       io.to(gameStartObj2.roomName).emit('gameTimer', 
+                        response.generate(constants.SUCCESS_STATUS, {},
+                         "Only 10 seconds remaining"));
+
+                       gameStartObj2.g = g;
+                       timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);
+
+                    }
+
+                    else if (g === 0) {
+                        console.log("only 0 sec remaining");
+                        console.log(g);
+                        //game winner loser clculation///////////////
+                        inmRoom.winAfterTimerEnd(gameStartObj2.roomName).then(function(roomDetails){
+                            console.log("game calculation done");
+                            console.log("roomDetails.userCoin"+roomDetails.userCoin);
+                            if(roomDetails.isWin==1){
+                            //console.log("gameres"+roomDetails.gameres.length);
+                            inmRoom.updateInmemoryRoomMod12(roomDetails).then(function(roomDetails1){
+                              console.log("roomdetails",roomDetails1)
+                              let roomDetailsAll=roomDetails1;
+                              //if (roomDetails1.isWin) {
+                                //user update with coin
+                                 user.updateUserCoin({userId: roomDetails1.userId},
+                                  {startCoin: roomDetails1.availableCoin,
+                                    cupNo:roomDetails1.cupNumber}).then(function (userStatusUpdate) {
+                                     console.log("user update"); 
+                                     //opponent user update ///////
+                                     let findIndex = roomDetails1.roomUsers.findIndex(elemt => (elemt.userId!=roomDetails1.userId));
+                                     let userOppo=roomDetails1.roomUsers[findIndex].userId;
+                                      console.log("opponent user"+userOppo);
+                                     user.updateUserCoinOpponent({userId: userOppo}, {startCoin: roomDetails1.availableCoin,cupNo:roomDetails1.opponentCup}).then(function (userStatusUpdateOpponent) {
+                                        console.log("opponent user update");
+                                        //game over call ///////
+                                        room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {
+                                            console.log("update room db");
+                                            Notification.createNotification({
+                                                //sent_by_user     : req.user_id ,
+                                                received_by_user : roomDetails1.userId,
+                                                subject          : "You are winner",
+                                                message          : "You are winner",
+                                                read_unread      : 0
+                                            }).then(function(notificationdetails){
+                                                logger.print("***Game Notification added ");
+                                                logger.print("***Game over successfully ");
+                                               // io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
+                                                io.to(roomDetails1.roomName).emit('gameOver', 
+                                                    response.generate(constants.SUCCESS_STATUS, {
+                                                   // userId: reqobj.userId,
+                                                    firstUserId: roomDetails1.userId,
+                                                    firstUserGameStatus: "Win",
+                                                    secondUserId:roomDetails1.opponentUserId,
+                                                    secondUserGameStatus: "Lose",
+                                                    roomName: roomDetails1.roomName,
+                                                    //gameStatus:"Win"
+                                                }, "Game is over"));
+                                                clearTimeout(this.interval); 
+                                            });
+
+                                            }).catch(err => {
+                                                logger.print("***Room update error ", err);
+                                            })
+                                        //clearTimeout(this.interval); 
+                                     });
+                                       
+                                     
+                                });
+                             /* } else {
+                                logger.print("***No calculation as game already finish ", err);
+                                
+                             }*/
+                               
+                            }).catch(err=>{
+                                //callback("err", null);
+                            })
+
+                        }
+
+                            else if(roomDetails.isWin==2){
+                            //console.log("gameres"+roomDetails.gameres.length);
+                            inmRoom.updateInmemoryRoomMod12(roomDetails).then(function(roomDetails1){
+                              console.log("roomdetails",roomDetails1)
+                              let roomDetailsAll=roomDetails1;
+                              //if (roomDetails1.isWin) {
+                                //user update with coin
+                                 user.updateUserCoin({userId: roomDetails1.userId},
+                                  {startCoin: roomDetails1.availableCoin,
+                                    cupNo:roomDetails1.cupNumber}).then(function (userStatusUpdate) {
+                                     console.log("user update"); 
+                                     //opponent user update ///////
+                                     let findIndex = roomDetails1.roomUsers.findIndex(elemt => (elemt.userId!=roomDetails1.userId));
+                                     let userOppo=roomDetails1.roomUsers[findIndex].userId;
+                                      console.log("opponent user"+userOppo);
+                                      user.updateUserCoin(
+                                        {userId: userOppo}, 
+                                        {startCoin: roomDetails1.availableCoin,
+                                            cupNo:roomDetails1.opponentCup}).then(function (userStatusUpdateOpponent) {
+                                        console.log("opponent user update");
+                                        //game over call ///////
+                                        room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {
+                                            console.log("update room db");
+                                              logger.print("***Game draw added ");
+                                                logger.print("***Game draw successfully ");
+                                               // io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
+                                                io.to(roomDetails1.roomName).emit('gameOver', 
+                                                    response.generate(constants.SUCCESS_STATUS, {
+                                                   // userId: reqobj.userId,
+                                                    firstUserId: roomDetails1.userId,
+                                                    firstUserGameStatus: "Draw",
+                                                    secondUserId:roomDetails1.opponentUserId,
+                                                    secondUserGameStatus: "Draw",
+                                                    roomName: roomDetails1.roomName,
+                                                    //gameStatus:"Win"
+                                                }, "Game is over"));
+                                                clearTimeout(this.interval); 
+
+                                            }).catch(err => {
+                                                logger.print("***Room update error ", err);
+                                            })
+                                        //clearTimeout(this.interval); 
+                                     });
+                                       
+                                     
+                                });
+                             /* } else {
+                                logger.print("***No calculation as game already finish ", err);
+                                
+                             }*/
+                               
+                            }).catch(err=>{
+                                //callback("err", null);
+                            })
+
+                        }
+                        else{
+                          logger.print("***No calculation as game already finish ", err);
+
+                        }
+
+
+
+                           //clearTimeout(this.interval);
+                           //callback(null, gameStartObj2);
+                         }).catch(err => {
+                         });    
+                        //console.log("first turn i turn 0 "+roomDetails.userId+gameStartObj1.roomName);
+                        //clearTimeout(this.interval);
+                        //callback(null, gameStartObj2);
+                        //logger.print("Next turn sent after game request"+roomDetails.userId);
+                        //io.to(gameStartObj1.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                    }
+                    
+                    
+                     else {
+                        console.log("game timer running");
+                        console.log(g);
+                        gameStartObj2.g = g;
+                        timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);
+                    }
+                }, 1000, roomObj);
+                //new code///////////
+                //logger.print("Next turn sent after game request"+roomDetails.userId);
+                //io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+           // }
+       /* }).catch(err => {
+        });*/
+    }  
+
+
 
 
 });

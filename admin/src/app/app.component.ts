@@ -94,6 +94,12 @@ export class AppComponent {
         label: 'Online User Module',
         route: '/online',
         icon: icAssigment
+      },
+      {
+        type: 'link',
+        label: 'Mailbox Module',
+        route: '/mail',
+        icon: icAssigment
       }
     ];
   }

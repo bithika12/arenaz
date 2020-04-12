@@ -104,6 +104,11 @@ router.post('/admin/match-add'/*authetication.authChecker*/,adminController.addM
 router.post('/admin/match-edit'/*authetication.authChecker*/,adminController.editMatches);
 router.post('/admin/delete-match'/*authetication.authChecker*/,adminController.deleteMatch);
 
+//admin mailbox ///////////////
+router.post('/admin/mail-list'/*authetication.authChecker*/,adminController.getMailList);
+router.post('/admin/mail-add'/*authetication.authChecker*/,adminController.addMail);
+router.post('/admin/mail-edit'/*authetication.authChecker*/,adminController.editMail);
+router.post('/admin/delete-mail'/*authetication.authChecker*/,adminController.deleteMail);
 
  ///user/leaderboard
 

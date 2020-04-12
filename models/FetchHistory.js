@@ -3,6 +3,7 @@ const appRoot = require('app-root-path');
 const Room = require(appRoot + '/models/Room');
 var Rooms = require('../schema/Schema').roomModel;
 var Coins = require('../schema/Schema').coinModel;
+let Notification = require(appRoot +'/schema/Schema').notificationModel;
 var underscore  = require('underscore');
 
 
@@ -13,7 +14,8 @@ const User = require(appRoot + '/models/User');
 const Role = require(appRoot + '/models/Role');
 const Coin = require(appRoot + '/models/Coin');
 const Match = require(appRoot + '/models/Game');
-
+var User1 = require('../schema/Schema').userModel; 
+const moment=require("moment");
 //const Room = require(appRoot + '/models/Room');
 /**
  * @desc fetch game history
@@ -426,5 +428,53 @@ const updateGameAdmin =(condObj,updateObj) =>{
 
     });
 }
+//fetchMail
+const fetchMail =(condObj,updateObj) =>{
+    return  new Promise((resolve,reject) => {
+        Notification.find({status:"active"},
+            {message:1,created_at:1,read_unread:1,_id:1,received_by_user:1}).then(responses => {
+            //console.log("notis",responses);
+            //let new_time = moment(responses.created_at).format('YYYY-MM-DD HH:mm:ss');
+              //fetch user details/////
+              
+              resolve(responses);
+         
 
-module.exports = { updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateCoinAdmin,updateRoomAdmin,addCoin,fetchHistory,userValidChk,userValidChkAdmin,fetchHistoryAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin };
+        //})
+        })
+
+    });
+}
+const addMail =(updateObj) =>{
+    return  new Promise((resolve,reject) => {
+
+        //Match.find({name:updateObj.name},{_id: 1,name:1}).then(res=> {
+           /* if(res.length){
+                reject({message:"Already added"});
+            }*/
+            //else{
+                Notification.create(updateObj).then(response => {
+                    return resolve(response);
+                }).catch(err => {
+                    return reject(err);
+                });
+            //}
+        /*}).catch(err=>{
+            reject(err);
+        })*/
+
+    });
+}
+
+const updateMail =(condObj,updateObj) =>{
+    return  new Promise((resolve,reject) => {
+        Notification.updateOne(condObj,{ $set : updateObj }).then(responses=> {
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+
+    });
+}
+
+module.exports = { updateMail,addMail,fetchMail,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateCoinAdmin,updateRoomAdmin,addCoin,fetchHistory,userValidChk,userValidChkAdmin,fetchHistoryAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin };
