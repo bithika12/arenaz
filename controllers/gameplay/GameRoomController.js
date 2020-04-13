@@ -28,6 +28,7 @@ let _ = require('underscore');
 	console.log("error",err);
 })*/
 var roomMemory = require(appRoot + '/utils/MemoryDatabaseManger').room;
+var RoomDb = require(appRoot + '/schema/Schema').roomModel;
 
 
 io.on('connection', function (socket) {
@@ -1505,14 +1506,27 @@ io.on('connection', function (socket) {
                     if(g===10){
                       console.log(g);
                       
-                      console.log("only 10 sec remaining");                      
+                      console.log("only 10 sec remaining"); 
+                      RoomDb.findOne({name:gameStartObj2.roomName}, {_id: 1,game_time:1, name:1}).then(gameresponses=> {
 
-                       io.to(gameStartObj2.roomName).emit('gameTimer', 
-                        response.generate(constants.SUCCESS_STATUS, {gameFinish:1},
-                         "Only 10 seconds remaining"));
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          console.log("game finished not required 10 sec listen");
+                        }
+                        else{
+                           io.to(gameStartObj2.roomName).emit('gameTimer', 
+                           response.generate(constants.SUCCESS_STATUS, {gameFinish:1},
+                          "Only 10 seconds remaining"));
 
-                       gameStartObj2.g = g;
-                       timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);
+                         gameStartObj2.g = g;
+                         timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2); 
+                        }
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+
+                       
 
                     }
 
