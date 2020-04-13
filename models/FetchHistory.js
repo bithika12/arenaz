@@ -42,6 +42,7 @@ const fetchHistory = userId => {
 
                     let entusers=entry.users;
                     chart.push({
+                        created_at:entry.created_at,
                         game_time: entry.game_time,
                         //updated_at: entry.updated_at,
                         last_time:timeWithCurrent,
