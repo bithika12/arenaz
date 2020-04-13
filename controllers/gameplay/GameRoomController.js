@@ -1486,16 +1486,16 @@ io.on('connection', function (socket) {
        // inmRoom.gameTimerStart({roomName: roomObj.roomName}).then(function (roomDetails) {
             //if (roomDetails) {
                 //new code 26 th mar//
-                 let g = 20;
-                 //let g = 360;
+                 //let g = 20;
+                 let g = 360;
                 //logger.print("  ************  first turn loop start");
                 let timer2 = setTimeout(function gameStartTimmer2(gameStartObj2) {
-                    if(g===20){
-                    //if(g===360){    
+                    //if(g===20){
+                    if(g===360){    
                       
                        console.log("game time start");
                       io.to(roomObj.roomName).emit('gameTimer',
-                      response.generate(constants.SUCCESS_STATUS, {}, "Your game time start"));
+                      response.generate(constants.SUCCESS_STATUS, {totalGameTime: 360}, "Your game time start"));
 
 
                     }
@@ -1508,7 +1508,7 @@ io.on('connection', function (socket) {
                       console.log("only 10 sec remaining");                      
 
                        io.to(gameStartObj2.roomName).emit('gameTimer', 
-                        response.generate(constants.SUCCESS_STATUS, {},
+                        response.generate(constants.SUCCESS_STATUS, {gameFinish:1},
                          "Only 10 seconds remaining"));
 
                        gameStartObj2.g = g;
