@@ -559,7 +559,9 @@ io.on('connection', function (socket) {
                             raceName: req.raceName,
                             dartName: req.dartname,
                             roomCoin: req.roomCoin,
-                            totalCupWin:req.cupNumbers
+                            totalCupWin:req.cupNumbers,
+                            firstName: req.firstName,
+                            lastName: req.lastName
                         }).then(function (result) {
                             let roomName = result.roomName;
                             userObj = {
@@ -581,7 +583,9 @@ io.on('connection', function (socket) {
                                 total_no_win: 0,
                                 cupNumber: 0,
                                 roomCoin: req.roomCoin,
-                                totalCupWin:req.cupNumbers
+                                totalCupWin:req.cupNumbers,
+                                firstName: req.firstName,
+                                lastName: req.lastName
 
                             };
                             inmRoom.roomJoineeCreation({

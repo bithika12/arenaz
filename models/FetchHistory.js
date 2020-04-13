@@ -47,6 +47,15 @@ const fetchHistory = userId => {
                         //updated_at: entry.updated_at,
                         last_time:timeWithCurrent,
                         gameDetails: entusers.map(function(entry1) {
+                            //console.log("key1"+key1);
+
+                         //User1.findOne({userName:entry1.userName},{_id: 1,firstName:1,lastName:1}).then(userRes=> {
+                             // console.log("ok1"+userRes);
+                             let firstName=(!entry1.firstName)? '' : entry1.firstName;
+                             let lastName=(!entry1.lastName)? '' : entry1.lastName;
+                             let userNm=firstName+" "+lastName;
+                              //let userNm=userRes.firstName+userRes.lastName;
+                          
                             if(entry1.userId==userId){
                                 if(entry1.isWin==1) {
                                     gameStatus = 'VICTORY';
@@ -61,10 +70,12 @@ const fetchHistory = userId => {
                                     gameCoin = entry1.roomCoin;
                                 }
                             }
+                           // User1.find({userName:entry1.userName}).then(userRes=> {
+                              
                             return {
                                 //gameResult:gameStatus,
                                 userId: entry1.userId,
-                                userName: entry1.userName,
+                                userName: userNm,
                                 userScore:entry1.total,
                                 cupNumber:entry1.cupNumber,
                                 colorName:entry1.colorName,
@@ -73,6 +84,8 @@ const fetchHistory = userId => {
                                // gameCoin:gameCoin,
                                 gameResult:entry1.isWin
                             };
+
+                        //});
                         })
                     });
                 });

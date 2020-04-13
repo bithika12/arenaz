@@ -29,6 +29,8 @@ io.on('connection', function(socket){
             	packet[1].userId = userDetails._id+"";
             	//packet[1].userName = (!userDetails.name)?"":userDetails.name;
 				packet[1].userName = (!userDetails.userName)?"":userDetails.userName;
+				packet[1].firstName = (!userDetails.firstName)?"":userDetails.firstName;
+				packet[1].lastName = (!userDetails.lastName)?"":userDetails.lastName;
 				packet[1].colorName = (!userDetails.colorName[0])?"":userDetails.colorName[0]['colorName'];
 				packet[1].raceName = (!userDetails.raceName[0])?"":userDetails.raceName[0]['raceName'];
 				packet[1].dartname = (!userDetails.dartName[0])?"":userDetails.dartName[0]['dartName'];

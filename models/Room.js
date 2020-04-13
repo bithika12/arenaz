@@ -52,7 +52,10 @@ room.createRoom = function(condObj){
                                        dartName:condObj.dartName,
                                        total_no_win:0,
                                        cupNumber:0,
-                                       roomCoin:condObj.roomCoin }}
+                                       roomCoin:condObj.roomCoin,
+                                       firstName:condObj.firstName,
+                                       lastName:condObj.lastName
+                                        }}
 
                 console.log(" roomObj",roomObj)
                 Room.create(roomObj).then(responses=> {
@@ -82,7 +85,10 @@ room.createRoom = function(condObj){
                             dartName:condObj.dartName,
                             total_no_win:0,
                             cupNumber:0,
-                            roomCoin:condObj.roomCoin }}
+                            roomCoin:condObj.roomCoin,
+                            firstName:condObj.firstName,
+                            lastName:condObj.lastName
+                             }}
 
                     console.log(" roomObj",roomObj)
                     Room.create(roomObj).then(responses=> {
@@ -112,7 +118,9 @@ room.createRoom = function(condObj){
                                 dartName: condObj.dartName,
                                 total_no_win: 0,
                                 cupNumber: 0,
-                                roomCoin: condObj.roomCoin
+                                roomCoin: condObj.roomCoin,
+                                firstName:condObj.firstName,
+                                lastName:condObj.lastName
                             }
                         }
                     },

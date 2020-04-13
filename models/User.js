@@ -46,6 +46,7 @@ User.createUser = function(reqObj){
               ? 500
               : 0;
       reqObj.startCoin=startCoin;
+      reqObj.userScore=3000;
       reqObj.deviceDetails = [{accessToken :  uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];
 
              Role.findOne({ slug: reqObj.userType},{_id: 1,name:1,slug:1}).then(roledetails=> {
@@ -284,7 +285,8 @@ User.checkUserToken = function(condObj){
  User.checkUserTokenMod = function(condObj){
      return  new Promise((resolve,reject) => {
          User.findOne({"deviceDetails.accessToken":condObj.accessToken},
-             {_id: 1,name:1,email:1,status:1,startCoin:1,cupNo:1,userName:1,deviceDetails: {$elemMatch: {accessToken: condObj.accessToken}},
+             {_id: 1,name:1,email:1,status:1,startCoin:1,cupNo:1,userName:1,firstName:1,lastName:1,
+              deviceDetails: {$elemMatch: {accessToken: condObj.accessToken}},
                  colorName:{$elemMatch: {status: 1}},
                  raceName:{$elemMatch: {status: 1}},
                  dartName:{$elemMatch: {status: 1}}})
