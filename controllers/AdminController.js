@@ -589,3 +589,12 @@ exports.deleteMail= function(req,res) {
             res.status(constants.API_ERROR).send(err);
         });
 }
+
+exports.getUsers = function (req,res) {
+    User.detailsAdmin({status:"active"}).then((roledetails)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            roledetails, 'User List fetched successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch role list"));
+    })
+};

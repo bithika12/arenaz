@@ -24,11 +24,11 @@ export class MailService {
                 //this.headers = new  HttpHeaders().set("email", userEmail);
     }
 
-    getAllGames() {
+    getAllUserLIsts() {
       console.log('userlist api');
       console.log(this.headers);
        let payloadObj={userEmail:localStorage.getItem('email')}
-        return this.http.post(`${environment.BASE_URL}admin/game-list`,payloadObj,{headers: this.headers});
+        return this.http.post(`${environment.BASE_URL}admin/get-users`,payloadObj,{headers: this.headers});
     }
 
     editUser(editplayer)

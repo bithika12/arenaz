@@ -923,6 +923,16 @@ User.resetPassword = function(condObj,updateObj){
       });  
     });
 }
+
+User.detailsAdmin = function(condObj){
+     return new Promise((resolve,reject)=>{
+         User.find(condObj,{_id: 1,userName:1,email:1}).then(response=> {
+             resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
 module.exports= User;
 
 

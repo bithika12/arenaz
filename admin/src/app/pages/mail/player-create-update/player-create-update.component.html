@@ -29,12 +29,24 @@
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
 
-      <mat-form-field class="mt-6" fxFlex>
+      <!--<mat-form-field class="mt-6" fxFlex>
         <mat-label>Received User</mat-label>
         <input cdkFocusInitial formControlName="received_by_user" matInput>
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
-      </mat-form-field>
+      </mat-form-field>-->
+
+        <mat-form-field>
+
+      <mat-label>Users</mat-label>
+      <mat-select formControlName="received_by_user" >
+
+        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==received_by_user ? selected : brand._id" >
+        <!--<mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand._id" >-->
+          {{ brand.slug }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
 
     </div>

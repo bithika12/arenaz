@@ -112,4 +112,6 @@ router.post('/admin/delete-mail'/*authetication.authChecker*/,adminController.de
 
  ///user/leaderboard
 
+router.post('/admin/get-users'/*authetication.authChecker*/,adminController.getUsers);
+
 module.exports = router;

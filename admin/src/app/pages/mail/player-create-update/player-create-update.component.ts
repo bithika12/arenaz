@@ -88,7 +88,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.getAllRoles().subscribe(Roles => {
+    this.mailService.getAllUserLIsts().subscribe(Roles => {
       console.log(Roles);
       //roleList: RoleList[] =Roles;
       this.rolelists = Roles["result"];
