@@ -22,6 +22,8 @@ let waitingDartInterval = [];
 let count = 0;
 let Notification  = require(appRoot +'/models/Notification')
 let _ = require('underscore');
+let dartArray=[];
+let Timer_Started=true;
 /*room.createRoom({userId : "5de7ac25c9dba27a72be9023"}).then(function(result){
 	console.log("success",result);
 }).catch(err=>{
@@ -195,8 +197,11 @@ io.on('connection', function (socket) {
      */
     socket.on('throwDart', function (req) {
         req.socketId = socket.id;
+        dartArray.push(1);
+        //clearTimeout(darttimer[req.roomName]);
         //chk valid dart o.r not
         room.findValidDart({roomName: req.roomName}).then(function (roomDetails) {
+            console.log("dartArray length"+dartArray.length)
 
             async.waterfall([
                 dartProcess(req),
@@ -208,6 +213,7 @@ io.on('connection', function (socket) {
                 gameStatusUpdateOpponent,
                 gameOverProcess,
                 userNextStartDart,
+                dartTimer
 
             ], function (err, result) {
                 if (result) {
@@ -442,8 +448,14 @@ io.on('connection', function (socket) {
                 callback(null, reqobj);
             }
             else {
-            waitingDartInterval[reqobj.roomName] = setTimeout(() => {
-                nextUserTurnDart(reqobj, 0)
+              waitingDartInterval[reqobj.roomName] = setTimeout(() => {
+                //nextUserTurnDart(reqobj).then(function (nextUsers) {
+                //let a=  nextUserTurnDart(reqobj, 0);  
+                //console.log("pk12"+nextUserTurnDart(reqobj, 0));
+                nextUserTurnDart(reqobj, 0);
+                //callback(reqobj,0);
+              //}); 
+                //nextUserTurnDart(reqobj, 0)
             }, 3000);
 
             callback(null, reqobj);
@@ -473,12 +485,125 @@ io.on('connection', function (socket) {
         })
     }
 
+
     function nextUserTurnDart(roomObj) {
         inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
             if (roomDetails) {
                 logger.print("***Next turn sent "+roomDetails.userId);
+                dartArray=[];
+                console.log("dartArray"+dartArray.length);
+                roomObj.userTurnId=roomDetails.userId;
+                //return roomDetails.userId;
                 io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
                 //clearTimeout(waitingDartInterval[reqobj.roomName]);
+            }
+        }).catch(err => {
+            //reject(err);
+        });
+    }
+
+
+
+    function nextUserTurnDartOld(roomObj) {
+        inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
+            if (roomDetails) {
+                logger.print("***Next turn sent "+roomDetails.userId);
+                dartArray=[];
+                console.log("dartArray"+dartArray.length);
+                roomObj.userTurnId=roomDetails.userId;
+                return roomDetails.userId;
+                //io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                //clearTimeout(waitingDartInterval[reqobj.roomName]); 
+
+                 if(roomObj.userTurn ==3){
+                    console.log("ok");
+                    roomObj.userTurn=0;
+                }
+                let k=20;
+                darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
+                console.log("ok2");
+                if(k==20){
+                 io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+
+                }
+                k--;
+                if (k === 0) {
+                     console.log("timer"+darttimer);
+                      clearTimeout(this.interval); 
+                      roomDatastore.findOne({roomName:gameStartObj4.roomName}, function (err, result) {
+                       if(result){
+                           userArr = result.users;
+                           userArr.findIndex(function (elemt) {
+                            if (elemt.userId == roomDetails.userId) {
+
+                                if(elemt.turn==roomObj.userTurn){
+                                   io.to(roomObj.roomName).emit('dartTimer', 
+                                   response.generate(constants.SUCCESS_STATUS, {dartFinish:1},
+                                   "No dart thrown"));   
+                                }
+                                else{
+                                    //not required listen
+                                    console.log("not required");
+                                }
+                            }
+                           });
+                       }
+                       else{
+                          console.log("no result found");
+                       }
+                       
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+
+
+                    
+                } else {
+                    //console.log("timer"+darttimer);
+                    //if(dartArray.length == 0){
+                    //chk user details
+                    roomDatastore.findOne({roomName:gameStartObj4.roomName}, function (err, result) {
+                       if(result){
+                           userArr = result.users;
+                           userArr.findIndex(function (elemt) {
+                            if (elemt.userId == roomDetails.userId) {
+
+                                if(elemt.turn==roomObj.userTurn){
+                                   console.log("dart timer running"+k);
+                                   gameStartObj4.k = k
+                                   darttimer = setTimeout(gameStartTimmer4, 1000, gameStartObj4); 
+                                    
+                                }
+                                else{
+                                    //not required listen
+                                    clearTimeout(this.interval); 
+                                    console.log("not required");
+                                }
+                            }
+                           });
+                       }
+                       else{
+                          console.log("no result found");
+                       }
+                       
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+
+                    
+                    //}
+
+
+                }
+            }, 1000, reqobj);
+               ////////new code/////////////////////
+
+
+
+
+               
             }
         }).catch(err => {
             //reject(err);
@@ -1476,6 +1601,241 @@ io.on('connection', function (socket) {
         }, 60 * 1000);
     }
 
+    //dart Timer ///////////////
+
+    //dartTimer
+
+    function DoThis(){
+
+     // function DoThis actions 
+     //note that timer is done.
+     Timer_Started = false;
+
+    }
+
+
+
+      function dartTimer(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+            //callback(null, reqobj);
+            //console.log("reqobj.userTurnId"+reqobj.nextUserId);
+            //console.log("timer start");
+
+
+             //var darttimer;
+        
+        
+
+           if(!Timer_Started){
+              console.log(darttimer); 
+              Timer_Started=true;
+              dartArray.push(1);
+              console.log("dartArraylength"+dartArray.length);
+              clearTimeout(darttimer);
+              console.log("timer running");
+
+              ///////new/////////////////////
+              let k=10;
+              darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
+                console.log("lp"+darttimer);
+                Timer_Started = false;
+                k--;
+                if (k === 0) {
+                     console.log("timer"+darttimer);
+
+                      RoomDb.findOne({name:gameStartObj4.roomName}, {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          clearTimeout(this.interval);
+                          Timer_Started=true;
+                          callback(null, gameStartObj4);
+                          console.log("game finished not dart timer listen");
+                        }
+                        else{
+                            console.log("dartArray.length"+dartArray.length);
+                            if(dartArray.length >0){
+                              console.log("dart thrown no dart timer required");  
+                              clearTimeout(this.interval);
+                              Timer_Started=true;
+                              callback(null, gameStartObj4);
+                            }
+                            else{
+                                console.log("plo"+Timer_Started);
+
+                                console.log("no dart thrown dart timer working");
+                                clearTimeout(this.interval);
+                                Timer_Started=true;
+                                io.to(gameStartObj4.roomName).emit('dartTimer', 
+                               response.generate(constants.SUCCESS_STATUS, {dartFinish:1},
+                               "No dart thrown"));
+
+                                callback(null, gameStartObj4);
+
+
+                            }                           
+                         
+                        }
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+
+
+                    
+                } else {
+                    //console.log("timer"+darttimer);
+                    //if(dartArray.length == 0){
+
+                    console.log("dart timer running"+k);
+                    gameStartObj4.k = k
+                    darttimer = setTimeout(gameStartTimmer4, 1000, gameStartObj4);
+                    //}
+
+
+                }
+            }, 1000, reqobj);
+              ///new ////////////////////////
+           }else{
+              console.log("The timer not running.");
+
+              console.log("call");
+          //clearTimeout(timer);
+          let k=10;
+          darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
+                console.log("lp"+darttimer);
+                Timer_Started = false;
+                k--;
+                if (k === 0) {
+                     console.log("timer"+darttimer);
+
+                      RoomDb.findOne({name:gameStartObj4.roomName}, {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          clearTimeout(this.interval);
+                          Timer_Started=true;
+                          callback(null, gameStartObj4);
+                          console.log("game finished not dart timer listen");
+                        }
+                        else{
+                            console.log("dartArray.length"+dartArray.length);
+                            if(dartArray.length >0){
+                              console.log("dart thrown no dart timer required");  
+                              clearTimeout(this.interval);
+                              Timer_Started=true;
+                              callback(null, gameStartObj4);
+                            }
+                            else{
+                                console.log("plo"+Timer_Started);
+
+                                console.log("no dart thrown dart timer working");
+                                clearTimeout(this.interval);
+                                Timer_Started=true;
+                                io.to(gameStartObj4.roomName).emit('dartTimer', 
+                               response.generate(constants.SUCCESS_STATUS, {dartFinish:1},
+                               "No dart thrown"));
+
+                                callback(null, gameStartObj4);
+
+
+                            }                           
+                         
+                        }
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+
+
+                    
+                } else {
+                    //console.log("timer"+darttimer);
+                    //if(dartArray.length == 0){
+
+                    console.log("dart timer running"+k);
+                    gameStartObj4.k = k
+                    darttimer = setTimeout(gameStartTimmer4, 1000, gameStartObj4);
+                    //}
+
+
+                }
+            }, 1000, reqobj);
+       // }
+
+           }
+
+         
+
+        //startTimer();
+        //..
+        //var startTimer = function() {
+            
+
+            //let k=20;
+            //let darttimer;
+            //console.log("darttimer"+this.interval);
+
+            
+
+            
+
+            /*darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
+                k--;
+                if (k === 0) {
+                     console.log("timer"+darttimer);
+
+                      RoomDb.findOne({name:gameStartObj4.roomName}, {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          
+                          clearTimeout(this.interval);
+                          callback(null, gameStartObj4);
+                          console.log("game finished not dart timer listen");
+                        }
+                        else{
+                            if(dartArray.length >0){
+                              console.log("dart thrown no dart timer required");  
+                              clearTimeout(this.interval);
+                              callback(null, gameStartObj4);
+                            }
+                            else{
+                                console.log("no dart thrown dart timer working");
+                                clearTimeout(this.interval);
+                                io.to(gameStartObj4.roomName).emit('dartTimer', 
+                               response.generate(constants.SUCCESS_STATUS, {dartFinish:1},
+                               "No dart thrown"));
+
+                                callback(null, gameStartObj4);
+
+
+                            }                           
+                         
+                        }
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+
+
+                    
+                } else {
+                    
+
+                    console.log("dart timer running"+k);
+                    gameStartObj4.k = k
+                    darttimer = setTimeout(gameStartTimmer4, 1000, gameStartObj4);
+                    
+
+
+                }
+            }, 1000, reqobj);*/
+
+
+
+            
+        })
+    }
 
     /////game start timer logic//////////////////////
 

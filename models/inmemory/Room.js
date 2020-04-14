@@ -932,7 +932,8 @@ room.updateInmemoryRoomMod12 = function (updateArr) {
                             opponentCup:updateArr.opponentCup,
                             opponentUserId:updateArr.opponentUserId,
                             opponentCoin:updateArr.opponentCoin,
-                            roundScore:updateArr.roundScore
+                            roundScore:updateArr.roundScore,
+                            userTurn:updateArr.userTurn
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else
