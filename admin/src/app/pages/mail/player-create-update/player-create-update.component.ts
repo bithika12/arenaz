@@ -47,7 +47,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
     { value: 'Prada', viewValue: 'Prada' },
     { value: 'Chanel', viewValue: 'Chanel' },
   ];
-
+  selected=false;
+  received_by_user=0;
   coins: Coin[] = [
     { value: 50},
     { value: 100},
@@ -92,6 +93,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
       console.log(Roles);
       //roleList: RoleList[] =Roles;
       this.rolelists = Roles["result"];
+      console.log("this.rolelists"+this.rolelists);
 
       //this.subject$.next(this.rolelists);
     })

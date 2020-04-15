@@ -43,7 +43,7 @@
 
         <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==received_by_user ? selected : brand._id" >
         <!--<mat-option *ngFor="let brand of rolelists"  [value]="brand._id ===roleid ? selected : brand._id" >-->
-          {{ brand.slug }}
+          {{ brand.email }}
         </mat-option>
       </mat-select>
     </mat-form-field>
