@@ -15,7 +15,7 @@ const moment = require('moment');
 
  var Room = require('../schema/Schema').roomModel;
  let Notification  = require(appRoot +'/models/Notification');
-
+ let Coin = require('../schema/Schema').coinModel; 
 
  /** TOTAL USER **/
 User.totalUser =function(condObj){
@@ -927,6 +927,19 @@ User.resetPassword = function(condObj,updateObj){
 User.detailsAdmin = function(condObj){
      return new Promise((resolve,reject)=>{
          User.find(condObj,{_id: 1,userName:1,email:1}).then(response=> {
+             resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
+
+ //coinDetails
+ User.coinDetails = function(condObj){
+     console.log("po");
+     return new Promise((resolve,reject)=>{
+         Coin.find(condObj,{_id: 1,number:1}).then(response=> {
+             console.log("coinres"+response);
              resolve(response)
          }).catch(err=>{
              reject(err);

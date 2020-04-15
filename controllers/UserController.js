@@ -226,8 +226,10 @@ exports.registration= function(req,res) {
         ],
         function (err, result) {
             if (result) {
-                //res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId" : result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.deviceDetails[0].accessToken}, 'User register successfully !!'));
-                res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
+                User.coinDetails({ status : "active"
+                }).then((coinDetails) => {
+                   //console.log("coinnumber"+coinDetails[0].number);
+                   res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
                     "userId": result._id,
                     "userName": result.userName,
                     email: result.email,
@@ -235,7 +237,22 @@ exports.registration= function(req,res) {
                     "accessToken": result.deviceDetails[0].accessToken,
                     "userCoin":500,
                     "userCup":0
-                }, 'You have successfully registered. You will be logged in.'));
+                }, 'You have successfully registered. You will be logged in.')); 
+
+                }).catch(err => {
+                  res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
+
+                });    
+                //res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS,{"userId" : result._id,"userName":result.userName,email:result.email,score:result.score,"accessToken":result.deviceDetails[0].accessToken}, 'User register successfully !!'));
+                /*res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
+                    "userId": result._id,
+                    "userName": result.userName,
+                    email: result.email,
+                    score: result.score,
+                    "accessToken": result.deviceDetails[0].accessToken,
+                    "userCoin":500,
+                    "userCup":0
+                }, 'You have successfully registered. You will be logged in.'));*/
             } else {
                 if (err == constants.UNIQUIE_EMAIL)
                     //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.UNIQUIE_EMAIL,{}," Email Already exist"));
