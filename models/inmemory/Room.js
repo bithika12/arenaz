@@ -48,6 +48,8 @@ room.throwDartDetails = function (reqObj) {
         let userTotalScore=0;
         let userRemainScore=0;
         let roundScore=0;
+        let totalGameScores;
+        let gameScoreOpponent;
 
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
@@ -81,14 +83,14 @@ room.throwDartDetails = function (reqObj) {
                             console.log("elemt.score"+elemt.score);
                             //userScore1=Math.sum(reqObj.score,elemt.score);
                             //console.log("userScore1"+userScore1);
-                            if(userTurn ==1){
+                            if(userTurn ==1){                             
                              roundScore=0; 
                              elemt.score=0;                            
                             }
                             else{
                                 roundScore=elemt.roundscore;
-                            }
-                            
+                            }                            
+                            totalGameScores=parseInt(reqObj.score) + parseInt(elemt.totalGameScore);   
                             roundScore=parseInt(reqObj.score) + parseInt(roundScore);
                             
                             userScore=parseInt(reqObj.score) + parseInt(elemt.score);
@@ -177,10 +179,16 @@ room.throwDartDetails = function (reqObj) {
                     userArr[findIndex].userId = reqObj.userId;
                     userArr[findIndex].status = "active";
                     userArr[findIndex].cupNumber = cupNumber;
+                    userArr[findIndex].totalGameScore = totalGameScores;
+                    //totalGameScore
                     //userArr[findIndex].userTurn=userTurnGame;
                     let findIndexOpponentMod = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
-                    if(findIndexOpponentMod!=-1)
+                    if(findIndexOpponentMod!=-1){
                        cupOpponent=userArr[findIndexOpponentMod].cupNumber;
+                       gameScoreOpponent=userArr[findIndexOpponentMod].totalGameScore;
+                    }
+
+                   console.log("user life score"+totalGameScores);
                     resolve({
                         roomName: reqObj.roomName,
                         users: reqObj.userId,
@@ -202,7 +210,9 @@ room.throwDartDetails = function (reqObj) {
                         userCoin:availableCoin,
                         opponentCup:cupOpponent,
                         opponentUserId:userArr[findIndexOpponentMod].userId,
-                        roundScore:roundScore
+                        roundScore:roundScore,
+                        totalGameScores:totalGameScores,
+                        gameScoreOpponent:gameScoreOpponent
                     });
                 } else {
                     console.log("Unable to find room"+reqObj.roomName);
@@ -613,6 +623,8 @@ room.userLeave = function (condObj, updateObj) {
                 const gameSeconds = Math.floor(diff / 1000 % 60);
 
                 let userOpponentUserId;
+                let totalGameScores;
+                let gameScoreOpponent;
 
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
@@ -644,6 +656,8 @@ room.userLeave = function (condObj, updateObj) {
 
                     cupNumberOppo=userArr[findIndexOppo].cupNumber;
 
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
                 }
                 if(findIndexOppo !=-1 &&  gameSeconds >8){
                     userArr[findIndexOppo].isWin = 1;
@@ -668,6 +682,7 @@ room.userLeave = function (condObj, updateObj) {
 
                     //console.log("opponent"+userArr[findIndexOppo].userId);
                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
+                   gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
                 }
                 //userArr[findIndex].status = "inactive";
                 calculatedScore= userArr[findIndex].total;
@@ -677,7 +692,7 @@ room.userLeave = function (condObj, updateObj) {
                 //isWin=userArr[findIndex].isWin;
                 playerScore=userArr[findIndex].score;
                 cupNumber=userArr[findIndex].cupNumber;
-                
+                totalGameScores=userArr[findIndex].totalGameScore;
                 //userArr[findIndexOppo].isWin = 1;
                 resolve({
                     roomName: condObj.roomName,
@@ -697,7 +712,10 @@ room.userLeave = function (condObj, updateObj) {
                     opponentCup:cupNumber,
                     cupNumber:cupNumberOppo,
                     availableCoin:userArr[findIndex].roomCoin,
-                    opponentCoin:userArr[findIndex].roomCoin
+                    opponentCoin:userArr[findIndex].roomCoin,
+                    
+                    totalGameScores:gameScoreOpponent,
+                    gameScoreOpponent:totalGameScores
                 });
 
     });
@@ -733,14 +751,17 @@ room.userLeaveNew = function (condObj, updateObj) {
                 let cupNumberOppo;
                 let opponentCoin;
                 let userCoin;
+                let totalGameScores;
+                let gameScoreOpponent;
+
 
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
                 //here opponent is winner
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
                 //winner user id
                 let findIndexOppoUserId=userArr[findIndexOppo].userId;
-
-
+                 totalGameScores=userArr[findIndex].totalGameScore;
+                 
                 if(findIndexOppo !=-1){
                     userArr[findIndexOppo].isWin = 1;
                     userArr[findIndexOppo].cupNumber=70;
@@ -761,6 +782,7 @@ room.userLeaveNew = function (condObj, updateObj) {
 
                     ///////coin set///////
                     opponentCoin=userArr[findIndexOppo].roomCoin;
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
                 }
                 userArr[findIndex].status = "leave";
                 calculatedScore= userArr[findIndex].total;
@@ -788,7 +810,10 @@ room.userLeaveNew = function (condObj, updateObj) {
                     opponentCup:userArr[findIndexOppo].cupNumber,
                     //opponentCup:cupNumberOppo,
                     opponentCoin:opponentCoin,
-                    userCoin:userCoin
+                    userCoin:userCoin,
+
+                    totalGameScores:totalGameScores,
+                    gameScoreOpponent:gameScoreOpponent
                 });
 
             });
@@ -933,7 +958,12 @@ room.updateInmemoryRoomMod12 = function (updateArr) {
                             opponentUserId:updateArr.opponentUserId,
                             opponentCoin:updateArr.opponentCoin,
                             roundScore:updateArr.roundScore,
-                            userTurn:updateArr.userTurn
+                            userTurn:updateArr.userTurn,
+
+                            totalGameScores:updateArr.totalGameScores,
+                            gameScoreOpponent:updateArr.gameScoreOpponent
+
+
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})
                     else
@@ -975,6 +1005,9 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             opponentCup:updateArr.opponentCup,
                             opponentUserId:updateArr.opponentUserId,
                             opponentCoin:updateArr.opponentCoin,
+
+                            totalGameScores:updateArr.totalGameScores,
+                            gameScoreOpponent:updateArr.gameScoreOpponent
                             //roundScore:updateArr.roundScore
                         })
                     //resolve({userId: updateArr.users,remainingScore:updateArr.remainingScore,userTurn:updateArr.userTurn,dartPoint:updateArr.dartPoint})

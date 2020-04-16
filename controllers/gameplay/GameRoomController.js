@@ -98,7 +98,11 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
                 //user update with coin
-                 user.updateUserCoin({userId: reqobj.userId}, {startCoin: reqobj.availableCoin,cupNo:reqobj.cupNumber}).then(function (userStatusUpdate) {
+                 user.updateUserCoin({userId: reqobj.userId},
+                  {startCoin: reqobj.availableCoin,
+                    cupNo:reqobj.cupNumber,
+                    userScore:reqobj.totalGameScores
+                }).then(function (userStatusUpdate) {
                      callback(null, reqobj);
                 });
             } else {
@@ -116,7 +120,7 @@ io.on('connection', function (socket) {
                 let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
                 let userOppo=reqobj.roomUsers[findIndex].userId;
                 console.log("opponent user"+userOppo);
-                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin,cupNo:reqobj.opponentCup/*reqobj.cupOpponent*/}).then(function (userStatusUpdate) {
+                user.updateUserCoinOpponent({userId: userOppo}, {startCoin: reqobj.availableCoin,cupNo:reqobj.opponentCup,userScore:reqobj.gameScoreOpponent/*reqobj.cupOpponent*/}).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
             } else {
@@ -130,7 +134,10 @@ io.on('connection', function (socket) {
                 //user update with coin
             console.log("pre"+reqobj.opponentCup);
                 user.updateUserCoin({userId: reqobj.opponentUserId},
-                    {startCoin: reqobj.opponentCoin,cupNo:reqobj.opponentCup}).then(function (userStatusUpdate) {
+                    {startCoin: reqobj.opponentCoin,
+                    cupNo:reqobj.opponentCup,
+                    userScore:reqobj.gameScoreOpponent
+                }).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
         })
@@ -146,7 +153,11 @@ io.on('connection', function (socket) {
                 console.log("opponent user"+userOppo);
                 console.log("loser coin"+reqobj.availableCoin);
                 user.updateUserCoinOpponent({userId: reqobj.userId},
-                    {startCoin: reqobj.availableCoin,cupNo:reqobj.cupNumber}).then(function (userStatusUpdate) {
+                    {startCoin: reqobj.availableCoin,
+                    cupNo:reqobj.cupNumber,
+                    userScore:reqobj.totalGameScores
+
+                }).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
 
@@ -217,7 +228,8 @@ io.on('connection', function (socket) {
 
             ], function (err, result) {
                 if (result) {
-                    console.log("redds"+req.roomName);
+
+                    console.log("user life score"+req.roomName);
                     logger.print(" throw dart done", req);
                     if (result.playStatus == 1) {
                         logger.print("it is bust");
@@ -710,7 +722,8 @@ io.on('connection', function (socket) {
                                 roomCoin: req.roomCoin,
                                 totalCupWin:req.cupNumbers,
                                 firstName: req.firstName,
-                                lastName: req.lastName
+                                lastName: req.lastName,
+                                totalGameScore:0
 
                             };
                             inmRoom.roomJoineeCreation({
@@ -1148,7 +1161,10 @@ io.on('connection', function (socket) {
                 //user update with coin
                 //console.log("pre"+reqobj.opponentCup);
                 user.updateUserCoin({userId: reqobj.opponentUserId},
-                    {startCoin: reqobj.opponentCoin,cupNo:reqobj.cupNumber}).then(function (userStatusUpdate) {
+                    {startCoin: reqobj.opponentCoin,
+                        cupNo:reqobj.cupNumber,
+                        userScore:reqobj.totalGameScores
+                    }).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
                 /* user.updateUserCoin({userId: reqobj.opponentUserId},
@@ -1172,7 +1188,10 @@ io.on('connection', function (socket) {
                 //console.log("opponent user"+userOppo);
 
                 user.updateUserCoinOpponent({userId: reqobj.userId},
-                    {startCoin: reqobj.opponentCoin,cupNo:reqobj.opponentCup}).then(function (userStatusUpdate) {
+                    {startCoin: reqobj.opponentCoin,
+                        cupNo:reqobj.opponentCup,
+                        userScore:reqobj.gameScoreOpponent
+                    }).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
                 

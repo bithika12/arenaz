@@ -138,7 +138,8 @@ User.updateUserDetails =function(condObj,updateObj){
              let updatedCup=parseInt(responses.cupNo)+parseInt(updateObj.cupNo);
              let total_no_win=parseInt(responses.total_no_win)+parseInt(1);
              console.log("total_no_win12"+total_no_win);
-             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win} }).then(updatedResponses=> {
+             let userScore=parseInt(responses.userScore)+parseInt(updateObj.userScore);
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win,userScore:userScore} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
                  return reject(updatedResponsesErr);
@@ -156,7 +157,7 @@ User.updateUserDetails =function(condObj,updateObj){
          User.findOne({_id: condObj.userId},{deviceDetails:0,resetOtp:0}).then(responses=> {
              console.log("responses.startCoin"+responses.startCoin);
              console.log("updateObj.startCoin"+updateObj.startCoin);
-
+             let userScore=parseInt(responses.userScore)+parseInt(updateObj.userScore);
              let updatedCoin=responses.startCoin - updateObj.startCoin;
              let updatedCup=parseInt(responses.cupNo)-parseInt(updateObj.cupNo);
              if(updatedCup <0)
@@ -167,7 +168,7 @@ User.updateUserDetails =function(condObj,updateObj){
              }*/
              console.log("opponent cup"+updatedCup);
              console.log("opponent coin"+updatedCoin);
-             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup} }).then(updatedResponses=> {
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,userScore:userScore} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
                  return reject(updatedResponsesErr);
