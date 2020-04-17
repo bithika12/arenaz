@@ -241,7 +241,7 @@ io.on('connection', function (socket) {
                     logger.print("1111user remaining score"+ result.remainingScore);
                     logger.print("user score" +result.playerScore);
 
-                    io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
+                    /*io.to(req.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                         userId: result.userId,
                         roomName: result.roomName,
                         remainingScore: parseInt(result.remainingScore),
@@ -252,7 +252,7 @@ io.on('connection', function (socket) {
                         hitScore:req.hitScore,
                         scoreMultiplier:req.scoreMultiplier,
                         roundScore:result.roundScore
-                    }, "Dart thrown"));
+                    }, "Dart thrown"));*/
 
                 } else
                     logger.print("***May be Only one user in that room so opponent coin update failed ", err);
@@ -1666,6 +1666,21 @@ io.on('connection', function (socket) {
               darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
                 console.log("lp"+darttimer);
                 Timer_Started = false;
+                if(k===10){
+                   io.to(reqobj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
+                        userId: reqobj.userId,
+                        roomName: reqobj.roomName,
+                        remainingScore: parseInt(reqobj.remainingScore),
+                        dartPoint: reqobj.dartPoint,
+                        playStatus: reqobj.playStatus,
+                        playerScore: reqobj.playerScore,
+                        cupNumber: reqobj.cupNumber,
+                        hitScore:reqobj.hitScore,
+                        scoreMultiplier:reqobj.scoreMultiplier,
+                        roundScore:reqobj.roundScore
+                    }, "Dart thrown"));
+ 
+                }
                 k--;
                 if (k === 0) {
                      console.log("timer"+darttimer);
@@ -1732,6 +1747,22 @@ io.on('connection', function (socket) {
           darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
                 console.log("lp"+darttimer);
                 Timer_Started = false;
+
+                 if(k===10){
+                   io.to(reqobj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
+                        userId: reqobj.userId,
+                        roomName: reqobj.roomName,
+                        remainingScore: parseInt(reqobj.remainingScore),
+                        dartPoint: reqobj.dartPoint,
+                        playStatus: reqobj.playStatus,
+                        playerScore: reqobj.playerScore,
+                        cupNumber: reqobj.cupNumber,
+                        hitScore:reqobj.hitScore,
+                        scoreMultiplier:reqobj.scoreMultiplier,
+                        roundScore:reqobj.roundScore
+                    }, "Dart thrown"));
+ 
+                }
                 k--;
                 if (k === 0) {
                      console.log("timer"+darttimer);

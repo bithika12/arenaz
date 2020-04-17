@@ -6,8 +6,8 @@ var Room = require(appRoot + '/schema/Schema').roomModel;
 //const  roomPlayer      = require(appRoot + '/utils/RoomPlayerManage');
 var room ={}
 var constants          =  require(appRoot + "/config/constants");
-
-
+var mongoose = require('mongoose');
+var ObjectID = require("mongodb").ObjectID;
 
 room.createRoom = function(condObj){
     return new Promise((resolve,reject) => {
@@ -471,7 +471,7 @@ room.updateRoomAfterWait = function(condObj){
    * Fetch game history
  */
 
- room.findHistory = function(userId){
+ room.findHistory12 = function(userId){
      //{game_time: {$gte : 0},status:"closed"}
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
@@ -494,37 +494,40 @@ room.updateRoomAfterWait = function(condObj){
         });
     })
  }
- room.findHistory12 = function(userId){
+ room.findHistory = function(userId){
      //{game_time: {$gte : 0},status:"closed"}
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
+    let userid=mongoose.Types.ObjectId(userId);
+    console.log("pl0"+userid);
 
-   Room.aggregate( [ /*{ "$match" : 
+   Room.aggregate( [ { "$match" : 
     { game_time: {$gte : 0},
-    'users.userId': userId,
+    'users.userId': userid,
     status : "closed"} 
-    },*/{ 
+    },{ 
       $project: 
       { 
          yearMonthDay: { $dateToString: { format: "%Y-%m-%d %H-%M:%S", date: "$updated_at" } },
-        //_id: 1,
+        _id: 1,
         dateDifference: { $subtract: [ new Date(), "$updated_at" ] },  
-        //name:1, 
-        //"users":1,
-        //game_time:1,
-        //updated_at:1,
-        //colorName:1,
-        //raceName:1,
-        //roomCoin:1,
-        //created_at:1
-    } }
-    //{ "$sort" : { created_at : -1 } },
-    //{ "$limit" : 50 }
-     ] ).toArray.then(responses=> {   
+        name:1, 
+        "users":1,
+        game_time:1,
+        updated_at:1,
+        colorName:1,
+        raceName:1,
+        roomCoin:1,
+        created_at:1
+    } },
+    { "$sort" : { created_at : -1 } },
+    { "$limit" : 50 }
+     ] ).then(responses=> {   
+      //console.log( JSON.stringify( responses, undefined, 2 ) );
 
        //console.log("responses1"+responses[0]);
         //Room.find({game_time: {$gte : 0},status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1,colorName:1,raceName:1,roomCoin:1,created_at:1}).sort({"created_at":-1}).limit(50).then(responses=> {
-            return resolve(responses);
+            return resolve(JSON.stringify( responses, undefined, 2 ) );
         }).catch(err => {
             return reject(err);
         });

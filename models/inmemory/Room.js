@@ -212,7 +212,11 @@ room.throwDartDetails = function (reqObj) {
                         opponentUserId:userArr[findIndexOpponentMod].userId,
                         roundScore:roundScore,
                         totalGameScores:totalGameScores,
-                        gameScoreOpponent:gameScoreOpponent
+                        gameScoreOpponent:gameScoreOpponent,
+
+                        /////
+                        hitScore:reqObj.hitScore,
+                        scoreMultiplier:reqObj.scoreMultiplier
                     });
                 } else {
                     console.log("Unable to find room"+reqObj.roomName);
@@ -961,7 +965,10 @@ room.updateInmemoryRoomMod12 = function (updateArr) {
                             userTurn:updateArr.userTurn,
 
                             totalGameScores:updateArr.totalGameScores,
-                            gameScoreOpponent:updateArr.gameScoreOpponent
+                            gameScoreOpponent:updateArr.gameScoreOpponent,
+                            ///////
+                            hitScore:updateArr.hitScore,
+                            Multiplier:updateArr.scoreMultiplier
 
 
                         })
