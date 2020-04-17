@@ -23,7 +23,7 @@ const moment=require("moment");
  * @param {String} username
  */ 
 
- const fetchHistory = userId => {
+ const fetchHistory12 = userId => {
 
     return new Promise((resolve, reject) => {
 
@@ -36,8 +36,8 @@ const moment=require("moment");
                 let chart = [];
                 let gameStatus;
 
-                a.map(function(entry) {
-                    console.log("dateDifference"+entry.dateDifference);
+                a.map(function(entry,key) {
+                    console.log("dateDifference"+entry);
 
                     let upDate=entry.updated_at;
                     let updatedTime=upDate.getTime();//in seconds
@@ -50,61 +50,15 @@ const moment=require("moment");
                     let gameCoin;
 
                     let entusers=entry.users;
-                    chart.push({
-                        created_at:entry.created_at,
-                        game_time: entry.game_time,
-                        //updated_at: entry.updated_at,
-                        last_time:timeWithCurrent,
-                        gameDetails: entusers.map(function(entry1) {
-                            //console.log("key1"+key1);
-
-                         //User1.findOne({userName:entry1.userName},{_id: 1,firstName:1,lastName:1}).then(userRes=> {
-                             // console.log("ok1"+userRes);
-                             let firstName=(!entry1.firstName)? '' : entry1.firstName;
-                             let lastName=(!entry1.lastName)? '' : entry1.lastName;
-                             let userNm=firstName+" "+lastName;
-                              //let userNm=userRes.firstName+userRes.lastName;
-                          
-                            if(entry1.userId==userId){
-                                if(entry1.isWin==1) {
-                                    gameStatus = 'VICTORY';
-                                    gameCoin = entry1.roomCoin * 2;
-                                }
-                                else if(entry1.isWin==2) {
-                                    gameStatus = 'DRAW';
-                                    gameCoin = entry1.roomCoin;
-                                }
-                                else if(entry1.isWin==0) {
-                                    gameStatus = 'DEFEAT';
-                                    gameCoin = entry1.roomCoin;
-                                }
-                            }
-                           // User1.find({userName:entry1.userName}).then(userRes=> {
-                              
-                            return {
-                                //gameResult:gameStatus,
-                                userId: entry1.userId,
-                                userName: userNm,
-                                userScore:entry1.total,
-                                cupNumber:entry1.cupNumber,
-                                colorName:entry1.colorName,
-                                raceName:entry1.raceName,
-                                coinNumber:entry1.roomCoin,
-                               // gameCoin:gameCoin,
-                                gameResult:entry1.isWin
-                            };
-
-                        //});
-                        })
-                    });
+                    
                 });
 
                 //let res={details:chart};
                 //let obj = _.extend({}, chart);
                // console.log(obj);
 
-                //console.log(chart);
-                resolve(chart);
+                console.log(chart);
+                //resolve(chart);
             }
             else{
                 resolve({status:Constants.SUCCESS_STATUS,message:"No Data Found"});
@@ -118,32 +72,92 @@ const moment=require("moment");
         });
     });
 };
-const fetchHistory1 = userId => {
+
+function getNatural(num) {
+    return parseFloat(num.toString().split(".")[0]);
+}
+const fetchHistory = userId => {
 
     return new Promise((resolve, reject) => {
 
         Room.findHistory(userId).then(function (responseParams) {
             console.log("responseParams"+typeof(responseParams));
-            let responseParams1=JSON.parse(responseParams);
-            console.log("responseParams1"+(responseParams1.length));
+            //let responseParams1=JSON.parse(responseParams);
+            //console.log("responseParams1"+(responseParams1.length));
             //console.log("responseParams1"+responseParams);
-            let userarr=[];
-            userarr.push(responseParams);
-            console.log("userarr"+userarr.length);
-            if(userarr.length >0){
+            //let userarr=[];
+            //userarr.push(responseParams);
+            //console.log("userarr"+userarr.length);
+            if(responseParams.length >0){
                 let chart = [];
                 let gameStatus;
 
-                userarr.map(function(entry) {
-                    console.log("dateDifference"+entry.dateDifference);
+                responseParams.map(function(entry) {
+                    //console.log("dateDifference"+entry.dateDifference);
 
                     let upDate=entry.updated_at;
+                    let dt=moment(upDate).format('MM/DD/YYYY HH:mm:ss');
+                    let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
+
+                    console.log("dt"+dt);
+                    console.log("dt1"+dt1);
+
+                     
+                     var config = "MM/DD/YYYY HH:mm:ss";
+                    var ms = moment(dt1, config).diff(moment(dt,config));
+
+                    var dms=moment.duration(ms);
+                    var d = (moment.duration(ms))/1000;
+                    console.log("d"+d);
+                    let timePeriod="";
+                    let timePeriodType="";
+                    let beforeRoundtimePeriod="";
+
+                    if(d > 24*3600)
+                    {
+
+                        //no. of day
+                        //timePeriod=Math.floor(dms.asDays());
+                        beforeRoundtimePeriod=dms.asDays();
+                        timePeriod=Math.floor(beforeRoundtimePeriod);
+                        timePeriodType="Days";
+                    }
+                    else if(d > 3600 && d < 24*3600){
+
+                        //hrs.
+                        beforeRoundtimePeriod=dms.asHours();
+                         timePeriod=Math.floor(beforeRoundtimePeriod);
+                         timePeriodType="Hours";
+
+
+                    }
+                    else if(d < 3600){
+
+                        beforeRoundtimePeriod=d/60;
+
+                        timePeriod=Math.floor(beforeRoundtimePeriod);
+                        timePeriodType="Minutes";
+
+
+                        //minutes.
+
+
+                    }
+
+                    //var s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+
+                    console.log("timePeriod"+timePeriod);    
+                    //let dt2=moment.startOf('day').fromNow();
+                    //console.log("dt2"+days);
+                    //console.log("upDate"+upDate);
                     let updatedTime=upDate.getTime();//in seconds
                     console.log("updated time in sec"+updatedTime);
                     let currentTime=new Date().getTime();
+                    console.log("currentTime"+new Date());
                     console.log("currentTime sec"+currentTime);
 
                     const diff = currentTime - updatedTime;
+                    console.log("diff"+diff);
                     let timeWithCurrent = Math.floor(diff / 1000 % 60);
                     let gameCoin;
 
@@ -152,7 +166,10 @@ const fetchHistory1 = userId => {
                         created_at:entry.created_at,
                         game_time: entry.game_time,
                         //updated_at: entry.updated_at,
-                        last_time:timeWithCurrent,
+                        last_time:Math.floor(beforeRoundtimePeriod),//timePeriod,
+                        timePeriodType: timePeriodType,
+                        //beforeRoundtimePeriod: beforeRoundtimePeriod,
+                        //last_time:timeWithCurrent,
                         gameDetails: entusers.map(function(entry1) {
                             //console.log("key1"+key1);
 

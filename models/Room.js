@@ -471,7 +471,7 @@ room.updateRoomAfterWait = function(condObj){
    * Fetch game history
  */
 
- room.findHistory12 = function(userId){
+ room.findHistory= function(userId){
      //{game_time: {$gte : 0},status:"closed"}
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
@@ -494,7 +494,7 @@ room.updateRoomAfterWait = function(condObj){
         });
     })
  }
- room.findHistory = function(userId){
+ room.findHistory123 = function(userId){
      //{game_time: {$gte : 0},status:"closed"}
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
