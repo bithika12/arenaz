@@ -41,6 +41,13 @@ User.countUser = function(condObj){
 //CREATE
 User.createUser = function(reqObj){
       return new Promise((resolve,reject)=>{
+      let msg="Welcome to Arena Z!\
+In the Arena you can test your skills and wage a war against other players.\
+It will take some time for each game to be fully tested and launched. You can enjoy the games we currently have available for all players. Before playing go to training and find out how the game is played.\
+In order to fill your account with game coins click the “+” by the coins at the bottom or top of the page and purchase coins. You can also request to receive the coins you have available back for a small transaction fee.\
+It is time to Pick & Play!\
+Enjoy… \
+Arena Z Team" ; 
       reqObj.password  =  password.hashPassword(reqObj.password);
       let startCoin = reqObj.userType =='regular-player'
               ? 500
@@ -57,7 +64,7 @@ User.createUser = function(reqObj){
                       //sent_by_user     : req.user_id ,
                       received_by_user : response._id,
                       subject          : "Welcome to Arena Z",
-                      message          : "You are successfully created account",
+                      message          :  msg,
                       read_unread      : 0
                   }).then(function(notificationdetails){
                       resolve(response);

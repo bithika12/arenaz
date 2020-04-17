@@ -670,11 +670,7 @@ const fetchHistoryUser = userId => {
                                 }
 
 
-                                
-                            }
-                           // User1.find({userName:entry1.userName}).then(userRes=> {
-                              
-                            return {
+                                 resolve({
                                 
                                 userId: entry1.userId,
                                 userName: userNm,
@@ -684,7 +680,24 @@ const fetchHistoryUser = userId => {
                                 raceName:entry1.raceName,
                                 coinNumber:entry1.roomCoin,                               
                                 gameResult:entry1.isWin
-                            };
+                            });
+
+
+                                
+                            }
+                           // User1.find({userName:entry1.userName}).then(userRes=> {
+                              
+                            /*return {
+                                
+                                userId: entry1.userId,
+                                userName: userNm,
+                                userScore:entry1.total,
+                                cupNumber:entry1.cupNumber,
+                                colorName:entry1.colorName,
+                                raceName:entry1.raceName,
+                                coinNumber:entry1.roomCoin,                               
+                                gameResult:entry1.isWin
+                            };*/
 
                         //});
                         })
@@ -697,7 +710,7 @@ const fetchHistoryUser = userId => {
 
                 //console.log(chart);
                 //resolve(chart);
-                resolve(chart[0].gameDetails[0])
+                //resolve(chart[0].gameDetails[0])
             }
             else{
                 resolve({status:Constants.SUCCESS_STATUS,message:"No Data Found"});
