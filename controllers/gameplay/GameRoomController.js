@@ -1662,11 +1662,11 @@ io.on('connection', function (socket) {
               console.log("timer running");
 
               ///////new/////////////////////
-              let k=10;
+              let k=13;
               darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
                 console.log("lp"+darttimer);
                 Timer_Started = false;
-                if(k===10){
+                if(k===13){
                    io.to(reqobj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                         userId: reqobj.userId,
                         roomName: reqobj.roomName,
@@ -1743,12 +1743,12 @@ io.on('connection', function (socket) {
 
               console.log("call");
           //clearTimeout(timer);
-          let k=10;
+          let k=13;
           darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
                 console.log("lp"+darttimer);
                 Timer_Started = false;
 
-                 if(k===10){
+                 if(k===13){
                    io.to(reqobj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
                         userId: reqobj.userId,
                         roomName: reqobj.roomName,
