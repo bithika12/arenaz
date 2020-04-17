@@ -189,8 +189,22 @@ User.listing = function(condObj){
     });
 }
 
-
 User.findDetails = function(condObj){
+  console.log(" condObj",)
+  return  new Promise((resolve,reject) => {
+       User.findOne({status:"active",$or: [
+    {email: condObj.email},
+    {userName: condObj.email}
+   ]},{deviceDetails:0,resetOtp:0}).then(responses=> {
+        //User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
+              return resolve(responses);
+        }).catch(err => {
+              return reject(err);
+        });
+    });
+}
+
+User.findDetailsOld12 = function(condObj){
   console.log(" condObj",)
   return  new Promise((resolve,reject) => {
        User.findOne({$or: [
@@ -870,7 +884,8 @@ User.resetPassword = function(condObj,updateObj){
 
  User.checkColorMod = function(condObj){
      return  new Promise((resolve,reject) => {
-         User.findOne({email:condObj.email},
+         User.findOne({email:condObj.email,status:"active"},
+         //User.findOne({email:condObj.email},
              {/*_id: 1,name:1,email:1,status:1,userName:1,*/
                  countryName:1,
                  languageName:1,
