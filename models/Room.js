@@ -483,6 +483,54 @@ room.updateRoomAfterWait = function(condObj){
     })
  }
 
+ room.findHistory1 = function(userId){
+     //{game_time: {$gte : 0},status:"closed"}
+    //console.log(" fetch game history  ",condObj)
+    return new Promise((resolve,reject) => {
+        Room.find({game_time: {$gte : 0},status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1,colorName:1,raceName:1,roomCoin:1,created_at:1}).sort({"created_at":-1}).limit(1).then(responses=> {
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+    })
+ }
+ room.findHistory12 = function(userId){
+     //{game_time: {$gte : 0},status:"closed"}
+    //console.log(" fetch game history  ",condObj)
+    return new Promise((resolve,reject) => {
+
+   Room.aggregate( [ /*{ "$match" : 
+    { game_time: {$gte : 0},
+    'users.userId': userId,
+    status : "closed"} 
+    },*/{ 
+      $project: 
+      { 
+         yearMonthDay: { $dateToString: { format: "%Y-%m-%d %H-%M:%S", date: "$updated_at" } },
+        //_id: 1,
+        dateDifference: { $subtract: [ new Date(), "$updated_at" ] },  
+        //name:1, 
+        //"users":1,
+        //game_time:1,
+        //updated_at:1,
+        //colorName:1,
+        //raceName:1,
+        //roomCoin:1,
+        //created_at:1
+    } }
+    //{ "$sort" : { created_at : -1 } },
+    //{ "$limit" : 50 }
+     ] ).toArray.then(responses=> {   
+
+       //console.log("responses1"+responses[0]);
+        //Room.find({game_time: {$gte : 0},status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1,colorName:1,raceName:1,roomCoin:1,created_at:1}).sort({"created_at":-1}).limit(50).then(responses=> {
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+    })
+ }
+
 room.findHistoryAdmin = function(userId){
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
@@ -493,5 +541,27 @@ room.findHistoryAdmin = function(userId){
         });
     })
 }
+
+//findHistorySpecific
+ room.findHistorySpecific = function(userId){
+    console.log("ok12");
+     //{game_time: {$gte : 0},status:"closed"}
+    console.log(" fetch game history  ",condObj)
+    return new Promise((resolve,reject) => {        
+        Room.find({game_time: {$gte : 0},
+          status:"closed",
+          'users.userId': userId},
+           {_id: 1, name:1, users:1, 
+            game_time:1,updated_at:1,
+            colorName:1,raceName:1,
+            roomCoin:1,
+            created_at:1}).sort({"created_at":-1}).limit(50).then(responses=> {
+
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+    })
+ }
 
 module.exports =room;

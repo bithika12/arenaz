@@ -1379,6 +1379,8 @@ io.on('connection', function (socket) {
                     console.log("new field"+result.opponentCup);
                     console.log("opponent coin"+result.opponentCoin);
                     console.log("user coin"+result.availableCoin);
+                    console.log("result.cupNumber"+result.cupNumber);
+                    console.log("result.opponentCup"+result.opponentCup);
                     //console.log("opponent cup"+result.opponentCup);
 
 
@@ -1404,6 +1406,8 @@ io.on('connection', function (socket) {
                                 roomName: req.roomName,
 
                                 //gameStatus: "Win"
+                                firstUserCupNumber: result.cupNumber,
+                                secondUserCupNumber: result.opponentCup
                             }, "Game is over"));
                             logger.print("Room closed");
                         });
@@ -1422,6 +1426,8 @@ io.on('connection', function (socket) {
                             secondUserGameStatus: "Draw",
                             //userId: result.roomUsers,
                             roomName: req.roomName,
+                            firstUserCupNumber: result.cupNumber,
+                            secondUserCupNumber: result.opponentCup
                             //gameStatus: "Draw"
                         }, "Game is over"));
                         logger.print("Room closed");
@@ -1440,6 +1446,8 @@ io.on('connection', function (socket) {
                             secondUserGameStatus: "",
                             //userId: result.roomUsers,
                             roomName: req.roomName,
+                            firstUserCupNumber: '',
+                            secondUserCupNumber: ''
                             //gameStatus: ""
                         }, "Game is over"));
                         logger.print("Room closed");
