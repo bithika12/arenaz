@@ -1968,13 +1968,19 @@ io.on('connection', function (socket) {
                                 //user update with coin
                                  user.updateUserCoin({userId: roomDetails1.userId},
                                   {startCoin: roomDetails1.availableCoin,
-                                    cupNo:roomDetails1.cupNumber}).then(function (userStatusUpdate) {
+                                    cupNo:roomDetails1.cupNumber,
+                                    userScore:roomDetails1.totalGameScores
+                                }).then(function (userStatusUpdate) {
                                      console.log("user update"); 
                                      //opponent user update ///////
                                      let findIndex = roomDetails1.roomUsers.findIndex(elemt => (elemt.userId!=roomDetails1.userId));
                                      let userOppo=roomDetails1.roomUsers[findIndex].userId;
                                       console.log("opponent user"+userOppo);
-                                     user.updateUserCoinOpponent({userId: userOppo}, {startCoin: roomDetails1.availableCoin,cupNo:roomDetails1.opponentCup}).then(function (userStatusUpdateOpponent) {
+                                     user.updateUserCoinOpponent({userId: userOppo},
+                                      {startCoin: roomDetails1.availableCoin,
+                                        cupNo:roomDetails1.opponentCup,
+                                        userScore:roomDetails1.gameScoreOpponent
+                                    }).then(function (userStatusUpdateOpponent) {
                                         console.log("opponent user update");
                                         //game over call ///////
                                         room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {
@@ -2030,7 +2036,9 @@ io.on('connection', function (socket) {
                                 //user update with coin
                                  user.updateUserCoin({userId: roomDetails1.userId},
                                   {startCoin: roomDetails1.availableCoin,
-                                    cupNo:roomDetails1.cupNumber}).then(function (userStatusUpdate) {
+                                    cupNo:roomDetails1.cupNumber,
+                                    userScore:roomDetails1.totalGameScores
+                                }).then(function (userStatusUpdate) {
                                      console.log("user update"); 
                                      //opponent user update ///////
                                      let findIndex = roomDetails1.roomUsers.findIndex(elemt => (elemt.userId!=roomDetails1.userId));
@@ -2039,7 +2047,9 @@ io.on('connection', function (socket) {
                                       user.updateUserCoin(
                                         {userId: userOppo}, 
                                         {startCoin: roomDetails1.availableCoin,
-                                            cupNo:roomDetails1.opponentCup}).then(function (userStatusUpdateOpponent) {
+                                            cupNo:roomDetails1.opponentCup,
+                                            userScore:roomDetails1.gameScoreOpponent
+                                        }).then(function (userStatusUpdateOpponent) {
                                         console.log("opponent user update");
                                         //game over call ///////
                                         room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {

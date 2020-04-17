@@ -1189,6 +1189,9 @@ room.winAfterTimerEnd = function (reqObj) {
         let roundScore=0;
         let playerScore;
         let gameres;
+        let totalGameScores;
+        let gameScoreOpponent;
+
         //const gameSeconds = Math.floor(diff / 1000 % 60);
 
         room.findOne({roomName: reqObj}
@@ -1292,6 +1295,9 @@ room.winAfterTimerEnd = function (reqObj) {
                     opponentCoin:userArr[findIndex].roomCoin,
                     userCoin:userArr[findIndex].roomCoin,
                     roundScore:roundScore,
+
+                    totalGameScores:userArr[findIndex].totalGameScore,
+                    gameScoreOpponent:userArr[findIndexOppo].totalGameScore
                     //gameres:gameresponses
                 });
 
@@ -1313,7 +1319,7 @@ room.winAfterTimerEnd = function (reqObj) {
                     isWin=1;
 
                     userArr[findIndex].cupNumber=Math.round(((199-userArr[findIndex].total)*70/199),0);
-
+                    console.log("userArr[findIndex].cupNumber"+userArr[findIndex].cupNumber);
 
                     if(userArr[findIndexOppo].total <99){
                          cupNumberOppo=Math.round((parseInt(userArr[findIndexOppo].total)+25),0);
@@ -1366,6 +1372,8 @@ room.winAfterTimerEnd = function (reqObj) {
                     userCoin:userArr[findIndex].roomCoin,
                     roundScore:roundScore,
                     //gameres:gameresponses
+                    totalGameScores:userArr[findIndex].totalGameScore,
+                    gameScoreOpponent:userArr[findIndexOppo].totalGameScore
                 });
 
                 }).catch(err => {
