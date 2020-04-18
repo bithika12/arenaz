@@ -24,6 +24,8 @@ let Notification  = require(appRoot +'/models/Notification')
 let _ = require('underscore');
 let dartArray=[];
 let Timer_Started=true;
+const moment=require("moment");
+
 /*room.createRoom({userId : "5de7ac25c9dba27a72be9023"}).then(function(result){
 	console.log("success",result);
 }).catch(err=>{
@@ -1914,11 +1916,23 @@ io.on('connection', function (socket) {
                 //logger.print("  ************  first turn loop start");
                 let timer2 = setTimeout(function gameStartTimmer2(gameStartObj2) {
                     //if(g===20){
-                    if(g===360){    
+                    if(g===360){  
+                        let updateCreateTime=moment().format('MM/DD/YYYY HH:mm:ss');
+                        //update memory room with create time/////
+                        console.log("updateCreateTime"+updateCreateTime);
+                        roomDatastore.update({roomName: roomObj.roomName},
+                         {$set: {createtime:updateCreateTime}},
+                          //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},
+                          function (err, updateroomresult) {
+
+                             console.log("game time start");
+                             io.to(roomObj.roomName).emit('gameTimer',
+                              response.generate(constants.SUCCESS_STATUS, {totalGameTime: 360}, "Your game time start"));
+                           }); 
                       
-                       console.log("game time start");
-                      io.to(roomObj.roomName).emit('gameTimer',
-                      response.generate(constants.SUCCESS_STATUS, {totalGameTime: 360}, "Your game time start"));
+                       //console.log("game time start");
+                      //io.to(roomObj.roomName).emit('gameTimer',
+                      //response.generate(constants.SUCCESS_STATUS, {totalGameTime: 360}, "Your game time start"));
 
 
                     }

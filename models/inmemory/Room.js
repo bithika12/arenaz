@@ -15,6 +15,8 @@ const Math = require('math');
 const logger = require(appRoot + '/utils/LoggerClass');
 var io = require(appRoot + '/utils/SocketManager').io;
 const response = require(appRoot + '/utils/ResponseManeger');
+const moment=require("moment");
+
 /**
  * @desc This function is used for calculate score
  * @param {Object} reqObj
@@ -57,10 +59,24 @@ room.throwDartDetails = function (reqObj) {
                    /* if(result.game_time!='undefined'){
                         reject({message: "Game is over"});
                     }*/
+
+                    let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
+                    let config = "MM/DD/YYYY HH:mm:ss";
+                    let ms = moment(dt1, config).diff(moment(result.createtime,config));
+                    let d = (moment.duration(ms))/1000;
+                    let gameSeconds = Math.floor(d);
+
+                    if(gameSeconds >360){
+                        gameSeconds=360;
+                    }
+
+
                     userArr = result.users;
                     let currentTime=new Date().getTime();
-                    const diff = currentTime - result.gametime;
-                    const gameSeconds = Math.floor(diff / 1000 % 60);
+                    //createtime
+                    const diff = currentTime - result.createtime;
+                    //const diff = currentTime - result.gametime;
+                    //const gameSeconds = Math.floor(diff / 1000 % 60);
 
                     let findIndexOppo = userArr.findIndex(elemt => (elemt.turn >= 3 && elemt.userId != reqObj.userId/*roomDetails.dealStartDirection*/));
                     logger.print("opponent turn set 0"+findIndexOppo);
@@ -470,6 +486,7 @@ room.inmCreateRoom = function (userObj) {
 room.roomJoineeCreation = function (conditionObj, updateObj) {
 
     return new Promise((resolve, reject) => {
+        let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
         room.findOne({roomId: conditionObj.roomId}, function (err, roomresult) {
             var userArr = [];
             if (roomresult == null || roomresult.length == 0) {
@@ -479,7 +496,8 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                     roomName: conditionObj.roomName,
                     users: userArr,
                     totalUser: 1,
-                    createtime: new Date().getTime(),
+                    createtime: dt1,
+                    //createtime: new Date().getTime(),
                     gametime:""
                 }, function (err, insertroomresult) {
                     if (err)
@@ -498,7 +516,8 @@ room.roomJoineeCreation = function (conditionObj, updateObj) {
                         roomName: conditionObj.roomName,
                         users: userArr,
                         totalUser: 1,
-                        createtime: new Date().getTime(),
+                        createtime: dt1,
+                        //createtime: new Date().getTime(),
                         gametime:""
                     }, function (err, insertroomresult) {
                         if (err)
@@ -623,12 +642,26 @@ room.userLeave = function (condObj, updateObj) {
                 userArr = result.users;
                 let cupNumberOppo;
                 let currentTime=new Date().getTime();
-                const diff = currentTime - result.gametime;
-                const gameSeconds = Math.floor(diff / 1000 % 60);
+                const diff = currentTime - result.createtime;
+                //const diff = currentTime - result.gametime;
+                //const gameSeconds = Math.floor(diff / 1000 % 60);
 
                 let userOpponentUserId;
                 let totalGameScores;
                 let gameScoreOpponent;
+
+                 let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
+                  let config = "MM/DD/YYYY HH:mm:ss";
+                   let ms = moment(dt1, config).diff(moment(result.createtime,config));
+                  let d = (moment.duration(ms))/1000;
+                  let gameSeconds = Math.floor(d);
+
+                if(gameSeconds >360){
+                        gameSeconds=360;
+                    }
+                   
+
+
 
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
@@ -750,13 +783,28 @@ room.userLeaveNew = function (condObj, updateObj) {
                 let playerScore;
                 userArr = result.users;
                 let currentTime=new Date().getTime();
-                const diff = currentTime - result.gametime;
-                const gameSeconds = Math.floor(diff / 1000 % 60);
+                const diff = currentTime - result.createtime;
+                //const diff = currentTime - result.gametime;
+                //const gameSeconds = Math.floor(diff / 1000 % 60);
                 let cupNumberOppo;
                 let opponentCoin;
                 let userCoin;
                 let totalGameScores;
                 let gameScoreOpponent;
+
+                let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
+                    let config = "MM/DD/YYYY HH:mm:ss";
+                    let ms = moment(dt1, config).diff(moment(result.createtime,config));
+                    let d = (moment.duration(ms))/1000;
+                    let gameSeconds = Math.floor(d);
+
+                    if(gameSeconds >360){
+                        gameSeconds=360;
+                    }
+
+
+
+
 
 
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
@@ -1201,13 +1249,25 @@ room.winAfterTimerEnd = function (reqObj) {
                    /* if(result.game_time!='undefined'){
                         reject({message: "Game is over"});
                     }*/
+
+                    let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
+                    let config = "MM/DD/YYYY HH:mm:ss";
+                    let ms = moment(dt1, config).diff(moment(result.createtime,config));
+                    let d = (moment.duration(ms))/1000;
+                    let gameSeconds = Math.floor(d);
+
+                    if(gameSeconds >360){
+                        gameSeconds=360;
+                    }
+
                     userArr = result.users;  
 
                     console.log(userArr);
 
                     let currentTime=new Date().getTime();
-                    const diff = currentTime - result.gametime;
-                    const gameSeconds = Math.floor(diff / 1000 % 60);
+                    const diff = currentTime - result.createtime;
+                    //const diff = currentTime - result.gametime;
+                    //const gameSeconds = Math.floor(diff / 1000 % 60);
 
                     //console.log(userArr[0].total); 
 
@@ -1227,12 +1287,18 @@ room.winAfterTimerEnd = function (reqObj) {
 
                     console.log("equalScore"+equalScore.total);
 
-                    let max = userArr.reduce(function (prev, current) {
+                    /*let max = userArr.reduce(function (prev, current) {
                       console.log("max prev.total"+prev.total);
                       console.log("max current.total"+current.total);    
                       return (prev.total < current.total) ? prev : 0
-                    });
+                    });*/
                     
+                    let max = userArr.reduce(function (prev, current) {
+                      console.log("max prev.total"+prev.total);
+                      console.log("max current.total"+current.total);    
+                      return (prev.total < current.total) ? prev : current
+                    });
+
                     console.log("max"+max.userId);
 
                     if(equalScore.total >0){
