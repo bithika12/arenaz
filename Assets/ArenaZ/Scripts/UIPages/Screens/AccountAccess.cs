@@ -100,6 +100,7 @@ namespace ArenaZ.Screens
         private void OpenCharacterUI()
         {
             UIManager.Instance.HideScreen(Page.AccountAccessDetailsPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
 
             characterSelection.Invoke("Initialize", 1.5f);

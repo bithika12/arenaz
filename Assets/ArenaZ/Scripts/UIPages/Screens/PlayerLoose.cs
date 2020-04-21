@@ -3,6 +3,10 @@ using DevCommons.Utility;
 using RedApple;
 using UnityEngine;
 using UnityEngine.UI;
+using RedApple.Api.Data;
+using Newtonsoft.Json;
+using RedApple.Utils;
+using System.Linq;
 
 namespace ArenaZ.Screens
 {
@@ -11,6 +15,8 @@ namespace ArenaZ.Screens
         [Header("User Image")]
         [SerializeField] private Image userFrame;
         [SerializeField] private Image userPic;
+        [SerializeField] private Text userCupText;
+        [SerializeField] private Text userLostCupText;
 
         [Header("Text")]
         [SerializeField] private Text WinnerUserName;
@@ -31,12 +37,51 @@ namespace ArenaZ.Screens
         private void OnEnable()
         {
             GettingButtonReferences();
-            DisplayCoinAmount();
+            Refresh();
         }
 
         private void OnDisable()
         {
             ReleaseButtonReferences();
+        }
+
+        public void Refresh()
+        {
+            DisplayCoinAmount();
+
+            if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
+            {
+                RestManager.GetUserSelection(User.UserEmailId, OnGetUserSelection, OnRequestFailure);
+                RestManager.GetLastGameHistory(User.UserEmailId, OnGetLastGameHistorySuccess, OnRequestFailure);
+            }
+            else
+            {
+                userCupText.text = "0";
+                userLostCupText.text = "0";
+            }
+        }
+
+        private void OnGetUserSelection(UserSelectionDetails userSelectionDetails)
+        {
+            Debug.Log($"------------------------------------USD: {JsonConvert.SerializeObject(userSelectionDetails)}");
+            if (userSelectionDetails != null)
+            {
+                userCupText.text = userSelectionDetails.UserCup.ToString();
+            }
+        }
+
+        private void OnGetLastGameHistorySuccess(LastGameHistory a_GameHistoryMatchDetails)
+        {
+            Debug.Log($"------------------------------------LGHD: {JsonConvert.SerializeObject(a_GameHistoryMatchDetails)}");
+            if (a_GameHistoryMatchDetails != null)
+            {
+                userLostCupText.text = "-" + a_GameHistoryMatchDetails.gameHistoryUserDatas.CupNumber.ToString();
+            }
+        }
+
+        private void OnRequestFailure(RestUtil.RestCallError obj)
+        {
+            Debug.Log("Get Data Error: " + obj.Description);
         }
 
         private void GettingButtonReferences()
@@ -53,8 +98,13 @@ namespace ArenaZ.Screens
 
         private void DisplayCoinAmount()
         {
-            int vlaue = PlayerPrefs.GetInt(ConstantStrings.ROOM_VALUE, 0);
-            coinText.text = "-" + vlaue;
+            if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
+            {
+                int vlaue = PlayerPrefs.GetInt(ConstantStrings.ROOM_VALUE, 0);
+                coinText.text = "-" + vlaue;
+            }
+            else
+                coinText.text = "0";
         }
 
         public void SetUserProfileImage(string race, string color)

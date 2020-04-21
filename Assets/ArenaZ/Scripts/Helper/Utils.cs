@@ -36,6 +36,8 @@ public enum Page
     RegionPopup,
     InternetConnectionLostPanel,
     GameplayUIPanel,
+    TrainingUIPanel,
+    DeleteAccountAlertOverlay,
 }
 
 public enum ERace
@@ -291,4 +293,6 @@ public static class ConstantStrings
     public const string hideTrigger = "Reverse";
     public const string dart = "Dart";
     public const string turnCancelled = "TurnCancelled";
+
+    public const string emptyFieldWarning = "This field can't be empty!";
 }

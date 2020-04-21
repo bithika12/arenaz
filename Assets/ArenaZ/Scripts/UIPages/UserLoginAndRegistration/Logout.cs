@@ -6,7 +6,7 @@ using RedApple.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Arenaz.LogoutUser
+namespace ArenaZ.LogoutUser
 {
     public class Logout : MonoBehaviour
     {

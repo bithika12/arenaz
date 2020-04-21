@@ -30,6 +30,7 @@ namespace ArenaZ.LoginUser
             else
             {
                 Debug.Log("Not Loggedin");
+                UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
                 UIManager.Instance.ShowScreen(Page.AccountAccesOverlay.ToString());
                 PlayerPrefs.SetInt(PlayerPrefsValue.Logout.ToString(), 1);
             }

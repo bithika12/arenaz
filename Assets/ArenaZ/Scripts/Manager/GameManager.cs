@@ -14,6 +14,8 @@ using DevCommons.Utility;
 using DG.Tweening;
 using System.Linq;
 using RedApple.Api.Data;
+using RedApple.Utils;
+using Newtonsoft.Json;
 
 namespace ArenaZ.Manager
 {
@@ -39,6 +41,13 @@ namespace ArenaZ.Manager
             Playing,
         }
 
+        public enum EGamePlayMode
+        {
+            None = 0,
+            Multiplayer,
+            Training,
+        }
+
         [Header("User")]
         [SerializeField] private Image userPic;
         [SerializeField] private Image userTimerImage;
@@ -51,6 +60,12 @@ namespace ArenaZ.Manager
 
         [Header("Others")]
         [SerializeField] private int scorePopUpDuration;
+        [SerializeField] private Text countdownTimerText;
+
+        [Header("Training User")]
+        [SerializeField] private Image trainingUserPic;
+        [SerializeField] private Image trainingUserTimerImage;
+        [SerializeField] private Text trainingUserName;
 
         [SerializeField] private CameraController cameraController;
         [SerializeField] private UiPopup popup;
@@ -61,6 +76,8 @@ namespace ArenaZ.Manager
 
         [SerializeField] private ScoreHandler scoreHandler;
         [SerializeField] private ScoreGraphic scoreGraphic;
+
+        [SerializeField] private CountdownTimer countdownTimer;
 
         private AudioPlayer mainMenuBGAudioPlayer;
         private AudioPlayer gameplayBGAudioPlayer;
@@ -75,7 +92,9 @@ namespace ArenaZ.Manager
 
         private EGameStatus gameStatus = EGameStatus.None;
         private bool gameIsSuspended = false;
-        
+
+        private EGamePlayMode gamePlayMode = EGamePlayMode.None;
+
         [SerializeField] private AlarmClock alarmClock;
 
         [Header("Hit Particle")]
@@ -92,7 +111,6 @@ namespace ArenaZ.Manager
 
         public Player PlayerType { get; set; }
         public CameraController CameraControllerRef { get => cameraController; }
-        public EGameStatus GameStatus { get => gameStatus; }
         public bool GameIsSuspended { get => gameIsSuspended; }
 
         private Player lastPlayerType;
@@ -104,6 +122,11 @@ namespace ArenaZ.Manager
         private int opponentRoundCount = 0;
 
         private float gameStartTime = 0.0f;
+
+        public PlayerWin PlayerWinScreen;
+        public PlayerLoose PlayerLooseScreen;
+        public PlayerDraw PlayerDrawScreen;
+        public ShootingRange ShootingRangeScreen;
 
         protected override void Awake()
         {
@@ -126,6 +149,72 @@ namespace ArenaZ.Manager
             startMainMenuBGMusic();
         }
 
+        public void SetGameplayMode(EGamePlayMode a_GamePlayMode)
+        {
+            gamePlayMode = a_GamePlayMode;
+        }
+
+        public EGamePlayMode GetGameplayMode()
+        {
+            return gamePlayMode;
+        }
+
+        public void StartTraining()
+        {
+            GetDartGameObj();
+            onSwitchTurn(Player.None);
+            cameraController.SetFocus(true);
+            cameraController.SetCameraPosition(Player.Self);
+            UIManager.Instance.HideScreen(Page.UIPanel.ToString());
+            UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.TrainingUIPanel.ToString(), Hide.none);
+            InitializeOnGameStartSequences();
+            gameStatus = EGameStatus.Playing;
+            PlayerType = Player.Self;
+
+            setTrainingUserProfileImage(User.UserName, User.UserRace, User.UserColor);
+            StartCoroutine(onNextTurnTraining());
+        }
+
+        public void StopTraining()
+        {
+            Debug.LogWarning("StopTraining");
+            if (popup != null)
+            {
+                popup.Show("QUIT", "ARE YOU SURE?", onLeaveTraining,
+                delegate { Debug.Log("Keep Training."); });
+            }
+        }
+
+        private void onLeaveTraining()
+        {
+            Debug.LogWarning("LeaveTraining");
+            cameraController.SetFocus(false);
+
+            firstTime = true;
+            genericTimer.StopTimer();
+
+            gameStatus = EGameStatus.None;
+
+            if (currentDart != null)
+                Destroy(currentDart.gameObject);
+
+            displayPopup(true);
+        }
+
+        private void setTrainingUserProfileImage(string name, string race, string color)
+        {
+            trainingUserName.text = name;
+            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
+            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
+
+            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
+            if (t_CharacterPicData != null)
+            {
+                trainingUserPic.material.SetTexture("_BaseMap", (Texture)t_CharacterPicData.ProfilePic.texture);
+            }
+        }
+
         private void OnDestroy()
         {
             SocketManager.Instance.iSocketStateSubscribers.Remove(this);
@@ -141,6 +230,8 @@ namespace ArenaZ.Manager
             SocketListener.Listen(SocketListenEvents.nextTurn.ToString(), onNextTurn);
             SocketListener.Listen(SocketListenEvents.gameThrow.ToString(), onOpponentDartThrow);
             SocketListener.Listen(SocketListenEvents.gameOver.ToString(), onGameOver);
+            SocketListener.Listen(SocketListenEvents.gameTimer.ToString(), onGameTimerEvent);
+            SocketListener.Listen(SocketListenEvents.dartTimer.ToString(), onDartTimerEvent);
         }
 
         private void setDartColor(string colorName, GameObject dartGameObj)
@@ -154,7 +245,17 @@ namespace ArenaZ.Manager
             //    Destroy(currentDart);
             firstTime = true;
             clearFakeDarts();
-            startGamplayBGMusic();
+            if (gamePlayMode == EGamePlayMode.Multiplayer)
+                startGamplayBGMusic();
+            else if (gamePlayMode == EGamePlayMode.Training)
+            {
+                stopMainMenuBGMusic();
+                if (gameplayBGAudioPlayer != null)
+                {
+                    gameplayBGAudioPlayer.Destroy();
+                    gameplayBGAudioPlayer = null;
+                }
+            }
             gameStartTime = Time.time;
         }
 
@@ -232,7 +333,10 @@ namespace ArenaZ.Manager
             {
                 if (playerTurn && PlayerType == Player.Self)
                 {
-                    userTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
+                    if (gamePlayMode == EGamePlayMode.Multiplayer)
+                        userTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
+                    else if (gamePlayMode == EGamePlayMode.Training)
+                        trainingUserTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
                 }
                 if (playerTurn && PlayerType == Player.Opponent)
                 {
@@ -244,6 +348,7 @@ namespace ArenaZ.Manager
         private void resetTimerRelatedValues()
         {
             timer = ConstantInteger.timerValue;
+            trainingUserTimerImage.fillAmount = genericTimer.SlowTimeFactor;
             userTimerImage.fillAmount = genericTimer.SlowTimeFactor;
             opponentTimerImage.fillAmount = genericTimer.SlowTimeFactor;
             playerTurn = false;
@@ -324,6 +429,7 @@ namespace ArenaZ.Manager
             else if (a_GameOverStatus == EGameOverStatus.Draw.ToString())
             {
                 onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
+                PlayerDrawScreen.Refresh();
             }
         }
 
@@ -406,10 +512,13 @@ namespace ArenaZ.Manager
                     winPopup.SetActive(false);
                     onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
                     AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Win).Clip, oneShot = true, volume = SettingData.SFXVolume });
-
+                    
                     UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
                     UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
                     cameraController.SetFocus(false);
+
+                    PlayerWinScreen.Refresh();
+                    ShootingRangeScreen.Refresh();
                 });
                 t_Sequence.Play();
             }
@@ -433,9 +542,60 @@ namespace ArenaZ.Manager
                     UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
                     UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
                     cameraController.SetFocus(false);
+
+                    PlayerLooseScreen.Refresh();
+                    ShootingRangeScreen.Refresh();
                 });
                 t_Sequence.Play();
             }
+        }
+
+        private void onGameTimerEvent(string a_Data)
+        {
+            if (gameStatus != EGameStatus.Playing)
+                return;
+
+            Debug.Log($"GameTimer Data : {a_Data}");
+            var t_GameTimerData = DataConverter.DeserializeObject<ApiResponseFormat<GameTimerData>>(a_Data);
+            if (t_GameTimerData != null && t_GameTimerData.Status == 1)
+            {
+                if (t_GameTimerData.Result.TotalGameTime > 0 && t_GameTimerData.Result.GameFinish == 0)
+                    countdownTimer.StartCountdown(t_GameTimerData.Result.TotalGameTime, false, (t) => countdownTimerText.text = t, ()=>
+                    {
+                        countdownTimerText.DOKill();
+                        countdownTimerText.color = Color.yellow;
+                    });
+                if (t_GameTimerData.Result.GameFinish == 1)
+                    countdownTimerText.DOColor(Color.red, 1.0f).SetLoops(-1, LoopType.Yoyo);
+            }
+        }
+
+        private void onDartTimerEvent(string a_Data)
+        {
+            if (gameStatus != EGameStatus.Playing)
+                return;
+
+            Debug.Log($"DartTimer Data : {a_Data}");
+        }
+
+        private IEnumerator onNextTurnTraining()
+        {
+            yield return new WaitForSeconds(2.0f);
+
+            if (gameStatus != EGameStatus.Playing)
+                yield break;
+
+            if (currentDart != null)
+                Destroy(currentDart.gameObject);
+
+            resetTimerRelatedValues();
+            genericTimer.StopTimer();
+
+            playerTurn = true;
+            InstantiateDart(userDart);
+            
+            touchBehaviour.IsShooted = false;
+            genericTimer.StartTimer(onPlayerTimerCompleteTraining);
         }
 
         private void onNextTurn(string data)
@@ -444,7 +604,7 @@ namespace ArenaZ.Manager
                 return;
 
             resetTimerRelatedValues();
-            Debug.Log($"Next Turn : {data}" + "  User Id: " + User.UserId);
+            Debug.Log($"onNextTurn : {data}" + "  User Id: " + User.UserId);
             var nextTurnData = DataConverter.DeserializeObject<ApiResponseFormat<NextTurn>>(data);
             playerTurn = true;
             if (nextTurnData.Result.UserId == User.UserId)
@@ -453,7 +613,7 @@ namespace ArenaZ.Manager
                 InstantiateDart(userDart);
                 PlayerType = Player.Self;
                 touchBehaviour.IsShooted = false;
-                genericTimer.StartTimer(OnPlayerTimerComplete);
+                genericTimer.StartTimer(onPlayerTimerComplete);
                 onSwitchTurn(PlayerType);
             }
             else
@@ -504,7 +664,7 @@ namespace ArenaZ.Manager
             StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
         }
 
-        private void OnPlayerTimerComplete()
+        private void onPlayerTimerComplete()
         {
             if (gameStatus != EGameStatus.Playing)
                 return;
@@ -518,12 +678,22 @@ namespace ArenaZ.Manager
             genericTimer.StopTimer();
         }
 
+        private void onPlayerTimerCompleteTraining()
+        {
+            if (gameStatus != EGameStatus.Playing)
+                return;
+
+            Debug.Log("On Player Timer complete");
+            alarmClock.Show();
+            StartCoroutine(onNextTurnTraining());
+        }
+
         private void onOpponentDartThrow(string data)
         {
             if (gameStatus != EGameStatus.Playing)
                 return;
 
-            Debug.Log($"Dart Throw : {data}");
+            Debug.Log($"onOpponentDartThrow : {data}");
             var dartThrowData = DataConverter.DeserializeObject<ApiResponseFormat<DartThrow>>(data);
             if(dartThrowData.Result.UserId != User.UserId)
             {
@@ -643,33 +813,54 @@ namespace ArenaZ.Manager
         {
             if (gameStatus != EGameStatus.Playing)
                 return;
-
-            Debug.Log("On Completion Dart Hit");
-            StartCoroutine(destroyDartAfterACertainTime(1, dartGameObj));
-            InstantiateFakeDart(dartGameObj);
-            if (PlayerType == Player.Self)
+            if (gamePlayMode == EGamePlayMode.Training)
+                onCompletionDartHitTraining(dartGameObj);
+            else if (gamePlayMode == EGamePlayMode.Multiplayer)
             {
-                Debug.Log("Player...");
+                Debug.Log("OnCompletionDartHit");
+                StartCoroutine(destroyDartAfterACertainTime(1, dartGameObj));
+                InstantiateFakeDart(dartGameObj);
+                if (PlayerType == Player.Self)
+                {
+                    Debug.Log("Player...");
 
-                BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
-                if (boardBody.name.Contains("Outside"))
-                    AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.DartMiss).Clip, oneShot = true, volume = SettingData.SFXVolume });
+                    BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
+                    if (boardBody.name.Contains("Outside"))
+                        AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.DartMiss).Clip, oneShot = true, volume = SettingData.SFXVolume });
 
-                int t_TotalValue = boardBody.HitPointScore;
+                    int t_TotalValue = boardBody.HitPointScore;
+                    if (boardBody.ScoreMultiplier > 1)
+                        t_TotalValue = boardBody.HitPointScore * boardBody.ScoreMultiplier;
+                    SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
+                }
+
+                PlayDartHitParticle(dartGameObj.transform.position);
+            }
+        }
+
+        private void onCompletionDartHitTraining(GameObject dartGameObj)
+        {
+            Debug.Log("onCompletionDartHitTraining");
+            InstantiateFakeDart(dartGameObj);
+
+            BoardBodyPart boardBody = touchBehaviour.DartHitGameObj.GetComponent<BoardBodyPart>();
+            if (boardBody.name.Contains("Outside"))
+            {
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.DartMiss).Clip, oneShot = true, volume = SettingData.SFXVolume });
+                scoreGraphic.ShowScore(0, 0);
+            }
+            else
+            {
+                scoreGraphic.ShowScore(boardBody.HitPointScore, boardBody.ScoreMultiplier);
                 if (boardBody.ScoreMultiplier > 1)
-                    t_TotalValue = boardBody.HitPointScore * boardBody.ScoreMultiplier;
-                SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
+                {
+                    int t_TotalValue = boardBody.HitPointScore * boardBody.ScoreMultiplier;
+                    scoreGraphic.ShowScore(t_TotalValue, 0);
+                }
             }
 
             PlayDartHitParticle(dartGameObj.transform.position);
-        }
-
-        private void countDownScore(TextMeshProUGUI a_TextMeshPro, int a_RoundTotalScore, int a_CurrentScore)
-        {
-            Sequence t_Sequence = DOTween.Sequence();
-            t_Sequence.AppendInterval(2.25f);
-            t_Sequence.Append(DOTween.To(() => a_CurrentScore, x => a_TextMeshPro.text = x.ToString(), a_RoundTotalScore, 2f));
-            t_Sequence.Play();
+            StartCoroutine(onNextTurnTraining());
         }
 
         private void InstantiateFakeDart(GameObject dartGameObj)
@@ -706,6 +897,8 @@ namespace ArenaZ.Manager
                 Destroy(currentDart.gameObject);
 
             gameStatus = EGameStatus.Playing;
+            countdownTimerText.text = "00:00";
+            countdownTimerText.color = Color.yellow;
 
             userRoundCount = 0;
             opponentRoundCount = 0;
@@ -779,6 +972,7 @@ namespace ArenaZ.Manager
                 if (t_CurrentTime - gameStartTime <= 5.0f)
                 {
                     onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
+                    PlayerDrawScreen.Refresh();
                 }
             }
         }
@@ -804,4 +998,20 @@ namespace ArenaZ.Manager
             }
         }
     }
+}
+
+[System.Serializable]
+public class GameTimerData
+{
+    [JsonProperty("totalGameTime")]
+    public int TotalGameTime = 0;
+    [JsonProperty("gameFinish")]
+    public int GameFinish = 0;
+}
+
+[System.Serializable]
+public class DartTimerData
+{
+    [JsonProperty("dartFinish")]
+    public int DartFinish = 0;
 }

@@ -101,6 +101,7 @@ namespace ArenaZ.SettingsManagement
             logOutButton.onClick.AddListener(OnClickLogInLogOut);
             playerColorButton.onClick.AddListener(onClickPlayerColor);
             regionButton.onClick.AddListener(onClickRegion);
+            deleteAccountButton.onClick.AddListener(onClickDeleteAccount);
 
             MusicToggle.onValueChanged.AddListener(delegate
             {
@@ -119,6 +120,7 @@ namespace ArenaZ.SettingsManagement
             logOutButton.onClick.RemoveListener(OnClickLogInLogOut);
             playerColorButton.onClick.RemoveListener(onClickPlayerColor);
             regionButton.onClick.RemoveListener(onClickRegion);
+            deleteAccountButton.onClick.RemoveListener(onClickDeleteAccount);
 
             MusicToggle.onValueChanged.RemoveListener(delegate
             {
@@ -183,6 +185,11 @@ namespace ArenaZ.SettingsManagement
 
         #region UI_Functionalities
 
+        private void onClickDeleteAccount()
+        {
+            UIManager.Instance.ShowScreen(Page.DeleteAccountAlertOverlay.ToString(), Hide.none);
+        }
+
         private void onClickPlayerColor()
         {
             UIManager.Instance.ToggleScreenWithAnim(Page.PlayerColorChooser.ToString());
@@ -225,6 +232,7 @@ namespace ArenaZ.SettingsManagement
             if (PlayerPrefs.GetInt(PlayerPrefsValue.Logout.ToString()) == 0)
             {
                 Debug.Log("Logged Out");
+                UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
                 UIManager.Instance.ShowScreen(Page.LogOutAlertOverlay.ToString(),Hide.none);
             }
             else
@@ -240,12 +248,15 @@ namespace ArenaZ.SettingsManagement
             UIManager.Instance.ShowScreen(Page.AccountAccessDetailsPanel.ToString());
             UIManager.Instance.ShowScreen(Page.AccountAccesOverlay.ToString());
             UIManager.Instance.HideScreen(Page.CharacterSelectionPanel.ToString());
+            UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
+            UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
         }
 
         private void GoToLogIn()
         {
             UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
+            UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.AccountAccessDetailsPanel.ToString());
             inputFieldclear?.Invoke();
         }

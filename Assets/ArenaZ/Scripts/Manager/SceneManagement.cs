@@ -19,7 +19,6 @@ public class SceneManagement : Singleton<SceneManagement>
 
     private void Start()
     {
-        // LoadScene("LevelSelection");
         StartCoroutine(LoadSceneAtStart());
     }
     IEnumerator LoadSceneAtStart()

@@ -5,6 +5,7 @@
         public const string REGISTER = "registration";
         public const string USER_LOGIN = "login";
         public const string LOGOUT = "logout";
+        public const string DELETE_ACCOUNT = "delete/account";
         public const string JSON = "json";
         public const string ACTIVATE_TOKEN = "activate";
         public const string CREATE_USER = "users";
@@ -57,7 +58,9 @@
         public const string GET_SELECTION_DETAILS = "get/details";
 
         public const string GET_GAME_HISTORY = "game/history";
+        public const string GET_USER_GAME_HISTORY = "user/game/history";
         public const string FETCH_NOTIFICATIONS = "fetch/notifications";
+        public const string CHANGE_NOTIFICATION_STATUS = "change/notification/status";
         public const string FETCH_LEADERBOARD = "user/board";
     }
 }

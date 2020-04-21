@@ -91,6 +91,7 @@ public class ForgotPassword : MonoBehaviour
     private void OnClickForgotPasswordPopUpClose()
     {
         ClearForgotPassWordInputFieldData();
+        UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
         UIManager.Instance.HideScreenImmediately(Page.ForgotPasswordOverlay.ToString());
         UIManager.Instance.ShowScreen(Page.LogINOverlay.ToString());
     }

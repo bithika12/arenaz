@@ -206,6 +206,16 @@ namespace ArenaZ.Screens
             SetProfilePicOnClick();
             LevelSelection.Instance.OnSelectionGameplayType(type);
             SocketManager.Instance.ColRequest();
+
+            switch (type)
+            {
+                case GameType.normal:
+                    GameManager.Instance.SetGameplayMode(GameManager.EGamePlayMode.Multiplayer);
+                    break;
+                case GameType.training:
+                    GameManager.Instance.SetGameplayMode(GameManager.EGamePlayMode.Training);
+                    break;
+            }
         }
 
         private void SaveUserData()

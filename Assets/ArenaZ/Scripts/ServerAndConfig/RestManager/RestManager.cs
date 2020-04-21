@@ -78,6 +78,17 @@ namespace RedApple
             sendWebRequest(webRqstbuilder, OnCompleteLogOut, restError);
         }
 
+        public static void DeleteAccount(Action a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.DELETE_ACCOUNT))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM);
+
+            addUserAuthHeader(ref webRqstBuilder);
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
         public static void ForgotPassword(bool isEmail, string emailOrUserName, Action OnCompleteForgotPassword, Action<RestError> restError)
         {
             WebRequestBuilder webRqstbuilder = new WebRequestBuilder()
@@ -143,6 +154,17 @@ namespace RedApple
             sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
         }
 
+        public static void GetLastGameHistory(string a_UserEmail, Action<LastGameHistory> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.GET_USER_GAME_HISTORY))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
         public static void FetchNotifications(string a_UserEmail, Action<MessageDetails> a_OnComplete, Action<RestError> a_RestError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
@@ -150,6 +172,18 @@ namespace RedApple
                 .Verb(Verbs.POST)
                 .ContentType(ContentTypes.FORM)
                 .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        public static void ChangeNotificationStatus(string a_UserEmail, string a_NotificationId, Action a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.CHANGE_NOTIFICATION_STATUS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail)
+                .FormData(Attributes.NOTIFICATION_ID, a_NotificationId);
 
             sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
         }

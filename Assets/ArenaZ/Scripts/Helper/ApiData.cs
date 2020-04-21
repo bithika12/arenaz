@@ -15,6 +15,8 @@ public class GameHistoryGameDetails
     public int GameTime { get; set; }
     [JsonProperty("last_time")]
     public int LastTime { get; set; }
+    [JsonProperty("timePeriodType")]
+    public string TimePeriodType { get; set; }
     [JsonProperty("gameDetails")]
     public List<GameHistoryUserData> gameHistoryUserDatas { get; set; } = new List<GameHistoryUserData>();
 }
@@ -41,6 +43,20 @@ public class GameHistoryUserData
 }
 
 [System.Serializable]
+public class LastGameHistory
+{
+    [JsonProperty("matchDetails")]
+    public GameHistoryUserData gameHistoryUserDatas { get; set; }
+}
+
+//[System.Serializable]
+//public class LastGameHistory
+//{
+//    [JsonProperty("matchDetails")]
+//    public List<GameHistoryUserData> gameHistoryUserDatas { get; set; } = new List<GameHistoryUserData>();
+//}
+
+[System.Serializable]
 public class MessageDetails
 {
     [JsonProperty("details")]
@@ -60,6 +76,10 @@ public class MessageData
     public string CretaedTime { get; set; }
     [JsonProperty("type")]
     public string Type { get; set; }
+    [JsonProperty("notification_id")]
+    public string NotificationId { get; set; }
+    [JsonProperty("read_status")]
+    public int ReadStatus { get; set; }
 }
 
 [System.Serializable]

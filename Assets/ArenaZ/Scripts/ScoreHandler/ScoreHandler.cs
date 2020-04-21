@@ -58,16 +58,6 @@ namespace ArenaZ
 
             DOTween.To(() => a_ScoreData.PreviousRemainingScore, x => a_TextMeshPro.text = x.ToString(), a_ScoreData.CurrentRemainingScore, 1.0f)
                 .OnComplete(() => a_ScoreData.PreviousRemainingScore = a_ScoreData.CurrentRemainingScore);
-
-            //Sequence t_Sequence = DOTween.Sequence();
-            //t_Sequence.AppendInterval(3f);
-            //t_Sequence.Append(DOTween
-            //    .To(() => a_ScoreData.PreviousRemainingScore, x => a_TextMeshPro.text = x.ToString(), a_ScoreData.CurrentRemainingScore, 1.2f)
-            //    .OnComplete(() =>
-            //    {
-            //        a_ScoreData.PreviousRemainingScore = a_ScoreData.CurrentRemainingScore;
-            //    }));
-            //t_Sequence.Play();
         }
     }
 

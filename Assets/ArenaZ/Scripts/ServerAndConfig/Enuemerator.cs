@@ -20,4 +20,6 @@ public enum SocketListenEvents
     gameOver,
     noUser,
     connectedRoom,
+    gameTimer,
+    dartTimer,
 }

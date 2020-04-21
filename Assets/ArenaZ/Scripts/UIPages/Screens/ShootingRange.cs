@@ -12,6 +12,7 @@ using DG.Tweening;
 using Coffee.UIExtensions;
 using System.Linq;
 using System.Collections;
+using RedApple.Utils;
 
 namespace ArenaZ.GameMode
 {
@@ -55,7 +56,7 @@ namespace ArenaZ.GameMode
             CharacterSelection.setDart += SetDartImage;
             UIManager.Instance.setUserName += SetUserName;
             UIManager.Instance.showProfilePic += SetUserProfileImage;
-            UIManager.Instance.setCoinAndCup += refreshValues;
+            UIManager.Instance.setCoinAndCup += refreshData;
         }
 
         private void OnEnable()
@@ -72,12 +73,38 @@ namespace ArenaZ.GameMode
             CancelInvoke("ScaleSize");
         }
 
-        private void refreshValues(string coinCount, string cupCount)
+        public void Refresh()
+        {
+            RestManager.GetUserSelection(User.UserEmailId, OnGetUserSelection, OnRequestFailure);
+        }
+
+        private void refreshData(string coin, string cup)
         {
             if (userCoinCount != null)
-                userCoinCount.text = coinCount;
+                userCoinCount.text = coin;
             if (userCupCount != null)
-                userCupCount.text = cupCount;
+                userCupCount.text = cup;
+        }
+
+        private void OnGetUserSelection(UserSelectionDetails userSelectionDetails)
+        {
+            Debug.Log($"------------------------------------USD: {JsonConvert.SerializeObject(userSelectionDetails)}");
+            if (userSelectionDetails != null)
+            {
+                if (userCoinCount != null)
+                    userCoinCount.text = userSelectionDetails.UserCoin.ToString();
+                if (userCupCount != null)
+                    userCupCount.text = userSelectionDetails.UserCup.ToString();
+
+                User.UserCoin = userSelectionDetails.UserCoin;
+                User.UserCup = userSelectionDetails.UserCup;
+                UIManager.Instance.setCoinAndCup?.Invoke(User.UserCoin.ToString(), User.UserCup.ToString());
+            }
+        }
+
+        private void OnRequestFailure(RestUtil.RestCallError obj)
+        {
+            Debug.Log("Get Data Error: " + obj.Description);
         }
 
         private void OnDestroy()
@@ -237,9 +264,21 @@ namespace ArenaZ.GameMode
 
         private void OnClickStartGameWithCoinValue(int a_Value)
         {
-            PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
-            gameLoading.WaitingForOtherPlayer();
-            SocketManager.Instance.GameRequest();
+            if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
+            {
+                if (a_Value <= User.UserCoin)
+                {
+                    PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
+                    gameLoading.WaitingForOtherPlayer();
+                    SocketManager.Instance.GameRequest();
+                }
+            }
+            else if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Training)
+            {
+                // TODO Load Training Mode
+                PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
+                GameManager.Instance.StartTraining();
+            }
         }
 
         //private IEnumerator LeaveAndJoinRoomRequest()

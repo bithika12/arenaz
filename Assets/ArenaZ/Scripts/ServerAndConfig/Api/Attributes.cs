@@ -57,11 +57,14 @@
         public const string STATUS = "status";
 
         public const string USER_EMAIL = "userEmail";
+        public const string USER_EMAIL_SMALL = "useremail";
         public const string COLOR_NAME = "colorName";
         public const string RACE_NAME = "raceName";
         public const string CHARACTER_ID = "characterId";
         public const string DART_NAME = "dartName";
         public const string COUNTRY_NAME = "countryName";
         public const string LANGUAGE_NAME = "languageName";
+
+        public const string NOTIFICATION_ID = "notificationId";
     }
 }

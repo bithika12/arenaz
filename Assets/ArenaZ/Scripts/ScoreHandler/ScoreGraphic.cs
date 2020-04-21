@@ -37,59 +37,6 @@ namespace ArenaZ
         private Queue<GraphicScoreData> graphicScoreDatas = new Queue<GraphicScoreData>();
         private GraphicScoreData activeGraphicScoreData = null;
 
-        /*private void OnGUI()
-        {
-            if (GUI.Button(new Rect(10, 0, 150, 50), "Score_Hit"))
-            {
-                int hitSore = UnityEngine.Random.Range(0, 10) * UnityEngine.Random.Range(0, 10);
-                ShowScore(hitSore, 0);
-            }
-
-            if (GUI.Button(new Rect(10, 50, 150, 50), "Score_Hit&Mul"))
-            {
-                int hitSore = UnityEngine.Random.Range(0, 10) * UnityEngine.Random.Range(0, 10);
-                int multiplierSore = UnityEngine.Random.Range(0, 10);
-                ShowScore(hitSore, multiplierSore);
-                if (multiplierSore > 1)
-                    ShowScore(hitSore * multiplierSore, 0);
-            }
-
-            if (GUI.Button(new Rect(10, 100, 150, 50), "Score_MoveTowardUser"))
-            {
-                int hitSore = UnityEngine.Random.Range(0, 10) * UnityEngine.Random.Range(0, 10);
-                ShowScore(hitSore, 0, EMoveTowards.User);
-            }
-
-            if (GUI.Button(new Rect(10, 150, 150, 50), "Score_MoveTowardOpponent"))
-            {
-                int hitSore = UnityEngine.Random.Range(0, 10) * UnityEngine.Random.Range(0, 10);
-                ShowScore(hitSore, 0, EMoveTowards.Opponent);
-            }
-
-            if (GUI.Button(new Rect(10, 200, 150, 50), "Score_Denied"))
-            {
-                int hitSore = UnityEngine.Random.Range(0, 10) * UnityEngine.Random.Range(0, 10);
-                int multiplierSore = UnityEngine.Random.Range(0, 10);
-                ShowScore(hitSore, multiplierSore, EMoveTowards.None, true);
-            }
-        }*/
-
-        public void ShowScore(GraphicScoreData a_GraphicScoreData)
-        {
-            Debug.Log($"Score HitPointScore: {a_GraphicScoreData.HitPointScore}, ScoreMultiplier: {a_GraphicScoreData.ScoreMultiplier}");
-            graphicScoreDatas.Enqueue(new GraphicScoreData()
-            {
-                HitPointScore = a_GraphicScoreData.HitPointScore,
-                ScoreMultiplier = a_GraphicScoreData.ScoreMultiplier,
-                ScoreMoveTowards = a_GraphicScoreData.ScoreMoveTowards,
-                ScoreIsDenied = a_GraphicScoreData.ScoreIsDenied,
-                OnStepComplete = a_GraphicScoreData.OnStepComplete,
-                OnComplete = a_GraphicScoreData.OnComplete,
-            });
-            if (activeGraphicScoreData == null)
-                peekFromQueue();
-        }
-
         public void ShowScore(int a_HitPointScore, int a_ScoreMultiplier, EMoveTowards a_MoveTowards = EMoveTowards.None, bool a_ScoreIsDenied = false, Action a_OnStepComplete = null, Action a_OnComplete = null)
         {
             graphicScoreDatas.Enqueue(new GraphicScoreData()

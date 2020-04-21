@@ -33,5 +33,9 @@ namespace RedApple.Api.Data
         public string CountryName { get; set; }
         [JsonProperty("languageName")]
         public string LanguageName { get; set; }
+        [JsonProperty("userCoin")]
+        public int UserCoin { get; set; }
+        [JsonProperty("userCup")]
+        public int UserCup { get; set; }
     }
 }

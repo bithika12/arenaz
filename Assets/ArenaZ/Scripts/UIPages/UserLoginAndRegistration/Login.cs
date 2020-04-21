@@ -75,9 +75,15 @@ namespace ArenaZ.LoginUser
         private void onClickUserLogin(string emailID, string password)
         {
             Debug.Log("Logging in");
-            if (GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID) != null)
+            //if (GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID) != null)
+            //{
+            //    UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID), PopUpduration);
+            //    return;
+            //}
+
+            if (string.IsNullOrEmpty(emailID) || string.IsNullOrWhiteSpace(emailID))
             {
-                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID), PopUpduration);
+                UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.emptyFieldWarning, PopUpduration);
                 return;
             }
             else if (GetMessageWhenFaultCheckOnLogin(password, Checking.Password) != null)

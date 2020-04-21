@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using RedApple;
 using DevCommons.Utility;
+using RedApple.Api.Data;
+using Newtonsoft.Json;
+using RedApple.Utils;
 
 namespace ArenaZ.Screens 
 {
@@ -39,6 +42,7 @@ namespace ArenaZ.Screens
         private void OnEnable()
         {
             GettingButtonReferences();
+            Refresh();
         }
 
         private void OnDisable()
@@ -56,6 +60,39 @@ namespace ArenaZ.Screens
         {
             closeButton.onClick.RemoveListener(onClickClose);
             playAgainButton.onClick.RemoveListener(onClickClose);
+        }
+
+
+        public void Refresh()
+        {
+            if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
+            {
+                RestManager.GetUserSelection(User.UserEmailId, OnGetUserSelection, OnRequestFailure);
+            }
+            else
+            {
+                if (userCoinCount != null)
+                    userCoinCount.text = "0";
+                if (userCupCount != null)
+                    userCupCount.text = "0";
+            }
+        }
+
+        private void OnGetUserSelection(UserSelectionDetails userSelectionDetails)
+        {
+            Debug.Log($"------------------------------------USD: {JsonConvert.SerializeObject(userSelectionDetails)}");
+            if (userSelectionDetails != null)
+            {
+                if (userCoinCount != null)
+                    userCoinCount.text = userSelectionDetails.UserCoin.ToString();
+                if (userCupCount != null)
+                    userCupCount.text = userSelectionDetails.UserCup.ToString();
+            }
+        }
+
+        private void OnRequestFailure(RestUtil.RestCallError obj)
+        {
+            Debug.Log("Get Data Error: " + obj.Description);
         }
 
         public void SetUserProfileImage(string race, string color)
@@ -85,7 +122,7 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.ClearOpenPagesContainer();
             //UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
-            UIManager.Instance.HideScreen(Page.PlayerWinPanel.ToString());
+            UIManager.Instance.HideScreen(Page.DrawMatchPanel.ToString());
             //UIManager.Instance.ShowScreen(Page.LevelSelectionPanel.ToString(), Hide.none);
             UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(), Hide.none);
         }

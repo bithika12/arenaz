@@ -49,6 +49,7 @@ namespace ArenaZ
 
         private void OnSelectMessage(MessageData obj)
         {
+            RestManager.ChangeNotificationStatus(User.UserEmailId, obj.NotificationId, () => Debug.Log("Message status updated.") , OnRequestFailure);
             UIManager.Instance.ShowScreen(Page.MailPopUp.ToString());
             mailDescription.InitializeCell(obj, response =>
             {

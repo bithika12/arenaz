@@ -68,7 +68,7 @@ namespace ArenaZ.Screens
 
         private void SettingButtonClicked()
         {
-           // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
+            // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
             UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.previous);
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
             UIManager.Instance.HideScreenImmediately(Page.RegionPopup.ToString());

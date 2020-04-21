@@ -66,7 +66,7 @@ public class MatchDetailsCell : Cell<GameHistoryGameDetails>
             }
 
             gameplayTime.text = GetTimeInFormat(cellData.GameTime);
-            playedAgo.text = GetTimeInFormat(cellData.LastTime) + " AGO";
+            playedAgo.text = GetTimeInFormat(cellData.LastTime, cellData.TimePeriodType);
         }
     }
 
@@ -106,9 +106,27 @@ public class MatchDetailsCell : Cell<GameHistoryGameDetails>
         }
     }
 
+    private string GetTimeInFormat(int seconds, string periodType)
+    {
+        string timeFormat = "";
+        if (!string.IsNullOrEmpty(periodType) && !string.IsNullOrWhiteSpace(periodType))
+        {
+            if (periodType.StartsWith("Minutes"))
+                timeFormat = seconds + "mm AGO";
+            else if (periodType.StartsWith("Hours"))
+                timeFormat = seconds + "H AGO";
+            else if (periodType.StartsWith("Days"))
+                timeFormat = seconds + "D AGO";
+            else
+                timeFormat = seconds + periodType + " AGO";
+        }
+        return timeFormat;
+    }
+
     private string GetTimeInFormat(int seconds)
     {
         TimeSpan time = TimeSpan.FromSeconds(seconds);
-        return time.ToString(@"hh\:mm\:ss");
+        return time.ToString(@"mm\:ss");
+        //return time.ToString(@"hh\:mm\:ss");
     }
 }
