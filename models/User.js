@@ -50,7 +50,7 @@ Enjoy… \
 Arena Z Team" ; 
       reqObj.password  =  password.hashPassword(reqObj.password);
       let startCoin = reqObj.userType =='regular-player'
-              ? 500
+              ? 3000
               : 0;
       reqObj.startCoin=startCoin;
       reqObj.userScore=3000;

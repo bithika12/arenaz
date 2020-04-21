@@ -235,7 +235,7 @@ exports.registration= function(req,res) {
                     email: result.email,
                     score: result.score,
                     "accessToken": result.deviceDetails[0].accessToken,
-                    "userCoin":500,
+                    "userCoin":3000,
                     "userCup":0
                 }, 'You have successfully registered. You will be logged in.')); 
 
