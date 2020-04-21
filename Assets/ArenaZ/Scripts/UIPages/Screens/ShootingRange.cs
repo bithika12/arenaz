@@ -275,8 +275,7 @@ namespace ArenaZ.GameMode
             }
             else if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Training)
             {
-                // TODO Load Training Mode
-                PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
+                //PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
                 GameManager.Instance.StartTraining();
             }
         }

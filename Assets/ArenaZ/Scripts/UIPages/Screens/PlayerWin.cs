@@ -101,7 +101,7 @@ namespace ArenaZ.Screens
             if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
             {
                 int vlaue = PlayerPrefs.GetInt(ConstantStrings.ROOM_VALUE, 0);
-                coinText.text = "+" + vlaue;
+                coinText.text = "+" + (vlaue * 2);
             }
             else
                 coinText.text = "0";

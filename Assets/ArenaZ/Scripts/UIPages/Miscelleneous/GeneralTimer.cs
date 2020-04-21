@@ -49,6 +49,7 @@ public class GeneralTimer
     public void ResetTimer()
     {
         _time = vanillaTimerRef;
+        _remainingTime = vanillaTimerRef;
     }
 
     IEnumerator CountDown()

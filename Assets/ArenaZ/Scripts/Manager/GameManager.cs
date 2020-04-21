@@ -128,6 +128,8 @@ namespace ArenaZ.Manager
         public PlayerDraw PlayerDrawScreen;
         public ShootingRange ShootingRangeScreen;
 
+        private int trainingDratThrowCount = 0;
+
         protected override void Awake()
         {
             touchBehaviour = GetComponent<TouchBehaviour>();
@@ -161,6 +163,8 @@ namespace ArenaZ.Manager
 
         public void StartTraining()
         {
+            resetTimerImages();
+            trainingDratThrowCount = 0;
             GetDartGameObj();
             onSwitchTurn(Player.None);
             cameraController.SetFocus(true);
@@ -193,12 +197,14 @@ namespace ArenaZ.Manager
 
             firstTime = true;
             genericTimer.StopTimer();
+            genericTimer.ResetTimer();
 
             gameStatus = EGameStatus.None;
 
             if (currentDart != null)
                 Destroy(currentDart.gameObject);
 
+            resetTimerImages();
             displayPopup(true);
         }
 
@@ -257,6 +263,14 @@ namespace ArenaZ.Manager
                 }
             }
             gameStartTime = Time.time;
+            resetTimerImages();
+        }
+
+        private void resetTimerImages()
+        {
+            userTimerImage.fillAmount = 1.0f;
+            opponentTimerImage.fillAmount = 1.0f;
+            trainingUserTimerImage.fillAmount = 1.0f;
         }
 
         private void setAllUserData(List<UserJoin> usersData)
@@ -329,6 +343,9 @@ namespace ArenaZ.Manager
 
         private void Update()
         {
+            if (gameStatus != EGameStatus.Playing)
+                return;
+
             if (genericTimer != null)
             {
                 if (playerTurn && PlayerType == Player.Self)
@@ -378,6 +395,7 @@ namespace ArenaZ.Manager
 
             cameraController.SetCameraPosition(Player.Self);
             genericTimer.StopTimer();
+            genericTimer.ResetTimer();
 
             displayPopup(false);
 
@@ -398,6 +416,7 @@ namespace ArenaZ.Manager
 
             cameraController.SetCameraPosition(Player.Self);
             genericTimer.StopTimer();
+            genericTimer.ResetTimer();
             Debug.Log($"OnGameOver : {data}" + "  User Id: " + User.UserId);
             var gameOverData = DataConverter.DeserializeObject<ApiResponseFormat<GameOverResponse>>(data);
 
@@ -548,6 +567,7 @@ namespace ArenaZ.Manager
                 });
                 t_Sequence.Play();
             }
+            resetTimerImages();
         }
 
         private void onGameTimerEvent(string a_Data)
@@ -581,6 +601,13 @@ namespace ArenaZ.Manager
         private IEnumerator onNextTurnTraining()
         {
             yield return new WaitForSeconds(2.0f);
+
+            if (trainingDratThrowCount == 3)
+            {
+                clearFakeDarts();
+                trainingDratThrowCount = 0;
+            }
+            trainingDratThrowCount++;
 
             if (gameStatus != EGameStatus.Playing)
                 yield break;
@@ -966,6 +993,9 @@ namespace ArenaZ.Manager
         #region ISocketState
         public void SocketStatus(SocketManager.ESocketState a_SocketState)
         {
+            if (gamePlayMode != EGamePlayMode.Multiplayer)
+                return;
+
             if (a_SocketState == SocketManager.ESocketState.Disconnected && gameStatus == EGameStatus.Playing)
             {
                 float t_CurrentTime = Time.time;
@@ -988,6 +1018,9 @@ namespace ArenaZ.Manager
 
         private void OnApplicationPause(bool pause)
         {
+            if (gamePlayMode != EGamePlayMode.Multiplayer)
+                return;
+
             if (pause && gameStatus == EGameStatus.Playing)
                 gameIsSuspended = true;
             if (!pause && gameStatus == EGameStatus.Playing && gameIsSuspended)
