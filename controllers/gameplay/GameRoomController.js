@@ -906,6 +906,7 @@ io.on('connection', function (socket) {
 
     function playerLeave(req) {
         return function (callback) {
+
             inmRoom.userLeave({roomName: req.roomName, userId: req.userId}).then(function (updateDetails) {
                 //room.playerLeave({roomName: req.roomName, userId: req.userId}).then(function (playerUpdate) {
                     callback(null, updateDetails);
@@ -1204,6 +1205,7 @@ io.on('connection', function (socket) {
     }
     //////////////////////////////////////////////////
 
+
     socket.on('disconnect', function (req) {
         let currentSocketId = socket.id;
         logger.print("socket id while disconnecting"+ " " +currentSocketId);
@@ -1227,7 +1229,178 @@ io.on('connection', function (socket) {
             if (userRoomName != '') {
                 logger.print("room name while disconnecting"+ userRoomName);
                 io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
+                
 
+                //////////////////////////////////////////////////
+
+                   RoomDb.findOne({name:userRoomName},
+                    {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          console.log("game finished");
+                          if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+                        }
+                        else{
+
+                      async.waterfall([
+                    playerLeave({roomName: userRoomName, userId: allOnlineUsers[findIndex].userId}),
+                    updateRoom,
+                    RoomUpdate,
+                    //new add
+                    gameStatusUpdateDisconnect,
+                    gameStatusUpdateOpponentDisconnect,
+                    //new/////
+                    userStatusUpdate
+                    // totalPlayerList,
+                    // roomClosed,
+                    // memoryRoomRemove
+                ], function (err, result) {
+                    //allOnlineUsers.splice(findIndex, 1);
+                    if (result) {
+                        //allOnlineUsers=_.without(allOnlineUsers, _.findWhere(allOnlineUsers, {userId: req.userId}));
+                        logger.print("win status after disconnecting"+result.isWin);
+
+
+                        if (findIndexOpponent != -1 && result.isWin == 1) {
+                            logger.print("opponent exists");
+                            winnerDeclare({
+                                userId: result.opponentUserId,
+                                //userId: allOnlineUsers[findIndexOpponent].userId,
+                                roomName: userRoomName
+                            }).then(function (roomDetails) {
+                                allOnlineUsers.splice(findIndex, 1);
+                                //allOnlineUsers[findIndex].roomName='';
+                                if(findIndex==1)
+                                   allOnlineUsers[findIndexOpponent].roomName='';
+                                else
+                                    allOnlineUsers[findIndex].roomName='';
+
+                                io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                    //userId: result.userId,
+                                    firstUserId: result.userId,
+                                    firstUserGameStatus: "Lose",
+                                    secondUserId:result.opponentUserId,
+                                    secondUserGameStatus: "Win",
+                                    //userId: roomDetails,
+                                    roomName: userRoomName,
+                                    //gameStatus: "Lose"
+                                    //gameStatus: "Win"
+                                }, "Game is over"));
+                                logger.print("Room closed");
+                            });
+                        } else if (findIndexOpponent != -1 && result.isWin == 2) {
+                            logger.print("opponent exists");
+                            allOnlineUsers.splice(findIndex, 1);
+                            //allOnlineUsers[findIndex].roomName='';
+                            if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+
+                            io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "Draw",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "Draw",
+                                //userId: result.roomUsers,
+                                roomName: userRoomName,
+                               // gameStatus: "Draw"
+                            }, "Game is over"));
+                            logger.print("Room closed");
+                        } else {
+                            logger.print("opponent not exists");
+                           // allOnlineUsers.splice(findIndex, 1);
+                            if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+                            io.sockets.to(socket.id).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "",
+                                //userId: result.roomUsers,
+                                roomName: userRoomName,
+                                //gameStatus: ""
+                            }, "Game is over"));
+                            /*io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                userId: result.roomUsers,
+                                roomName: userRoomName,
+                                gameStatus: ""
+                            }, "Game is over"));*/
+                            logger.print("Room closed");
+                        }
+                        logger.print("Room closed");
+
+
+
+                    } else{
+                        logger.print("***DISCONNECT ERROR ", err);
+                        allOnlineUsers.splice(findIndex, 1);
+                        //allOnlineUsers[findIndex].roomName='';
+                        if(findIndex==1)
+                            allOnlineUsers[findIndexOpponent].roomName='';
+                        else
+                            allOnlineUsers[findIndex].roomName='';
+                        io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+                   }
+                });
+                           
+                        }
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+                 
+                //////////////////////////////////////////////////
+               
+
+            }
+            else{
+                logger.print("Room not found");
+                allOnlineUsers.splice(findIndex, 1);
+              }
+        }
+        else{
+            logger.print("no socket id found");
+        }
+    });
+
+    socket.on('disconnect-run', function (req) {
+        let currentSocketId = socket.id;
+        logger.print("socket id while disconnecting"+ " " +currentSocketId);
+
+        /*var findIndex = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.userId == req.userId
+        });
+        let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.userId != req.userId
+        });*/
+
+        let findIndex = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId == currentSocketId
+        });
+        let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId != currentSocketId
+        });
+         console.log(findIndex);
+        if (findIndex != -1) {
+            let userRoomName = allOnlineUsers[findIndex].roomName;
+            if (userRoomName != '') {
+                logger.print("room name while disconnecting"+ userRoomName);
+                io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
+                
+
+                //////////////////////////////////////////////////
+
+                 
+                //////////////////////////////////////////////////
                 async.waterfall([
                     playerLeave({roomName: userRoomName, userId: allOnlineUsers[findIndex].userId}),
                     updateRoom,
