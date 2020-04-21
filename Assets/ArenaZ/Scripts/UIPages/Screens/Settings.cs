@@ -66,6 +66,7 @@ namespace ArenaZ.SettingsManagement
 
         private bool IsMusicMute = false;
         private bool IsSFXMute = false;
+        private bool soundBtnUpdatedOnStart = false;
       //  private FacebookLogin facebookLogin;
 
         private Sprite countrySprite;
@@ -174,7 +175,7 @@ namespace ArenaZ.SettingsManagement
             this.userName.text = userName;
         }
 
-        private void setSelectedColorImage(string imageName)
+        public void setSelectedColorImage(string imageName)
         {
             ButtonImage buttonImage = UIManager.Instance.ButtonImageType(imageName);
             if(buttonImage.normalSprite)
@@ -232,7 +233,7 @@ namespace ArenaZ.SettingsManagement
             if (PlayerPrefs.GetInt(PlayerPrefsValue.Logout.ToString()) == 0)
             {
                 Debug.Log("Logged Out");
-                UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
+                //UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
                 UIManager.Instance.ShowScreen(Page.LogOutAlertOverlay.ToString(),Hide.none);
             }
             else
@@ -265,6 +266,8 @@ namespace ArenaZ.SettingsManagement
         #region Music_AND_SFX
         private void UpdateMusicValue(Toggle stateChange)
         {
+            if (soundBtnUpdatedOnStart)
+                GameManager.Instance.PlayButtonClickSound();
             Debug.Log("MusicValue::" + stateChange.isOn);
             IsMusicMute = stateChange.isOn;
 
@@ -291,6 +294,8 @@ namespace ArenaZ.SettingsManagement
 
         private void UpdateSFXValue(Toggle stateChange)
         {
+            if (soundBtnUpdatedOnStart)
+                GameManager.Instance.PlayButtonClickSound();
             Debug.Log("SfxValue::" + stateChange.isOn);
             IsSFXMute = stateChange.isOn;
 
@@ -354,6 +359,7 @@ namespace ArenaZ.SettingsManagement
             }
             GameManager.Instance.MainMenuBGMusicVolume(SettingData.BGMVolume);
             GameManager.Instance.GameplayBGMusicVolume(SettingData.BGMVolume);
+            soundBtnUpdatedOnStart = true;
         }
         #endregion
     }

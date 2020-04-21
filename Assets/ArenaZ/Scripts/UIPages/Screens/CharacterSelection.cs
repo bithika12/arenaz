@@ -92,7 +92,8 @@ namespace ArenaZ.Screens
                 UIManager.Instance.ShowCharacterName(raceNames[characterId]);
                 horizontalScrollSnap.GoToScreen(characterId);
                 playerColorChooser.SetSelectedColor(userSelectionDetails.ColorName);
-                PlayerColorChooser.setColorAfterChooseColor?.Invoke(userSelectionDetails.ColorName);
+                Settings.Instance.setSelectedColorImage(userSelectionDetails.ColorName);
+                //PlayerColorChooser.setColorAfterChooseColor?.Invoke(userSelectionDetails.ColorName);
 
                 FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), characterIdStr);
                 FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[characterId]);

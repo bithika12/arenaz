@@ -72,6 +72,8 @@ namespace ArenaZ.Manager
 
         [SerializeField] private GameObject winPopup;
         [SerializeField] private GameObject loosePopup;
+        [SerializeField] private GameObject winPopupBG;
+        [SerializeField] private GameObject loosePopupBG;
         [SerializeField] private Vector3 wonPopupOriginalScale = new Vector3();
 
         [SerializeField] private ScoreHandler scoreHandler;
@@ -518,17 +520,17 @@ namespace ArenaZ.Manager
             if (a_Won)
             {
                 loosePopup.transform.localScale = Vector3.zero;
-                loosePopup.SetActive(false);
+                loosePopupBG.SetActive(false);
 
                 winPopup.transform.localScale = Vector3.zero;
-                winPopup.SetActive(true);
+                winPopupBG.SetActive(true);
 
                 Sequence t_Sequence = DOTween.Sequence();
                 t_Sequence.Append(winPopup.transform.DOScale(wonPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
                 t_Sequence.AppendInterval(1.0f);
                 t_Sequence.AppendCallback(() => 
                 {
-                    winPopup.SetActive(false);
+                    winPopupBG.SetActive(false);
                     onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
                     AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Win).Clip, oneShot = true, volume = SettingData.SFXVolume });
                     
@@ -544,17 +546,17 @@ namespace ArenaZ.Manager
             else
             {
                 winPopup.transform.localScale = Vector3.zero;
-                winPopup.SetActive(false);
+                winPopupBG.SetActive(false);
 
                 loosePopup.transform.localScale = Vector3.zero;
-                loosePopup.SetActive(true);
+                loosePopupBG.SetActive(true);
 
                 Sequence t_Sequence = DOTween.Sequence();
                 t_Sequence.Append(loosePopup.transform.DOScale(wonPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
                 t_Sequence.AppendInterval(1.0f);
                 t_Sequence.AppendCallback(() => 
                 {
-                    loosePopup.SetActive(false);
+                    loosePopupBG.SetActive(false);
                     onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
                     AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Lose).Clip, oneShot = true, volume = SettingData.SFXVolume });
 
