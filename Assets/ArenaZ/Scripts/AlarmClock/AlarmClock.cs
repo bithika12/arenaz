@@ -17,6 +17,12 @@ namespace ArenaZ
         [SerializeField] private GameObject clock;
         private EAnimation animationState = EAnimation.Idle;
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+                Show();
+        }
+
         public void Show()
         {
             if (animationState == EAnimation.Idle)

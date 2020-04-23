@@ -31,11 +31,30 @@ namespace ArenaZ
         [SerializeField] private Transform userTarget;
         [SerializeField] private Transform opponentTarget;
 
+        [SerializeField] private float primarySpacing = -100;
+        [SerializeField] private float secondarySpacing = -50;
+
         [SerializeField] private List<ScoreGraphicData> scoreGraphicDatas = new List<ScoreGraphicData>();
 
         private List<GameObject> activeScoreGraphics = new List<GameObject>();
         private Queue<GraphicScoreData> graphicScoreDatas = new Queue<GraphicScoreData>();
         private GraphicScoreData activeGraphicScoreData = null;
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                ShowScore(UnityEngine.Random.Range(10, 99), 0, EMoveTowards.User);
+            }
+            else if (Input.GetKeyDown(KeyCode.O))
+            {
+                ShowScore(UnityEngine.Random.Range(10, 99), 0, EMoveTowards.Opponent);
+            }
+            else if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ShowScore(UnityEngine.Random.Range(5, 50), UnityEngine.Random.Range(2, 3));
+            }
+        }
 
         public void ShowScore(int a_HitPointScore, int a_ScoreMultiplier, EMoveTowards a_MoveTowards = EMoveTowards.None, bool a_ScoreIsDenied = false, Action a_OnStepComplete = null, Action a_OnComplete = null)
         {
@@ -65,20 +84,20 @@ namespace ArenaZ
             {
                 if (a_GraphicScoreData.ScoreMultiplier > 1)
                 {
-                    horizontalLayoutGroup.spacing = -50;
+                    horizontalLayoutGroup.spacing = secondarySpacing;
                     instantiateHelper(a_GraphicScoreData.HitPointScore, a_GraphicScoreData, 2);
                     instantiateSprites(numberCross, a_GraphicScoreData, 2.5f);
                     instantiateHelper(a_GraphicScoreData.ScoreMultiplier, a_GraphicScoreData, 2.5f);
                 }
                 else
                 {
-                    horizontalLayoutGroup.spacing = -100;
+                    horizontalLayoutGroup.spacing = primarySpacing;
                     instantiateHelper(a_GraphicScoreData.HitPointScore, a_GraphicScoreData, 1);
                 }
             }
             else
             {
-                horizontalLayoutGroup.spacing = -100;
+                horizontalLayoutGroup.spacing = primarySpacing;
                 instantiateHelper(0, a_GraphicScoreData, 1);
             }
             if (a_GraphicScoreData.ScoreIsDenied)

@@ -29,7 +29,7 @@ namespace ArenaZ
             }
         }
 
-        public void MoveFadeInOutAnimation(Transform a_Parent, Action a_OnStepComplete = null, Action a_OnComplete = null, Action a_OnCompleteInternal = null, float a_FadeInTransitionTime = 0.2f, float a_HoldIntervalTime = 1.0f, float a_FadeOutTransitionTime = 1.0f)
+        public void MoveFadeInOutAnimation(Transform a_Parent, Action a_OnStepComplete = null, Action a_OnComplete = null, Action a_OnCompleteInternal = null, float a_FadeInTransitionTime = 0.2f, float a_HoldIntervalTime = 1.0f, float a_FadeOutTransitionTime = 1.5f)
         {
             Image t_Image = GetComponent<Image>();
             RectTransform t_RectTransform = GetComponent<RectTransform>();
@@ -47,17 +47,18 @@ namespace ArenaZ
             }
         }
 
-        private void moveFadeOutAnimation(Image a_Image, RectTransform a_RectTransform , Transform a_Parent, Action a_OnComplete, Action a_OnCompleteInternal, float a_FadeOutTransitionTime)
+        private void moveFadeOutAnimation(Image a_Image, RectTransform a_RectTransform, Transform a_Parent, Action a_OnComplete, Action a_OnCompleteInternal, float a_FadeOutTransitionTime)
         {
             transform.SetParent(a_Parent);
-            a_Image.DOFade(0.0f, a_FadeOutTransitionTime).OnComplete(() =>
+            a_Image.DOFade(0.0f, a_FadeOutTransitionTime / 2.0f).OnComplete(() =>
             {
                 a_OnComplete?.Invoke();
                 a_OnCompleteInternal?.Invoke();
                 Destroy(gameObject);
             });
             a_RectTransform.DOScale(0.0f, a_FadeOutTransitionTime);
-            a_RectTransform.DOAnchorPos(Vector3.zero, a_FadeOutTransitionTime);
+            a_RectTransform.DOAnchorPos3DZ(0.0f, a_FadeOutTransitionTime * 2.5f);
+            a_RectTransform.DOAnchorPos(Vector2.zero, a_FadeOutTransitionTime);
         }
     }
 }
