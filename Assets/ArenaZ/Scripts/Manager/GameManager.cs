@@ -860,7 +860,9 @@ namespace ArenaZ.Manager
                     int t_TotalValue = boardBody.HitPointScore;
                     if (boardBody.ScoreMultiplier > 1)
                         t_TotalValue = boardBody.HitPointScore * boardBody.ScoreMultiplier;
-                    SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
+                    // TODO fixing score bug
+                    SocketManager.Instance.ThrowDartData(10, 5, 2, touchBehaviour.LastTouchPosition);
+                    //SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
                 }
 
                 PlayDartHitParticle(dartGameObj.transform.position);
