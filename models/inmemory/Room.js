@@ -1016,7 +1016,7 @@ room.updateInmemoryRoomMod12 = function (updateArr) {
                             gameScoreOpponent:updateArr.gameScoreOpponent,
                             ///////
                             hitScore:updateArr.hitScore,
-                            Multiplier:updateArr.scoreMultiplier
+                            scoreMultiplier:updateArr.scoreMultiplier
 
 
                         })
