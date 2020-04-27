@@ -38,6 +38,7 @@ public enum Page
     GameplayUIPanel,
     TrainingUIPanel,
     DeleteAccountAlertOverlay,
+    TrainingPlayerWinPanel,
 }
 
 public enum ERace

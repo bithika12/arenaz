@@ -273,11 +273,11 @@ namespace ArenaZ.GameMode
                     SocketManager.Instance.GameRequest();
                 }
             }
-            else if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Training)
-            {
-                //PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
-                GameManager.Instance.StartTraining();
-            }
+            //else if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Training)
+            //{
+            //    //PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
+            //    GameManager.Instance.StartTraining();
+            //}
         }
 
         //private IEnumerator LeaveAndJoinRoomRequest()

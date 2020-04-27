@@ -52,20 +52,17 @@ namespace ArenaZ.Manager
         [SerializeField] private Image userPic;
         [SerializeField] private Image userTimerImage;
         [SerializeField] private Text userName;
+        [SerializeField] private TextMeshProUGUI userScore;
 
         [Header("Opponent")]
         [SerializeField] private Image opponentPic;
         [SerializeField] private Image opponentTimerImage;
         [SerializeField] private Text opponentName;
+        [SerializeField] private TextMeshProUGUI opponentScore;
 
         [Header("Others")]
         [SerializeField] private int scorePopUpDuration;
         [SerializeField] private Text countdownTimerText;
-
-        [Header("Training User")]
-        [SerializeField] private Image trainingUserPic;
-        [SerializeField] private Image trainingUserTimerImage;
-        [SerializeField] private Text trainingUserName;
 
         [SerializeField] private CameraController cameraController;
         [SerializeField] private UiPopup popup;
@@ -74,8 +71,9 @@ namespace ArenaZ.Manager
         [SerializeField] private GameObject loosePopup;
         [SerializeField] private GameObject winPopupBG;
         [SerializeField] private GameObject loosePopupBG;
-        [SerializeField] private Vector3 wonPopupOriginalScale = new Vector3();
+        [SerializeField] private Vector3 winnerPopupOriginalScale = new Vector3();
 
+        [SerializeField] private TrainingScoreHandler trainingScoreHandler;
         [SerializeField] private ScoreHandler scoreHandler;
         [SerializeField] private ScoreGraphic scoreGraphic;
 
@@ -129,6 +127,7 @@ namespace ArenaZ.Manager
         public PlayerLoose PlayerLooseScreen;
         public PlayerDraw PlayerDrawScreen;
         public ShootingRange ShootingRangeScreen;
+        public TrainingPlayerWin TrainingPlayerWinScreen;
 
         private int trainingDratThrowCount = 0;
 
@@ -173,26 +172,32 @@ namespace ArenaZ.Manager
             cameraController.SetCameraPosition(Player.Self);
             UIManager.Instance.HideScreen(Page.UIPanel.ToString());
             UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(), Hide.none);
-            UIManager.Instance.ShowScreen(Page.TrainingUIPanel.ToString(), Hide.none);
+            UIManager.Instance.ShowScreen(Page.GameplayUIPanel.ToString(), Hide.none);
             InitializeOnGameStartSequences();
             gameStatus = EGameStatus.Playing;
             PlayerType = Player.Self;
 
-            setTrainingUserProfileImage(User.UserName, User.UserRace, User.UserColor);
+            setUserProfileImage(User.UserName, User.UserRace, User.UserColor);
+
+            trainingScoreHandler.Initialize();
+            clearOpponentData();
             StartCoroutine(onNextTurnTraining());
         }
 
         public void StopTraining()
         {
+            if (gamePlayMode == EGamePlayMode.Multiplayer)
+                return;
+
             Debug.LogWarning("StopTraining");
             if (popup != null)
             {
-                popup.Show("QUIT", "ARE YOU SURE?", onLeaveTraining,
+                popup.Show("QUIT", "ARE YOU SURE?", OnLeaveTraining,
                 delegate { Debug.Log("Keep Training."); });
             }
         }
 
-        private void onLeaveTraining()
+        public void OnLeaveTraining()
         {
             Debug.LogWarning("LeaveTraining");
             cameraController.SetFocus(false);
@@ -208,19 +213,6 @@ namespace ArenaZ.Manager
 
             resetTimerImages();
             displayPopup(true);
-        }
-
-        private void setTrainingUserProfileImage(string name, string race, string color)
-        {
-            trainingUserName.text = name;
-            ERace t_Race = EnumExtensions.EnumFromString<ERace>(typeof(ERace), race);
-            EColor t_Color = EnumExtensions.EnumFromString<EColor>(typeof(EColor), color);
-
-            CharacterPicData t_CharacterPicData = DataHandler.Instance.GetCharacterPicData(t_Race, t_Color);
-            if (t_CharacterPicData != null)
-            {
-                trainingUserPic.material.SetTexture("_BaseMap", (Texture)t_CharacterPicData.ProfilePic.texture);
-            }
         }
 
         private void OnDestroy()
@@ -272,7 +264,6 @@ namespace ArenaZ.Manager
         {
             userTimerImage.fillAmount = 1.0f;
             opponentTimerImage.fillAmount = 1.0f;
-            trainingUserTimerImage.fillAmount = 1.0f;
         }
 
         private void setAllUserData(List<UserJoin> usersData)
@@ -316,6 +307,22 @@ namespace ArenaZ.Manager
             }
         }
 
+        private void clearUserData()
+        {
+            userName.text = string.Empty;
+            userScore.text = string.Empty;
+            userTimerImage.fillAmount = 1.0f;
+            userPic.material.SetTexture("_BaseMap", null);
+        }
+
+        private void clearOpponentData()
+        {
+            opponentName.text = string.Empty;
+            opponentScore.text = string.Empty;
+            opponentTimerImage.fillAmount = 1.0f;
+            opponentPic.material.SetTexture("_BaseMap", null);
+        }
+
         private void onSwitchTurn(Player a_PlayerType)
         {
             switch (a_PlayerType)
@@ -352,10 +359,7 @@ namespace ArenaZ.Manager
             {
                 if (playerTurn && PlayerType == Player.Self)
                 {
-                    if (gamePlayMode == EGamePlayMode.Multiplayer)
-                        userTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
-                    else if (gamePlayMode == EGamePlayMode.Training)
-                        trainingUserTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
+                    userTimerImage.fillAmount = genericTimer.RemainingTime / ConstantInteger.timerValue;
                 }
                 if (playerTurn && PlayerType == Player.Opponent)
                 {
@@ -367,7 +371,6 @@ namespace ArenaZ.Manager
         private void resetTimerRelatedValues()
         {
             timer = ConstantInteger.timerValue;
-            trainingUserTimerImage.fillAmount = genericTimer.SlowTimeFactor;
             userTimerImage.fillAmount = genericTimer.SlowTimeFactor;
             opponentTimerImage.fillAmount = genericTimer.SlowTimeFactor;
             playerTurn = false;
@@ -375,6 +378,9 @@ namespace ArenaZ.Manager
 
         public void LeaveRoom()
         {
+            if (gamePlayMode == EGamePlayMode.Training)
+                return;
+
             Debug.LogWarning("LeaveRoom");
             if (popup != null)
             {
@@ -526,20 +532,30 @@ namespace ArenaZ.Manager
                 winPopupBG.SetActive(true);
 
                 Sequence t_Sequence = DOTween.Sequence();
-                t_Sequence.Append(winPopup.transform.DOScale(wonPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
+                t_Sequence.Append(winPopup.transform.DOScale(winnerPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
                 t_Sequence.AppendInterval(1.0f);
                 t_Sequence.AppendCallback(() => 
                 {
                     winPopupBG.SetActive(false);
-                    onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
+                    if (gamePlayMode == EGamePlayMode.Multiplayer)
+                        onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
+                    else if (gamePlayMode == EGamePlayMode.Training)
+                        onOpenWinloosePopUp(Page.TrainingPlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
                     AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Win).Clip, oneShot = true, volume = SettingData.SFXVolume });
                     
                     UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
                     UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
                     cameraController.SetFocus(false);
 
-                    PlayerWinScreen.Refresh();
-                    ShootingRangeScreen.Refresh();
+                    if (gamePlayMode == EGamePlayMode.Multiplayer)
+                    {
+                        PlayerWinScreen.Refresh();
+                        ShootingRangeScreen.Refresh();
+                    }
+                    else if (gamePlayMode == EGamePlayMode.Training)
+                    {
+                        TrainingPlayerWinScreen.Refresh();
+                    }
                 });
                 t_Sequence.Play();
             }
@@ -552,7 +568,7 @@ namespace ArenaZ.Manager
                 loosePopupBG.SetActive(true);
 
                 Sequence t_Sequence = DOTween.Sequence();
-                t_Sequence.Append(loosePopup.transform.DOScale(wonPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
+                t_Sequence.Append(loosePopup.transform.DOScale(winnerPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
                 t_Sequence.AppendInterval(1.0f);
                 t_Sequence.AppendCallback(() => 
                 {
@@ -713,6 +729,7 @@ namespace ArenaZ.Manager
                 return;
 
             Debug.Log("On Player Timer complete");
+            trainingScoreHandler.AddHitPoint(0, 0);
             alarmClock.Show();
             StartCoroutine(onNextTurnTraining());
         }
@@ -860,9 +877,7 @@ namespace ArenaZ.Manager
                     int t_TotalValue = boardBody.HitPointScore;
                     if (boardBody.ScoreMultiplier > 1)
                         t_TotalValue = boardBody.HitPointScore * boardBody.ScoreMultiplier;
-                    // TODO fixing score bug
-                    SocketManager.Instance.ThrowDartData(10, 5, 2, touchBehaviour.LastTouchPosition);
-                    //SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
+                    SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
                 }
 
                 PlayDartHitParticle(dartGameObj.transform.position);
@@ -878,16 +893,11 @@ namespace ArenaZ.Manager
             if (boardBody.name.Contains("Outside"))
             {
                 AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.DartMiss).Clip, oneShot = true, volume = SettingData.SFXVolume });
-                scoreGraphic.ShowScore(0, 0);
+                trainingScoreHandler.AddHitPoint(0, 0);
             }
             else
             {
-                scoreGraphic.ShowScore(boardBody.HitPointScore, boardBody.ScoreMultiplier);
-                if (boardBody.ScoreMultiplier > 1)
-                {
-                    int t_TotalValue = boardBody.HitPointScore * boardBody.ScoreMultiplier;
-                    scoreGraphic.ShowScore(t_TotalValue, 0);
-                }
+                trainingScoreHandler.AddHitPoint(boardBody.HitPointScore, boardBody.ScoreMultiplier);
             }
 
             PlayDartHitParticle(dartGameObj.transform.position);

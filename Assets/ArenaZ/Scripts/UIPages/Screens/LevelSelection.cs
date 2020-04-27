@@ -122,12 +122,12 @@ namespace ArenaZ.LevelMangement
                 UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(),Hide.none);
                 GameManager.Instance.ShootingRangeScreen.Refresh();
             }
-            else if (gamePlayType == GameType.training)
-            {
-                UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
-                UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(),Hide.none);
-                GameManager.Instance.ShootingRangeScreen.Refresh();
-            }
+            //else if (gamePlayType == GameType.training)
+            //{
+            //    UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
+            //    UIManager.Instance.ShowScreen(Page.ShootingrangePanel.ToString(),Hide.none);
+            //    GameManager.Instance.ShootingRangeScreen.Refresh();
+            //}
         }
 
         private void OnClickSpeedRaceAndBunkerDef()
