@@ -31,6 +31,8 @@ namespace ArenaZ
             if (a_Multiplier > 1)
                 t_TotalPoint *= a_Multiplier;
 
+            Debug.Log($"TrainingScore:- RS:{remainingScore}, ARS:{activeRoundScore}, AHC:{activeHitCount}, HP:{a_HitPoint}, SM:{a_Multiplier}, TS:{t_TotalPoint}");
+
             if ((remainingScore - t_TotalPoint) >= 0)
             {
                 t_IsBust = false;

@@ -508,6 +508,11 @@ namespace ArenaZ.Manager
             cameraController.SetFocus(false);
             //UIManager.Instance.ShowUiPanel(true);
             UIManager.Instance.ShowScreen(Page.UIPanel.ToString());
+            if (gamePlayMode == EGamePlayMode.Training)
+            {
+                UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
+                UIManager.Instance.HideScreenImmediately(Page.CharacterSelectionPanel.ToString());
+            }
             //UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(popUpName.ToString(),Hide.previous);
             UIManager.Instance.ClearOpenPagesContainer();

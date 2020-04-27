@@ -23,7 +23,7 @@ namespace ArenaZ.Screens
 
         [Header("Button")]
         [SerializeField] private Button closeButton;
-        [SerializeField] private Button playAgainButton;
+        [SerializeField] private Button playNowButton;
 
         [Header("Others")]
         [SerializeField] private Text coinText;
@@ -87,13 +87,13 @@ namespace ArenaZ.Screens
         private void GettingButtonReferences()
         {
             closeButton.onClick.AddListener(onClickClose);
-            playAgainButton.onClick.AddListener(onClickPlayNow);
+            playNowButton.onClick.AddListener(onClickPlayNow);
         }
 
         private void ReleaseButtonReferences()
         {
             closeButton.onClick.RemoveListener(onClickClose);
-            playAgainButton.onClick.RemoveListener(onClickPlayNow);
+            playNowButton.onClick.RemoveListener(onClickPlayNow);
         }
 
         private void DisplayCoinAmount()
