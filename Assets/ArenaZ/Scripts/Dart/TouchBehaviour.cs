@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using ArenaZ.Manager;
+using UnityEngine.EventSystems;
 
 namespace ArenaZ.Behaviour
 {
@@ -50,23 +51,27 @@ namespace ArenaZ.Behaviour
 #if UNITY_EDITOR
             if (Input.GetMouseButton(0))
             {
-                DartMove(Input.mousePosition);
+                if (!EventSystem.current.IsPointerOverGameObject())
+                    DartMove(Input.mousePosition);
             }
             if (Input.GetMouseButtonUp(0) && isDartSelected)
             {
-                shootIfNotStayedInSamePosForLong(Input.mousePosition);
+                if (!EventSystem.current.IsPointerOverGameObject())
+                    shootIfNotStayedInSamePosForLong(Input.mousePosition);
             }
 #elif UNITY_ANDROID
             if(Input.touchCount > 0)
             {
                 Touch touch = Input.GetTouch(0);
-                if(touch.phase==TouchPhase.Stationary || touch.phase==TouchPhase.Moved)
+                if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
                 {
-                    DartMove(touch.position);
+                    if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                        DartMove(touch.position);
                 }
                 else if(touch.phase==TouchPhase.Ended && isDartSelected)
                 {
-                    shootIfNotStayedInSamePosForLong(touch.position);
+                    if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                        shootIfNotStayedInSamePosForLong(touch.position);
                 }
             }
 #endif

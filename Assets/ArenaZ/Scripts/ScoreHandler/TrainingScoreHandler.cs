@@ -9,6 +9,7 @@ namespace ArenaZ
     public class TrainingScoreHandler : MonoBehaviour
     {
         [SerializeField] private int targetScore = 199;
+        private int previousRemainingScore = 0;
         private int remainingScore = 0;
         private int activeRoundScore = 0;
         private int activeHitCount = 0;
@@ -18,6 +19,7 @@ namespace ArenaZ
 
         public void Initialize()
         {
+            previousRemainingScore = targetScore;
             remainingScore = targetScore;
             activeRoundScore = 0;
             activeHitCount = 0;
@@ -31,21 +33,17 @@ namespace ArenaZ
             if (a_Multiplier > 1)
                 t_TotalPoint *= a_Multiplier;
 
-            Debug.Log($"TrainingScore:- RS:{remainingScore}, ARS:{activeRoundScore}, AHC:{activeHitCount}, HP:{a_HitPoint}, SM:{a_Multiplier}, TS:{t_TotalPoint}");
+            Debug.Log($"TrainingScore:- RS:{remainingScore}, PRS{previousRemainingScore}, ARS:{activeRoundScore}, AHC:{activeHitCount}, HP:{a_HitPoint}, SM:{a_Multiplier}, TS:{t_TotalPoint}");
 
             if ((remainingScore - t_TotalPoint) >= 0)
             {
                 t_IsBust = false;
                 onNonBust(t_TotalPoint, a_HitPoint, a_Multiplier);
-                if ((remainingScore - t_TotalPoint) == 0)
-                {
-                    GameManager.Instance.OnLeaveTraining();
-                }
             }
             else
             {
                 t_IsBust = true;
-                onBust();
+                onBust(t_TotalPoint);
             }
 
             scoreHandler.SetRoundScoreData(GameManager.Player.Self, activeRoundScore);
@@ -59,14 +57,23 @@ namespace ArenaZ
             activeRoundScore += a_TotalPoint;
             remainingScore -= a_TotalPoint;
 
-            scoreGraphic.ShowScore(a_HitPoint, a_Multiplier);
-            if (a_Multiplier > 1)
-                scoreGraphic.ShowScore(a_TotalPoint, 0);
+            if (remainingScore > 0)
+            {
+                scoreGraphic.ShowScore(a_HitPoint, a_Multiplier);
+                if (a_Multiplier > 1)
+                    scoreGraphic.ShowScore(a_TotalPoint, 0);
+            }
+            else if (remainingScore == 0)
+                GameManager.Instance.OnLeaveTraining();
         }
 
-        private void onBust()
+        private void onBust(int a_TotalPoint)
         {
+            activeRoundScore += a_TotalPoint;
             scoreGraphic.ShowScore(activeRoundScore, 0, ScoreGraphic.EMoveTowards.None, true);
+            GameManager.Instance.OnTrainingTurnComplete();
+
+            remainingScore = previousRemainingScore;
             activeRoundScore = 0;
             activeHitCount = 0;
         }
@@ -80,7 +87,9 @@ namespace ArenaZ
                 {
                     AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.AudienceCheering).Clip, oneShot = true, volume = SettingData.SFXVolume });
                     scoreGraphic.ShowScore(activeRoundScore, 0, ScoreGraphic.EMoveTowards.User, false, () => scoreHandler.UpdateScoreText(GameManager.Player.Self));
+                    GameManager.Instance.OnTrainingTurnComplete();
 
+                    previousRemainingScore = remainingScore;
                     activeRoundScore = 0;
                     activeHitCount = 0;
                 }

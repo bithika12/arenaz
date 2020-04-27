@@ -40,21 +40,21 @@ namespace ArenaZ
         private Queue<GraphicScoreData> graphicScoreDatas = new Queue<GraphicScoreData>();
         private GraphicScoreData activeGraphicScoreData = null;
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.U))
-            {
-                ShowScore(UnityEngine.Random.Range(10, 99), 0, EMoveTowards.User);
-            }
-            else if (Input.GetKeyDown(KeyCode.O))
-            {
-                ShowScore(UnityEngine.Random.Range(10, 99), 0, EMoveTowards.Opponent);
-            }
-            else if (Input.GetKeyDown(KeyCode.Space))
-            {
-                ShowScore(UnityEngine.Random.Range(5, 50), UnityEngine.Random.Range(2, 3));
-            }
-        }
+        //private void Update()
+        //{
+        //    if (Input.GetKeyDown(KeyCode.U))
+        //    {
+        //        ShowScore(UnityEngine.Random.Range(10, 99), 0, EMoveTowards.User);
+        //    }
+        //    else if (Input.GetKeyDown(KeyCode.O))
+        //    {
+        //        ShowScore(UnityEngine.Random.Range(10, 99), 0, EMoveTowards.Opponent);
+        //    }
+        //    else if (Input.GetKeyDown(KeyCode.Space))
+        //    {
+        //        ShowScore(UnityEngine.Random.Range(5, 50), UnityEngine.Random.Range(2, 3));
+        //    }
+        //}
 
         public void ShowScore(int a_HitPointScore, int a_ScoreMultiplier, EMoveTowards a_MoveTowards = EMoveTowards.None, bool a_ScoreIsDenied = false, Action a_OnStepComplete = null, Action a_OnComplete = null)
         {
