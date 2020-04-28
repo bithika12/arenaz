@@ -16,6 +16,7 @@ const moment = require('moment');
  var Room = require('../schema/Schema').roomModel;
  let Notification  = require(appRoot +'/models/Notification');
  let Coin = require('../schema/Schema').coinModel; 
+ let Appversion=require('../schema/Schema').versionModel; 
 
  /** TOTAL USER **/
 User.totalUser =function(condObj){
@@ -973,6 +974,19 @@ User.detailsAdmin = function(condObj){
          })
      })
  }
+ //fetchVersion
+ User.fetchVersion = function(){
+     console.log("po");
+     return new Promise((resolve,reject)=>{
+         Appversion.find({app_version:1}).then(response=> {
+             console.log("versionres"+response);
+             resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
+
 module.exports= User;
 
 

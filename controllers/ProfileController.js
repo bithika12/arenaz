@@ -303,6 +303,42 @@ exports.updatePassword = function (req,res){
 
  }
 
+ //fetchVersion
+
+ exports.fetchVersion = function (req,res) {
+
+     let schema = Joi.object().keys({
+         userEmail: Joi.string().required()
+     });
+
+     const {body} = req;
+     let result = Joi.validate(body, schema);
+     const {value, error} = result;
+     const valid = error == null;
+     if (!valid) {
+         let data = {
+             status: constants.VALIDATION_ERROR,
+             result: result.error.name,
+             message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+         };
+         return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+     }
+     else {
+     User.fetchVersion().then((versionDetails) => {
+         if (versionDetails) {
+             //res.send(userDetails);
+             res.send(response.generate(constants.SUCCESS_STATUS,versionDetails, 'Version details fetched successfully !!'));
+         }
+         else {
+             res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch version details!!"));
+         }
+     })
+
+   }
+
+
+ }
+
 
 
 
