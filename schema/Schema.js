@@ -131,7 +131,9 @@ var gameSchema      = new Schema({
 
 
 var versionSchema      = new Schema({
-    app_version : String    
+    app_version : String,
+    status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'}
+    
 });
 //MODEL DECLARATION
 
@@ -143,7 +145,7 @@ schema.roomModel   = mongoose.model('rooms'  , roomSchema);
 schema.notificationModel   = mongoose.model('notifications'  , notificationSchema);
 schema.coinModel   = mongoose.model('coins'  , coinSchema);
 schema.gameModel   = mongoose.model('games'  , gameSchema);
-schema.versionModel   = mongoose.model('appversion'  , versionSchema);
+schema.versionModel   = mongoose.model('appversions'  , versionSchema);
 
 
 module.exports = schema;

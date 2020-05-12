@@ -53,6 +53,7 @@ router.post('/delete/account',userController.deleteAccount);
 router.post('/change/notification/status',fetchNotification.changeStatus);
 router.post('/user/game/history',fetchGameHistory.userGame);
 router.post('/fetch/app/version',profileController.fetchVersion);
+router.post('/fetch/unread/message',fetchNotification.fetchUnreadMessage);
 
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD

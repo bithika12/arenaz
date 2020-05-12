@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var app = express();
 var server = require('http').Server(app);
+const expressip = require('express-ip');
 //var timeout = express.timeout;
 //var  radisConfig = require('./config/radisConfig');
 
@@ -59,5 +60,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+app.use(expressip().getIpInfoMiddleware);
 /* export   app  and server*/
 module.exports = {app: app, server: server};

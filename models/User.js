@@ -978,7 +978,7 @@ User.detailsAdmin = function(condObj){
  User.fetchVersion = function(){
      console.log("po");
      return new Promise((resolve,reject)=>{
-         Appversion.find({app_version:1}).then(response=> {
+         Appversion.find({status:"active"},{app_version:1}).then(response=> {
              console.log("versionres"+response);
              resolve(response)
          }).catch(err=>{

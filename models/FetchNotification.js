@@ -78,4 +78,19 @@ const changeNotificationStatus = notificationId => {
         });
     });
 };
-module.exports = { fetchNotification,userValidChk,fetchDetails,changeNotificationStatus };
+
+const fetchNotificationUnreadCount = userId => {
+
+    return new Promise((resolve, reject) => {
+
+     //fetch notifications
+        Notifications.notifications1({received_by_user:userId,read_unread:0
+}).then(function (responseParams) {
+          //Notifications.notifications1({received_by_user:userId}).then(function (responseParams) {
+
+            resolve(responseParams.length)
+
+        });
+    });
+};
+module.exports = { fetchNotificationUnreadCount,fetchNotification,userValidChk,fetchDetails,changeNotificationStatus };

@@ -173,6 +173,9 @@ function updateLogIn(user,callback) {
  */
 exports.registration= function(req,res) {
 
+    const ipInfo = req.ipInfo;
+    console.log("pl"+ipInfo);
+
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
         userName: Joi.string().min(3).trim().required(),
@@ -235,8 +238,10 @@ exports.registration= function(req,res) {
                     email: result.email,
                     score: result.score,
                     "accessToken": result.deviceDetails[0].accessToken,
-                    "userCoin":3000,
-                    "userCup":0
+                    "userCoin":50,
+                    "userCup":3000
+                    //"userCoin":3000,
+                    //"userCup":0
                 }, 'You have successfully registered. You will be logged in.')); 
 
                 }).catch(err => {
