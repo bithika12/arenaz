@@ -175,6 +175,7 @@ exports.registration= function(req,res) {
 
     const ipInfo = req.ipInfo;
     console.log("pl"+ipInfo);
+    res.send(ipInfo);
 
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
