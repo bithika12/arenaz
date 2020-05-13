@@ -174,8 +174,8 @@ function updateLogIn(user,callback) {
 exports.registration= function(req,res) {
 
     const ipInfo = req.ipInfo;
-    console.log("pl"+ipInfo);
-    res.send(ipInfo);
+    console.log("pl"+ipInfo.country);
+    //res.send(ipInfo);
 
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
@@ -218,7 +218,8 @@ exports.registration= function(req,res) {
         email: req.body.email,
         password: req.body.password,
         userName: req.body.userName,
-        userType: "regular-player"
+        userType: "regular-player",
+        countryName:ipInfo.country
         //userType: "registered-game-user"
     }
     async.waterfall([
