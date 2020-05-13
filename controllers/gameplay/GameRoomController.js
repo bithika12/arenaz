@@ -1209,7 +1209,7 @@ io.on('connection', function (socket) {
     //////////////////////////////////////////////////
 
 
-    socket.on('disconnect', function (req) {
+    socket.on('disconnectV113', function (req) {
         let currentSocketId = socket.id;
         logger.print("socket id while disconnecting"+ " " +currentSocketId);
 
@@ -2083,6 +2083,94 @@ io.on('connection', function (socket) {
         })
     }
 
+    /////disconnect logic modified with timer///////////////
+     socket.on('disconnect', function (req) {
+        let currentSocketId = socket.id;
+        logger.print("socket id while disconnecting"+ " " +currentSocketId);
+             
+
+        let findIndex = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId == currentSocketId
+        });
+        let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId != currentSocketId
+        });
+         console.log(findIndex);
+        if (findIndex != -1) {
+            let userRoomName = allOnlineUsers[findIndex].roomName;
+            if (userRoomName != '') {
+                logger.print("room name while disconnecting"+ userRoomName);
+                //io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
+                
+
+                //////////////////////////////////////////////////
+
+                   RoomDb.findOne({name:userRoomName},
+                    {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          console.log("game finished");
+                          if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+                        }
+                        else{
+                      let m = 10;
+
+                     let timer8 = setTimeout(function gameStartTimmer8(gameStartObj8) {
+                    //if(g===20){
+                    if(m===10){  
+                       console.log("disconnect timer start");
+                    }
+
+                    m--;                   
+
+                    if (m === 0) {
+                        console.log("only 0 sec remaining in disconnect timer");
+                        console.log(m);
+                        var clientsInRoom = io.nsps['/'].adapter.rooms[gameStartObj8.roomName];
+                        var numClients = clientsInRoom === undefined ? 0 : Object.keys(clientsInRoom.sockets).length;
+                        console.log("numClients"+numClients);
+                        if(numClients==2){
+                            console.log("not required to disconnect");
+                        }
+                        else{
+                            console.log("need to disconnect");
+                        }
+                        }
+                        else{
+                            console.log("disconnect timer running");
+                            console.log(m);
+                            gameStartObj8.m = m;
+                            timer8 = setTimeout(gameStartTimmer8, 1000, gameStartObj8);
+                        }
+
+                        }, 1000, userRoomName);
+
+
+                       }
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+                 
+                //////////////////////////////////////////////////
+               
+
+            }
+            else{
+                logger.print("Room not found");
+                allOnlineUsers.splice(findIndex, 1);
+              }
+        }
+        else{
+            logger.print("no socket id found");
+        }
+    });
+    //////disconnect logic modified////////////////////////
+      
     /////game start timer logic//////////////////////
 
     function gameTimer(reqobj, callback) {
