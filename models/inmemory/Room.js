@@ -16,6 +16,12 @@ const logger = require(appRoot + '/utils/LoggerClass');
 var io = require(appRoot + '/utils/SocketManager').io;
 const response = require(appRoot + '/utils/ResponseManeger');
 const moment=require("moment");
+let gameUserFirstArr=[];
+let gameUserSecondArr=[];
+let gameUserFirstObj={};
+let gameUserSecondObj={};
+let gameUserFirstArr1=[];
+
 
 /**
  * @desc This function is used for calculate score
@@ -205,6 +211,34 @@ room.throwDartDetails = function (reqObj) {
                     }
 
                    console.log("user life score"+totalGameScores);
+
+                   userArr[findIndex].hitScore = reqObj.hitScore;
+                   userArr[findIndex].scoreMultiplier = reqObj.scoreMultiplier;
+
+                   //gameUserFirstArr=[];
+                   //gameUserSecondArr=[];
+                   //gameUserFirstObj={};
+                   //gameUserSecondObj={};
+                   // let gameUserFirstArr1=[];
+                   userArr.findIndex(function (reselemt) {                      
+                         //if(reselemt.total !=199 && reselemt.userId =reqObj.userId){
+                         reselemt.roomName=reqObj.roomName;                       
+                           
+                           gameUserFirstArr1.push(reselemt);
+                      // }
+                        
+                        
+
+                      
+
+
+                   });
+
+                   console.log("gameUserFirstArr"+gameUserFirstArr1);
+                   console.log("gameUserSecondArr"+gameUserSecondArr);
+
+
+
                     resolve({
                         roomName: reqObj.roomName,
                         users: reqObj.userId,
@@ -232,7 +266,12 @@ room.throwDartDetails = function (reqObj) {
 
                         /////
                         hitScore:reqObj.hitScore,
-                        scoreMultiplier:reqObj.scoreMultiplier
+                        scoreMultiplier:reqObj.scoreMultiplier,
+                         
+                        gameUserFirstArr1:gameUserFirstArr1,
+                        gameUserSecondArr:gameUserSecondArr
+
+
                     });
                 } else {
                     console.log("Unable to find room"+reqObj.roomName);
@@ -892,6 +931,7 @@ room.findNextUser = function (condObj) {
 
 room.findNextUserDart = function (condObj) {
     return new Promise((resolve, reject) => {
+        console.log("next turn console"+condObj.roomName);
         room.findOne({roomName: condObj.roomName}, function (err, roomDetails) {
             if (roomDetails) {
                 let users = roomDetails.users;
@@ -1204,6 +1244,38 @@ room.gameTimerStart = function (reqObj) {
             });
     });
 }
+
+///rejoin ///
+room.findNextUserDartJoin = function (condObj) {
+    return new Promise((resolve, reject) => {
+        console.log("next turn console"+condObj.roomName);
+        RoomDb.findOne({name: condObj.roomName}, function (err, roomDetails) {
+            if (roomDetails) {
+                let users = roomDetails.users;
+                let findIndex = users.findIndex(elemt => (elemt.turn > 0 && elemt.turn < 3)/*||  elemt.turn < 1 *//*roomDetails.dealStartDirection*/);
+                  logger.print("***Next turn index "+findIndex);
+                  //logger.print("current user turn"+users[findIndex].turn);
+                //resolve({ userId  : users[findIndex].userId});
+                if (findIndex == -1) {
+
+                    let findIndex1 = users.findIndex(elemt => elemt.turn < 1 /*roomDetails.dealStartDirection*/);
+                    logger.print("***Next turn index "+findIndex1);
+                    if (findIndex1 != -1)
+                        resolve({userId: users[findIndex1].userId});
+                    else
+                        logger.print("***Next user not found");
+                        reject({message: "User not found"});
+                } else {
+                    resolve({userId: users[findIndex].userId});
+                }
+            } else {
+                logger.print("***Room not found while fetch next turn ");
+                reject({});
+            }
+        })
+    })
+}
+
 //winAfterTimerEnd
 
 room.winAfterTimerEnd = function (reqObj) {

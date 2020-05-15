@@ -25,6 +25,7 @@ let _ = require('underscore');
 let dartArray=[];
 let Timer_Started=true;
 const moment=require("moment");
+let g;
 
 /*room.createRoom({userId : "5de7ac25c9dba27a72be9023"}).then(function(result){
 	console.log("success",result);
@@ -33,7 +34,7 @@ const moment=require("moment");
 })*/
 var roomMemory = require(appRoot + '/utils/MemoryDatabaseManger').room;
 var RoomDb = require(appRoot + '/schema/Schema').roomModel;
-
+var RoomlogDb = require(appRoot + '/schema/Schema').roomLogModel;
 
 io.on('connection', function (socket) {
 
@@ -204,6 +205,24 @@ io.on('connection', function (socket) {
         })
     }
 
+   ///insertRoomLog
+   function insertRoomLog(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+                console.log("room log cont");
+                room.updateRoomLogGameOver({roomName: reqobj.roomName,
+                    gameTotalTime:reqobj.gameTotalTime,userId:reqobj.userId}, 
+                    {userObj: reqobj.roomUsers},{hitScore:reqobj.hitScore,
+                        scoreMultiplier:reqobj.scoreMultiplier}).then(function (updateRoom) {
+
+                    callback(null, reqobj);
+
+                }).catch(err => {
+                    logger.print("***Room update error ", err);
+                })
+            
+        })
+    }
+
 
     /**
      * @desc This function is used for throw dart
@@ -222,12 +241,15 @@ io.on('connection', function (socket) {
             async.waterfall([
                 dartProcess(req),
                 updateRoomModified,
-                //updateRoom,
-                //gameOverProcess,
+
+                //updateRoom,                
                 //NEWLY ADDED FOR COIN
                 gameStatusUpdate,
                 gameStatusUpdateOpponent,
                 gameOverProcess,
+                ////newly added log///
+                insertRoomLog,
+                ////////////////
                 userNextStartDart,
                 dartTimer
 
@@ -506,12 +528,22 @@ io.on('connection', function (socket) {
     function nextUserTurnDart(roomObj) {
         inmRoom.findNextUserDart({roomName: roomObj.roomName}).then(function (roomDetails) {
             if (roomDetails) {
-                logger.print("***Next turn sent "+roomDetails.userId);
+                logger.print("123***Next turn sent "+roomDetails.userId);
                 dartArray=[];
+                console.log("game timer while turn dart");
                 console.log("dartArray"+dartArray.length);
                 roomObj.userTurnId=roomDetails.userId;
                 //return roomDetails.userId;
-                io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                //update turn timer////
+                console.log("game timer while turn dart"+g);
+                RoomDb.updateOne({name: roomObj.roomName},
+                 {turn_time:g},
+                  function (err, updateroomresult) {
+                  io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+
+                  });
+                //update turn timer////
+                //io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
                 //clearTimeout(waitingDartInterval[reqobj.roomName]);
             }
         }).catch(err => {
@@ -728,7 +760,11 @@ io.on('connection', function (socket) {
                                 totalCupWin:req.cupNumbers,
                                 firstName: req.firstName,
                                 lastName: req.lastName,
-                                totalGameScore:0
+                                totalGameScore:0,
+
+                                ////////////
+                                hitScore:0,
+                                scoreMultiplier:0
 
                             };
                             inmRoom.roomJoineeCreation({
@@ -2102,7 +2138,6 @@ io.on('connection', function (socket) {
                 logger.print("room name while disconnecting"+ userRoomName);
                 //io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
                 
-
                 //////////////////////////////////////////////////
 
                    RoomDb.findOne({name:userRoomName},
@@ -2117,28 +2152,168 @@ io.on('connection', function (socket) {
                                 allOnlineUsers[findIndex].roomName='';
                         }
                         else{
+
                       let m = 10;
 
                      let timer8 = setTimeout(function gameStartTimmer8(gameStartObj8) {
                     //if(g===20){
-                    if(m===10){  
-                       console.log("disconnect timer start");
+                    if(m===10){ 
+                         user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
+
+                         console.log("disconnect timer start");
+                         console.log("user update responses"+statusUpdate);  
+                       }).catch(err => {
+                          console.log("user update error"+err);
+                       }); 
+                       
                     }
 
                     m--;                   
 
                     if (m === 0) {
+                        //fetch user status///
+                       user.checkOnlineOrNot({_id:allOnlineUsers[findIndex].userId,onlineStatus:1}).then((userOnlineStatusRes)=>{
+                        console.log("user status check"+userOnlineStatusRes.length);
+                        if(userOnlineStatusRes.length >0){
+                            console.log("not required to disconnect..user reconnect");
+                        }
+
+                        else{
+                            console.log("user not reconnect after 5 sec");
+
+                        console.log("gameStartObj8"+gameStartObj8);
                         console.log("only 0 sec remaining in disconnect timer");
                         console.log(m);
-                        var clientsInRoom = io.nsps['/'].adapter.rooms[gameStartObj8.roomName];
+                        var clientsInRoom = io.nsps['/'].adapter.rooms[gameStartObj8];
                         var numClients = clientsInRoom === undefined ? 0 : Object.keys(clientsInRoom.sockets).length;
                         console.log("numClients"+numClients);
-                        if(numClients==2){
-                            console.log("not required to disconnect");
+                        ////normal winner declare/////
+                        console.log("allOnlineUsers"+allOnlineUsers[findIndex].userId); 
+                      async.waterfall([
+                    playerLeave({roomName: gameStartObj8, userId: allOnlineUsers[findIndex].userId}),
+                    updateRoom,
+                    RoomUpdate,
+                    //new add
+                    gameStatusUpdateDisconnect,
+                    gameStatusUpdateOpponentDisconnect,
+                    //new/////
+                    userStatusUpdate
+                    // totalPlayerList,
+                    // roomClosed,
+                    // memoryRoomRemove
+                ], function (err, result) {
+                    //allOnlineUsers.splice(findIndex, 1);
+                    if (result) {
+                        //allOnlineUsers=_.without(allOnlineUsers, _.findWhere(allOnlineUsers, {userId: req.userId}));
+                        logger.print("win status after disconnecting"+result.isWin);
+
+
+                        if (findIndexOpponent != -1 && result.isWin == 1) {
+                            logger.print("opponent exists");
+                            winnerDeclare({
+                                userId: result.opponentUserId,
+                                //userId: allOnlineUsers[findIndexOpponent].userId,
+                                roomName: userRoomName
+                            }).then(function (roomDetails) {
+                                allOnlineUsers.splice(findIndex, 1);
+                                //allOnlineUsers[findIndex].roomName='';
+                                if(findIndex==1)
+                                   allOnlineUsers[findIndexOpponent].roomName='';
+                                else
+                                    allOnlineUsers[findIndex].roomName='';
+
+                                io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                    //userId: result.userId,
+                                    firstUserId: result.userId,
+                                    firstUserGameStatus: "Lose",
+                                    secondUserId:result.opponentUserId,
+                                    secondUserGameStatus: "Win",
+                                    //userId: roomDetails,
+                                    roomName: userRoomName,
+
+                                    firstUserCupNumber:result.cupNumber,
+                                    secondUserCupNumber:result.opponentCup
+
+                                    //gameStatus: "Lose"
+                                    //gameStatus: "Win"
+                                }, "Game is over"));
+                                logger.print("Room closed");
+                            });
+                        } else if (findIndexOpponent != -1 && result.isWin == 2) {
+                            logger.print("opponent exists");
+                            allOnlineUsers.splice(findIndex, 1);
+                            //allOnlineUsers[findIndex].roomName='';
+                            if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+
+                            io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "Draw",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "Draw",
+                                //userId: result.roomUsers,
+                                roomName: userRoomName,
+
+                                firstUserCupNumber:result.cupNumber,
+                                secondUserCupNumber:result.opponentCup
+                               // gameStatus: "Draw"
+                            }, "Game is over"));
+                            logger.print("Room closed");
+                        } else {
+                            logger.print("opponent not exists");
+                           // allOnlineUsers.splice(findIndex, 1);
+                            if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+                            io.sockets.to(socket.id).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "",
+                                //userId: result.roomUsers,
+                                roomName: userRoomName,
+
+                                firstUserCupNumber:result.cupNumber,
+                                secondUserCupNumber:result.opponentCup
+                                //gameStatus: ""
+                            }, "Game is over"));
+                            /*io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                userId: result.roomUsers,
+                                roomName: userRoomName,
+                                gameStatus: ""
+                            }, "Game is over"));*/
+                            logger.print("Room closed");
                         }
-                        else{
-                            console.log("need to disconnect");
+                        logger.print("Room closed");
+
+
+
+                    } else{
+                        logger.print("***DISCONNECT ERROR ", err);
+                        allOnlineUsers.splice(findIndex, 1);
+                        //allOnlineUsers[findIndex].roomName='';
+                        if(findIndex==1)
+                            allOnlineUsers[findIndexOpponent].roomName='';
+                        else
+                            allOnlineUsers[findIndex].roomName='';
+                        io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+                       }
+                       });
+
+                        /////normal winner declare////
+
                         }
+                       }).catch(err=>{
+                         console.log("error while fetch user sttaus"+err);
+                       })                       
+
+                        
+
                         }
                         else{
                             console.log("disconnect timer running");
@@ -2170,7 +2345,105 @@ io.on('connection', function (socket) {
         }
     });
     //////disconnect logic modified////////////////////////
-      
+      socket.on("reconnecting", function(req) {
+        console.log("reconnecting");
+     });
+
+    //new event fired for rejoin///////
+    socket.on('reJoin', function (req) {
+       RoomDb.findOne({name:req.roomName},
+         {_id: 1,game_time:1, name:1,users:1}).then(gameresponses=> { 
+           
+           if(gameresponses.game_time >0){
+               //game finished//////////////
+              console.log("game finished while rejoin");    
+              io.sockets.to(socket.id).emit('rejoinFailure',
+                         response.generate(constants.SUCCESS_STATUS, {                            
+                            userLastDetails:gameresponses.users
+                         }));          
+             }
+             else{
+                console.log("game not finished and user rejoined");
+                ////check if user exist in that room or not///////
+                RoomlogDb.find({name: req.roomName,
+                    userId: req.userId},
+                    {_id: 1, name:1, userId:1, status:1,
+                    total:1,score:1,isWin:1,turn:1,
+                    dartPoint:1,cupNumber:1,roomCoin:1,
+                    scoreMultiplier:1,hitScore:1
+
+                   }).sort({"_id":-1}).limit(3).then(responses=> {
+
+
+
+                  RoomlogDb.find({name: req.roomName,
+                    userId: { $ne: req.userId }},
+                    {_id: 1, name:1, userId:1, status:1,
+                    total:1,score:1,isWin:1,turn:1,
+                    dartPoint:1,cupNumber:1,roomCoin:1,
+                    scoreMultiplier:1,hitScore:1
+
+                   }).sort({"_id":-1}).limit(3).then(opponentResponses=> {
+
+                   console.log("responseParams"+responses);
+                    if(responses.length >0){
+                        console.log("user valid in that room while rejoin");
+                        //////////roomdetails///////////////////
+                        RoomDb.findOne({name: req.roomName},
+                        {_id: 1, turn_time:1}).then(roomresponses=> { 
+
+                        ////fetch current turn///
+                        inmRoom.findNextUserDart({roomName: req.roomName}).then(function (roomDetails) {    
+
+
+
+                         console.log("roomresponses in rejoin"+roomresponses.turn_time);   
+                           
+                         io.sockets.to(socket.id).emit('rejoinSuccess',
+                         response.generate(constants.SUCCESS_STATUS, {
+                            lastTurnTime:roomresponses.turn_time,
+                            gameRemainingTime:g,
+                            currentUserTurn:roomDetails.userId,
+                            firstUserLastDetails:responses,
+                            secondUserLastDetails:opponentResponses
+                         }));
+
+
+                         }).catch(err => {
+                            console.log("error while rejoin");
+                            
+                         });
+
+
+                         }).catch(err => {
+                            console.log("error while rejoin");
+                            
+                         });
+
+                        
+
+                        //////////roomdetails//////////////////
+                    }
+                    else{
+                        console.log("user not valid in that room");
+                    }      
+                  //return resolve(responses);
+
+                  }).catch(err => {
+                 console.log("error while rejoin");
+                 });
+
+               }).catch(err => {
+                 console.log("error while rejoin");
+              });
+
+             }
+          
+          }).catch(err => {
+              console.log("error while rejoin");
+          });
+    });
+    //new event fired for rejoin///////  
     /////game start timer logic//////////////////////
 
     function gameTimer(reqobj, callback) {
@@ -2186,7 +2459,9 @@ io.on('connection', function (socket) {
             //if (roomDetails) {
                 //new code 26 th mar//
                  //let g = 20;
-                 let g = 360;
+                 //let g = 20;
+                 g = 360;
+                 //let g = 360;
                 //logger.print("  ************  first turn loop start");
                 let timer2 = setTimeout(function gameStartTimmer2(gameStartObj2) {
                     //if(g===20){

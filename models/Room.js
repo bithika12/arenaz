@@ -9,6 +9,8 @@ var constants          =  require(appRoot + "/config/constants");
 var mongoose = require('mongoose');
 var ObjectID = require("mongodb").ObjectID;
 const moment=require("moment");
+var Roomlog = require(appRoot + '/schema/Schema').roomLogModel;
+
 
 
 room.createRoom = function(condObj){
@@ -444,6 +446,75 @@ room.updateRoomGameOver = function(condObj,updateObj){
     })
 }
 
+////insert room log////
+//updateRoomLogGameOver
+room.updateRoomLogGameOver = function(condObj,updateObj,hitscoreObj){
+    return new Promise((resolve,reject) => {
+
+        let userArr=updateObj.userObj;
+        console.log("userArr in log"+userArr);
+        userArr.forEach(function(val,key){
+        console.log("key in log"+key);
+        console.log("val in log"+val);
+        console.log("val in log"+hitscoreObj.hitScore);
+        if(!val.cupNumber){
+          val.cupNumber=0
+
+        }
+        if(!hitscoreObj.hitScore){
+          hitscoreObj.hitScore=''
+
+        }
+        if(!hitscoreObj.scoreMultiplier){
+          hitscoreObj.scoreMultiplier=''
+
+        }
+        //hitScore:updateArr.hitScore,
+        //scoreMultiplier:updateArr.scoreMultiplier
+        //console.log("val in log"+val.cupNumber);
+        let roomlogObj ={   name : condObj.roomName,
+                           status:val.status,
+                            userId : val.userId ,
+                                     
+                                       total:val.total,
+                                       score:val.score,
+                                       //score:"199",
+                                       //total:"333",
+                                       //score:"333",
+                                       isWin:val.isWin,
+                                       turn:val.turn,
+                                       dartPoint:val.dartPoint,
+                                       userName:val.userName,
+                                       colorName:val.colorName,
+                                       raceName:val.raceName,
+                                       dartName:val.dartName,
+                                       total_no_win:val.total_no_win,
+                                       cupNumber:val.cupNumber,
+                                       roomCoin:val.roomCoin,
+                                       firstName:val.firstName,
+                                       lastName:val.lastName,
+                                       scoreMultiplier:val.scoreMultiplier,
+                                       hitScore:val.hitScore
+                                       //totalCupWin:val.totalCupWin
+                                        }
+
+
+           Roomlog.create(roomlogObj).then(responses=> {
+                    if(key==userArr.length-1)
+                      resolve(true)
+                }).catch(err => {
+                    console.log("error while insert log"+err);
+                    reject({message:"Unable to insert room log"});
+
+                });                              
+
+      })
+
+
+     
+        
+    })
+}
 
 room.updateRoomAfterWait = function(condObj){
     return new Promise((resolve,reject) => {

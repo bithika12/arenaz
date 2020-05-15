@@ -80,7 +80,51 @@ var roomSchema = new Schema({
         type: Date,
        // default: Date.now
     },
-    game_time:Number
+    game_time:Number,
+    turn_time:{
+        type: Number,
+        default: 0
+    }
+
+});
+
+///room log table/////////
+var roomlogSchema = new Schema({
+     name          : String,
+     status        : String,
+     userId        : Schema.Types.ObjectId, 
+     total         : String,
+     score:  String,
+     isWin:Number,
+     turn:Number,
+     dartPoint:String,
+     colorName:String,
+     raceName:String,
+     dartName:String,
+     userName:String,
+     cupNumber:Number,
+     roomCoin:Number,
+     totalCupWin:Number,
+     firstName:String,
+     lastName:String,
+     //cupNumber:Number,
+     totalCupWin:Number,
+     scoreMultiplier:String,
+     hitScore:String,
+   
+    created_at: {
+        type: Date,
+        default: Date.now()
+    },
+    updated_at: {
+        type: Date,
+       // default: Date.now
+    },
+    game_time:Number,
+    turn_time:{
+        type: Number,
+        default: 0
+    }
 
 });
 
@@ -146,6 +190,6 @@ schema.notificationModel   = mongoose.model('notifications'  , notificationSchem
 schema.coinModel   = mongoose.model('coins'  , coinSchema);
 schema.gameModel   = mongoose.model('games'  , gameSchema);
 schema.versionModel   = mongoose.model('appversions'  , versionSchema);
-
+schema.roomLogModel   = mongoose.model('roomlogs'  , roomlogSchema);
 
 module.exports = schema;

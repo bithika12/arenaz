@@ -987,6 +987,17 @@ User.detailsAdmin = function(condObj){
      })
  }
 
+ User.checkOnlineOrNot = function(condObj){
+     return new Promise((resolve,reject)=>{
+         User.find(condObj,{onlineStatus:1}).then(response=> {
+             //console.log("response"+response.onlineStatus);
+             resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
+
 module.exports= User;
 
 
