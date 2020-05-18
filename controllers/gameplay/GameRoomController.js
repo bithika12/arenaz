@@ -2153,11 +2153,11 @@ io.on('connection', function (socket) {
                         }
                         else{
 
-                      let m = 10;
+                      let m = 5;
 
                      let timer8 = setTimeout(function gameStartTimmer8(gameStartObj8) {
                     //if(g===20){
-                    if(m===10){ 
+                    if(m===5){ 
                          user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
 
                          console.log("disconnect timer start");
