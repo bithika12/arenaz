@@ -51,10 +51,15 @@ Enjoy… \
 Arena Z Team" ; 
       reqObj.password  =  password.hashPassword(reqObj.password);
       let startCoin = reqObj.userType =='regular-player'
-              ? 3000
+              ? 50
               : 0;
+
+      /*let startCoin = reqObj.userType =='regular-player'
+              ? 3000
+              : 0;*/        
       reqObj.startCoin=startCoin;
       reqObj.userScore=3000;
+      reqObj.cupNo=3000;
       reqObj.deviceDetails = [{accessToken :  uuidv4(), deviceId:"", deviceToken: "",status: "active" ,createdAt : timeManage.now(),updatedAt : timeManage.now()}];
 
              Role.findOne({ slug: reqObj.userType},{_id: 1,name:1,slug:1}).then(roledetails=> {
