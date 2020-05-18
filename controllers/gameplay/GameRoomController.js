@@ -99,7 +99,8 @@ io.on('connection', function (socket) {
 
     function gameStatusUpdate(reqobj, callback) {
         return new Promise((resolve, reject) => {
-            if (reqobj.isWin) {
+            if (reqobj.isWin==1) {
+            //if (reqobj.isWin) {
                 //user update with coin
                  user.updateUserCoin({userId: reqobj.userId},
                   {startCoin: reqobj.availableCoin,
@@ -116,7 +117,8 @@ io.on('connection', function (socket) {
 
     function gameStatusUpdateOpponent(reqobj, callback) {
         return new Promise((resolve, reject) => {
-            if (reqobj.isWin) {
+            if (reqobj.isWin==1) {
+            //if (reqobj.isWin) {
                 console.log("12"+reqobj.opponentCup);
                 //user update with coin
                 //reqobj.roomUsers
@@ -257,6 +259,7 @@ io.on('connection', function (socket) {
                 if (result) {
 
                     console.log("user life score"+req.roomName);
+                    console.log("result.isWin"+result.isWin);
                     logger.print(" throw dart done", req);
                     if (result.playStatus == 1) {
                         logger.print("it is bust");
@@ -1199,7 +1202,8 @@ io.on('connection', function (socket) {
 
     function gameStatusUpdateDisconnect(reqobj, callback) {
         return new Promise((resolve, reject) => {
-            if (reqobj.isWin) {
+            if (reqobj.isWin==1) {
+            //if (reqobj.isWin) {
                 //user update with coin
                 //console.log("pre"+reqobj.opponentCup);
                 user.updateUserCoin({userId: reqobj.opponentUserId},
@@ -1221,7 +1225,8 @@ io.on('connection', function (socket) {
 
     function gameStatusUpdateOpponentDisconnect(reqobj, callback) {
         return new Promise((resolve, reject) => {
-            if (reqobj.isWin) {
+            if (reqobj.isWin==1) {
+            //if (reqobj.isWin) {
                 console.log("12"+reqobj.opponentCup);
                 //user update with coin
                 //reqobj.roomUsers
@@ -2600,22 +2605,22 @@ io.on('connection', function (socket) {
                               let roomDetailsAll=roomDetails1;
                               //if (roomDetails1.isWin) {
                                 //user update with coin
-                                 user.updateUserCoin({userId: roomDetails1.userId},
+                                 /*user.updateUserCoin({userId: roomDetails1.userId},
                                   {startCoin: roomDetails1.availableCoin,
                                     cupNo:roomDetails1.cupNumber,
                                     userScore:roomDetails1.totalGameScores
-                                }).then(function (userStatusUpdate) {
+                                }).then(function (userStatusUpdate) {*/
                                      console.log("user update"); 
                                      //opponent user update ///////
                                      let findIndex = roomDetails1.roomUsers.findIndex(elemt => (elemt.userId!=roomDetails1.userId));
                                      let userOppo=roomDetails1.roomUsers[findIndex].userId;
                                       console.log("opponent user"+userOppo);
-                                      user.updateUserCoin(
+                                      /*user.updateUserCoin(
                                         {userId: userOppo}, 
                                         {startCoin: roomDetails1.availableCoin,
                                             cupNo:roomDetails1.opponentCup,
                                             userScore:roomDetails1.gameScoreOpponent
-                                        }).then(function (userStatusUpdateOpponent) {
+                                        }).then(function (userStatusUpdateOpponent) {*/
                                         console.log("opponent user update");
                                         //game over call ///////
                                         room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {
@@ -2642,10 +2647,12 @@ io.on('connection', function (socket) {
                                                 logger.print("***Room update error ", err);
                                             })
                                         //clearTimeout(this.interval); 
-                                     });
+                                     //update coin////   
+                                     //});
                                        
                                      
-                                });
+                                //});
+                                /////update coin////
                              /* } else {
                                 logger.print("***No calculation as game already finish ", err);
                                 
