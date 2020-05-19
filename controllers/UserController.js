@@ -176,8 +176,8 @@ exports.registration= function(req,res) {
 
     const ipInfo = req.ipInfo;
     console.log("pl"+ipInfo.country);
-    let uk = CountryCodes.findCountry({'gec': ipInfo.country});
-    console.log(uk.name);
+    let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
+    console.log(countryNameDetails.name);
     //res.send(ipInfo);
 
     let schema = Joi.object().keys({
@@ -222,7 +222,7 @@ exports.registration= function(req,res) {
         password: req.body.password,
         userName: req.body.userName,
         userType: "regular-player",
-        countryName:ipInfo.country
+        countryName:countryNameDetails.name
         //userType: "registered-game-user"
     }
     async.waterfall([
