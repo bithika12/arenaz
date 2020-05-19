@@ -736,6 +736,7 @@ room.userLeave = function (condObj, updateObj) {
 
                 }
                 if(findIndexOppo !=-1 &&  gameSeconds >8){
+                    if(userArr[findIndexOppo].total != userArr[findIndex].total){
                     userArr[findIndexOppo].isWin = 1;
                     userArr[findIndexOppo].cupNumber=70;
                     userArr[findIndex].status = "inactive";
@@ -759,6 +760,19 @@ room.userLeave = function (condObj, updateObj) {
                     //console.log("opponent"+userArr[findIndexOppo].userId);
                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
+                  }
+                  else{
+                    userArr[findIndex].isWin=2;
+                    userArr[findIndexOppo].isWin=2;
+                    userArr[findIndex].status = "inactive";                    
+                    isWin=2;                    
+
+                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
+
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
+                  }
                 }
                 //userArr[findIndex].status = "inactive";
                 calculatedScore= userArr[findIndex].total;
@@ -854,6 +868,7 @@ room.userLeaveNew = function (condObj, updateObj) {
                  totalGameScores=userArr[findIndex].totalGameScore;
                  
                 if(findIndexOppo !=-1){
+                    if(userArr[findIndexOppo].total != userArr[findIndex].total){
                     userArr[findIndexOppo].isWin = 1;
                     userArr[findIndexOppo].cupNumber=70;
                     userArr[findIndex].status = "leave";
@@ -874,6 +889,22 @@ room.userLeaveNew = function (condObj, updateObj) {
                     ///////coin set///////
                     opponentCoin=userArr[findIndexOppo].roomCoin;
                     gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
+                  }
+
+                  else{
+
+                    userArr[findIndexOppo].isWin = 2;
+                    userArr[findIndex].isWin = 2;
+                    //userArr[findIndexOppo].cupNumber=70;
+                    userArr[findIndex].status = "leave";
+                    playStatus=userArr[findIndex].playStatus;
+                    isWin=2;                
+                    ///////coin set///////
+                    opponentCoin=userArr[findIndexOppo].roomCoin;
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
+                  }
                 }
                 userArr[findIndex].status = "leave";
                 calculatedScore= userArr[findIndex].total;

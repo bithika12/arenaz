@@ -15,6 +15,7 @@ const response  = require('../utils/ResponseManeger');
 const password = require('../utils/PasswordManage');
 const Joi = require('joi');
 let Notification  = require(appRoot +'/models/Notification');
+const CountryCodes = require('country-code-info');
 
 /* Async function*/
 
@@ -175,6 +176,8 @@ exports.registration= function(req,res) {
 
     const ipInfo = req.ipInfo;
     console.log("pl"+ipInfo.country);
+    let uk = CountryCodes.findCountry({'gec': ipInfo.country});
+    console.log(uk.name);
     //res.send(ipInfo);
 
     let schema = Joi.object().keys({

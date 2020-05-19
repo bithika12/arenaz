@@ -138,6 +138,7 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
                 //user update with coin
             console.log("pre"+reqobj.opponentCup);
+               if(reqobj.isWin==1){
                 user.updateUserCoin({userId: reqobj.opponentUserId},
                     {startCoin: reqobj.opponentCoin,
                     cupNo:reqobj.opponentCup,
@@ -145,6 +146,11 @@ io.on('connection', function (socket) {
                 }).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
+
+            }
+            else{
+                callback(null, reqobj);
+            }
         })
     }
     //gameStatusUpdateOpponentLeaveMod
@@ -153,6 +159,7 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
                 //user update with coin
                 //reqobj.roomUsers
+                if(reqobj.isWin==1){
                 let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
                 let userOppo=reqobj.roomUsers[findIndex].userId;
                 console.log("opponent user"+userOppo);
@@ -165,6 +172,11 @@ io.on('connection', function (socket) {
                 }).then(function (userStatusUpdate) {
                     callback(null, reqobj);
                 });
+
+            }
+            else{
+                callback(null, reqobj);
+            }
 
         })
     }
