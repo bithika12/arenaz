@@ -80,7 +80,11 @@ var roomSchema = new Schema({
         type: Date,
        // default: Date.now
     },
-    game_time:Number,
+    game_time: {
+        type: Number,
+        default: 0
+    },
+    //game_time:Number,
     turn_time:{
         type: Number,
         default: 0

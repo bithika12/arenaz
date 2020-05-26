@@ -244,6 +244,9 @@ User.updateUserDetails =function(condObj,updateObj){
              let updatedCup=parseInt(responses.cupNo)-parseInt(updateObj.cupNo);
              if(updatedCup <0)
                 updatedCup=0;
+
+             if(updatedCoin <0)
+                updatedCoin=0; 
              //let updatedCup=parseInt(responses.cupNo)+parseInt(updateObj.cupNo);
              /*if(updatedCoin ==0){
                  updatedCoin=500;

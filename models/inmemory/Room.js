@@ -309,6 +309,7 @@ room.throwDartDetailsDraw = function (reqObj) {
                 if (result) {
 
 
+
                     let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
                     cupNumber=70;
                     userArr[findIndex].isWin = 2;
@@ -1079,7 +1080,7 @@ room.updateInmemoryRoomMod12 = function (updateArr) {
                             availableCoin:updateArr.userCoin,
                             opponentCup:updateArr.opponentCup,
                             opponentUserId:updateArr.opponentUserId,
-                            opponentCoin:updateArr.opponentCoin,
+                            opponentCoin:(!updateArr.opponentCoin)? updateArr.userCoin : updateArr.opponentCoin,
                             roundScore:updateArr.roundScore,
                             userTurn:updateArr.userTurn,
 
@@ -1127,7 +1128,7 @@ room.updateInmemoryRoomMod = function (updateArr) {
                             playerScore: updateArr.playerScore,
                             cupNumber: updateArr.cupNumber,
                             gameTotalTime:updateArr.gameTotalTime,
-                            availableCoin:updateArr.userCoin,
+                            availableCoin:(!updateArr.userCoin)? updateArr.availableCoin :updateArr.userCoin,
                             opponentCup:updateArr.opponentCup,
                             opponentUserId:updateArr.opponentUserId,
                             opponentCoin:updateArr.opponentCoin,
