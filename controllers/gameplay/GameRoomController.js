@@ -2176,6 +2176,13 @@ io.on('connection', function (socket) {
                     //if(g===20){
                     if(m===5){ 
                          user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
+                          
+                          io.to(userRoomName).emit('temporaryDisconnect', response.generate(constants.SUCCESS_STATUS, {
+                                    //userId: result.userId,
+                                    userId: allOnlineUsers[findIndex].userId,
+                                    userGameStatus: "User temporarily unavailable",                                    
+                                    roomName: userRoomName                                    
+                                }, "User temporarily unavailable"));
 
                          console.log("disconnect timer start");
                          console.log("user update responses"+statusUpdate);  
