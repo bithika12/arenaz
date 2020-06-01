@@ -1611,4 +1611,36 @@ room.winAfterTimerEnd = function (reqObj) {
     });
 }
 
+
+
+room.findNextRejoinMod = function (condObj) {
+    return new Promise((resolve, reject) => {
+        console.log("next turn console"+condObj.roomName);
+        room.findOne({roomName: condObj.roomName}, function (err, roomDetails) {
+            if (roomDetails) {
+                let users = roomDetails.users;
+                let findIndex = users.findIndex(elemt => (elemt.turn > 0 && elemt.turn < 3)/*||  elemt.turn < 1 *//*roomDetails.dealStartDirection*/);
+                  logger.print("***Next turn index "+findIndex);
+                  //logger.print("current user turn"+users[findIndex].turn);
+                //resolve({ userId  : users[findIndex].userId});
+                if (findIndex == -1) {
+
+                    let findIndex1 = users.findIndex(elemt => elemt.turn < 1 /*roomDetails.dealStartDirection*/);
+                    logger.print("***Next turn index "+findIndex1);
+                    if (findIndex1 != -1)
+                        resolve({userId: users[findIndex1].userId,turnstat:0});
+                    else
+                        logger.print("***Next user not found");
+                        reject({message: "User not found"});
+                } else {
+                    resolve({userId: users[findIndex].userId,turnstat:1});
+                }
+            } else {
+                logger.print("***Room not found while fetch next turn ");
+                reject({});
+            }
+        })
+    })
+}
+
 module.exports = room;

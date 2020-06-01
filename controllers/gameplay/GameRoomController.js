@@ -2440,7 +2440,8 @@ io.on('connection', function (socket) {
                         ////fetch current turn///
                         inmRoom.findNextUserDart({roomName: req.roomName}).then(function (roomDetails) {    
 
-
+                        inmRoom.findNextRejoinMod({roomName: req.roomName}).then(function (turnres) {    
+  
 
                          console.log("roomresponses in rejoin"+roomresponses.turn_time);   
                            
@@ -2449,9 +2450,22 @@ io.on('connection', function (socket) {
                             lastTurnTime:roomresponses.turn_time,
                             gameRemainingTime:g,
                             currentUserTurn:roomDetails.userId,
+                            turnStatus:turnres.turnstat,
                             firstUserLastDetails:responses,
                             secondUserLastDetails:opponentResponses
                          }));
+
+
+                         io.to(req.roomName).emit('opponentReconnect',
+                         response.generate(constants.SUCCESS_STATUS, {
+                            userId:req.userId                            
+                         }, "Oponent rejoined"));
+
+                        }).catch(err => {
+                            console.log("error while rejoin");
+                            
+                         });
+                        ///////
 
 
                          }).catch(err => {
