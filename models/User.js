@@ -1075,6 +1075,17 @@ User.detailsAdmin = function(condObj){
      })
  }
 
+User.findDetailsGame = function(condObj){
+  console.log(" condObj",)
+  return  new Promise((resolve,reject) => {
+       User.findOne(condObj,{deviceDetails:0,resetOtp:0}).then(responses=> {
+        //User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
+              return resolve(responses);
+        }).catch(err => {
+              return reject(err);
+        });
+    });
+}
 module.exports= User;
 
 

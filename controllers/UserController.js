@@ -222,7 +222,8 @@ exports.registration= function(req,res) {
         password: req.body.password,
         userName: req.body.userName,
         userType: "regular-player",
-        countryName:countryNameDetails.name
+        countryName:ipInfo.country
+        //countryName:countryNameDetails.name
         //userType: "registered-game-user"
     }
     async.waterfall([
