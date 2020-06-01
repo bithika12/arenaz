@@ -207,7 +207,8 @@ io.on('connection', function (socket) {
                             secondUserCupNumber:reqobj.opponentCup,
 
                             firstUserCoinNumber: reqobj.availableCoin,
-                            secondUserCoinNumber: reqobj.opponentCoin
+                            secondUserCoinNumber: reqobj.opponentCoin,
+                            completeStatus:1
                             //gameStatus:"Win"
                         }, "Game is over"));
                         callback(null, reqobj);
@@ -1654,7 +1655,9 @@ io.on('connection', function (socket) {
                                 secondUserCupNumber: result.opponentCup,
 
                                 firstUserCoinNumber: result.availableCoin,
-                                secondUserCoinNumber: result.opponentCoin
+                                secondUserCoinNumber: result.opponentCoin,
+
+                                completeStatus:0
                             }, "Game is over"));
                             logger.print("Room closed");
                         });
@@ -1677,7 +1680,9 @@ io.on('connection', function (socket) {
                             secondUserCupNumber: result.opponentCup,
 
                             firstUserCoinNumber: result.availableCoin,
-                            secondUserCoinNumber: result.opponentCoin
+                            secondUserCoinNumber: result.opponentCoin,
+
+                            completeStatus:0
                             //gameStatus: "Draw"
                         }, "Game is over"));
                         logger.print("Room closed");
@@ -1700,7 +1705,9 @@ io.on('connection', function (socket) {
                             secondUserCupNumber: '',
 
                             firstUserCoinNumber: '',
-                            secondUserCoinNumber: ''
+                            secondUserCoinNumber: '',
+
+                            completeStatus:0
                             //gameStatus: ""
                         }, "Game is over"));
                         logger.print("Room closed");
@@ -2271,7 +2278,9 @@ io.on('connection', function (socket) {
                                     secondUserCupNumber:result.opponentCup,
 
                                     firstUserCoinNumber: result.availableCoin,
-                                    secondUserCoinNumber: result.opponentCoin
+                                    secondUserCoinNumber: result.opponentCoin,
+
+                                    completeStatus:0
 
                                     //gameStatus: "Lose"
                                     //gameStatus: "Win"
@@ -2300,7 +2309,9 @@ io.on('connection', function (socket) {
                                 secondUserCupNumber:result.opponentCup,
 
                                 firstUserCoinNumber: result.availableCoin,
-                                secondUserCoinNumber: result.opponentCoin
+                                secondUserCoinNumber: result.opponentCoin,
+
+                                completeStatus:0
                                // gameStatus: "Draw"
                             }, "Game is over"));
                             logger.print("Room closed");
@@ -2324,7 +2335,9 @@ io.on('connection', function (socket) {
                                 secondUserCupNumber:result.opponentCup,
 
                                 firstUserCoinNumber: result.availableCoin,
-                                secondUserCoinNumber: result.opponentCoin
+                                secondUserCoinNumber: result.opponentCoin,
+
+                                completeStatus:0
                                 //gameStatus: ""
                             }, "Game is over"));
                             /*io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
@@ -2631,7 +2644,9 @@ io.on('connection', function (socket) {
                                                     secondUserCupNumber: roomDetails1.opponentCup,
 
                                                     firstUserCoinNumber: roomDetails1.availableCoin,
-                                                    secondUserCoinNumber: roomDetails1.opponentCoin
+                                                    secondUserCoinNumber: roomDetails1.opponentCoin,
+
+                                                    completeStatus:1
                                                     //gameStatus:"Win"
                                                 }, "Game is over"));
                                                 clearTimeout(this.interval); 
@@ -2699,7 +2714,9 @@ io.on('connection', function (socket) {
                                                     secondUserCupNumber: roomDetails1.opponentCup,
 
                                                     firstUserCoinNumber: roomDetails1.availableCoin,
-                                                    secondUserCoinNumber: roomDetails1.opponentCoin
+                                                    secondUserCoinNumber: roomDetails1.opponentCoin,
+
+                                                    completeStatus:1
                                                     //gameStatus:"Win"
                                                 }, "Game is over"));
                                                 clearTimeout(this.interval); 
