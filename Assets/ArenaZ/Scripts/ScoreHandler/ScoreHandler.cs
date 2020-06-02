@@ -51,6 +51,26 @@ namespace ArenaZ
                 animateScoreText(opponentRemainingScoreText, opponentScoreData);
         }
 
+        public void UpdateScoreImmediately(GameManager.Player a_PlayerType, int a_RemainingScore, bool a_AllTurnFinished)
+        {
+            if (a_PlayerType == GameManager.Player.Self)
+            {
+                selfRemainingScoreText.text = a_RemainingScore.ToString();
+                selfScoreData.CurrentRemainingScore = a_RemainingScore;
+
+                if (a_AllTurnFinished)
+                    selfScoreData.PreviousRemainingScore = a_RemainingScore;
+            }
+            else if (a_PlayerType == GameManager.Player.Opponent)
+            {
+                opponentRemainingScoreText.text = a_RemainingScore.ToString();
+                opponentScoreData.CurrentRemainingScore = a_RemainingScore;
+
+                if (a_AllTurnFinished)
+                    opponentScoreData.PreviousRemainingScore = a_RemainingScore;
+            }
+        }
+
         private void animateScoreText(TextMeshProUGUI a_TextMeshPro, SoreData a_ScoreData)
         {
             // Tween a float called myFloat to 52 in 1 second

@@ -62,6 +62,11 @@ namespace ArenaZ.Screens
             playAgainButton.onClick.RemoveListener(onClickClose);
         }
 
+        public void Refresh(int a_TotalCup)
+        {
+            userCupCount.text = a_TotalCup.ToString();
+            Refresh();
+        }
 
         public void Refresh()
         {

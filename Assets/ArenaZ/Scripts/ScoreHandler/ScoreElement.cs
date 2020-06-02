@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace ArenaZ
@@ -59,6 +60,38 @@ namespace ArenaZ
             a_RectTransform.DOScale(0.0f, a_FadeOutTransitionTime);
             a_RectTransform.DOAnchorPos3DZ(0.0f, a_FadeOutTransitionTime * 2.5f);
             a_RectTransform.DOAnchorPos(Vector2.zero, a_FadeOutTransitionTime);
+        }
+
+
+        public void Request()
+        {
+            try
+            {
+                string url = "www.link.com";
+
+                var request = UnityWebRequest.Post(url, "");
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.SetRequestHeader("Accept", "text/csv");
+                request.SetRequestHeader("appKey", "ABC");
+                StartCoroutine(onResponse(request));
+            }
+            catch (Exception e)
+            {
+                Debug.Log("ERROR : " + e.Message);
+            }
+        }
+
+        private IEnumerator onResponse(UnityWebRequest req)
+        {
+
+            yield return req.SendWebRequest();
+            if (req.isNetworkError)
+                Debug.Log("Network error has occured: " + req.GetResponseHeader(""));
+            else
+                Debug.Log("Success " + req.downloadHandler.text);
+            byte[] results = req.downloadHandler.data;
+            Debug.Log("Second Success");
+            // Some code after success
         }
     }
 }

@@ -321,17 +321,29 @@ namespace ArenaZ.SettingsManagement
 
         private void UpdateButtonsOnStart()
         {
-            if (PlayerPrefs.GetFloat("MusicVolume") == MuteValue)
+            if (PlayerPrefs.HasKey("MusicVolume"))
             {
-                MusicImage.sprite = MuteMusicSprite;
-                MusicAudioMixer.SetFloat("MusicVolume", MuteValue);
-                IsMusicMute = true;
-                MusicToggle.isOn = true;
-                SettingData.BGMVolume = MuteValue;
-            }
+                if (PlayerPrefs.GetFloat("MusicVolume") == MuteValue)
+                {
+                    MusicImage.sprite = MuteMusicSprite;
+                    MusicAudioMixer.SetFloat("MusicVolume", MuteValue);
+                    IsMusicMute = true;
+                    MusicToggle.isOn = true;
+                    SettingData.BGMVolume = MuteValue;
+                }
 
-            if (PlayerPrefs.GetFloat("MusicVolume") == UnmuteValue)
+                if (PlayerPrefs.GetFloat("MusicVolume") == UnmuteValue)
+                {
+                    MusicImage.sprite = UnmuteMusicSprite;
+                    MusicAudioMixer.SetFloat("MusicVolume", UnmuteValue);
+                    IsMusicMute = false;
+                    MusicToggle.isOn = false;
+                    SettingData.BGMVolume = UnmuteValue;
+                }
+            }
+            else
             {
+                PlayerPrefs.SetFloat("MusicVolume", UnmuteValue);
                 MusicImage.sprite = UnmuteMusicSprite;
                 MusicAudioMixer.SetFloat("MusicVolume", UnmuteValue);
                 IsMusicMute = false;
@@ -339,18 +351,29 @@ namespace ArenaZ.SettingsManagement
                 SettingData.BGMVolume = UnmuteValue;
             }
 
-
-            if (PlayerPrefs.GetFloat("SFXVolume") == MuteValue)
+            if (PlayerPrefs.HasKey("SFXVolume"))
             {
-                SFXImage.sprite = MuteSFXSprite;
-                SFXAudioMixer.SetFloat("SFXVolume", MuteValue);
-                IsSFXMute = true;
-                SFXToggle.isOn = true;
-                SettingData.SFXVolume = MuteValue;
+                if (PlayerPrefs.GetFloat("SFXVolume") == MuteValue)
+                {
+                    SFXImage.sprite = MuteSFXSprite;
+                    SFXAudioMixer.SetFloat("SFXVolume", MuteValue);
+                    IsSFXMute = true;
+                    SFXToggle.isOn = true;
+                    SettingData.SFXVolume = MuteValue;
+                }
+
+                if (PlayerPrefs.GetFloat("SFXVolume") == UnmuteValue)
+                {
+                    SFXImage.sprite = UnmuteSFXSprite;
+                    SFXAudioMixer.SetFloat("SFXVolume", UnmuteValue);
+                    IsSFXMute = false;
+                    SFXToggle.isOn = false;
+                    SettingData.SFXVolume = UnmuteValue;
+                }
             }
-
-            if (PlayerPrefs.GetFloat("SFXVolume") == UnmuteValue)
+            else
             {
+                PlayerPrefs.SetFloat("SFXVolume", UnmuteValue);
                 SFXImage.sprite = UnmuteSFXSprite;
                 SFXAudioMixer.SetFloat("SFXVolume", UnmuteValue);
                 IsSFXMute = false;

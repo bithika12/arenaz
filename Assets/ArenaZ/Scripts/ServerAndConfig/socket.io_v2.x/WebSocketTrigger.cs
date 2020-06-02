@@ -4,7 +4,7 @@ using UniRx.Triggers;
 using System;
 using System.Linq;
 using System.Collections;
-
+using RedApple;
 
 namespace socket.io {
 
@@ -93,6 +93,7 @@ namespace socket.io {
                 //WebSocket.
                 Debug.LogFormat("socket.io => {0} probed~", WebSocket.Url.ToString());
                 string[] wsArr = WebSocket.Url.ToString().Split(new string[] { "sid=" }, StringSplitOptions.None);//.Select(Convert.ToSingle).ToList(); ;
+                RedApple.SocketManager.Instance.SetCurrentSocketId(wsArr[1]);
                 //SocketManager.Instance.SocketID = wsArr[1];
                 //SocketManager.Instance.OnSocketIDReceive?.Invoke(wsArr[1]);
             }

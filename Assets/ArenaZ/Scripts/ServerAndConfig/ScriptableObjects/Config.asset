@@ -30,3 +30,7 @@ MonoBehaviour:
     - userJoined
     - gameTimer
     - dartTimer
+    - rejoinSuccess
+    - rejoinFailure
+    - temporaryDisconnect
+    - opponentReconnect

@@ -20,6 +20,8 @@ public class GeneralTimer
     public float SlowTimeFactor { get => _slowTimeFactor; set { } }
     public bool IsTimerPaused { get => _isTimerPaused; set => _isTimerPaused = value; }
 
+
+
     public GeneralTimer(MonoBehaviour mono, float time)
     {
         _monoBehaviour = mono;

@@ -1,21 +1,20 @@
-﻿using ArenaZ.Behaviour;
-using ArenaZ.ShootingObject;
-using UnityEngine;
-using RedApple;
-using RedApple.Api;
-using System;
-using TMPro;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using ArenaZ.GameMode;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using ArenaZ.Behaviour;
+using ArenaZ.GameMode;
 using ArenaZ.Screens;
+using ArenaZ.ShootingObject;
 using DevCommons.Utility;
 using DG.Tweening;
-using System.Linq;
-using RedApple.Api.Data;
-using RedApple.Utils;
 using Newtonsoft.Json;
+using RedApple;
+using RedApple.Api;
+using RedApple.Utils;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace ArenaZ.Manager
 {
@@ -46,6 +45,12 @@ namespace ArenaZ.Manager
             None = 0,
             Multiplayer,
             Training,
+        }
+
+        public enum EGameRejoin
+        {
+            No = 0,
+            Yes,
         }
 
         [Header("User")]
@@ -81,6 +86,7 @@ namespace ArenaZ.Manager
 
         private AudioPlayer mainMenuBGAudioPlayer;
         private AudioPlayer gameplayBGAudioPlayer;
+        private AudioPlayer countdownAudioPlayer;
 
         private bool playerTurn = false;
         private GameObject userDart;
@@ -94,6 +100,7 @@ namespace ArenaZ.Manager
         private bool gameIsSuspended = false;
 
         private EGamePlayMode gamePlayMode = EGamePlayMode.None;
+        private EGameRejoin gameRejoin = EGameRejoin.No;
 
         [SerializeField] private AlarmClock alarmClock;
 
@@ -128,6 +135,11 @@ namespace ArenaZ.Manager
         public PlayerDraw PlayerDrawScreen;
         public ShootingRange ShootingRangeScreen;
         public TrainingPlayerWin TrainingPlayerWinScreen;
+        public OpponentSurrenderWindow OpponentSurrenderWindowScreen;
+        public ReconnectCountdown ReconnectCountdownScreen;
+
+        private bool haltProcess = false;
+        private ThrowDartData throwDartData = null;
 
         protected override void Awake()
         {
@@ -236,11 +248,16 @@ namespace ArenaZ.Manager
 
         private void listenSocketEvents()
         {
+            SocketListener.Listen(SocketListenEvents.userConnected.ToString(), onUserConnected);
             SocketListener.Listen(SocketListenEvents.nextTurn.ToString(), onNextTurn);
             SocketListener.Listen(SocketListenEvents.gameThrow.ToString(), onOpponentDartThrow);
             SocketListener.Listen(SocketListenEvents.gameOver.ToString(), onGameOver);
             SocketListener.Listen(SocketListenEvents.gameTimer.ToString(), onGameTimerEvent);
             SocketListener.Listen(SocketListenEvents.dartTimer.ToString(), onDartTimerEvent);
+            SocketListener.Listen(SocketListenEvents.rejoinSuccess.ToString(), onRejoinSuccess);
+            SocketListener.Listen(SocketListenEvents.rejoinFailure.ToString(), onRejoinFailure);
+            SocketListener.Listen(SocketListenEvents.temporaryDisconnect.ToString(), onTemporaryDisconnect);
+            SocketListener.Listen(SocketListenEvents.opponentReconnect.ToString(), onOpponentReconnect);
         }
 
         private void setDartColor(string colorName, GameObject dartGameObj)
@@ -250,6 +267,8 @@ namespace ArenaZ.Manager
 
         public void InitializeOnGameStartSequences()
         {
+            genericTimer.IsTimerPaused = false;
+            haltProcess = false;
             //if (currentDart != null)
             //    Destroy(currentDart);
             firstTime = true;
@@ -268,6 +287,7 @@ namespace ArenaZ.Manager
             //}
             gameStartTime = Time.time;
             resetTimerImages();
+            gameRejoin = EGameRejoin.No;
         }
 
         private void resetTimerImages()
@@ -365,7 +385,7 @@ namespace ArenaZ.Manager
             if (gameStatus != EGameStatus.Playing)
                 return;
 
-            if (genericTimer != null)
+            if (genericTimer != null && !haltProcess)
             {
                 if (playerTurn && PlayerType == Player.Self)
                 {
@@ -418,6 +438,7 @@ namespace ArenaZ.Manager
 
             cameraController.SetCameraPosition(Player.Self);
             countdownTimer.StopCountdown();
+            stopCountdownMusic();
             genericTimer.StopTimer();
             genericTimer.ResetTimer();
 
@@ -431,6 +452,7 @@ namespace ArenaZ.Manager
 
         private void onGameOver(string data)
         {
+            StopRecconectCountdown();
             gameStatus = EGameStatus.None;
             firstTime = true;
             if (currentDart != null)
@@ -440,40 +462,42 @@ namespace ArenaZ.Manager
 
             cameraController.SetCameraPosition(Player.Self);
             countdownTimer.StopCountdown();
+            stopCountdownMusic();
             genericTimer.StopTimer();
             genericTimer.ResetTimer();
             Debug.Log($"OnGameOver : {data}" + "  User Id: " + User.UserId);
             var gameOverData = DataConverter.DeserializeObject<ApiResponseFormat<GameOverResponse>>(data);
 
-            if(gameOverData.Result.FirstUserId == User.UserId)
+            if (gameOverData.Result.FirstUserId == User.UserId)
             {
-                DisplayAppropriateGameOverScreen(gameOverData.Result.FirstUserGameStatus);
+                DisplayAppropriateGameOverScreen(gameOverData.Result.FirstUserGameStatus, gameOverData.Result.FirstUserCupNumber, gameOverData.Result.FirstUserTotalCup, gameOverData.Result.CompleteStatus);
             }
             else if (gameOverData.Result.SecondUserId == User.UserId)
             {
-                DisplayAppropriateGameOverScreen(gameOverData.Result.SecondUserGameStatus);
+                DisplayAppropriateGameOverScreen(gameOverData.Result.SecondUserGameStatus, gameOverData.Result.SecondUserCupNumber, gameOverData.Result.SecondUserTotalCup, gameOverData.Result.CompleteStatus);
             }
-
-            //if (currentDart != null)
-            //    StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
-
             onSwitchTurn(Player.None);
         }
 
-        private void DisplayAppropriateGameOverScreen(string a_GameOverStatus)
+        private void DisplayAppropriateGameOverScreen(string a_GameOverStatus, int a_MatchCup, int a_TotalCup, int a_CompleteStatus)
         {
             if (a_GameOverStatus == EGameOverStatus.Win.ToString())
             {
-                displayPopup(true);
+                PlayerWinScreen.Refresh(a_MatchCup, a_TotalCup);
+                if (a_CompleteStatus == 1)
+                    displayPopup(true);
+                else
+                    OpponentSurrenderWindowScreen.UpdateInfo(opponentName.text, () => displayPopup(true));
             }
             else if (a_GameOverStatus == EGameOverStatus.Lose.ToString())
             {
+                PlayerLooseScreen.Refresh(a_MatchCup, a_TotalCup);
                 displayPopup(false);
             }
             else if (a_GameOverStatus == EGameOverStatus.Draw.ToString())
             {
+                PlayerDrawScreen.Refresh(a_TotalCup);
                 onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
-                PlayerDrawScreen.Refresh();
             }
         }
 
@@ -505,6 +529,20 @@ namespace ArenaZ.Manager
                 gameplayBGAudioPlayer = null;
             }
             startMainMenuBGMusic();
+        }
+
+        private void startCountdownMusic()
+        {
+            countdownAudioPlayer = AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Countdown).Clip, loop = true, volume = SettingData.SFXVolume });
+        }
+
+        private void stopCountdownMusic()
+        {
+            if (countdownAudioPlayer != null)
+            {
+                countdownAudioPlayer.Destroy();
+                countdownAudioPlayer = null;
+            }
         }
 
         public void MainMenuBGMusicVolume(float a_Volume)
@@ -620,11 +658,14 @@ namespace ArenaZ.Manager
             if (t_GameTimerData != null && t_GameTimerData.Status == 1)
             {
                 if (t_GameTimerData.Result.TotalGameTime > 0 && t_GameTimerData.Result.GameFinish == 0)
-                    countdownTimer.StartCountdown(t_GameTimerData.Result.TotalGameTime, false, (t) => countdownTimerText.text = t, ()=>
+                {
+                    countdownTimer.StartCountdown(t_GameTimerData.Result.TotalGameTime, false, (t) => countdownTimerText.text = t, () =>
                     {
                         countdownTimerText.DOKill();
                         countdownTimerText.color = Color.yellow;
                     });
+                    startCountdownMusic();
+                }
                 if (t_GameTimerData.Result.GameFinish == 1)
                     countdownTimerText.DOColor(Color.red, 1.0f).SetLoops(-1, LoopType.Yoyo);
             }
@@ -722,6 +763,26 @@ namespace ArenaZ.Manager
             }
         }
 
+        private void ThrowDartAfterRejoin(bool firstDartOfTurn)
+        {
+            resetTimerRelatedValues();
+            playerTurn = true;
+            cameraController.SetCameraPosition(Player.Self);
+            InstantiateDart(userDart);
+            PlayerType = Player.Self;
+            touchBehaviour.IsShooted = false;
+            genericTimer.StartTimer(onPlayerTimerComplete);
+            onSwitchTurn(PlayerType);
+
+            if (firstDartOfTurn)
+            {
+                userRoundCount = 3;
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.WindowChange).Clip, oneShot = true, volume = SettingData.SFXVolume });
+                lastPlayerType = PlayerType;
+                clearFakeDarts();
+            }
+        }
+
         private void onOponnetTimerComplete()
         {
             if (gameStatus != EGameStatus.Playing)
@@ -749,7 +810,12 @@ namespace ArenaZ.Manager
                 Destroy(currentDart.gameObject);
 
             alarmClock.Show();
-            SocketManager.Instance.ThrowDartData(0, ConstantStrings.turnCancelled);
+
+            if (SocketManager.socket.IsConnected)
+                SocketManager.Instance.ThrowDartData(0, ConstantStrings.turnCancelled);
+            else
+                throwDartData = new ThrowDartData() { TurnCanceled = true };
+
             resetTimerRelatedValues();
             genericTimer.StopTimer();
         }
@@ -773,7 +839,7 @@ namespace ArenaZ.Manager
         {
             if (gameStatus != EGameStatus.Playing)
                 return;
-
+            throwDartData = null;
             Debug.Log($"onOpponentDartThrow : {data}");
             var dartThrowData = DataConverter.DeserializeObject<ApiResponseFormat<DartThrow>>(data);
             if(dartThrowData.Result.UserId != User.UserId)
@@ -912,7 +978,11 @@ namespace ArenaZ.Manager
                     int t_TotalValue = boardBody.HitPointScore;
                     if (boardBody.ScoreMultiplier > 1)
                         t_TotalValue = boardBody.HitPointScore * boardBody.ScoreMultiplier;
-                    SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
+
+                    if (SocketManager.socket.IsConnected)
+                        SocketManager.Instance.ThrowDartData(t_TotalValue, boardBody.HitPointScore, boardBody.ScoreMultiplier, touchBehaviour.LastTouchPosition);
+                    else
+                        throwDartData = new ThrowDartData() { TotalValue = t_TotalValue, HitPointScore = boardBody.HitPointScore, ScoreMultiplier = boardBody.ScoreMultiplier, HitPosition = touchBehaviour.LastTouchPosition, TurnCanceled = false }; 
                 }
 
                 PlayDartHitParticle(dartGameObj.transform.position);
@@ -950,6 +1020,17 @@ namespace ArenaZ.Manager
             fakeDarts.Add(t_Go);
         }
 
+        private void InstantiateFakeDart(GameObject dartGameObj, Vector3 position)
+        {
+            Debug.Log("Instantiate FakeDart");
+            GameObject t_Go = Instantiate(dartGameObj, position, dartGameObj.transform.rotation);
+            t_Go.transform.DOKill();
+            Dart t_Dart = t_Go.GetComponent<Dart>();
+            if (t_Dart != null)
+                Destroy(t_Dart);
+            fakeDarts.Add(t_Go);
+        }
+
         private void clearFakeDarts()
         {
             if (fakeDarts.Any())
@@ -957,6 +1038,133 @@ namespace ArenaZ.Manager
                 fakeDarts.ForEach(x => Destroy(x));
                 fakeDarts.Clear();
             }
+        }
+
+        private void onUserConnected(string obj)
+        {
+            if (gameRejoin == EGameRejoin.Yes)
+            {
+                SocketManager.Instance.UpdateOldSocketId();
+                SocketManager.Instance.ReJoinRequest();
+            }
+        }
+
+        private void doReJoinRequest()
+        {
+            if (SocketManager.Instance.SocketIdsMatching())
+            {
+                SocketManager.Instance.ReJoinRequest();
+            }
+            else
+            {
+                gameRejoin = EGameRejoin.Yes;
+                SocketManager.Instance.AddUser();
+            }
+        }
+
+        private void onRejoinSuccess(string a_Data)
+        {
+            gameRejoin = EGameRejoin.No;
+            var t_ApiResponseFormatData = DataConverter.DeserializeObject<ApiResponseFormat<RejoinSuccessResponseData>>(a_Data);
+            RejoinSuccessResponseData t_RejoinSuccessResponseData = t_ApiResponseFormatData.Result;
+            countdownTimer.UpdateTime(t_RejoinSuccessResponseData.GameRemainingTime);
+
+            if (t_RejoinSuccessResponseData.CurrentUserTurn == User.UserId)
+            {
+                if (t_RejoinSuccessResponseData.TurnStatus == 1)
+                {
+                    if (throwDartData != null)
+                    {
+                        if (throwDartData.TurnCanceled)
+                            SocketManager.Instance.ThrowDartData(0, ConstantStrings.turnCancelled);
+                        else
+                            SocketManager.Instance.ThrowDartData(throwDartData.TotalValue, throwDartData.HitPointScore, throwDartData.ScoreMultiplier, throwDartData.HitPosition);
+                    }
+                    else
+                    {
+                        ThrowDartAfterRejoin(false);
+                    }
+                }
+                else
+                {
+                    scoreHandler.UpdateScoreImmediately(Player.Opponent, int.Parse(t_RejoinSuccessResponseData.SecondUserLastDetails.Last().TotalScore), true);
+                    ThrowDartAfterRejoin(true);
+                }
+            }
+            else
+            {
+                if (t_RejoinSuccessResponseData.SecondUserLastDetails.Any())
+                {
+                    t_RejoinSuccessResponseData.SecondUserLastDetails.ForEach(x => InstantiateFakeDart(opponentDart, getValue(x.DartPoint)));
+                    opponentRoundCount = 3 - t_RejoinSuccessResponseData.SecondUserLastDetails.Count;
+                    if (t_RejoinSuccessResponseData.SecondUserLastDetails.Count == 3)
+                    {
+                        scoreHandler.UpdateScoreImmediately(Player.Opponent, int.Parse(t_RejoinSuccessResponseData.SecondUserLastDetails.Last().TotalScore), true);
+                    }
+                    else
+                    {
+                        scoreHandler.UpdateScoreImmediately(Player.Opponent, int.Parse(t_RejoinSuccessResponseData.SecondUserLastDetails.Last().TotalScore), false);
+                    }
+                }
+            }
+        }
+
+        private void onRejoinFailure(string a_Data)
+        {
+            gameRejoin = EGameRejoin.No;
+            var t_ApiResponseFormatData = DataConverter.DeserializeObject<ApiResponseFormat<RejoinFailureResponseData>>(a_Data);
+            RejoinFailureResponseData t_RejoinFailureResponseData = t_ApiResponseFormatData.Result;
+            RejoinResponseData t_RejoinResponseData = t_RejoinFailureResponseData.UserLastDetails.Where(x => x.UserId == User.UserId).FirstOrDefault();
+
+            // TODO Gameover
+            gameStatus = EGameStatus.None;
+            firstTime = true;
+            if (currentDart != null)
+                Destroy(currentDart.gameObject);
+            clearFakeDarts();
+            stopGamplayBGMusic();
+
+            cameraController.SetCameraPosition(Player.Self);
+            countdownTimer.StopCountdown();
+            stopCountdownMusic();
+            genericTimer.StopTimer();
+            genericTimer.ResetTimer();
+
+            PlayerLooseScreen.Refresh(t_RejoinResponseData.CupNumber, t_RejoinResponseData.TotalCupWin);
+
+            displayPopup(false);
+            onSwitchTurn(Player.None);
+        }
+
+        private void onTemporaryDisconnect(string a_Data)
+        {
+            var t_ApiResponseFormatData = DataConverter.DeserializeObject<ApiResponseFormat<TemporarilyDisconnectData>>(a_Data);
+            TemporarilyDisconnectData t_TemporarilyDisconnectData = t_ApiResponseFormatData.Result;
+            if (t_TemporarilyDisconnectData.UserId != User.UserId)
+            {
+                genericTimer.IsTimerPaused = true;
+                haltProcess = true;
+                UIManager.Instance.ShowScreen(Page.ReconnectCountdownPanel.ToString());
+                ReconnectCountdownScreen.StartCountdown();
+            }
+        }
+
+        private void onOpponentReconnect(string a_Data)
+        {
+            var t_ApiResponseFormatData = DataConverter.DeserializeObject<ApiResponseFormat<OpponentReconnectData>>(a_Data);
+            OpponentReconnectData t_OpponentReconnectData = t_ApiResponseFormatData.Result;
+            if (t_OpponentReconnectData.UserId != User.UserId)
+            {
+                genericTimer.IsTimerPaused = false;
+                StopRecconectCountdown();
+            }
+        }
+
+        private void StopRecconectCountdown()
+        {
+            ReconnectCountdownScreen.StopCountdown();
+            UIManager.Instance.HideScreenImmediately(Page.ReconnectCountdownPanel.ToString());
+            haltProcess = false;
         }
 
         private Vector3 getValue(string vectorValue)
@@ -1040,12 +1248,12 @@ namespace ArenaZ.Manager
         }
 
         #region ISocketState
-        public void SocketStatus(SocketManager.ESocketState a_SocketState)
+        public void SocketStatus(SocketManager.ESocketStatus a_SocketState)
         {
             if (gamePlayMode != EGamePlayMode.Multiplayer)
                 return;
 
-            if (a_SocketState == SocketManager.ESocketState.Disconnected && gameStatus == EGameStatus.Playing)
+            if (a_SocketState == SocketManager.ESocketStatus.Disconnected && gameStatus == EGameStatus.Playing)
             {
                 float t_CurrentTime = Time.time;
                 if (t_CurrentTime - gameStartTime <= 5.0f)
@@ -1061,6 +1269,10 @@ namespace ArenaZ.Manager
             if (gameStatus == EGameStatus.None)
             {
                 SocketManager.Instance.AddUser();
+            }
+            else if (gamePlayMode == EGamePlayMode.Multiplayer && gameStatus == EGameStatus.Playing)
+            {
+                doReJoinRequest();
             }
         }
         #endregion
@@ -1078,10 +1290,21 @@ namespace ArenaZ.Manager
             {
                 Debug.Log("GameResumed");
                 gameIsSuspended = false;
-                onLeaveRoom();
+                doReJoinRequest();
+                //onLeaveRoom();
             }
         }
     }
+}
+
+[System.Serializable]
+public class ThrowDartData
+{
+    public int TotalValue { get; set; } = 0;
+    public int HitPointScore { get; set; } = 0;
+    public int ScoreMultiplier { get; set; } = 0;
+    public Vector3 HitPosition { get; set; } = new Vector3(0, 0, 0);
+    public bool TurnCanceled { get; set; } = false;
 }
 
 [System.Serializable]
@@ -1098,4 +1321,92 @@ public class DartTimerData
 {
     [JsonProperty("dartFinish")]
     public int DartFinish = 0;
+}
+
+[System.Serializable]
+public class RejoinSuccessResponseData
+{
+    [JsonProperty("lastTurnTime")]
+    public int LastTurnTime;
+    [JsonProperty("gameRemainingTime")]
+    public int GameRemainingTime;
+    [JsonProperty("currentUserTurn")]
+    public string CurrentUserTurn;
+    [JsonProperty("turnStatus")]
+    public int TurnStatus;
+
+    [JsonProperty("firstUserLastDetails")]
+    public List<RejoinResponseData> FirstUserLastDetails = new List<RejoinResponseData>();
+    [JsonProperty("secondUserLastDetails")]
+    public List<RejoinResponseData> SecondUserLastDetails = new List<RejoinResponseData>();
+}
+
+[System.Serializable]
+public class RejoinFailureResponseData
+{
+    [JsonProperty("userLastDetails")]
+    public List<RejoinResponseData> UserLastDetails = new List<RejoinResponseData>();
+}
+
+[System.Serializable]
+public class RejoinResponseData
+{
+    [JsonProperty("_id")]
+    public string Id;
+    [JsonProperty("name")]
+    public string RoomName;
+    [JsonProperty("status")]
+    public string Status;
+    [JsonProperty("userId")]
+    public string UserId;
+    [JsonProperty("total")]
+    public string TotalScore;
+    [JsonProperty("score")]
+    public string Score;
+    [JsonProperty("isWin")]
+    public int IsWin;
+    [JsonProperty("turn")]
+    public int Turn;
+    [JsonProperty("dartPoint")]
+    public string DartPoint;
+    [JsonProperty("cupNumber")]
+    public int CupNumber;
+    [JsonProperty("totalCupWin")]
+    public int TotalCupWin;
+    [JsonProperty("roomCoin")]
+    public int RoomCoin;
+    [JsonProperty("scoreMultiplier")]
+    public string ScoreMultiplier;
+    [JsonProperty("hitScore")]
+    public string HitScore;
+    [JsonProperty("userName")]
+    public string UserName;
+    [JsonProperty("colorName")]
+    public string ColorName;
+    [JsonProperty("raceName")]
+    public string RaceName;
+    [JsonProperty("dartName")]
+    public string DartName;
+    [JsonProperty("firstName")]
+    public string FirstName;
+    [JsonProperty("lastName")]
+    public string LastName;
+}
+
+[System.Serializable]
+public class TemporarilyDisconnectData
+{
+    [JsonProperty("userId")]
+    public string UserId { get; set; } = "";
+    [JsonProperty("userGameStatus")]
+    public string UserGameStatus { get; set; } = "";
+    [JsonProperty("roomName")]
+    public string RoomName { get; set; } = "";
+}
+
+[System.Serializable]
+public class OpponentReconnectData
+{
+    [JsonProperty("userId")]
+    public string UserId;
 }

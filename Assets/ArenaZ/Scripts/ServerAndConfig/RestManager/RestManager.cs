@@ -101,6 +101,18 @@ namespace RedApple
         }
         #endregion
 
+        public static void GetUnreadMailCount(string email_id, Action<UnreadMailCountData> onCompletionSaveData, Action<RestError> restError)
+        {
+            Debug.Log("URL: " + getApiUrl(Urls.FETCH_UNREAD_MESSAGE));
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FETCH_UNREAD_MESSAGE))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, email_id);
+
+            sendWebRequest(webRqstBuilder, onCompletionSaveData, restError);
+        }
+
         public static void SaveUserSelection(string email_id, UserSelectionDetails userSelectionDetails, Action onCompletionSaveData, Action<RestError> restError)
         {
             Debug.Log($"User Email: {email_id}, Data: {JsonConvert.SerializeObject(userSelectionDetails)}");

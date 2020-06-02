@@ -24,10 +24,12 @@ namespace ArenaZ.Screens
         [SerializeField] private Button arenaButton;
         [SerializeField] private Button trainingButton;
         [SerializeField] private Button rankingButton;
+        [SerializeField] private Button newUserCongratulationBtn;
 
         [Header("Text Fields")]
         [Space(5)]
         [SerializeField] private Text userName;
+        [SerializeField] private Text mailCountText;
 
         [Header("Scroll Snap")]
         [Space(5)]
@@ -44,6 +46,8 @@ namespace ArenaZ.Screens
         [SerializeField] private Settings settings;
         [SerializeField] private PlayerColorChooser playerColorChooser;
 
+        private bool gotInitialize = false;
+
         private void Start()
         {           
             GettingButtonReferences();
@@ -59,6 +63,8 @@ namespace ArenaZ.Screens
         public void Initialize()
         {
             Debug.Log("Initialize CS");
+            gotInitialize = true;
+            GetUnreadMail();
             RestManager.GetUserSelection(User.UserEmailId, OnGetUserSelection, OnErrorGetSelectionData);
 
             string colorName = FileHandler.ReadFromPlayerPrefs(PlayerPrefsValue.SelectedColor.ToString(), UIManager.Instance.StartColorName);
@@ -70,6 +76,24 @@ namespace ArenaZ.Screens
             //Debug.Log("--------------CharacterId: " + characterId);
             //UIManager.Instance.ShowCharacterName(raceNames[characterId]);
             //horizontalScrollSnap.GoToScreen(characterId);
+        }
+
+        public void GetUnreadMail()
+        {
+            if (gotInitialize)
+                RestManager.GetUnreadMailCount(User.UserEmailId, OnGetUnreadMailCount, OnErrorGetSelectionData);
+        }
+
+        private void OnGetUnreadMailCount(UnreadMailCountData a_Data)
+        {
+            if (a_Data != null)
+            {
+                Debug.Log($"UnreadMailData: {JsonConvert.SerializeObject(a_Data)}, MailCount: {a_Data.UnreadMailCount}");
+                if (a_Data.UnreadMailCount <= 0)
+                    mailCountText.text = string.Empty;
+                else
+                    mailCountText.text = a_Data.UnreadMailCount.ToString();
+            }
         }
 
         private void OnGetUserSelection(UserSelectionDetails userSelectionDetails)
@@ -110,6 +134,11 @@ namespace ArenaZ.Screens
             LoadDefaultData();
         }
 
+        private void OnClickCloseNewUserCongratulation()
+        {
+            UIManager.Instance.HideScreen(Page.NewUserCongratulationOverlay.ToString());
+        }
+
         private void LoadDefaultData()
         {
             SetColorOnCharacter(UIManager.Instance.StartColorName);
@@ -132,6 +161,7 @@ namespace ArenaZ.Screens
             arenaButton.onClick.AddListener(()=> OnClickArena(GameType.normal));
             trainingButton.onClick.AddListener(()=> OnClickArena(GameType.training));
             rankingButton.onClick.AddListener(OnclickRanking);
+            newUserCongratulationBtn.onClick.AddListener(OnClickCloseNewUserCongratulation);
         }
 
         private void ReleaseButtonReferences()
@@ -139,6 +169,7 @@ namespace ArenaZ.Screens
             arenaButton.onClick.RemoveListener(()=> OnClickArena(GameType.normal));
             trainingButton.onClick.RemoveListener(()=> OnClickArena(GameType.training));
             rankingButton.onClick.RemoveListener(OnclickRanking);
+            newUserCongratulationBtn.onClick.RemoveAllListeners();
         }
         #endregion
 
@@ -285,4 +316,10 @@ public class CharacterData
 
     public int CharacterId { get; set; }
     public string ColorName { get; set; }
+}
+
+public class UnreadMailCountData
+{
+    [JsonProperty("details")]
+    public int UnreadMailCount = 0;
 }

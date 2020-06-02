@@ -145,6 +145,7 @@ namespace ArenaZ.Screens
             UIManager.Instance.HideScreen(Page.TrainingPlayerWinPanel.ToString());
             UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString(), Hide.none);
             UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString(), Hide.none);
+            CharacterSelection.Instance.GetUnreadMail();
         }
     }
 }

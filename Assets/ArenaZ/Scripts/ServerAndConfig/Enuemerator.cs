@@ -7,6 +7,7 @@ public enum SocketEmitEvents
     throwDart,
     leave,
     gameRequestCancel,
+    reJoin,
 }
 
 public enum SocketListenEvents
@@ -22,4 +23,8 @@ public enum SocketListenEvents
     connectedRoom,
     gameTimer,
     dartTimer,
+    rejoinSuccess,
+    rejoinFailure,
+    temporaryDisconnect,
+    opponentReconnect,
 }

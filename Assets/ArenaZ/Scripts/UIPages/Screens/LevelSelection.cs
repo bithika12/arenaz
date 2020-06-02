@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using ArenaZ.Manager;
 using RedApple;
 using DevCommons.Utility;
+using ArenaZ.Screens;
 
 namespace ArenaZ.LevelMangement
 {
@@ -116,6 +117,7 @@ namespace ArenaZ.LevelMangement
 
         private void OnClickShootingRange()
         {
+            UIManager.Instance.HideScreenImmediately(Page.ComingSoonOverlay.ToString());
             if (gamePlayType == GameType.normal)
             {
                 UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
@@ -132,6 +134,7 @@ namespace ArenaZ.LevelMangement
 
         private void OnClickSpeedRaceAndBunkerDef()
         {
+            UIManager.Instance.HideScreenImmediately(Page.ComingSoonOverlay.ToString());
             UIManager.Instance.ShowScreen(Page.ComingSoonOverlay.ToString());
         }
 
@@ -146,6 +149,7 @@ namespace ArenaZ.LevelMangement
             UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
             UIManager.Instance.ShowScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.CharacterSelectionPanel.ToString());
+            CharacterSelection.Instance.GetUnreadMail();
         }
         #endregion
     }

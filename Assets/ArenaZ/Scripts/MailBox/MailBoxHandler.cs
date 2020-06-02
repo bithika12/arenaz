@@ -7,6 +7,7 @@ using RedApple;
 using RedApple.Utils;
 using System;
 using ArenaZ.Manager;
+using ArenaZ.Screens;
 
 namespace ArenaZ
 {
@@ -54,6 +55,7 @@ namespace ArenaZ
             mailDescription.InitializeCell(obj, response =>
             {
                 UIManager.Instance.HideScreen(Page.MailPopUp.ToString());
+                CharacterSelection.Instance.GetUnreadMail();
             });
         }
 
@@ -69,6 +71,7 @@ namespace ArenaZ
         public void CloseWindow()
         {
             UIManager.Instance.HideScreen(Page.MailboxPanel.ToString());
+            CharacterSelection.Instance.GetUnreadMail();
         }
     }
 }

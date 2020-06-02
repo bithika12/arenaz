@@ -45,6 +45,13 @@ namespace ArenaZ.Screens
             ReleaseButtonReferences();
         }
 
+        public void Refresh(int a_LostCup, int a_TotalCup)
+        {
+            DisplayCoinAmount();
+            userLostCupText.text = "-" + a_LostCup.ToString();
+            userCupText.text = a_TotalCup.ToString();
+        }
+
         public void Refresh()
         {
             DisplayCoinAmount();

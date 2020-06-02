@@ -6,18 +6,19 @@ using System.Text.RegularExpressions;
 using DevCommons.Utility;
 using System.Collections.Generic;
 using ArenaZ.Manager;
+using System.Collections;
 
 namespace RedApple
 {
     public interface ISocketState
     {
-        void SocketStatus(SocketManager.ESocketState a_SocketState);
+        void SocketStatus(SocketManager.ESocketStatus a_SocketState);
         void SocketReconnected();
     }
 
     public class SocketManager : Singleton<SocketManager>
     {
-        public enum ESocketState
+        public enum ESocketStatus
         {
             None,
             Connected,
@@ -26,9 +27,12 @@ namespace RedApple
 
         public static Socket socket;
         public static event Action<string, string> onListen;
-        private ESocketState socketState = ESocketState.None;
+        public ESocketStatus SocketStatus { get; private set; } = ESocketStatus.None;
 
         public List<ISocketState> iSocketStateSubscribers = new List<ISocketState>();
+
+        public string OldSocketId { get; private set; } = string.Empty;
+        public string CurrentSocketId { get; private set; } = string.Empty;
 
         private void Start()
         {
@@ -44,6 +48,25 @@ namespace RedApple
             socket.On(SystemEvents.connectError, OnConnectedError);
             socket.On(SystemEvents.disconnect, OnDisconnected);
             socket.On(SystemEvents.connectTimeOut, OnTimeout);
+        }
+
+        public void SetCurrentSocketId(string a_SocketId)
+        {
+            Debug.Log($"Socket Id: {a_SocketId}");
+            CurrentSocketId = a_SocketId;
+
+            if (string.IsNullOrEmpty(OldSocketId) || string.IsNullOrWhiteSpace(OldSocketId))
+                OldSocketId = CurrentSocketId;
+        }
+
+        public void UpdateOldSocketId()
+        {
+            OldSocketId = CurrentSocketId;
+        }
+
+        public bool SocketIdsMatching()
+        {
+            return OldSocketId.Equals(CurrentSocketId);
         }
 
         #region Socket Emit
@@ -147,14 +170,27 @@ namespace RedApple
             Debug.LogError("Throw Dart Data: " + throwDartData);
             socket.EmitJson(SocketEmitEvents.throwDart.ToString(), throwDartData);
         }
+
+        public void ReJoinRequest()
+        {
+            // {"accessToken":"de103012-0cbe-4256-8222-4e5eb172f040","roomName":"RM1589509679450"}
+            ReJoinData reJoinData = new ReJoinData
+            {
+                AccessToken = User.UserAccessToken,
+                RoomName = User.RoomName
+            };
+
+            string reJoinRequestData = DataConverter.SerializeObject(reJoinData);
+            Debug.LogError("ReJoin Data: " + reJoinRequestData);
+            socket.EmitJson(SocketEmitEvents.reJoin.ToString(), reJoinRequestData);
+        }
         #endregion
 
         #region Socket Callbacks
-
         private void OnConnected()
         {
-            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Connected));
-            socketState = ESocketState.Connected;
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketStatus.Connected));
+            SocketStatus = ESocketStatus.Connected;
             Debug.LogWarning("SocketConnected : " + socket);
             SocketListener.ActivateListener();
             AddEvents();
@@ -164,33 +200,33 @@ namespace RedApple
         {
             iSocketStateSubscribers.ForEach(x =>
             {
-                x.SocketStatus(ESocketState.Connected);
+                x.SocketStatus(ESocketStatus.Connected);
                 x.SocketReconnected();
             });
-            socketState = ESocketState.Connected;
+            SocketStatus = ESocketStatus.Connected;
             Debug.LogWarning("SocketReConnected : " + val);
         }
 
         private void OnConnectedError(Exception error)
         {
-            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Disconnected));
-            socketState = ESocketState.Disconnected;
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketStatus.Disconnected));
+            SocketStatus = ESocketStatus.Disconnected;
             Debug.LogError("ConnectedError");
             //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
         }
 
         private void OnDisconnected()
         {
-            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Disconnected));
-            socketState = ESocketState.Disconnected;
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketStatus.Disconnected));
+            SocketStatus = ESocketStatus.Disconnected;
             Debug.LogError("Disconnected");
             //Invoke(nameof(chectSocketConnection), 2.5f);
         }
 
         private void OnTimeout()
         {
-            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketState.Disconnected));
-            socketState = ESocketState.Disconnected;
+            iSocketStateSubscribers.ForEach(x => x.SocketStatus(ESocketStatus.Disconnected));
+            SocketStatus = ESocketStatus.Disconnected;
             Debug.LogError("Timeout");
             //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
         }
@@ -204,9 +240,24 @@ namespace RedApple
 
         private void chectSocketConnection()
         {
-            if (socketState == ESocketState.Disconnected)
+            if (SocketStatus == ESocketStatus.Disconnected)
                 UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
         }
+
+        //private IEnumerator Emiting(string eventName, string messgae, bool jsonFormat = true)
+        //{
+        //    yield return new WaitUntil(() => socket != null && socket.IsConnected);
+        //    if (jsonFormat)
+        //    {
+        //        Debug.Log($"{eventName} {messgae}");
+        //        socket.EmitJson(eventName, messgae);
+        //    }
+        //    else
+        //    {
+        //        Debug.Log($"{eventName} {messgae}");
+        //        socket.Emit(eventName, messgae);
+        //    }
+        //}
     }
 }
 
@@ -277,6 +328,20 @@ public class GameOverResponse
     public string SecondUserGameStatus;
     [JsonProperty("roomName")]
     public string RoomName;
+    [JsonProperty("firstUserCupNumber")]
+    public int FirstUserCupNumber;
+    [JsonProperty("secondUserCupNumber")]
+    public int SecondUserCupNumber;
+    [JsonProperty("firstUserCoinNumber")]
+    public int FirstUserCoinNumber;
+    [JsonProperty("secondUserCoinNumber")]
+    public int SecondUserCoinNumber;
+    [JsonProperty("firstUserTotalCup")]
+    public int FirstUserTotalCup;
+    [JsonProperty("secondUserTotalCup")]
+    public int SecondUserTotalCup;
+    [JsonProperty("completeStatus")]
+    public int CompleteStatus;
 }
 
 [System.Serializable]
@@ -284,4 +349,13 @@ public class SocketUserData
 {
     [JsonProperty("userId")]
     public string UserId;
+}
+
+[System.Serializable]
+public class ReJoinData
+{
+    [JsonProperty("accessToken")]
+    public string AccessToken { get; set; }
+    [JsonProperty("roomName")]
+    public string RoomName { get; set; }
 }

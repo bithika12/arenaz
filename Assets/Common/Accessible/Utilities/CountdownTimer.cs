@@ -34,6 +34,12 @@ namespace RedApple.Utils
             timeLeft = a_CountdownTime;
         }
 
+        public void UpdateTime(float a_CountdownTime)
+        {
+            if (timerState == ETimerState.CountdownActive)
+                timeLeft = a_CountdownTime;
+        }
+
         public void StopCountdown()
         {
             timerState = ETimerState.Idle;

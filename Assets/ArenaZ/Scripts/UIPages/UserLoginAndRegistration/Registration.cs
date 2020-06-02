@@ -112,7 +112,7 @@ namespace ArenaZ.RegistrationUser
             storeUserData(registeredProfile);
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.successFullyRegisterd, PopUpduration);
             OnClickRegisterPopUpClose();
-            AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName, AccountAccessType.Registration);
+            AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName, AccountAccessType.Registration, true);
         }
 
         private void storeUserData(CreateAccount userDetails)

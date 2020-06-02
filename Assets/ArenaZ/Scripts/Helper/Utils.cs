@@ -39,6 +39,10 @@ public enum Page
     TrainingUIPanel,
     DeleteAccountAlertOverlay,
     TrainingPlayerWinPanel,
+    NotEnoughCoinOverlay,
+    NewUserCongratulationOverlay,
+    SurrenderedPopupPanel,
+    ReconnectCountdownPanel,
 }
 
 public enum ERace
@@ -85,7 +89,8 @@ public enum ButtonType
     Teal,
     White,
     Yellow,
-    None
+    None,
+    HandImage,
 }
 
 public enum EColor
@@ -193,6 +198,7 @@ public enum EAudioClip
     ButtonClick,
     MainMenu,
     PlayerSkinSelection,
+    Countdown,
 }
 
 public enum EGameOverStatus

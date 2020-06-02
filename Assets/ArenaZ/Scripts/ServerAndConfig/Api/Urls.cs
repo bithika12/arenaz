@@ -62,5 +62,7 @@
         public const string FETCH_NOTIFICATIONS = "fetch/notifications";
         public const string CHANGE_NOTIFICATION_STATUS = "change/notification/status";
         public const string FETCH_LEADERBOARD = "user/board";
+
+        public const string FETCH_UNREAD_MESSAGE = "fetch/unread/message";
     }
 }

@@ -49,12 +49,12 @@ namespace ArenaZ.Screens
         #endregion
 
         #region UI_Functionalities
-        public void TasksAfterLogin(string userName, AccountAccessType type)
-        { 
-             StartCoroutine(DoTasksAfterLogin(userName,type));
+        public void TasksAfterLogin(string userName, AccountAccessType type, bool newUser)
+        {
+            StartCoroutine(DoTasksAfterLogin(userName, type, newUser));
         }
 
-        private IEnumerator DoTasksAfterLogin(string userName,AccountAccessType accessType)
+        private IEnumerator DoTasksAfterLogin(string userName,AccountAccessType accessType, bool newUser)
         {
             float delay = 0f;
             if (accessType == AccountAccessType.Registration)
@@ -74,6 +74,10 @@ namespace ArenaZ.Screens
             UIManager.Instance.setCoinAndCup?.Invoke(User.UserCoin.ToString(), User.UserCup.ToString());
             CharacterSelection.Instance.ResetCharacterScroller(userName);
             SocketManager.Instance.AddUser();
+
+            yield return new WaitForSeconds(0.5f);
+            if (newUser)
+                UIManager.Instance.ShowScreen(Page.NewUserCongratulationOverlay.ToString());
         }
 
 

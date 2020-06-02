@@ -177,7 +177,8 @@ namespace socket.io {
             Emit(eventName, data, null);
         }
 
-        public void EmitJson(string eventName, string jsonData) {
+        public void EmitJson(string eventName, string jsonData)
+        {
             Debug.Log($"SentData:- \nEventName: {eventName} \nData: {jsonData}");
             EmitJson(eventName, jsonData, null);
         }

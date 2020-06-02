@@ -107,7 +107,7 @@ namespace ArenaZ.LoginUser
             FileHandler.SaveToFile<UserData>(userData, ConstantStrings.USER_SAVE_FILE_KEY);
 
             storeUserData(loggedinProfile);
-            AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName, AccountAccessType.Login);
+            AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName, AccountAccessType.Login, false);
             OnClickLoginPopUpClose();
         }
 

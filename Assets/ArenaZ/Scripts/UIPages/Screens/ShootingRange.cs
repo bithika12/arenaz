@@ -21,11 +21,12 @@ namespace ArenaZ.GameMode
         [Header("Buttons")]
         [Space(5)]
         [SerializeField] private Button shootingRangeBackButton;
+        [SerializeField] private Button notEnoughCoinCloseBtn;
         [SerializeField] private Button coinButton10;
         [SerializeField] private Button coinButton50;
         [SerializeField] private Button coinButton100;
         [SerializeField] private Button coinButton250;
-        [SerializeField] private Button coinButton500;
+        [SerializeField] private Button coinButton500;        
 
         [Header("User Image")]
         [SerializeField] private Image userFrame;
@@ -73,6 +74,11 @@ namespace ArenaZ.GameMode
             CancelInvoke("ScaleSize");
         }
 
+        private void OnClickNotEnoughCoinClose()
+        {
+            UIManager.Instance.HideScreen(Page.NotEnoughCoinOverlay.ToString());
+        }
+
         public void Refresh()
         {
             RestManager.GetUserSelection(User.UserEmailId, OnGetUserSelection, OnRequestFailure);
@@ -116,6 +122,8 @@ namespace ArenaZ.GameMode
         private void GettingButtonReferences()
         {
             shootingRangeBackButton.onClick.AddListener(OnClickShootingRangeBack);
+            notEnoughCoinCloseBtn.onClick.AddListener(OnClickNotEnoughCoinClose);
+
             coinButton10.onClick.AddListener(() => OnClickStartGameWithCoinValue(10));
             coinButton50.onClick.AddListener(() => OnClickStartGameWithCoinValue(50));
             coinButton100.onClick.AddListener(() => OnClickStartGameWithCoinValue(100));
@@ -126,6 +134,8 @@ namespace ArenaZ.GameMode
         private void ReleaseButtonReferences()
         {
             shootingRangeBackButton.onClick.RemoveAllListeners();
+            notEnoughCoinCloseBtn.onClick.RemoveAllListeners();
+
             coinButton10.onClick.RemoveAllListeners();
             coinButton50.onClick.RemoveAllListeners();
             coinButton100.onClick.RemoveAllListeners();
@@ -266,12 +276,15 @@ namespace ArenaZ.GameMode
         {
             if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
             {
+                UIManager.Instance.HideScreenImmediately(Page.NotEnoughCoinOverlay.ToString());
                 if (a_Value <= User.UserCoin)
                 {
                     PlayerPrefs.SetInt(ConstantStrings.ROOM_VALUE, a_Value);
                     gameLoading.WaitingForOtherPlayer();
                     SocketManager.Instance.GameRequest();
                 }
+                else
+                    UIManager.Instance.ShowScreen(Page.NotEnoughCoinOverlay.ToString());
             }
             //else if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Training)
             //{

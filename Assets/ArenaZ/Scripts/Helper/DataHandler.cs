@@ -36,7 +36,7 @@ namespace ArenaZ
 
         public CountryPicData GetCountryPicData(string a_Id)
         {
-            return countryPicDatas.Where(x => x.CountryId.Equals(a_Id)).First();
+            return countryPicDatas.Where(x => x.CountryId.ToUpper().Contains(a_Id.ToUpper())).First();
         }
 
         public AudioClipData GetAudioClipData(EAudioClip a_AudioClip)
