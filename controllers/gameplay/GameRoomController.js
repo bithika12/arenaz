@@ -2564,7 +2564,7 @@ io.on('connection', function (socket) {
                         console.log("user valid in that room while rejoin");
                         //////////roomdetails///////////////////
                         RoomDb.findOne({name: req.roomName},
-                        {_id: 1, turn_time:1}).then(roomresponses=> { 
+                        {_id: 1, turn_time:1,game_time_remain:1}).then(roomresponses=> { 
 
                         ////fetch current turn///
                         inmRoom.findNextUserDart({roomName: req.roomName}).then(function (roomDetails) {    
@@ -2577,7 +2577,8 @@ io.on('connection', function (socket) {
                          io.sockets.to(socket.id).emit('rejoinSuccess',
                          response.generate(constants.SUCCESS_STATUS, {
                             lastTurnTime:roomresponses.turn_time,
-                            gameRemainingTime:g,
+                            gameRemainingTime:roomresponses.game_time_remain,
+                            //gameRemainingTime:g,
                             currentUserTurn:roomDetails.userId,
                             turnStatus:turnres.turnstat,
                             firstUserLastDetails:responses,
@@ -2688,7 +2689,7 @@ io.on('connection', function (socket) {
                           console.log("game finished not required 10 sec listen");
                         }
                         else{
-                            
+
                            io.to(gameStartObj2.roomName).emit('gameTimer', 
                            response.generate(constants.SUCCESS_STATUS, {gameFinish:1},
                           "Only 10 seconds remaining"));
