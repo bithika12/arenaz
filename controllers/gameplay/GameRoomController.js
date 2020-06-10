@@ -2654,6 +2654,7 @@ io.on('connection', function (socket) {
                 let timer2 = setTimeout(function gameStartTimmer2(gameStartObj2) {
                     //if(g===20){
                     if(g===360){  
+                        //game_time_remain//
                         let updateCreateTime=moment().format('MM/DD/YYYY HH:mm:ss');
                         //update memory room with create time/////
                         console.log("updateCreateTime"+updateCreateTime);
@@ -2687,6 +2688,7 @@ io.on('connection', function (socket) {
                           console.log("game finished not required 10 sec listen");
                         }
                         else{
+                            
                            io.to(gameStartObj2.roomName).emit('gameTimer', 
                            response.generate(constants.SUCCESS_STATUS, {gameFinish:1},
                           "Only 10 seconds remaining"));
@@ -2926,10 +2928,19 @@ io.on('connection', function (socket) {
                     
                     
                      else {
-                        console.log("game timer running");
+                        room.updateRoomDetails({roomName: roomObj.roomName}, {game_time_remain: g}).then(function (gameremainOver) {
+                           console.log("game timer running");
+                           console.log(g);
+                           gameStartObj2.g = g;
+                           timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);
+
+                         }).catch(err => {
+                             logger.print("***Room update error ", err);
+                         })
+                        /*console.log("game timer running");
                         console.log(g);
                         gameStartObj2.g = g;
-                        timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);
+                        timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);*/
                     }
                 }, 1000, roomObj);
                 //new code///////////

@@ -88,6 +88,10 @@ var roomSchema = new Schema({
     turn_time:{
         type: Number,
         default: 0
+    },
+    game_time_remain:{
+        type: Number,
+        default: 0
     }
 
 });

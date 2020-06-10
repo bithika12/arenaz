@@ -912,7 +912,10 @@ room.userLeave = function (condObj, updateObj) {
                             }
                       else{
                          cupNumberOppo=Math.round((parseInt(userArr[findIndex].total)-25),0);
-                        } 
+                        }
+
+                    cupNumberOppo=Math.round(((199-cupNumberOppo)*70/199),0);
+    
 
                     //cupNumberOppo = Math.round(((userArr[findIndexOppo].total / 333) * 100), 0);
                     //cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
@@ -1062,7 +1065,9 @@ room.userLeaveNew = function (condObj, updateObj) {
                             }
                       else{
                          cupNumberOppo=Math.round((parseInt(userArr[findIndex].total)-25),0);
-                        }  
+                        } 
+
+                     cupNumberOppo=Math.round(((199-cupNumberOppo)*70/199),0);    
 
                     //cupNumberOppo = Math.round(((userArr[findIndexOppo].total / 333) * 100), 0);
                     //cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
