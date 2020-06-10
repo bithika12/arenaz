@@ -213,7 +213,9 @@ User.updateUserDetails =function(condObj,updateObj){
              console.log("user coin"+responses.startCoin);
              console.log("update cup"+updateObj.cupNo);
              console.log("update coin"+updateObj.startCoin);
-             let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin);
+             //let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin);
+             //update 09-06/////////
+             let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin)*2;
              console.log("win coin"+updatedCoin);
              console.log("responses.total_no_win"+responses.total_no_win);
              //console.log("")
