@@ -178,6 +178,7 @@ const fetchHistory = userId => {
                              let firstName=(!entry1.firstName)? '' : entry1.firstName;
                              let lastName=(!entry1.lastName)? '' : entry1.lastName;
                              let userNm=firstName+" "+lastName;
+                             userNm=entry1.userName;
                               //let userNm=userRes.firstName+userRes.lastName;
                           
                             if(entry1.userId==userId){
