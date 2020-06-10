@@ -160,13 +160,17 @@ room.throwDartDetails = function (reqObj) {
                                 availableCoin=elemt.roomCoin;
 
                                 let findIndexOpponent = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
-                                if(userArr[findIndexOpponent].total <99){
+                                /*if(userArr[findIndexOpponent].total <99){
                                     cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)+25),0);
                                 }
                                 else{
                                     cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)-25),0);
-                                }                                
+                                }*/                                
+                                
 
+                                ///09-06////
+                                cupNumberOppo=Math.round(((199-userArr[findIndexOpponent].total)*70/199),0);
+                                ///////09-06////////////////
                                 //cupNumberOppo = Math.round(((userArr[findIndexOpponent].total / 333) * 100), 0);
                                 //cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
                                 userArr[findIndexOpponent].cupNumber = cupNumberOppo;
@@ -1023,8 +1027,29 @@ room.userLeaveNew = function (condObj, updateObj) {
                 //winner user id
                 let findIndexOppoUserId=userArr[findIndexOppo].userId;
                  totalGameScores=userArr[findIndex].totalGameScore;
+
+                /////09_06//////////
+                if(findIndexOppo !=-1 && gameSeconds <=8){
+                    userArr[findIndex].isWin=2;
+                    userArr[findIndexOppo].isWin=2;
+                    userArr[findIndex].status = "leave";
+                    playStatus=userArr[findIndex].playStatus;
+
+                    //playStatus=2;
+                    isWin=2;
+                    userArr[findIndexOppo].cupNumber=70;
+                    userArr[findIndex].cupNumber=70;
+
+                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
+
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+                    opponentCoin=userArr[findIndexOppo].roomCoin;
+
+                }
+                ///09_o6//////////////
+
                  
-                if(findIndexOppo !=-1){
+                if(findIndexOppo !=-1 &&  gameSeconds >8){
                     //if(userArr[findIndexOppo].total != userArr[findIndex].total){
                     userArr[findIndexOppo].isWin = 1;
                     userArr[findIndexOppo].cupNumber=70;
@@ -1646,13 +1671,18 @@ room.winAfterTimerEnd = function (reqObj) {
 
                     userArr[findIndex].cupNumber=Math.round(((199-userArr[findIndex].total)*70/199),0);
                     console.log("userArr[findIndex].cupNumber"+userArr[findIndex].cupNumber);
+                    
 
-                    if(userArr[findIndexOppo].total <99){
+                    /*if(userArr[findIndexOppo].total <99){
                          cupNumberOppo=Math.round((parseInt(userArr[findIndexOppo].total)+25),0);
                             }
                       else{
                          cupNumberOppo=Math.round((parseInt(userArr[findIndexOppo].total)-25),0);
-                        } 
+                        }*/
+
+
+                    cupNumberOppo=Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+                    
 
                     userArr[findIndexOppo].cupNumber = cupNumberOppo;
                      console.log("userArr[findIndex].total"+userArr[findIndex].total);

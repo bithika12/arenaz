@@ -25,7 +25,7 @@ let _ = require('underscore');
 let dartArray=[];
 let Timer_Started=true;
 const moment=require("moment");
-let g;
+//let g;
 
 /*room.createRoom({userId : "5de7ac25c9dba27a72be9023"}).then(function(result){
 	console.log("success",result);
@@ -2648,7 +2648,7 @@ io.on('connection', function (socket) {
                 //new code 26 th mar//
                  //let g = 20;
                  //let g = 20;
-                 g = 360;
+                 let g = 360;
                  //let g = 360;
                 //logger.print("  ************  first turn loop start");
                 let timer2 = setTimeout(function gameStartTimmer2(gameStartObj2) {
