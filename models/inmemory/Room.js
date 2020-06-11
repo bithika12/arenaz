@@ -159,6 +159,10 @@ room.throwDartDetails = function (reqObj) {
                                 cupNumber = 70;
                                 availableCoin=elemt.roomCoin;
 
+                                ///////////////////////
+                                  
+                                ///////////////////////
+
                                 let findIndexOpponent = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
                                 /*if(userArr[findIndexOpponent].total <99){
                                     cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)+25),0);
@@ -169,7 +173,18 @@ room.throwDartDetails = function (reqObj) {
                                 
 
                                 ///09-06////
-                                cupNumberOppo=Math.round(((199-userArr[findIndexOpponent].total)*70/199),0);
+
+                                if(userArr[findIndexOpponent].total <99){
+                                     cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)+25),0);
+                                    }
+                                else{
+                                   cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)-25),0);
+                                } 
+
+                               cupNumberOppo=Math.round(((cupNumberOppo)*70/199),0);
+
+
+                                //cupNumberOppo=Math.round(((199-userArr[findIndexOpponent].total)*70/199),0);
                                 ///////09-06////////////////
                                 //cupNumberOppo = Math.round(((userArr[findIndexOpponent].total / 333) * 100), 0);
                                 //cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
@@ -1704,7 +1719,17 @@ room.winAfterTimerEnd = function (reqObj) {
                         }*/
 
 
-                    cupNumberOppo=Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+                    if(userArr[findIndexOppo].total <99){
+                                     cupNumberOppo=Math.round((parseInt(userArr[findIndexOppo].total)+25),0);
+                                    }
+                                else{
+                                   cupNumberOppo=Math.round((parseInt(userArr[findIndexOppo].total)-25),0);
+                                } 
+
+                    cupNumberOppo=Math.round(((cupNumberOppo)*70/199),0);    
+
+
+                    //cupNumberOppo=Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
                     
 
                     userArr[findIndexOppo].cupNumber = cupNumberOppo;
