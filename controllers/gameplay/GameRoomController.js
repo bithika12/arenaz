@@ -619,13 +619,21 @@ io.on('connection', function (socket) {
                 roomObj.userTurnId=roomDetails.userId;
                 //return roomDetails.userId;
                 //update turn timer////
-                console.log("game timer while turn dart"+g);
+                //console.log("game timer while turn dart"+g);
+                RoomDb.findOne({name: roomObj.roomName},
+                        {_id: 1, turn_time:1,game_time_remain:1}).then(roomresponses=> { 
+
                 RoomDb.updateOne({name: roomObj.roomName},
-                 {turn_time:g},
+                 {turn_time:roomresponses.game_time_remain},
                   function (err, updateroomresult) {
                   io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
 
                   });
+
+                }).catch(err => {
+                  console.log("error while rejoin");
+                            
+               });
                 //update turn timer////
                 //io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
                 //clearTimeout(waitingDartInterval[reqobj.roomName]);
@@ -2682,6 +2690,7 @@ io.on('connection', function (socket) {
                       console.log(g);
                       
                       console.log("only 10 sec remaining"); 
+
                       RoomDb.findOne({name:gameStartObj2.roomName}, {_id: 1,game_time:1, name:1}).then(gameresponses=> {
                         console.log("gameresponses.game_time"+gameresponses.game_time);
                         if(gameresponses.game_time >0){
@@ -2689,6 +2698,8 @@ io.on('connection', function (socket) {
                           console.log("game finished not required 10 sec listen");
                         }
                         else{
+                         room.updateRoomDetails({roomName: roomObj.roomName}, {game_time_remain: g}).then(function (gameremainOver) {
+
 
                            io.to(gameStartObj2.roomName).emit('gameTimer', 
                            response.generate(constants.SUCCESS_STATUS, {gameFinish:1},
@@ -2696,6 +2707,13 @@ io.on('connection', function (socket) {
 
                          gameStartObj2.g = g;
                          timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2); 
+                          ////
+
+                          }).catch(err => {
+                             logger.print("***Room update error ", err);
+                         })
+
+
                         }
 
                       }).catch(err => {
