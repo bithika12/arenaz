@@ -888,8 +888,15 @@ room.userLeave = function (condObj, updateObj) {
 
                     //playStatus=2;
                     isWin=2;
-                    userArr[findIndexOppo].cupNumber=70;
-                    userArr[findIndex].cupNumber=70;
+
+                    userArr[findIndex].cupNumber=
+                    Math.round(((199-userArr[findIndex].total)*70/199),0);
+
+                    userArr[findIndexOppo].cupNumber=
+                    Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
+                    /*userArr[findIndexOppo].cupNumber=70;
+                    userArr[findIndex].cupNumber=70;*/
 
                     cupNumberOppo=userArr[findIndexOppo].cupNumber;
 
@@ -899,7 +906,7 @@ room.userLeave = function (condObj, updateObj) {
                 if(findIndexOppo !=-1 &&  gameSeconds >8){
                     //if(userArr[findIndexOppo].total != userArr[findIndex].total){
                     userArr[findIndexOppo].isWin = 1;
-                    userArr[findIndexOppo].cupNumber=70;
+                    //userArr[findIndexOppo].cupNumber=70;
                     userArr[findIndex].status = "inactive";
                     playStatus=userArr[findIndex].playStatus;
                     isWin=1;
@@ -1040,8 +1047,15 @@ room.userLeaveNew = function (condObj, updateObj) {
 
                     //playStatus=2;
                     isWin=2;
-                    userArr[findIndexOppo].cupNumber=70;
-                    userArr[findIndex].cupNumber=70;
+                    //userArr[findIndexOppo].cupNumber=70;
+                    //userArr[findIndex].cupNumber=70;
+
+                    userArr[findIndex].cupNumber=
+                    Math.round(((199-userArr[findIndex].total)*70/199),0);
+
+                    userArr[findIndexOppo].cupNumber=
+                    Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
 
                     cupNumberOppo=userArr[findIndexOppo].cupNumber;
 
@@ -1055,10 +1069,13 @@ room.userLeaveNew = function (condObj, updateObj) {
                 if(findIndexOppo !=-1 &&  gameSeconds >8){
                     //if(userArr[findIndexOppo].total != userArr[findIndex].total){
                     userArr[findIndexOppo].isWin = 1;
-                    userArr[findIndexOppo].cupNumber=70;
+                    //userArr[findIndexOppo].cupNumber=70;
                     userArr[findIndex].status = "leave";
                     playStatus=userArr[findIndex].playStatus;
                     isWin=1;
+
+                    userArr[findIndexOppo].cupNumber=Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
 
                     if(userArr[findIndex].total <99){
                          cupNumberOppo=Math.round((parseInt(userArr[findIndex].total)+25),0);
@@ -1066,7 +1083,7 @@ room.userLeaveNew = function (condObj, updateObj) {
                       else{
                          cupNumberOppo=Math.round((parseInt(userArr[findIndex].total)-25),0);
                         } 
-                        
+
                      cupNumberOppo=Math.round(((cupNumberOppo)*70/199),0);
                      //cupNumberOppo=Math.round(((199-cupNumberOppo)*70/199),0);    
 
