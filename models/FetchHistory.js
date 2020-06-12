@@ -82,6 +82,8 @@ const fetchHistory = userId => {
 
         Room.findHistory(userId).then(function (responseParams) {
             console.log("responseParams"+typeof(responseParams));
+
+            console.log("responseParams123"+JSON.stringify(responseParams));
             //let responseParams1=JSON.parse(responseParams);
             //console.log("responseParams1"+(responseParams1.length));
             //console.log("responseParams1"+responseParams);
@@ -94,7 +96,7 @@ const fetchHistory = userId => {
 
                 responseParams.map(function(entry) {
                     //console.log("dateDifference"+entry.dateDifference);
-
+                    if(entry.updated_at){ 
                     let upDate=entry.updated_at;
                     let dt=moment(upDate).format('MM/DD/YYYY HH:mm:ss');
                     let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
@@ -181,7 +183,7 @@ const fetchHistory = userId => {
                              userNm=entry1.userName;
                               //let userNm=userRes.firstName+userRes.lastName;
                           
-                            if(entry1.userId==userId){
+                            /*if(entry1.userId==userId){
                                 if(entry1.isWin==1) {
                                     gameStatus = 'VICTORY';
                                     gameCoin = entry1.roomCoin * 2;
@@ -194,7 +196,7 @@ const fetchHistory = userId => {
                                     gameStatus = 'DEFEAT';
                                     gameCoin = entry1.roomCoin;
                                 }
-                            }
+                            }*/
                            // User1.find({userName:entry1.userName}).then(userRes=> {
                               
                             return {
@@ -213,13 +215,20 @@ const fetchHistory = userId => {
                         //});
                         })
                     });
+
+                    ////
+
+                }
+                 else{
+                    console.log("po0");
+                 }
                 });
 
                 //let res={details:chart};
                 //let obj = _.extend({}, chart);
                // console.log(obj);
 
-                //console.log(chart);
+                console.log("chart"+JSON.stringify(chart));
                 resolve(chart);
             }
             else{
@@ -228,6 +237,7 @@ const fetchHistory = userId => {
 
 
         }).catch(function (fetchHistoryErr) {
+            console.log("pop"+fetchHistoryErr);
             reject({status:Constants.API_ERROR,message:fetchHistoryErr});
         });
     });
