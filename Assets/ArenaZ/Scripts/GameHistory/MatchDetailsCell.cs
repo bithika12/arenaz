@@ -49,9 +49,8 @@ public class MatchDetailsCell : Cell<GameHistoryGameDetails>
                 EWinningStatus winningStatus = (EWinningStatus)t_UserData.GameResult;
                 userStatus.text = winningStatus.ToString();
                 userStatus.color = winningStatus.Equals(EWinningStatus.Defeat) ? Color.red : winningStatus.Equals(EWinningStatus.Victory) ? Color.green : winningStatus.Equals(EWinningStatus.Draw) ? Color.yellow : Color.white;
-
-                userCoinAmount.text = t_UserData.CoinNumber.ToString();
-                userCupCount.text = t_UserData.CupNumber.ToString();
+                userCoinAmount.text = winningStatus.Equals(EWinningStatus.Defeat) ? "-" + t_UserData.CoinNumber.ToString() : winningStatus.Equals(EWinningStatus.Victory) ? "+" + t_UserData.CoinNumber.ToString() : winningStatus.Equals(EWinningStatus.Draw) ? t_UserData.CoinNumber.ToString() : t_UserData.CoinNumber.ToString();
+                userCupCount.text = winningStatus.Equals(EWinningStatus.Defeat) ? "-" + t_UserData.CupNumber.ToString() : winningStatus.Equals(EWinningStatus.Victory) ? "+" + t_UserData.CupNumber.ToString() : winningStatus.Equals(EWinningStatus.Draw) ? t_UserData.CupNumber.ToString() : t_UserData.CupNumber.ToString();
                 userName.text = t_UserData.Name;
 
                 SetUserProfileImage(t_UserData.RaceName, t_UserData.ColorName);
@@ -59,7 +58,8 @@ public class MatchDetailsCell : Cell<GameHistoryGameDetails>
 
             if (t_OpponentData != null)
             {
-                opponentCupCount.text = t_OpponentData.CupNumber.ToString();
+                EWinningStatus winningStatus = (EWinningStatus)t_OpponentData.GameResult;
+                opponentCupCount.text = winningStatus.Equals(EWinningStatus.Defeat) ? "-" + t_OpponentData.CupNumber.ToString() : winningStatus.Equals(EWinningStatus.Victory) ? "+" + t_OpponentData.CupNumber.ToString() : winningStatus.Equals(EWinningStatus.Draw) ? t_OpponentData.CupNumber.ToString() : t_OpponentData.CupNumber.ToString();
                 opponentName.text = t_OpponentData.Name;
 
                 SetOpponentProfileImage(t_OpponentData.RaceName, t_OpponentData.ColorName);
@@ -67,6 +67,10 @@ public class MatchDetailsCell : Cell<GameHistoryGameDetails>
 
             gameplayTime.text = GetTimeInFormat(cellData.GameTime);
             playedAgo.text = GetTimeInFormat(cellData.LastTime, cellData.TimePeriodType);
+        }
+        else
+        {
+            this.gameObject.SetActive(false);
         }
     }
 

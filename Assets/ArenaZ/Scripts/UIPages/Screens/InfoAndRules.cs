@@ -32,6 +32,7 @@ namespace ArenaZ.InfoAndRules
         private void OnClickClose()
         {
             UIManager.Instance.HideScreen(Page.InfoAndRulesForPlayerPanel.ToString());
+            UIManager.Instance.ShowDefaultScreens();
         }
     }
 }

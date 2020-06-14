@@ -296,6 +296,7 @@ namespace ArenaZ.Screens
 
         public void OnclickRanking()
         {
+            UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.LeaderBoardPanel.ToString(),Hide.previous);
         }
         #endregion

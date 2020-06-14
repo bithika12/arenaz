@@ -72,6 +72,11 @@ namespace RedApple
         #region Socket Emit
         public void AddUser()
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             AccesToken acToken = new AccesToken
             {
                 AccessToken = User.UserAccessToken
@@ -84,6 +89,11 @@ namespace RedApple
 
         public void GameRequest()
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             int t_RoomCoin = PlayerPrefs.GetInt(ConstantStrings.ROOM_VALUE, 10);
             GameRequest gameRequest = new GameRequest
             {
@@ -97,6 +107,11 @@ namespace RedApple
 
         public void GameRequestCancel()
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             Debug.Log("RoomName: " + User.RoomName);
             LeaveRoomRequest leaveRoomRequest = new LeaveRoomRequest
             {
@@ -110,6 +125,11 @@ namespace RedApple
 
         public void LeaveRoomRequest()
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             Debug.Log("Leave RoomName: " + User.RoomName);
             LeaveRoomRequest leaveRoomRequest = new LeaveRoomRequest
             {
@@ -123,6 +143,11 @@ namespace RedApple
 
         public void ColRequest()
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             ColorRequest colorRequest = new ColorRequest
             {
                 AccessToken = User.UserAccessToken,
@@ -138,6 +163,11 @@ namespace RedApple
 
         public void ThrowDartData(int socreValue, int hitValue, int multiplierValue, Vector3 point)
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             string hitPoint = Regex.Replace(point.ToString(), @"\s+", "");
             //string hitPoint = Regex.Replace(point.ToString(), @"\s", "");
             Debug.Log("RoomName: " + User.RoomName);
@@ -157,6 +187,11 @@ namespace RedApple
 
         public void ThrowDartData(int hitValue, string point)
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             Debug.Log("RoomName: " + User.RoomName);
             ThrowDart throwDart = new ThrowDart
             {
@@ -173,6 +208,11 @@ namespace RedApple
 
         public void ReJoinRequest()
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             // {"accessToken":"de103012-0cbe-4256-8222-4e5eb172f040","roomName":"RM1589509679450"}
             ReJoinData reJoinData = new ReJoinData
             {
@@ -237,12 +277,6 @@ namespace RedApple
             Config.SocketConfig.SocketListenEvents.ForEach(evt => socket.On(evt, onListen));
         }
         #endregion
-
-        private void chectSocketConnection()
-        {
-            if (SocketStatus == ESocketStatus.Disconnected)
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
-        }
 
         //private IEnumerator Emiting(string eventName, string messgae, bool jsonFormat = true)
         //{

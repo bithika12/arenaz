@@ -4,6 +4,7 @@ using ArenaZ.Manager;
 using RedApple;
 using System.Collections.Generic;
 using System;
+using ArenaZ.SettingsManagement;
 
 namespace ArenaZ.Screens
 {
@@ -41,6 +42,7 @@ namespace ArenaZ.Screens
         {
             ReleaseButtonReferences();
         }
+
         #region Button_References
         private void GettingButtonReferences()
         {
@@ -63,12 +65,15 @@ namespace ArenaZ.Screens
 
         private void InfoButtonClicked()
         {
+            UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.InfoAndRulesForPlayerPanel.ToString(),Hide.previous);
         }
 
         private void SettingButtonClicked()
         {
-            // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
+            Settings.Instance.FromMainMenu = true;
+            UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
+            //UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
             UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.previous);
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
             UIManager.Instance.HideScreenImmediately(Page.RegionPopup.ToString());
@@ -80,11 +85,13 @@ namespace ArenaZ.Screens
 
         private void MailButtonClicked()
         {
+            UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.MailboxPanel.ToString(), Hide.previous);
         }
 
         private void HistoryButtonClicked()
         {
+            UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.PlayerMatchHistoryPanel.ToString(),Hide.previous);
         }
     }

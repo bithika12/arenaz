@@ -6,6 +6,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using RestUtil = RedApple.Utils.RestUtil;
 using RestError = RedApple.Utils.RestUtil.RestCallError;
+using ArenaZ.Manager;
 
 namespace RedApple
 {
@@ -21,7 +22,7 @@ namespace RedApple
         private string clientAccessToken = "";
 
         protected override void Awake()
-        {      
+        {
             restUtil = RestUtil.Initialize(this);
         }
 
@@ -29,7 +30,7 @@ namespace RedApple
 
         public static void UpdateUserProfile<T>(string name, string locaton, Action<T> onCompletion,
             Action<RestError> onError)
-        {
+        {           
             var builder = new WebRequestBuilder()
                 .Url(getApiUrl(Urls.PROFILE))
                 .Verb(Verbs.PUT)
@@ -213,6 +214,11 @@ namespace RedApple
 
         private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             Instance.restUtil.Send(builder, handler => { onCompletion?.Invoke(); },
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));
         }
@@ -220,6 +226,11 @@ namespace RedApple
         private static void sendWebRequest<T>(WebRequestBuilder builder, Action<T> onCompletion,
             Action<RestError> onError = null)
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             Instance.restUtil.Send(builder,
                 handler =>
                 {
@@ -239,6 +250,11 @@ namespace RedApple
         private static void sendWebRequestForCountryDetails(WebRequestBuilder builder, Action<CountryData> onCompletion,
            Action<RestError> onError = null)
         {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
             Instance.restUtil.Send(builder,
                 handler =>
                 {

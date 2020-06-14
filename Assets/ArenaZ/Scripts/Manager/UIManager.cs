@@ -55,6 +55,7 @@ namespace ArenaZ.Manager
         {
             enableGameStartPages();
         }
+
         private void enableGameStartPages()
         {
             //ShowUiPanel(true);
@@ -63,6 +64,11 @@ namespace ArenaZ.Manager
             ShowScreen(Page.AccountAccessDetailsPanel.ToString());
         }
 
+        public void ShowDefaultScreens()
+        {
+            ShowScreen(Page.TopAndBottomBarPanel.ToString());
+            ShowScreen(Page.CharacterSelectionPanel.ToString());
+        }
 
         public Sprite GetCorrespondingCountrySprite(string spriteName)
         {

@@ -141,6 +141,18 @@ namespace ArenaZ.Manager
         private bool haltProcess = false;
         private ThrowDartData throwDartData = null;
 
+        public bool InternetConnection()
+        {
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         protected override void Awake()
         {
             touchBehaviour = GetComponent<TouchBehaviour>();
@@ -441,8 +453,17 @@ namespace ArenaZ.Manager
             stopCountdownMusic();
             genericTimer.StopTimer();
             genericTimer.ResetTimer();
-
-            displayPopup(false);
+            ShootingRangeScreen.Refresh();
+            float t_CurrentTime = Time.time;
+            if (t_CurrentTime - gameStartTime <= 5.0f)
+            {
+                onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
+                PlayerDrawScreen.Refresh();
+            }
+            else
+            {
+                displayPopup(false);
+            }
 
             //if (currentDart != null)
             //    StartCoroutine(destroyDartAfterACertainTime(0, currentDart.gameObject));
@@ -465,6 +486,7 @@ namespace ArenaZ.Manager
             stopCountdownMusic();
             genericTimer.StopTimer();
             genericTimer.ResetTimer();
+            ShootingRangeScreen.Refresh();
             Debug.Log($"OnGameOver : {data}" + "  User Id: " + User.UserId);
             var gameOverData = DataConverter.DeserializeObject<ApiResponseFormat<GameOverResponse>>(data);
 
@@ -487,7 +509,10 @@ namespace ArenaZ.Manager
                 if (a_CompleteStatus == 1)
                     displayPopup(true);
                 else
+                {
+                    UIManager.Instance.ShowScreen(Page.SurrenderedPopupPanel.ToString());
                     OpponentSurrenderWindowScreen.UpdateInfo(opponentName.text, () => displayPopup(true));
+                }
             }
             else if (a_GameOverStatus == EGameOverStatus.Lose.ToString())
             {
@@ -664,10 +689,12 @@ namespace ArenaZ.Manager
                         countdownTimerText.DOKill();
                         countdownTimerText.color = Color.yellow;
                     });
-                    startCountdownMusic();
                 }
                 if (t_GameTimerData.Result.GameFinish == 1)
+                {
                     countdownTimerText.DOColor(Color.red, 1.0f).SetLoops(-1, LoopType.Yoyo);
+                    startCountdownMusic();
+                }
             }
         }
 
@@ -1250,17 +1277,32 @@ namespace ArenaZ.Manager
         #region ISocketState
         public void SocketStatus(SocketManager.ESocketStatus a_SocketState)
         {
-            if (gamePlayMode != EGamePlayMode.Multiplayer)
-                return;
-
-            if (a_SocketState == SocketManager.ESocketStatus.Disconnected && gameStatus == EGameStatus.Playing)
+            if (gamePlayMode == EGamePlayMode.Multiplayer)
             {
-                float t_CurrentTime = Time.time;
-                if (t_CurrentTime - gameStartTime <= 5.0f)
+                if (gameStatus == EGameStatus.Playing)
                 {
-                    onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
-                    PlayerDrawScreen.Refresh();
+                    if (a_SocketState == SocketManager.ESocketStatus.Disconnected)
+                    {
+                        CheckForInternetOnGameplay();
+                    }
                 }
+            }
+        }
+
+        private void CheckForInternetOnGameplay()
+        {
+            Debug.LogWarning("--------CheckForInternetOnGameplay--------");
+            float t_CurrentTime = Time.time;
+            if (t_CurrentTime - gameStartTime <= 5.0f)
+            {
+                onOpenWinloosePopUp(Page.DrawMatchPanel, User.UserName, User.UserRace, User.UserColor);
+                PlayerDrawScreen.Refresh();
+                ShootingRangeScreen.Refresh();
+            }
+            else
+            {
+                displayPopup(false);
+                ShootingRangeScreen.Refresh();
             }
         }
 

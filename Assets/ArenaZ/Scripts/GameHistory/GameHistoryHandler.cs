@@ -42,10 +42,20 @@ namespace ArenaZ
             Debug.LogError($"GameHistoryMatchDetails: {a_Error.Description}");
         }
 
+        private void OnDisable()
+        {
+            ClearWindow();
+        }
+
         private void ClearWindow()
         {
             if (activeMatchDetailsCells.Any())
             {
+                //for (int i = activeMatchDetailsCells.Count; i-- > 0;)
+                //{
+                //    Destroy(activeMatchDetailsCells[i].gameObject);
+                //}
+
                 activeMatchDetailsCells.ForEach(x => Destroy(x.gameObject));
                 activeMatchDetailsCells.Clear();
             }

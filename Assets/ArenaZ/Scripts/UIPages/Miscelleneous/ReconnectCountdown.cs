@@ -13,7 +13,7 @@ namespace ArenaZ
         private bool isCountingDown = false;
         private Action callback;
 
-        public void StartCountdown(float a_TimeLeft = 5.0f, Action a_Callback = null)
+        public void StartCountdown(float a_TimeLeft = 5.1f, Action a_Callback = null)
         {
             timeLeft = a_TimeLeft;
             callback = a_Callback;

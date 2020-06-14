@@ -113,6 +113,7 @@ namespace ArenaZ.RegistrationUser
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.successFullyRegisterd, PopUpduration);
             OnClickRegisterPopUpClose();
             AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName, AccountAccessType.Registration, true);
+            Settings.Instance.setSelectedColorImage(EColor.DarkBlue.ToString());
         }
 
         private void storeUserData(CreateAccount userDetails)

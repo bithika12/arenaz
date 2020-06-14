@@ -68,10 +68,16 @@ namespace ArenaZ
             }
         }
 
+        private void OnDisable()
+        {
+            ClearWindow();
+        }
+
         public void CloseWindow()
         {
             UIManager.Instance.HideScreen(Page.MailboxPanel.ToString());
             CharacterSelection.Instance.GetUnreadMail();
+            UIManager.Instance.ShowDefaultScreens();
         }
     }
 }

@@ -67,6 +67,8 @@ namespace ArenaZ.SettingsManagement
         private bool IsMusicMute = false;
         private bool IsSFXMute = false;
         private bool soundBtnUpdatedOnStart = false;
+
+        public bool FromMainMenu = false;
       //  private FacebookLogin facebookLogin;
 
         private Sprite countrySprite;
@@ -223,6 +225,9 @@ namespace ArenaZ.SettingsManagement
 
         private void OnClickClose()
         {
+            if (FromMainMenu)
+                UIManager.Instance.ShowDefaultScreens();
+
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
             UIManager.Instance.HideScreenImmediately(Page.RegionPopup.ToString());
             UIManager.Instance.HideScreen(Page.SettingsPanel.ToString());
@@ -252,6 +257,7 @@ namespace ArenaZ.SettingsManagement
             UIManager.Instance.HideScreen(Page.LevelSelectionPanel.ToString());
             UIManager.Instance.HideScreenImmediately(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.HideScreenImmediately(Page.SettingsPanel.ToString());
+            setSelectedColorImage(EColor.DarkBlue.ToString());
         }
 
         private void GoToLogIn()

@@ -29,5 +29,6 @@ public class MatchHistory : MonoBehaviour
     private void OnClickClose()
     {
         UIManager.Instance.HideScreen(Page.PlayerMatchHistoryPanel.ToString());
+        UIManager.Instance.ShowDefaultScreens();
     }
 }

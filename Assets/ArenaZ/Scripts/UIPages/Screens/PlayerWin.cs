@@ -48,7 +48,7 @@ namespace ArenaZ.Screens
         public void Refresh(int a_WonCup, int a_TotalCup)
         {
             DisplayCoinAmount();
-            userWonCupText.text = "-" + a_WonCup.ToString();
+            userWonCupText.text = "+" + a_WonCup.ToString();
             userCupText.text = a_TotalCup.ToString();
         }
 

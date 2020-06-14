@@ -21,10 +21,13 @@ public class ForgotPassword : MonoBehaviour
     [Space(5)]
     private float PopUpduration;
 
+    private bool allowFogotPassword = true;
+
     RegularExpression regularExp = new RegularExpression();
 
     private void OnEnable()
     {
+        allowFogotPassword = true;
         GettingButtonReferences();
     }
 
@@ -53,26 +56,30 @@ public class ForgotPassword : MonoBehaviour
 
     private void OnClickForgotPassword()
     {
-        Debug.Log("OnClickForgotPassword");
-        if (string.IsNullOrWhiteSpace(forgotPass_userEmail.text) && string.IsNullOrWhiteSpace(forgotPass_userName.text))
+        if (allowFogotPassword)
         {
-            UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongEmailAndUsername, PopUpduration);
-            return;
-        }
-        else if(!regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
-        {
-            if (string.IsNullOrWhiteSpace(forgotPass_userName.text))
+            allowFogotPassword = false;
+            Debug.Log("OnClickForgotPassword");
+            if (string.IsNullOrWhiteSpace(forgotPass_userEmail.text) && string.IsNullOrWhiteSpace(forgotPass_userName.text))
             {
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongEmailAndUsername, PopUpduration);
+                return;
             }
-            else
+            else if (!regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
             {
-                RestManager.ForgotPassword(false, forgotPass_userName.text, OnCompleteForgotPassword, OnErrorForgotPassword);
+                if (string.IsNullOrWhiteSpace(forgotPass_userName.text))
+                {
+                    UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.wrongEmailAndUsername, PopUpduration);
+                }
+                else
+                {
+                    RestManager.ForgotPassword(false, forgotPass_userName.text, OnCompleteForgotPassword, OnErrorForgotPassword);
+                }
             }
-        }
-        else if(regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
-        {
-            RestManager.ForgotPassword(true, forgotPass_userEmail.text, OnCompleteForgotPassword, OnErrorForgotPassword);
+            else if (regularExp.emailFormat.IsMatch(forgotPass_userEmail.text))
+            {
+                RestManager.ForgotPassword(true, forgotPass_userEmail.text, OnCompleteForgotPassword, OnErrorForgotPassword);
+            }
         }
     }
 
@@ -80,12 +87,14 @@ public class ForgotPassword : MonoBehaviour
     {
         UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.rightEmailAndUserName, PopUpduration);
         OnClickForgotPasswordPopUpClose();
+        allowFogotPassword = true;
        // UIManager.Instance.ScreenShowNormal(Page.LogINOverlay.ToString());
     }
 
     private void OnErrorForgotPassword(RestUtil.RestCallError obj)
     {
         UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), obj.Description, PopUpduration);
+        allowFogotPassword = true;
     }
 
     private void OnClickForgotPasswordPopUpClose()

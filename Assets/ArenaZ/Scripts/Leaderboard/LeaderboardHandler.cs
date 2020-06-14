@@ -53,6 +53,11 @@ namespace ArenaZ
             Debug.LogError($"LeaderboardDetails: {a_Error.Description}");
         }
 
+        private void OnDisable()
+        {
+            ClearWindow();
+        }
+
         private void ClearWindow()
         {
             selfLeaderboardCell.gameObject.SetActive(false);
@@ -66,6 +71,7 @@ namespace ArenaZ
         public void CloseWindow()
         {
             UIManager.Instance.HideScreen(Page.LeaderBoardPanel.ToString());
+            UIManager.Instance.ShowDefaultScreens();
         }
     }
 }

@@ -4,6 +4,8 @@ using ArenaZ.Manager;
 using RedApple;
 using DevCommons.Utility;
 using ArenaZ.Screens;
+using ArenaZ.SettingsManagement;
+using System.Collections.Generic;
 
 namespace ArenaZ.LevelMangement
 {
@@ -13,8 +15,7 @@ namespace ArenaZ.LevelMangement
         [Space(5)]
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button shootingRangeButton;
-        [SerializeField] private Button speedRaceButton;
-        [SerializeField] private Button bunkerDefenseButton;
+        [SerializeField] private List<Button> unavailabeLevelButtons = new List<Button>();
         [SerializeField] private Button backButton;
         [SerializeField] private Button comingSoonCloseButton;
 
@@ -78,8 +79,7 @@ namespace ArenaZ.LevelMangement
         {
             settingsButton.onClick.AddListener(SettingButtonClicked);
             shootingRangeButton.onClick.AddListener(OnClickShootingRange);
-            speedRaceButton.onClick.AddListener(OnClickSpeedRaceAndBunkerDef);
-            bunkerDefenseButton.onClick.AddListener(OnClickSpeedRaceAndBunkerDef);
+            unavailabeLevelButtons.ForEach(x => x.onClick.AddListener(OnClickUnavailableLevel));
             comingSoonCloseButton.onClick.AddListener(OnClickComingSoonClose);
             backButton.onClick.AddListener(OnClickBack);
         }
@@ -88,8 +88,7 @@ namespace ArenaZ.LevelMangement
         {
             settingsButton.onClick.RemoveListener(SettingButtonClicked);
             shootingRangeButton.onClick.RemoveListener(OnClickShootingRange);
-            speedRaceButton.onClick.RemoveListener(OnClickSpeedRaceAndBunkerDef);
-            bunkerDefenseButton.onClick.RemoveListener(OnClickSpeedRaceAndBunkerDef);
+            unavailabeLevelButtons.ForEach(x => x.onClick.RemoveListener(OnClickUnavailableLevel));
             comingSoonCloseButton.onClick.RemoveListener(OnClickComingSoonClose);
             backButton.onClick.RemoveListener(OnClickBack);
         }
@@ -97,6 +96,7 @@ namespace ArenaZ.LevelMangement
 
         private void SettingButtonClicked()
         {
+            Settings.Instance.FromMainMenu = false;
             // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
             UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.none);
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
@@ -132,7 +132,7 @@ namespace ArenaZ.LevelMangement
             //}
         }
 
-        private void OnClickSpeedRaceAndBunkerDef()
+        private void OnClickUnavailableLevel()
         {
             UIManager.Instance.HideScreenImmediately(Page.ComingSoonOverlay.ToString());
             UIManager.Instance.ShowScreen(Page.ComingSoonOverlay.ToString());

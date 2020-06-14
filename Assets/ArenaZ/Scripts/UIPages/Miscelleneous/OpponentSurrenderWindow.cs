@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ArenaZ.Manager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,7 @@ namespace ArenaZ
 
         public void OnProcced()
         {
+            UIManager.Instance.HideScreen(Page.SurrenderedPopupPanel.ToString());
             callback?.Invoke();
         }
 
