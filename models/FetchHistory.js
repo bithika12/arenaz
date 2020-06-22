@@ -399,12 +399,13 @@ const fetchHistoryAdmin = userId => {
 
                 responseParams.map(function(entry) {
                     if(entry.updated_at){ 
+                    console.log("plo123");    
                     //console.log(entry.users);
-                    let upDate=entry.updated_at;
-                    let updatedTime=upDate.getTime();//in seconds
-                    let currentTime=new Date().getTime();
-                    const diff = currentTime - updatedTime;
-                    let timeWithCurrent = Math.floor(diff / 1000 % 60);
+                   // let upDate=entry.updated_at;
+                    //let updatedTime=upDate.getTime();//in seconds
+                    //let currentTime=new Date().getTime();
+                    //const diff = currentTime - updatedTime;
+                    //let timeWithCurrent = Math.floor(diff / 1000 % 60);
                     let winnerUserId=(entry.users[0]['isWin']==1 ? entry.users[0]['userName'] : entry.users[1]['userName']);
                     //let entusers=entry.users;
                     chart.push({
