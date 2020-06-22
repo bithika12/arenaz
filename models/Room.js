@@ -610,7 +610,7 @@ room.updateRoomAfterWait = function(condObj){
 room.findHistoryAdmin = function(userId){
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
-        Room.find({game_time: {$gt : 0},status:"closed"}, {_id: 1, name:1, users:1, game_time:1,updated_at:1}).then(responses=> {
+        Room.find({game_time: {$gt : 0},status:"closed"}, {_id: 1, name:1, users:1, game_time:1,updated_at:1}).sort({"_id":-1}).then(responses=> {
             return resolve(responses);
         }).catch(err => {
             return reject(err);
