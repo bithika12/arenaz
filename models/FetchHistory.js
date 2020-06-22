@@ -406,7 +406,7 @@ const fetchHistoryAdmin = userId => {
                     //let currentTime=new Date().getTime();
                     //const diff = currentTime - updatedTime;
                     //let timeWithCurrent = Math.floor(diff / 1000 % 60);
-                    //let winnerUserId=(entry.users[0]['isWin']==1 ? entry.users[0]['userName'] : entry.users[1]['userName']);
+                    let winnerUserId=(entry.users[0]['isWin']==1 ? entry.users[0]['userName'] : entry.users[1]['userName']);
                     //let entusers=entry.users;
                     chart.push({
                         //game_time: entry.game_time,
@@ -417,7 +417,7 @@ const fetchHistoryAdmin = userId => {
                         second_user:entry.users[1]['userName'],
                         first_user_score:entry.users[0]['total'],
                         second_user_score:entry.users[1]['total'],
-                        winner_user:123
+                        winner_user:winnerUserId
                     });
 
                  }
