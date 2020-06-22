@@ -414,7 +414,7 @@ const fetchHistoryAdmin = userId => {
                          winnerUserId=entry.users[1]['userName'];
                     }
                     else if(entry.users[0]['isWin']==2){
-                         winnerUserId=entry.users[1]['userName'] + "and "+entry.users[0]['userName'];
+                         winnerUserId=entry.users[1]['userName'] + "  and  "+entry.users[0]['userName'];
                     }
                     //let winnerUserId=(entry.users[0]['isWin']==1 ? entry.users[0]['userName'] : entry.users[1]['userName']);
                     //let entusers=entry.users;
