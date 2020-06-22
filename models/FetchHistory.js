@@ -398,6 +398,7 @@ const fetchHistoryAdmin = userId => {
                 let secondScore;
 
                 responseParams.map(function(entry) {
+                    if(entry.updated_at){ 
                     //console.log(entry.users);
                     let upDate=entry.updated_at;
                     let updatedTime=upDate.getTime();//in seconds
@@ -417,6 +418,11 @@ const fetchHistoryAdmin = userId => {
                         second_user_score:entry.users[1]['total'],
                         winner_user:winnerUserId
                     });
+
+                 }
+                 else{
+                    console.log("po0");
+                 }
                 });
 
                 console.log(chart);
