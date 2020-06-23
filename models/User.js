@@ -414,6 +414,7 @@ User.checkUserToken = function(condObj){
  //userStatusUpdate
  User.userStatusUpdate = function(condObj){
      return  new Promise((resolve,reject) => {
+         console.log("condObj.userStatus"+condObj.userStatus);
          User.updateOne({_id:condObj.userId},{ $set : {onlineStatus:condObj.userStatus} }).then(updatedResponses=> {
              return resolve(updatedResponses);
          }).catch(updatedResponsesErr => {

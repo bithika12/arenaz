@@ -543,7 +543,8 @@ const updateCoinAdmin =(condObj,updateObj) =>{
 //fetchActiveUsers
 const fetchUserList =(condObj) =>{
     return  new Promise((resolve,reject) => {
-        User.find({ onlineStatus: 1},{_id: 1,userName:1,email:1,firstName:1,lastName:1}).then(roledetails=> {
+        let condObj={onlineStatus: 1};
+        User.find(condObj,{_id: 1,userName:1,email:1,firstName:1,lastName:1}).then(roledetails=> {
             return resolve(roledetails);
         }).catch(err => {
             return reject(err);

@@ -36,7 +36,7 @@ var userSchema =  new Schema({
                         raceName         :  [{ raceName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         dartName         :  [{ dartName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         characterName      :  [{ characterName: String, status: Number,createdAt : Date, updatedAt:Date}],
-                        onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
+                        //onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
                         loginType        :  {  type : String ,enum :["normal","social"],default :'normal'},
                         status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
                         total_no_win     :  { type : Number , default  : 0},
@@ -54,6 +54,8 @@ var userSchema =  new Schema({
                         loggedIn         :  { type : Number , default  : 0},
                         countryName      :  { type : String , default  : ''},
                         languageName     :  { type : String , default  : ''},
+                        onlineStatus     :  {  type : Number, default  : 0},/* 0=>  offline ,1 => online */
+
                   },{
                      strict:false
                   });
