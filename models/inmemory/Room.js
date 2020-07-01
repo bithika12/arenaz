@@ -99,6 +99,251 @@ room.throwDartDetails = function (reqObj) {
                             //userTurnOppnt = (elemt.turn) = 3 ? 0 : elemt.turn;
                             dartPnt = reqObj.dartPoint;
                             isWin = elemt.isWin;
+                            
+                            totalGameScores=parseInt(reqObj.score);   
+                            roundScore=parseInt(reqObj.score);
+                            
+                            calculatedScore = remainingScore - reqObj.score;
+
+                            /*
+                              * If user score is 10 but user hits 21
+                              * or some other number bigger
+                              * It is a bust and turn changes
+                             */
+                             //hitScore,
+                             //scoreMultiplier
+
+                            if (calculatedScore < 0) {
+                                //reject({message:"It is bust"});
+                                logger.print("It is a bust");
+                                logger.print("set trun to opponent as it is a bust");
+                                userTurn = 3;
+                                playStatus = 1;
+                                calculatedScore=remainingScore;
+                                //userRemainScore=remainingScore; 
+                            }
+                            
+
+                            if (calculatedScore == 0) {
+                                logger.print("win the match");
+                                isWin = 1;
+                                cupNumber = 70;
+                                availableCoin=elemt.roomCoin;
+
+                                ///////////////////////
+                                  
+                                ///////////////////////
+
+                                let findIndexOpponent = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
+                                /*if(userArr[findIndexOpponent].total <99){
+                                    cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)+25),0);
+                                }
+                                else{
+                                    cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)-25),0);
+                                }*/                                
+                                
+
+                                ///09-06////
+
+                                if(userArr[findIndexOpponent].total <99){
+                                     cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)+25),0);
+                                    }
+                                else{
+                                   cupNumberOppo=Math.round((parseInt(userArr[findIndexOpponent].total)-25),0);
+                                } 
+
+                               cupNumberOppo=Math.round(((cupNumberOppo)*70/199),0);
+
+
+                                //cupNumberOppo=Math.round(((199-userArr[findIndexOpponent].total)*70/199),0);
+                                ///////09-06////////////////
+                                //cupNumberOppo = Math.round(((userArr[findIndexOpponent].total / 333) * 100), 0);
+                                //cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
+                                userArr[findIndexOpponent].cupNumber = cupNumberOppo;
+                            } /*else {
+                                cupNumber = Math.round(((reqObj.score / remainingScore) * 100), 0);
+                                cupNumber = Math.round(((cupNumber * 70) / 100), 0);
+                            }*/
+                        }
+
+                    });
+                    /*calculatedScore = remainingScore - reqObj.score;
+
+                     if (reqObj.score == 1 || reqObj.score < 0 || calculatedScore < 0) {
+                         userTurn = 3;
+                         playStatus=1;
+
+                    }
+                     if(calculatedScore==0){
+                         isWin=1;
+                         cupNumber=70;
+                     }*/
+
+                    let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
+                    //userArr[findIndex].roundscore = roundScore;
+                   // userArr[findIndex].score = userScore;
+                    userArr[findIndex].score = reqObj.score;
+                    //userArr[findIndex].total = userRemainScore;
+                    userArr[findIndex].total = calculatedScore;
+                    userArr[findIndex].turn = userTurn;
+                    userArr[findIndex].dartPoint = dartPnt;
+                    userArr[findIndex].isWin = isWin;
+                    userArr[findIndex].userId = reqObj.userId;
+                    userArr[findIndex].status = "active";
+                    userArr[findIndex].cupNumber = cupNumber;
+                    userArr[findIndex].totalGameScore = totalGameScores;
+                    //totalGameScore
+                    //userArr[findIndex].userTurn=userTurnGame;
+                    let findIndexOpponentMod = userArr.findIndex(elemt => elemt.userId != reqObj.userId);
+                    if(findIndexOpponentMod!=-1){
+                       cupOpponent=userArr[findIndexOpponentMod].cupNumber;
+                       gameScoreOpponent=userArr[findIndexOpponentMod].totalGameScore;
+                    }
+
+                   console.log("user life score"+totalGameScores);
+
+                   userArr[findIndex].hitScore = reqObj.hitScore;
+                   userArr[findIndex].scoreMultiplier = reqObj.scoreMultiplier;
+
+                   //gameUserFirstArr=[];
+                   //gameUserSecondArr=[];
+                   //gameUserFirstObj={};
+                   //gameUserSecondObj={};
+                   // let gameUserFirstArr1=[];
+                   userArr.findIndex(function (reselemt) {                      
+                         //if(reselemt.total !=199 && reselemt.userId =reqObj.userId){
+                         reselemt.roomName=reqObj.roomName;                       
+                           
+                           gameUserFirstArr1.push(reselemt);
+                      // }
+                        
+                        
+
+                      
+
+
+                   });
+
+                   console.log("gameUserFirstArr"+gameUserFirstArr1);
+                   console.log("gameUserSecondArr"+gameUserSecondArr);
+
+
+
+                    resolve({
+                        roomName: reqObj.roomName,
+                        users: reqObj.userId,
+                        //remainingScore: userRemainScore,
+                        remainingScore: calculatedScore,
+                        finalArr: userArr,
+                        userTurn: userTurn,
+                        dartPoint: dartPnt,
+                        playStatus: playStatus,
+                        isWin: isWin,
+                        //playerScore: userScore,
+                        playerScore: reqObj.score,
+                        cupNumber: cupNumber,
+                        gameTotalTime:gameSeconds,
+                        availableCoin:availableCoin,
+                        //availableCoin:availableCoin,
+                        cupOpponent:cupOpponent,
+                        //new add
+                        userCoin:availableCoin,
+                        opponentCup:cupOpponent,
+                        opponentUserId:userArr[findIndexOpponentMod].userId,
+                        roundScore:roundScore,
+                        totalGameScores:totalGameScores,
+                        gameScoreOpponent:gameScoreOpponent,
+
+                        /////
+                        hitScore:reqObj.hitScore,
+                        scoreMultiplier:reqObj.scoreMultiplier,
+                         
+                        gameUserFirstArr1:gameUserFirstArr1,
+                        gameUserSecondArr:gameUserSecondArr
+
+
+                    });
+                } else {
+                    console.log("Unable to find room"+reqObj.roomName);
+                    reject({message: "No room found"});
+                }
+            });
+    });
+}
+
+
+room.throwDartDetailsRun = function (reqObj) {
+    return new Promise((resolve, reject) => {
+
+
+        let score;
+        let multiplier;
+        let calculatedScore;
+        let boardScore;
+        let userArr = [];
+        let newArr = [];
+        let newArr1 = [];
+        let newArr3 = [];
+        let userTurn;
+        let dartPnt;
+        let remainingScore=0;
+        let isWin;
+        let userTurnOppnt;
+        let userTurnGame;
+        boardScore = reqObj.score;
+        let playStatus = 0;
+        let cupNumber;
+        let cupNumberOppo;
+        let availableCoin;
+        let userScore;
+        //let findIndexOpponentMod;
+        let cupOpponent;
+        let userTotalScore=0;
+        let userRemainScore=0;
+        let roundScore=0;
+        let totalGameScores;
+        let gameScoreOpponent;
+
+        room.findOne({roomName: reqObj.roomName}
+            , function (err, result) {
+                if (result) {
+                   /* if(result.game_time!='undefined'){
+                        reject({message: "Game is over"});
+                    }*/
+
+                    let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
+                    let config = "MM/DD/YYYY HH:mm:ss";
+                    let ms = moment(dt1, config).diff(moment(result.createtime,config));
+                    let d = (moment.duration(ms))/1000;
+                    let gameSeconds = Math.floor(d);
+
+                    if(gameSeconds >360){
+                        gameSeconds=360;
+                    }
+
+
+                    userArr = result.users;
+                    let currentTime=new Date().getTime();
+                    //createtime
+                    const diff = currentTime - result.createtime;
+                    //const diff = currentTime - result.gametime;
+                    //const gameSeconds = Math.floor(diff / 1000 % 60);
+
+                    let findIndexOppo = userArr.findIndex(elemt => (elemt.turn >= 3 && elemt.userId != reqObj.userId/*roomDetails.dealStartDirection*/));
+                    logger.print("opponent turn set 0"+findIndexOppo);
+                    if (findIndexOppo != -1)
+                        userArr[findIndexOppo].turn = 0;
+                    userArr.findIndex(function (elemt) {
+
+                        if (elemt.userId == reqObj.userId) {
+                            remainingScore = elemt.total;
+                            userTurn = elemt.turn + 1;
+                            logger.print("current user turn"+userTurn);
+                            //userTurn = (elemt.turn) >= 3 ? 0 : elemt.turn + 1;
+                            //userTurn = (elemt.turn) >= 3 ? 0 : elemt.turn + 1;
+                            //userTurnOppnt = (elemt.turn) = 3 ? 0 : elemt.turn;
+                            dartPnt = reqObj.dartPoint;
+                            isWin = elemt.isWin;
 
                             //new code on 30 th march 2020//
                             console.log("user1 acore"+reqObj.score);

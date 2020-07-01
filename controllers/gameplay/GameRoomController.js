@@ -2370,7 +2370,7 @@ io.on('connection', function (socket) {
                                 else
                                     allOnlineUsers[findIndex].roomName='';
                               
-                                io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                  io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                     //userId: result.userId,
                                     firstUserId: result.userId,
                                     firstUserGameStatus: "Lose",
@@ -2430,9 +2430,9 @@ io.on('connection', function (socket) {
                            // allOnlineUsers.splice(findIndex, 1);
                             if(findIndex==1)
                                 allOnlineUsers[findIndexOpponent].roomName='';
-                            else
+                            else {
                                 allOnlineUsers[findIndex].roomName='';
-                            io.sockets.to(socket.id).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 //userId: result.userId,
                                 firstUserId: result.userId,
                                 firstUserGameStatus: "",
@@ -2459,6 +2459,8 @@ io.on('connection', function (socket) {
                                 gameStatus: ""
                             }, "Game is over"));*/
                             logger.print("Room closed");
+                           //nes///
+                          }
                         }
                         logger.print("Room closed");
 
