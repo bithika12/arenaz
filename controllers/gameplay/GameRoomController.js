@@ -790,18 +790,19 @@ io.on('connection', function (socket) {
 
     function processGameRequest(req, callback) {
         if (req.userId && req.userName) {
-            let coinArr=[10,20,50,100,500];
+            let coinArr=[10,50,100,250,500];
             let findCoin = coinArr.findIndex(elemt => elemt === req.roomCoin);
             console.log("findCoin"+findCoin);
 
-            if(findCoin==1){
+           if(findCoin==-1){
+               console.log("pl0"); 
                io.sockets.to(socket.id).emit('invalidCoin', 
                response.generate(constants.SUCCESS_STATUS,
-                {roomName: roomName,
-                 coin: req.roomCoin
+                {coin: req.roomCoin
                }, "User enter coin is not valid !"));  
+               callback();
             }
-
+            else {
             user.getUserSocketDetails({userId: req.userId}).then((userDetails) => {
                 var findIndex = allOnlineUsers.findIndex(function (elemt) {
                     return elemt.userId == req.userId
@@ -987,6 +988,8 @@ io.on('connection', function (socket) {
                 io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
                 callback();
             })
+
+        }
         } else {
             io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "User not found"}));
             callback();
