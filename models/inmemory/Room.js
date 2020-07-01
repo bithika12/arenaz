@@ -1077,7 +1077,7 @@ room.userLeave09_06_20 = function (condObj, updateObj) {
 });
 }
 
-room.userLeavenotrun = function (condObj, updateObj) {
+room.userLeave = function (condObj, updateObj) {
     return new Promise((resolve, reject) => {
 
         room.findOne({roomName: condObj.roomName}
@@ -1123,14 +1123,34 @@ room.userLeavenotrun = function (condObj, updateObj) {
                    
 
 
-
+                let onStatus;
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
 
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
                 if(findIndexOppo!=-1)
                   userOpponentUserId=userArr[findIndexOppo].userId;
+                if(findIndexOppo!=-1){
+                     UserDb.checkOnlineOrNot({_id:userArr[findIndexOppo].userId,onlineStatus:1}).then((userOnlineOpponnentStatusRes)=>{
+                        
+                         console.log("plo0");
+                        if(userOnlineOpponnentStatusRes.length >0){
+                            console.log("get");
+                            onStatus=1;
+                        }
+                        else{
+                            console.log("not get");
+                            onStatus=0;
+                        }
+                      
+
+                      }).catch(firstUserTotalCupErr=>{
+                        console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
+                      });   
+
+                }
 
                 if(userArr.length ==1){
+                    console.log("one");
                     //userArr[findIndex].isWin=2;
                     //userArr[findIndexOppo].isWin=2;
                     userArr[findIndex].status = "inactive";
@@ -1141,8 +1161,32 @@ room.userLeavenotrun = function (condObj, updateObj) {
                     //userArr[findIndex].cupNumber=70;
 
                 }
+                if(onStatus===0){
+                    console.log("drawe3");
+                    userArr[findIndex].isWin=2;
+                    userArr[findIndexOppo].isWin=2;
+                    userArr[findIndex].status = "inactive";
+                    userArr[findIndexOppo].status = "inactive";
 
-                if(userArr.length >1 && gameSeconds <=8){
+                    //playStatus=2;
+                    isWin=2;
+
+                    userArr[findIndex].cupNumber=
+                    Math.round(((199-userArr[findIndex].total)*70/199),0);
+
+                    userArr[findIndexOppo].cupNumber=
+                    Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
+                    /*userArr[findIndexOppo].cupNumber=70;
+                    userArr[findIndex].cupNumber=70;*/
+
+                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
+
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+                }
+
+                if(userArr.length >1 && gameSeconds <=10 || onStatus===0 ){
+                    console.log("drawe3");
                     userArr[findIndex].isWin=2;
                     userArr[findIndexOppo].isWin=2;
                     userArr[findIndex].status = "inactive";
@@ -1164,12 +1208,13 @@ room.userLeavenotrun = function (condObj, updateObj) {
                     gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
 
                 }
-                if(findIndexOppo !=-1 &&  gameSeconds >8){
+                if(findIndexOppo !=-1 &&  gameSeconds >10){
+                    console.log("not draw");
 
-                    UserDb.checkOnlineOrNot({_id:userArr[findIndexOppo].userId,onlineStatus:1}).then((userOnlineOpponnentStatusRes)=>{
-                        console.log("user opponent status check"+userOnlineOpponnentStatusRes.length);
-                           if(userOnlineOpponnentStatusRes.length >0){
-                            console.log("disconnect win");
+                    //UserDb.checkOnlineOrNot({_id:userArr[findIndexOppo].userId,onlineStatus:1}).then((userOnlineOpponnentStatusRes)=>{
+                       // console.log("user opponent status check"+userOnlineOpponnentStatusRes.length);
+                          // if(userOnlineOpponnentStatusRes.length >0){
+                           // console.log("disconnect win");
                             //console.log("not required to disconnect..user reconnect");
                             //if(userArr[findIndexOppo].total != userArr[findIndex].total){
                             userArr[findIndexOppo].isWin = 1;
@@ -1198,38 +1243,36 @@ room.userLeavenotrun = function (condObj, updateObj) {
                             //console.log("opponent"+userArr[findIndexOppo].userId);
                            cupNumberOppo=userArr[findIndexOppo].cupNumber;
                            gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
-                          }
-                          else{
-                            console.log("disconnect draw");
-                            //draw
-
-                            userArr[findIndex].isWin=2;
-                            userArr[findIndexOppo].isWin=2;
-                            userArr[findIndex].status = "inactive";
-                            userArr[findIndexOppo].status = "inactive";
-
-                            //playStatus=2;
-                            isWin=2;
-
-                            userArr[findIndex].cupNumber=
-                            Math.round(((199-userArr[findIndex].total)*70/199),0);
-
-                            userArr[findIndexOppo].cupNumber=
-                            Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
-
-                            /*userArr[findIndexOppo].cupNumber=70;
-                            userArr[findIndex].cupNumber=70;*/
-
-                            cupNumberOppo=userArr[findIndexOppo].cupNumber;
-
-                            gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
-
-                          }
-                         }).catch(firstUserTotalCupErr=>{
-                        console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
-                      })                   
+                          
+                          
+                        // }).catch(firstUserTotalCupErr=>{
+                       // console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
+                      //});                   
 
                  
+                }
+
+                 else{
+                    userArr[findIndex].isWin=2;
+                    userArr[findIndexOppo].isWin=2;
+                    userArr[findIndex].status = "inactive";
+
+                    //playStatus=2;
+                    isWin=2;
+
+                    userArr[findIndex].cupNumber=
+                    Math.round(((199-userArr[findIndex].total)*70/199),0);
+
+                    userArr[findIndexOppo].cupNumber=
+                    Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
+                    /*userArr[findIndexOppo].cupNumber=70;
+                    userArr[findIndex].cupNumber=70;*/
+
+                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
+
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
                 }
                 //userArr[findIndex].status = "inactive";
                 calculatedScore= userArr[findIndex].total;
@@ -1270,7 +1313,7 @@ room.userLeavenotrun = function (condObj, updateObj) {
 }
 
 
-room.userLeave = function (condObj, updateObj) {
+room.userLeaveRun = function (condObj, updateObj) {
     return new Promise((resolve, reject) => {
         
         room.findOne({roomName: condObj.roomName}
