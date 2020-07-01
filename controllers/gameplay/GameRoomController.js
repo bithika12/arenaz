@@ -2268,7 +2268,7 @@ io.on('connection', function (socket) {
         })
     }
 
-    /////disconnect logic modified with timer///////////////
+
      socket.on('disconnect', function (req) {
         let currentSocketId = socket.id;
         logger.print("socket id while disconnecting"+ " " +currentSocketId);
@@ -2302,11 +2302,12 @@ io.on('connection', function (socket) {
                         }
                         else{
 
-                      let m = 5;
+                      let m = 50;
 
                      let timer8 = setTimeout(function gameStartTimmer8(gameStartObj8) {
                     //if(g===20){
-                    if(m===5){ 
+                    if(m===50){ 
+
                          user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
                           
                           io.to(userRoomName).emit('temporaryDisconnect', response.generate(constants.SUCCESS_STATUS, {
@@ -2327,6 +2328,307 @@ io.on('connection', function (socket) {
                     m--;                   
 
                     if (m === 0) {
+
+                         //chk again game finished or not
+                        RoomDb.findOne({name:userRoomName},
+                        {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          console.log("game finished");
+                          if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+                        }
+
+
+                        else{
+
+                       
+
+                        //fetch user status///
+                       user.checkOnlineOrNot({_id:allOnlineUsers[findIndex].userId,onlineStatus:1}).then((userOnlineStatusRes)=>{
+                        console.log("user status check"+userOnlineStatusRes.length);
+                        if(userOnlineStatusRes.length >0){
+                            console.log("not required to disconnect..user reconnect");
+                        }
+
+                        else{
+                            console.log("user not reconnect after 5 sec");
+
+                        console.log("gameStartObj8"+gameStartObj8);
+                        console.log("only 0 sec remaining in disconnect timer");
+                        console.log(m);
+                        var clientsInRoom = io.nsps['/'].adapter.rooms[gameStartObj8];
+                        var numClients = clientsInRoom === undefined ? 0 : Object.keys(clientsInRoom.sockets).length;
+                        console.log("numClients"+numClients);
+                        ////normal winner declare/////
+                        console.log("allOnlineUsers"+allOnlineUsers[findIndex].userId); 
+                      async.waterfall([
+                    playerLeave({roomName: gameStartObj8, userId: allOnlineUsers[findIndex].userId}),
+                    updateRoom,
+                    RoomUpdate,
+                    //new add
+                    gameStatusUpdateDisconnect,
+                    gameStatusUpdateOpponentDisconnect,
+                    //new/////
+                    userStatusUpdate
+                    // totalPlayerList,
+                    // roomClosed,
+                    // memoryRoomRemove
+                ], function (err, result) {
+                    //allOnlineUsers.splice(findIndex, 1);
+                    if (result) {
+
+                        //allOnlineUsers=_.without(allOnlineUsers, _.findWhere(allOnlineUsers, {userId: req.userId}));
+                        logger.print("win status after disconnecting"+result.isWin);
+
+                        user.findDetailsGame({_id:result.userId}).then((firstUserTotalCup)=>{
+                        console.log("firstUserTotalCup"+firstUserTotalCup.cupNo);    
+                         
+                        user.findDetailsGame({_id:result.opponentUserId}).then((secondUserTotalCup)=>{
+                        
+                        console.log("secondUserTotalCup"+secondUserTotalCup.cupNo); 
+
+                        if (findIndexOpponent != -1 && result.isWin == 1) {
+                            logger.print("opponent exists");
+                            winnerDeclare({
+                                userId: result.opponentUserId,
+                                //userId: allOnlineUsers[findIndexOpponent].userId,
+                                roomName: userRoomName
+                            }).then(function (roomDetails) {
+                                allOnlineUsers.splice(findIndex, 1);
+                                //allOnlineUsers[findIndex].roomName='';
+                                if(findIndex==1)
+                                   allOnlineUsers[findIndexOpponent].roomName='';
+                                else
+                                    allOnlineUsers[findIndex].roomName='';
+                              
+                                  io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                    //userId: result.userId,
+                                    firstUserId: result.userId,
+                                    firstUserGameStatus: "Lose",
+                                    secondUserId:result.opponentUserId,
+                                    secondUserGameStatus: "Win",
+                                    //userId: roomDetails,
+                                    roomName: userRoomName,
+
+                                    firstUserCupNumber:result.cupNumber,
+                                    secondUserCupNumber:result.opponentCup,
+
+                                    firstUserCoinNumber: result.availableCoin,
+                                    secondUserCoinNumber: result.opponentCoin,
+
+                                    completeStatus:0,
+
+                                    firstUserTotalCup: firstUserTotalCup.cupNo,
+                                    secondUserTotalCup: secondUserTotalCup.cupNo
+                                    //gameStatus: "Lose"
+                                    //gameStatus: "Win"
+                                }, "Game is over"));
+                                logger.print("Room closed");
+                            });
+                        } else if (findIndexOpponent != -1 && result.isWin == 2) {
+                            logger.print("opponent exists");
+                            allOnlineUsers.splice(findIndex, 1);
+                            //allOnlineUsers[findIndex].roomName='';
+                            if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+
+                            io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "Draw",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "Draw",
+                                //userId: result.roomUsers,
+                                roomName: userRoomName,
+
+                                firstUserCupNumber:result.cupNumber,
+                                secondUserCupNumber:result.opponentCup,
+
+                                firstUserCoinNumber: result.availableCoin,
+                                secondUserCoinNumber: result.opponentCoin,
+
+                                completeStatus:0,
+
+                                firstUserTotalCup: firstUserTotalCup.cupNo,
+                                secondUserTotalCup: secondUserTotalCup.cupNo
+                               // gameStatus: "Draw"
+                            }, "Game is over"));
+                            logger.print("Room closed");
+                        } else {
+                            logger.print("opponent not exists");
+                           // allOnlineUsers.splice(findIndex, 1);
+                            if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else {
+                                allOnlineUsers[findIndex].roomName='';
+                                io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                //userId: result.userId,
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "",
+                                //userId: result.roomUsers,
+                                roomName: userRoomName,
+
+                                firstUserCupNumber:result.cupNumber,
+                                secondUserCupNumber:result.opponentCup,
+
+                                firstUserCoinNumber: result.availableCoin,
+                                secondUserCoinNumber: result.opponentCoin,
+
+                                completeStatus:0,
+
+                                firstUserTotalCup: firstUserTotalCup.cupNo,
+                                secondUserTotalCup: secondUserTotalCup.cupNo
+                                //gameStatus: ""
+                            }, "Game is over"));
+                            /*io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                userId: result.roomUsers,
+                                roomName: userRoomName,
+                                gameStatus: ""
+                            }, "Game is over"));*/
+                            logger.print("Room closed");
+                           //nes///
+                          }
+                        }
+                        logger.print("Room closed");
+
+                       /////
+
+                       //if clause
+
+                       }).catch(secondUserTotalCupErr=>{
+                        console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                       })
+
+                       }).catch(firstUserTotalCupErr=>{
+                        console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
+                      })
+
+
+                    } else{
+                        logger.print("***DISCONNECT ERROR ", err);
+                        allOnlineUsers.splice(findIndex, 1);
+                        //allOnlineUsers[findIndex].roomName='';
+                        if(findIndex==1)
+                            allOnlineUsers[findIndexOpponent].roomName='';
+                        else
+                            allOnlineUsers[findIndex].roomName='';
+                        io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+                       }
+                       });
+
+                        /////normal winner declare////
+
+                        }
+                       }).catch(err=>{
+                         console.log("error while fetch user sttaus"+err);
+                       }) 
+
+                       }                      
+                       }).catch(secondUserTotalCupErr=>{
+                        console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                       })
+                        
+
+                        }
+                        else{
+                            console.log("disconnect timer running");
+                            console.log(m);
+                            gameStartObj8.m = m;
+                            timer8 = setTimeout(gameStartTimmer8, 1000, gameStartObj8);
+                        }
+
+                        }, 1000, userRoomName);
+
+
+                       }
+
+                      }).catch(err => {
+                        reject(err);
+                      });
+                 
+                //////////////////////////////////////////////////
+               
+
+            }
+            else{
+                logger.print("Room not found");
+                allOnlineUsers.splice(findIndex, 1);
+              }
+        }
+        else{
+            logger.print("no socket id found");
+        }
+    });
+
+    /////disconnect logic modified with timer///////////////
+     socket.on('disconnectAlreadyRun', function (req) {
+        let currentSocketId = socket.id;
+        logger.print("socket id while disconnecting"+ " " +currentSocketId);
+             
+
+        let findIndex = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId == currentSocketId
+        });
+        let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId != currentSocketId
+        });
+         console.log(findIndex);
+        if (findIndex != -1) {
+            let userRoomName = allOnlineUsers[findIndex].roomName;
+            if (userRoomName != '') {
+                logger.print("room name while disconnecting"+ userRoomName);
+                //io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
+                
+                //////////////////////////////////////////////////
+
+                   RoomDb.findOne({name:userRoomName},
+                    {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          console.log("game finished");
+                          if(findIndex==1)
+                                allOnlineUsers[findIndexOpponent].roomName='';
+                            else
+                                allOnlineUsers[findIndex].roomName='';
+                        }
+                        else{
+
+                      let m = 50;
+
+                     let timer8 = setTimeout(function gameStartTimmer8(gameStartObj8) {
+                    //if(g===20){
+                    if(m===50){ 
+
+                         user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
+                          
+                          io.to(userRoomName).emit('temporaryDisconnect', response.generate(constants.SUCCESS_STATUS, {
+                                    //userId: result.userId,
+                                    userId: allOnlineUsers[findIndex].userId,
+                                    userGameStatus: "User temporarily unavailable",                                    
+                                    roomName: userRoomName                                    
+                                }, "User temporarily unavailable"));
+
+                         console.log("disconnect timer start");
+                         console.log("user update responses"+statusUpdate);  
+                       }).catch(err => {
+                          console.log("user update error"+err);
+                       }); 
+                       
+                    }
+
+                    m--;                   
+
+                    if (m === 0) {
+
                         //fetch user status///
                        user.checkOnlineOrNot({_id:allOnlineUsers[findIndex].userId,onlineStatus:1}).then((userOnlineStatusRes)=>{
                         console.log("user status check"+userOnlineStatusRes.length);
@@ -3241,3 +3543,5 @@ io.on('connection', function (socket) {
     });
 
 });
+
+

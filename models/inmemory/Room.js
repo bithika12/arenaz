@@ -21,7 +21,7 @@ let gameUserSecondArr=[];
 let gameUserFirstObj={};
 let gameUserSecondObj={};
 let gameUserFirstArr1=[];
-
+var UserDb = require(appRoot + '/schema/Schema').userModel;
 
 /**
  * @desc This function is used for calculate score
@@ -1077,8 +1077,202 @@ room.userLeave09_06_20 = function (condObj, updateObj) {
 });
 }
 
+room.userLeavenotrun = function (condObj, updateObj) {
+    return new Promise((resolve, reject) => {
+
+        room.findOne({roomName: condObj.roomName}
+            , function (err, result) {
+                let score;
+                let multiplier;
+                let calculatedScore;
+                let boardScore;
+                let userArr = [];
+                let newArr = [];
+                let newArr1 = [];
+                let newArr3 = [];
+                let userTurn;
+                let dartPnt;
+                let remainingScore;
+                let isWin;
+                let userTurnOppnt;
+                let userTurnGame;
+                boardScore = condObj.score;
+                let playStatus = 0;
+                let cupNumber;
+                let playerScore;
+                userArr = result.users;
+                let cupNumberOppo;
+                let currentTime=new Date().getTime();
+                const diff = currentTime - result.createtime;
+                //const diff = currentTime - result.gametime;
+                //const gameSeconds = Math.floor(diff / 1000 % 60);
+
+                let userOpponentUserId;
+                let totalGameScores;
+                let gameScoreOpponent;
+
+                 let dt1=moment().format('MM/DD/YYYY HH:mm:ss');
+                  let config = "MM/DD/YYYY HH:mm:ss";
+                   let ms = moment(dt1, config).diff(moment(result.createtime,config));
+                  let d = (moment.duration(ms))/1000;
+                  let gameSeconds = Math.floor(d);
+
+                if(gameSeconds >360){
+                        gameSeconds=360;
+                    }
+                   
+
+
+
+                let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
+
+                let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
+                if(findIndexOppo!=-1)
+                  userOpponentUserId=userArr[findIndexOppo].userId;
+
+                if(userArr.length ==1){
+                    //userArr[findIndex].isWin=2;
+                    //userArr[findIndexOppo].isWin=2;
+                    userArr[findIndex].status = "inactive";
+
+                    //playStatus=2;
+                    //isWin=2;
+                    //userArr[findIndexOppo].cupNumber=70;
+                    //userArr[findIndex].cupNumber=70;
+
+                }
+
+                if(userArr.length >1 && gameSeconds <=8){
+                    userArr[findIndex].isWin=2;
+                    userArr[findIndexOppo].isWin=2;
+                    userArr[findIndex].status = "inactive";
+
+                    //playStatus=2;
+                    isWin=2;
+
+                    userArr[findIndex].cupNumber=
+                    Math.round(((199-userArr[findIndex].total)*70/199),0);
+
+                    userArr[findIndexOppo].cupNumber=
+                    Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
+                    /*userArr[findIndexOppo].cupNumber=70;
+                    userArr[findIndex].cupNumber=70;*/
+
+                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
+
+                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
+                }
+                if(findIndexOppo !=-1 &&  gameSeconds >8){
+
+                    UserDb.checkOnlineOrNot({_id:userArr[findIndexOppo].userId,onlineStatus:1}).then((userOnlineOpponnentStatusRes)=>{
+                        console.log("user opponent status check"+userOnlineOpponnentStatusRes.length);
+                           if(userOnlineOpponnentStatusRes.length >0){
+                            console.log("disconnect win");
+                            //console.log("not required to disconnect..user reconnect");
+                            //if(userArr[findIndexOppo].total != userArr[findIndex].total){
+                            userArr[findIndexOppo].isWin = 1;
+                            //userArr[findIndexOppo].cupNumber=70;
+                            userArr[findIndex].status = "inactive";
+                            playStatus=userArr[findIndex].playStatus;
+                            isWin=1;
+
+                            userArr[findIndexOppo].cupNumber=Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
+
+                            if(userArr[findIndex].total <99){
+                                 cupNumberOppo=Math.round((parseInt(userArr[findIndex].total)+25),0);
+                                    }
+                              else{
+                                 cupNumberOppo=Math.round((parseInt(userArr[findIndex].total)-25),0);
+                                }
+
+                            //cupNumberOppo=Math.round(((199-cupNumberOppo)*70/199),0);
+                            cupNumberOppo=Math.round(((cupNumberOppo)*70/199),0);
+
+                            //cupNumberOppo = Math.round(((userArr[findIndexOppo].total / 333) * 100), 0);
+                            //cupNumberOppo = Math.round(((cupNumberOppo * 70) / 100), 0);
+                            userArr[findIndex].cupNumber = cupNumberOppo;
+
+                            //console.log("opponent"+userArr[findIndexOppo].userId);
+                           cupNumberOppo=userArr[findIndexOppo].cupNumber;
+                           gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+                          }
+                          else{
+                            console.log("disconnect draw");
+                            //draw
+
+                            userArr[findIndex].isWin=2;
+                            userArr[findIndexOppo].isWin=2;
+                            userArr[findIndex].status = "inactive";
+                            userArr[findIndexOppo].status = "inactive";
+
+                            //playStatus=2;
+                            isWin=2;
+
+                            userArr[findIndex].cupNumber=
+                            Math.round(((199-userArr[findIndex].total)*70/199),0);
+
+                            userArr[findIndexOppo].cupNumber=
+                            Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
+
+                            /*userArr[findIndexOppo].cupNumber=70;
+                            userArr[findIndex].cupNumber=70;*/
+
+                            cupNumberOppo=userArr[findIndexOppo].cupNumber;
+
+                            gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
+
+                          }
+                         }).catch(firstUserTotalCupErr=>{
+                        console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
+                      })                   
+
+                 
+                }
+                //userArr[findIndex].status = "inactive";
+                calculatedScore= userArr[findIndex].total;
+                userTurn=userArr[findIndex].turn;
+                dartPnt=userArr[findIndex].dartPoint;
+                playStatus=userArr[findIndex].playStatus;
+                //isWin=userArr[findIndex].isWin;
+                playerScore=userArr[findIndex].score;
+                cupNumber=userArr[findIndex].cupNumber;
+                totalGameScores=userArr[findIndex].totalGameScore;
+                //userArr[findIndexOppo].isWin = 1;
+                resolve({
+                    roomName: condObj.roomName,
+                    users: condObj.userId,
+                    remainingScore: calculatedScore,
+                    finalArr: userArr,
+                    userTurn: userTurn,
+                    dartPoint: dartPnt,
+                    playStatus: playStatus,
+                    isWin: isWin,
+                    playerScore: playerScore,
+                    
+                    cupNumber: cupNumber,
+                    gameTotalTime:gameSeconds,
+                    opponentUserId:userOpponentUserId,
+                    ////////////////////////////////////
+                    opponentCup:cupNumber,
+                    cupNumber:cupNumberOppo,
+                    availableCoin:userArr[findIndex].roomCoin,
+                    opponentCoin:userArr[findIndex].roomCoin,
+                    
+                    totalGameScores:gameScoreOpponent,
+                    gameScoreOpponent:totalGameScores
+                });
+
+    });
+});
+}
+
+
 room.userLeave = function (condObj, updateObj) {
     return new Promise((resolve, reject) => {
+        
         room.findOne({roomName: condObj.roomName}
             , function (err, result) {
                 let score;
