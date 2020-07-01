@@ -790,6 +790,18 @@ io.on('connection', function (socket) {
 
     function processGameRequest(req, callback) {
         if (req.userId && req.userName) {
+            let coinArr=[10,20,50,100,500];
+            let findCoin = coinArr.findIndex(elemt => elemt === req.roomCoin);
+            console.log("findCoin"+findCoin);
+
+            if(findCoin==1){
+               io.sockets.to(socket.id).emit('invalidCoin', 
+               response.generate(constants.SUCCESS_STATUS,
+                {roomName: roomName,
+                 coin: req.roomCoin
+               }, "User enter coin is not valid !"));  
+            }
+
             user.getUserSocketDetails({userId: req.userId}).then((userDetails) => {
                 var findIndex = allOnlineUsers.findIndex(function (elemt) {
                     return elemt.userId == req.userId
