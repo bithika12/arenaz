@@ -1208,7 +1208,7 @@ room.userLeave = function (condObj, updateObj) {
                     gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
 
                 }
-                if(findIndexOppo !=-1 &&  gameSeconds >10){
+                if(findIndexOppo !=-1 &&  gameSeconds >10 && onStatus ===1){
                     console.log("not draw");
 
                     //UserDb.checkOnlineOrNot({_id:userArr[findIndexOppo].userId,onlineStatus:1}).then((userOnlineOpponnentStatusRes)=>{
