@@ -1689,6 +1689,203 @@ io.on('connection', function (socket) {
                 return elemt.userId != req.userId
             });
 
+
+            RoomDb.findOne({name:req.roomName},
+                        {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          console.log("game finished 678");
+                          allOnlineUsers[findIndex].roomName='';
+                        
+                            console.log("after splice"+allOnlineUsers.findIndex.roomName);
+                            io.sockets.sockets[currentSocketId].leave(req.roomName);
+                        }
+
+                        else {
+
+            /*var findIndex = allOnlineUsers.findIndex(function (elemt) {
+                return elemt.socketId == currentSocketId
+            });
+            let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+                return elemt.socketId != currentSocketId
+            });*/
+            //if (io.sockets.sockets[currentSocketId] != undefined)
+               // io.sockets.sockets[currentSocketId].leave(req.roomName);
+            //io.to(req.roomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: req.userId}, "Player leave from room"));
+            //if (allOnlineUsers[findIndexOpponent]){
+            if (findIndex != -1) {
+            async.waterfall([
+                playerLeaveMod({roomName: req.roomName, userId: req.userId}),
+                updateRoom,
+                RoomUpdate,
+                gameStatusUpdateLeaveMod,
+                gameStatusUpdateOpponentLeaveMod  
+
+            ], function (err, result) {
+                if (result) {
+                    console.log("new field"+result.opponentCup);
+                    console.log("opponent coin"+result.opponentCoin);
+                    console.log("user coin"+result.availableCoin);
+                    console.log("result.cupNumber"+result.cupNumber);
+                    console.log("result.opponentCup"+result.opponentCup);
+                    //console.log("opponent cup"+result.opponentCup);
+                    
+                    user.findDetailsGame({_id:result.userId}).then((firstUserTotalCup)=>{
+                        console.log("firstUserTotalCup"+firstUserTotalCup.cupNo);    
+                         
+                    user.findDetailsGame({_id:result.opponentUserId}).then((secondUserTotalCup)=>{
+
+                    if (findIndexOpponent != -1 && result.isWin == 1) {
+                        winnerDeclare({
+                            //useropponentId: result.opponentUserId,
+                            userId: result.opponentUserId,
+                            roomName: req.roomName
+                        }).then(function (roomDetails) {
+                            console.log("splice");
+                            console.log(allOnlineUsers.findIndex.userId);
+                            console.log(allOnlineUsers.findIndex.roomName);
+                            allOnlineUsers[findIndex].roomName='';
+                            allOnlineUsers[findIndexOpponent].roomName='';
+                            console.log("after splice"+allOnlineUsers.findIndex.roomName);
+                            io.sockets.sockets[currentSocketId].leave(req.roomName);
+                            io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                                firstUserId: result.userId,
+                                firstUserGameStatus: "Lose",
+                                secondUserId:result.opponentUserId,
+                                secondUserGameStatus: "Win",
+                               // userId: roomDetails,
+                                roomName: req.roomName,
+
+                                //gameStatus: "Win"
+                                firstUserCupNumber: result.cupNumber,
+                                secondUserCupNumber: result.opponentCup,
+
+                                firstUserCoinNumber: result.availableCoin,
+                                secondUserCoinNumber: result.opponentCoin,
+
+                                completeStatus:0,
+
+                                firstUserTotalCup: firstUserTotalCup.cupNo,
+                                secondUserTotalCup: secondUserTotalCup.cupNo
+                            }, "Game is over"));
+                            logger.print("Room closed");
+                        });
+                    } else if (findIndexOpponent != -1 && result.isWin == 2) {
+                        console.log("splice"+allOnlineUsers);
+                        console.log(allOnlineUsers.findIndex.userId);
+                        console.log(allOnlineUsers.findIndex.roomName);
+                        allOnlineUsers[findIndex].roomName='';
+                        allOnlineUsers[findIndexOpponent].roomName='';
+                        console.log("after splice"+allOnlineUsers.findIndex.roomName);
+                        io.sockets.sockets[currentSocketId].leave(req.roomName);
+                        io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                            firstUserId: result.userId,
+                            firstUserGameStatus: "Draw",
+                            secondUserId:result.opponentUserId,
+                            secondUserGameStatus: "Draw",
+                            //userId: result.roomUsers,
+                            roomName: req.roomName,
+                            firstUserCupNumber: result.cupNumber,
+                            secondUserCupNumber: result.opponentCup,
+
+                            firstUserCoinNumber: result.availableCoin,
+                            secondUserCoinNumber: result.opponentCoin,
+
+                            completeStatus:0,
+
+                            firstUserTotalCup: firstUserTotalCup.cupNo,
+                            secondUserTotalCup: secondUserTotalCup.cupNo
+                            //gameStatus: "Draw"
+                        }, "Game is over"));
+                        logger.print("Room closed");
+                    } else {
+                        //console.log("splice"+allOnlineUsers);
+                        console.log(allOnlineUsers.findIndex.userId);
+                        console.log(allOnlineUsers.findIndex.roomName);
+                        allOnlineUsers[findIndex].roomName='';
+                        allOnlineUsers[findIndexOpponent].roomName='';
+                        console.log("after splice"+allOnlineUsers.findIndex.roomName);
+                        io.sockets.sockets[currentSocketId].leave(req.roomName);
+                        io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                            firstUserId: result.userId,
+                            firstUserGameStatus: "",
+                            secondUserId:result.opponentUserId,
+                            secondUserGameStatus: "",
+                            //userId: result.roomUsers,
+                            roomName: req.roomName,
+                            firstUserCupNumber: '',
+                            secondUserCupNumber: '',
+
+                            firstUserCoinNumber: '',
+                            secondUserCoinNumber: '',
+
+                            completeStatus:0,
+
+                            firstUserTotalCup: firstUserTotalCup.cupNo,
+                            secondUserTotalCup: secondUserTotalCup.cupNo
+                            //gameStatus: ""
+                        }, "Game is over"));
+                        logger.print("Room closed");
+                    }
+
+                    logger.print("Room closed");
+
+
+                    //////if clause////
+
+                       }).catch(secondUserTotalCupErr=>{
+                        console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                       })
+
+                       }).catch(firstUserTotalCupErr=>{
+                        console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
+                      })
+
+                } else {
+                    console.log("splice"+allOnlineUsers);
+                    console.log(allOnlineUsers.findIndex.userId);
+                    console.log(allOnlineUsers.findIndex.roomName);
+                    allOnlineUsers[findIndex].roomName='';
+                    allOnlineUsers[findIndexOpponent].roomName='';
+                    io.sockets.sockets[currentSocketId].leave(req.roomName);
+                   // allOnlineUsers.splice(findIndex, 1);
+                    //allOnlineUsers.splice(findIndex, 2);
+                    console.log("after splice"+allOnlineUsers.findIndex.roomName);
+                    logger.print("***LEAVE ERROR ", err);
+                }
+            });
+        }
+            else{
+                logger.print("no user index found in leave");
+            }
+            //}
+
+        }
+
+
+             }).catch(secondUserTotalCupErr=>{
+                        console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                       })
+
+
+        }
+    })
+
+
+
+  socket.on('leave02jul', function (req) {
+        console.log("leave called");
+        if (req.userId && req.roomName) {
+            let currentSocketId = socket.id;
+
+            var findIndex = allOnlineUsers.findIndex(function (elemt) {
+                return elemt.userId == req.userId
+            });
+            let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+                return elemt.userId != req.userId
+            });
+
             /*var findIndex = allOnlineUsers.findIndex(function (elemt) {
                 return elemt.socketId == currentSocketId
             });
@@ -1849,6 +2046,7 @@ io.on('connection', function (socket) {
 
         }
     })
+
 
     socket.on('leave_run', function (req) {
         console.log("leave called");
