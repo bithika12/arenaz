@@ -1175,14 +1175,14 @@ room.userLeave = function (condObj, updateObj) {
                     //userArr[findIndex].cupNumber=70;
 
                 }
-                if(onStatus===0){
+                /*if(onStatus===0){
                     console.log("drawe3");
                     userArr[findIndex].isWin=2;
                     userArr[findIndexOppo].isWin=2;
                     userArr[findIndex].status = "inactive";
                     userArr[findIndexOppo].status = "inactive";
 
-                    //playStatus=2;
+                    
                     isWin=2;
 
                     userArr[findIndex].cupNumber=
@@ -1191,13 +1191,12 @@ room.userLeave = function (condObj, updateObj) {
                     userArr[findIndexOppo].cupNumber=
                     Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
 
-                    /*userArr[findIndexOppo].cupNumber=70;
-                    userArr[findIndex].cupNumber=70;*/
+                    
 
                     cupNumberOppo=userArr[findIndexOppo].cupNumber;
 
                     gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
-                }
+                }*/
 
                 if(userArr.length >1 && gameSeconds <=10 ){
                     console.log("drawe3");
