@@ -1199,7 +1199,7 @@ room.userLeave = function (condObj, updateObj) {
                     gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
                 }
 
-                if(userArr.length >1 && gameSeconds <=10 || onStatus===0 ){
+                if(userArr.length >1 && gameSeconds <=10 ){
                     console.log("drawe3");
                     userArr[findIndex].isWin=2;
                     userArr[findIndexOppo].isWin=2;
@@ -1222,7 +1222,7 @@ room.userLeave = function (condObj, updateObj) {
                     gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
 
                 }
-                if(findIndexOppo !=-1 &&  gameSeconds >10 && onStatus ===1){
+                if(findIndexOppo !=-1 &&  gameSeconds >10){
                     console.log("not draw");
 
                     //UserDb.checkOnlineOrNot({_id:userArr[findIndexOppo].userId,onlineStatus:1}).then((userOnlineOpponnentStatusRes)=>{
@@ -1266,28 +1266,7 @@ room.userLeave = function (condObj, updateObj) {
                  
                 }
 
-                 else{
-                    userArr[findIndex].isWin=2;
-                    userArr[findIndexOppo].isWin=2;
-                    userArr[findIndex].status = "inactive";
-
-                    //playStatus=2;
-                    isWin=2;
-
-                    userArr[findIndex].cupNumber=
-                    Math.round(((199-userArr[findIndex].total)*70/199),0);
-
-                    userArr[findIndexOppo].cupNumber=
-                    Math.round(((199-userArr[findIndexOppo].total)*70/199),0);
-
-                    /*userArr[findIndexOppo].cupNumber=70;
-                    userArr[findIndex].cupNumber=70;*/
-
-                    cupNumberOppo=userArr[findIndexOppo].cupNumber;
-
-                    gameScoreOpponent=userArr[findIndexOppo].totalGameScore;
-
-                }
+                 
                 //userArr[findIndex].status = "inactive";
                 calculatedScore= userArr[findIndex].total;
                 userTurn=userArr[findIndex].turn;
