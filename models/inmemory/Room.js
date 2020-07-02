@@ -58,6 +58,9 @@ room.throwDartDetails = function (reqObj) {
         let roundScore=0;
         let totalGameScores;
         let gameScoreOpponent;
+        //let firstScore;
+        
+
 
         room.findOne({roomName: reqObj.roomName}
             , function (err, result) {
@@ -83,6 +86,7 @@ room.throwDartDetails = function (reqObj) {
                     const diff = currentTime - result.createtime;
                     //const diff = currentTime - result.gametime;
                     //const gameSeconds = Math.floor(diff / 1000 % 60);
+                    let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
 
                     let findIndexOppo = userArr.findIndex(elemt => (elemt.turn >= 3 && elemt.userId != reqObj.userId/*roomDetails.dealStartDirection*/));
                     logger.print("opponent turn set 0"+findIndexOppo);
@@ -113,13 +117,23 @@ room.throwDartDetails = function (reqObj) {
                              //hitScore,
                              //scoreMultiplier
 
+                             if(userTurn ==1){                             
+                               let firstScore=elemt.total; 
+                               console.log("firstScore"+firstScore);
+                               userArr[findIndex].firstScore=firstScore;
+                               console.log("firstScore 1"+userArr[findIndex].firstScore);
+                                                          
+                              }
+
                             if (calculatedScore < 0) {
+                                console.log("firstScore bust"+userArr[findIndex].firstScore);
                                 //reject({message:"It is bust"});
                                 logger.print("It is a bust");
                                 logger.print("set trun to opponent as it is a bust");
                                 userTurn = 3;
                                 playStatus = 1;
-                                calculatedScore=remainingScore;
+                                calculatedScore=userArr[findIndex].firstScore;
+                                //calculatedScore=remainingScore;
                                 //userRemainScore=remainingScore; 
                             }
                             
@@ -178,8 +192,8 @@ room.throwDartDetails = function (reqObj) {
                          isWin=1;
                          cupNumber=70;
                      }*/
-
-                    let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
+                    ////ajj
+                    //let findIndex = userArr.findIndex(elemt => elemt.userId === reqObj.userId);
                     //userArr[findIndex].roundscore = roundScore;
                    // userArr[findIndex].score = userScore;
                     userArr[findIndex].score = reqObj.score;
