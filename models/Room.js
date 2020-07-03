@@ -560,7 +560,7 @@ room.updateRoomAfterWait = function(condObj){
      //{game_time: {$gte : 0},status:"closed"}
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
-        Room.find({game_time: {$gte : 0},status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1,colorName:1,raceName:1,roomCoin:1,created_at:1}).sort({"_id":-1}).limit(1).then(responses=> {
+        Room.find({game_time: {$gte : 0},status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1,colorName:1,raceName:1,roomCoin:1,created_at:1,totalCupWin:1}).sort({"_id":-1}).limit(1).then(responses=> {
             return resolve(responses);
         }).catch(err => {
             return reject(err);

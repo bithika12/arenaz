@@ -707,7 +707,8 @@ const fetchHistoryUser = userId => {
                                 cupNumber:entry1.cupNumber,
                                 colorName:entry1.colorName,
                                 raceName:entry1.raceName,
-                                coinNumber:entry1.roomCoin,                               
+                                coinNumber:entry1.roomCoin, 
+                                totalCupWin:entry1.totalCupWin,                                
                                 gameResult:entry1.isWin
                             });
 
