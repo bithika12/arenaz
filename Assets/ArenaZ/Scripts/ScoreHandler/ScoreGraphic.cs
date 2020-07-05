@@ -101,7 +101,10 @@ namespace ArenaZ
                 instantiateHelper(0, a_GraphicScoreData, 1);
             }
             if (a_GraphicScoreData.ScoreIsDenied)
+            {
                 scoreDenied();
+                a_GraphicScoreData.OnStepComplete?.Invoke();
+            }
 
             AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.NumberDisplay).Clip, oneShot = true, volume = SettingData.SFXVolume });
         }
@@ -143,7 +146,7 @@ namespace ArenaZ
         {
             cross.FadeInOutAnimation(false, () =>
             {
-                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Lost).Clip, oneShot = true, volume = SettingData.SFXVolume });
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.Bust).Clip, oneShot = true, volume = SettingData.SFXVolume });
                 bust.FadeInOutAnimation();
             });
         }

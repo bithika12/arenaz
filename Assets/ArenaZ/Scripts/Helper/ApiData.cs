@@ -38,6 +38,8 @@ public class GameHistoryUserData
     public string RaceName { get; set; }
     [JsonProperty("coinNumber")]
     public int CoinNumber { get; set; }
+    [JsonProperty("totalCupWin")]
+    public int TotalCupWin { get; set; }
     [JsonProperty("gameResult")]
     public int GameResult { get; set; }
 }

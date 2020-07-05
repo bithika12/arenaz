@@ -276,6 +276,12 @@ namespace ArenaZ.GameMode
         {
             if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
             {
+                if (!GameManager.Instance.InternetConnection())
+                {
+                    UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                    return;
+                }
+
                 UIManager.Instance.HideScreenImmediately(Page.NotEnoughCoinOverlay.ToString());
                 if (a_Value <= User.UserCoin)
                 {

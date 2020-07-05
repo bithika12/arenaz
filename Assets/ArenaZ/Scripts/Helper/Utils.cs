@@ -190,15 +190,16 @@ public enum EAudioClip
     DartMiss,
     Timeout,
     Intro,
-    Lose,
+    GameLose,
     NumberDisplay,
     WindowChange,
-    Win,
-    Lost,
+    GameWin,
+    Bust,
     ButtonClick,
     MainMenu,
     PlayerSkinSelection,
     Countdown,
+    MoneyWin,
 }
 
 public enum EGameOverStatus

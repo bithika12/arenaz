@@ -63,7 +63,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Glow: 1
+    - _Glow: 0
     - _GlowInterval: 2
     - _GlowOnAwake: 0
     - _GlowPercentage: 1
