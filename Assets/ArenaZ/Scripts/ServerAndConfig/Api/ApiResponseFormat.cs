@@ -1,9 +1,10 @@
-namespace ArenaZ.Api
+
+namespace RedApple.Api
 {
     public class ApiResponseFormat<T>
-    {
-        public int Status;
+    {       
+        public int Status;      
         public string Message;
-        public T Data;
+        public T Result;
     }
 }

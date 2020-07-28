@@ -1,106 +1,288 @@
 ﻿using System;
 using RedApple.Utils.Rest;
-using Newtonsoft.Json;
-using ArenaZ.Api;
+using RedApple.Api;
+using RedApple.Api.Data;
 using UnityEngine;
-using RestUtil = RedApple.Utils.RestUtil<ArenaZ.Api.ApiErrorResponse>;
-using CreateAccountResponse = ArenaZ.Api.ApiResponseFormat<ArenaZ.Api.CreateAccountResponse>;
-using RedApple.Utils;
+using Newtonsoft.Json;
+using RestUtil = RedApple.Utils.RestUtil;
+using RestError = RedApple.Utils.RestUtil.RestCallError;
+using ArenaZ.Manager;
 
-namespace ArenaZ.Manager
+namespace RedApple
 {
-    public class RestManager : MonoBehaviour
+    public class RestManager : Singleton<RestManager>
     {
-        private static RestManager instance;
 
-        public static string AccessToken { set { instance.userAccessToken = value; } }
-        public static string RefreshToken { set { instance.refreshToken = value; } }
+        public static string AccessToken { set { Instance.userAccessToken = value; } }
 
         private RestUtil restUtil;
 
         private string userAccessToken;
-        private string refreshToken;
 
+        private string clientAccessToken = "";
 
-        public void Awake()
+        protected override void Awake()
         {
-            if (instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-
             restUtil = RestUtil.Initialize(this);
         }
 
-        #region Authentication
+        #region UserProfile
 
-        public static void CreateAccount(string data, Action<CreateAccountResponse> onCompletion, Action<RestUtil.RestCallError> onError)
-        {
+        public static void UpdateUserProfile<T>(string name, string locaton, Action<T> onCompletion,
+            Action<RestError> onError)
+        {           
             var builder = new WebRequestBuilder()
-                .Url(getApiUrl(APIConstants.API_REGISTER))
-                .Verb(Verbs.POST)
-                .FormData(APIConstants.FIRST_NAME, "dummyData")
-                .FormData(APIConstants.LAST_NAME, "dummyData")
-                .FormData(APIConstants.EMAIL_ID, "dummyData")
-                .FormData(APIConstants.PASSWORD, "dummyData")
-                .FormData(APIConstants.CONFIRM_PASSWORD, "dummyData");
+                .Url(getApiUrl(Urls.PROFILE))
+                .Verb(Verbs.PUT)
+                .FormData(Attributes.NAME, name)
+                .FormData(Attributes.LOCATION, locaton);
 
-            //addClientAuthHeader(ref builder);
-
-            SendWebRequest<CreateAccountResponse>(builder, onCompletion, onError);
+            addUserAuthHeader(ref builder);
+            sendWebRequest(builder, onCompletion, onError);
         }
 
         #endregion
-
-        private static void SendWebRequest<T>(WebRequestBuilder builder, Action<T> onCompletion, Action<RestUtil<ApiErrorResponse>.RestCallError> onError)
+        #region USER_LOGIN_REGISTRATION
+        public static void UserRegistration(string email_id, string name, string password, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
         {
-            instance.restUtil.Send(builder, handler =>
-            {
-                Debug.Log($"Response Data of {builder.url} :: {handler.text}");
-                var response = DataConverter.DeserializeObject<T>(handler.text);// JsonConvert.DeserializeObject<T>(handler.text);
-                if (onCompletion != null)
-                {
-                    onCompletion(response);
-                }
-            }, restError =>
-            {
-                interceptError(
-                 restError, () =>
-                 {
-                     if (onError != null)
-                         onError(restError);
-                 }, onError);
-            });
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+            .Url(getApiUrl(Urls.REGISTER))
+            .Verb(Verbs.POST)
+            .ContentType(ContentTypes.FORM)
+            .FormData(Attributes.EMAIL_ID, email_id)
+            .FormData(Attributes.NAME, name)
+            .FormData(Attributes.PASSWORD, password);
+
+            sendWebRequest(webRqstBuilder, onCompletionRegistration, restError);
         }
 
-        private static void interceptError(RestUtil.RestCallError error, Action onSuccess,
-            Action<RestUtil.RestCallError> defaultOnError)
+        public static void LoginProfile(string email_id, string password, Action<UserLogin> onCompletionLogin, Action<RestError> restError)
         {
-            if ("invalid_grant".Equals(error.Error))
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.USER_LOGIN))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.EMAIL_ID, email_id)
+                .FormData(Attributes.PASSWORD, password);
+            
+            sendWebRequest(webRqstBuilder, onCompletionLogin, restError);
+        }
+
+        public static void LogOutProfile(Action OnCompleteLogOut,Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstbuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.LOGOUT))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM);
+
+            addUserAuthHeader(ref webRqstbuilder);
+            sendWebRequest(webRqstbuilder, OnCompleteLogOut, restError);
+        }
+
+        public static void DeleteAccount(Action a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.DELETE_ACCOUNT))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM);
+
+            addUserAuthHeader(ref webRqstBuilder);
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        public static void ForgotPassword(bool isEmail, string emailOrUserName, Action OnCompleteForgotPassword, Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstbuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FORGOT_PASSWORD))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(isEmail ? Attributes.EMAIL_ID : Attributes.NAME, emailOrUserName);
+
+            sendWebRequest(webRqstbuilder, OnCompleteForgotPassword, restError);
+        }
+        #endregion
+
+        public static void GetUnreadMailCount(string email_id, Action<UnreadMailCountData> onCompletionSaveData, Action<RestError> restError)
+        {
+            Debug.Log("URL: " + getApiUrl(Urls.FETCH_UNREAD_MESSAGE));
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FETCH_UNREAD_MESSAGE))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, email_id);
+
+            sendWebRequest(webRqstBuilder, onCompletionSaveData, restError);
+        }
+
+        public static void SaveUserSelection(string email_id, UserSelectionDetails userSelectionDetails, Action onCompletionSaveData, Action<RestError> restError)
+        {
+            Debug.Log($"User Email: {email_id}, Data: {JsonConvert.SerializeObject(userSelectionDetails)}");
+            Debug.Log("URL: " + getApiUrl(Urls.SAVE_SELECTION_DETAILS));
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.SAVE_SELECTION_DETAILS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, email_id)
+                .FormData(Attributes.COLOR_NAME, userSelectionDetails.ColorName)
+                .FormData(Attributes.RACE_NAME, userSelectionDetails.RaceName)
+                .FormData(Attributes.CHARACTER_ID, userSelectionDetails.CharacterId)
+                .FormData(Attributes.DART_NAME, userSelectionDetails.DartName)
+                .FormData(Attributes.COUNTRY_NAME, userSelectionDetails.CountryName)
+                .FormData(Attributes.LANGUAGE_NAME, userSelectionDetails.LanguageName);
+
+            sendWebRequest(webRqstBuilder, onCompletionSaveData, restError);
+        }
+
+        public static void GetUserSelection(string email_id, Action<UserSelectionDetails> onCompletionGetData, Action<RestError> restError)
+        {
+            Debug.Log($"User Email: {email_id}");
+            Debug.Log("URL: " + getApiUrl(Urls.GET_SELECTION_DETAILS));
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.GET_SELECTION_DETAILS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, email_id);
+
+            sendWebRequest(webRqstBuilder, onCompletionGetData, restError);
+        }
+
+        public static void GetCountryDetails(Action<CountryData> OnCompleteteCountryDetailsFetch,Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getIpApiUrl(Urls.JSON))
+                .Verb(Verbs.GET)
+                .ContentType(ContentTypes.FORM);
+
+            sendWebRequestForCountryDetails(webRqstBuilder, OnCompleteteCountryDetailsFetch, restError);
+        }
+
+        public static void GetGameHistory(string a_UserEmail, Action<GameHistoryMatchDetails> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.GET_GAME_HISTORY))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        public static void GetLastGameHistory(string a_UserEmail, Action<LastGameHistory> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.GET_USER_GAME_HISTORY))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        public static void FetchNotifications(string a_UserEmail, Action<MessageDetails> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FETCH_NOTIFICATIONS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        public static void ChangeNotificationStatus(string a_UserEmail, string a_NotificationId, Action a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.CHANGE_NOTIFICATION_STATUS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail)
+                .FormData(Attributes.NOTIFICATION_ID, a_NotificationId);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        public static void FetchLeaderboard(string a_UserEmail, Action<LeaderboardDetails> a_OnComplete, Action<RestError> a_RestError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.FETCH_LEADERBOARD))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.USER_EMAIL, a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
+        }
+
+        private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
+        {
+            if (!GameManager.Instance.InternetConnection())
             {
-                defaultOnError(new RestUtil.RestCallError() { Response = new ApiErrorResponse() { Message = error.Description } });
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
             }
-            else
+            Instance.restUtil.Send(builder, handler => { onCompletion?.Invoke(); },
+                restError => interceptError(restError, () => onError?.Invoke(restError), onError));
+        }
+
+        private static void sendWebRequest<T>(WebRequestBuilder builder, Action<T> onCompletion,
+            Action<RestError> onError = null)
+        {
+            if (!GameManager.Instance.InternetConnection())
             {
-                defaultOnError(error);
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
             }
+            Instance.restUtil.Send(builder,
+                handler =>
+                {
+                    try
+                    {
+                        var response = DataConverter.DeserializeObject<ApiResponseFormat<T>>(handler.text);
+                        onCompletion?.Invoke(response.Result);
+                    } catch(Exception e)
+                    {
+
+                    }
+                    
+                },
+                restError => interceptError(restError, () => onError?.Invoke(restError), onError));
+        }
+
+        private static void sendWebRequestForCountryDetails(WebRequestBuilder builder, Action<CountryData> onCompletion,
+           Action<RestError> onError = null)
+        {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
+            Instance.restUtil.Send(builder,
+                handler =>
+                {
+                    var response = DataConverter.DeserializeObject<CountryData>(handler.text);
+                    onCompletion?.Invoke(response);
+                },
+                restError => interceptError(restError, () => onError?.Invoke(restError), onError));
+        }
+
+        private static void interceptError(RestError error, Action onSuccess,
+            Action<RestError> defaultOnError)
+        {
+             defaultOnError?.Invoke(error);
         }
 
         private static string getApiUrl(string path)
         {
-            return string.Format("{0}{1}", Config.Api.Host, path);
+            return $"{Config.Api.Host}{path}";
         }
 
-        private static string getApiUrlWithPath(string path, params string[] paths)
+        private static string getIpApiUrl(string path)
         {
-            string additionalPath = string.Join("/", paths);
-            string finalPath = string.Format("{0}{1}{2}", path, "/", additionalPath);
-            return string.Format("{0}{1}", Config.Api.Host, finalPath);
+            return $"{Config.IpApi.IpHost}{path}";
+        }
+
+        protected static string FormatApiUrl(string path, params object[] args)
+        {
+            return string.Format($"{Config.Api.Host}{path}", args);
         }
 
         private static void addSecurityHeaders(ref WebRequestBuilder builder)
@@ -111,7 +293,8 @@ namespace ArenaZ.Manager
 
         private static void addUserAuthHeader(ref WebRequestBuilder builder)
         {
-            builder.Header("Authorization", string.Format("Bearer {0}", instance.userAccessToken));
+            builder.Header("access_token", Instance.userAccessToken);
+            Debug.Log("User Access Token: " + Instance.userAccessToken);
         }
     }
 }

@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ArenaZ.Api
+namespace RedApple.Api
 {
-    public class ApiErrorResponse 
+    public class ErrorResponse 
     {
-        public int Code;
+        public int Status;
         public string Message;
-        public string Tag;
+    }
+
+    public class OauthErrorResponse
+    {
+        public string Error;
+        public string ErrorDescription;
+        public string ErrorUri;
     }
 }

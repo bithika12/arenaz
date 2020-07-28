@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System.ComponentModel;
 
-namespace ArenaZ
+namespace RedApple
 {
     public static class DataConverter
     {
@@ -18,9 +18,9 @@ namespace ArenaZ
             {
                 ContractResolver = _contractResolver,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
+                TypeNameHandling = TypeNameHandling.None,
                 StringEscapeHandling = StringEscapeHandling.EscapeHtml,
-        };
+            };
 
         private static bool _customConvertersAdded = false;
 

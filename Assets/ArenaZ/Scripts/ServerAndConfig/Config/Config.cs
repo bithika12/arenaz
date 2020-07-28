@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace ArenaZ
+namespace RedApple
 {
-    public class Config : RedAppleSingleton<Config>
+    public class Config : Singleton<Config>
     {
-        //private static Config instance;
 
         #region Serialized Fields
 #pragma warning disable 649
@@ -12,37 +12,40 @@ namespace ArenaZ
         private Configuration configuration;
 #pragma warning restore
         #endregion
-
-        //public void Awake()
-        //{
-        //    if (instance != null)
-        //    {
-        //        Destroy(this);
-        //        return;
-        //    }
-
-        //    instance = this;
-           
-        //}
         
-
         public class Api
         {
-            public static string Host { get { return Instance.configuration.Api.Host; } }
+            public static string Host
+            {
+                get
+                {
+                    return Instance.configuration.Api.Host;
+                }
+            }
         }
 
-        public class Common
+        public class IpApi
         {
-            public static string DefaultLoadingPromptText { get { return Instance.configuration.Common.DefaultLoadingPromptText; } }
-            public static string DefaultLocale { get { return Instance.configuration.Common.DefaultLocale; } }
-
+            public static string IpHost { get { return Instance.configuration.ipApi.ipHost; } }
         }
 
-        public class Photon
+        public class SocketConfig
         {
-            public static string Address { get { return Instance.configuration.Photon.Address; } }
-            public static int Port { get { return Instance.configuration.Photon.Port; } }
+            public static string Host { get { return Instance.configuration.socketConfig.socketHost; } }
+            public static List<string> SocketListenEvents { get { return Instance.configuration.socketConfig.SocketListenEvents; } }
         }
+
+        //public class Common
+        //{
+        //    public static string DefaultLoadingPromptText { get { return instance.configuration.Common.DefaultLoadingPromptText; } }
+        //    public static string DefaultLocale { get { return instance.configuration.Common.DefaultLocale; } }
+        //}
+
+        //public class Photon
+        //{
+        //    public static string Address { get { return instance.configuration.Photon.Address; } }
+        //    public static int Port { get { return instance.configuration.Photon.Port; } }
+        //}
     }
 
 }

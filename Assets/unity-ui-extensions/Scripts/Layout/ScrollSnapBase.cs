@@ -2,6 +2,8 @@
 /// Sourced from - http://forum.unity3d.com/threads/scripts-useful-4-6-scripts-collection.264161/page-2#post-1945602
 /// Updated by ddreaper - removed dependency on a custom ScrollRect script. Now implements drag interfaces and standard Scroll Rect.
 
+using ArenaZ;
+using DevCommons.Utility;
 using System;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -27,7 +29,7 @@ namespace UnityEngine.UI.Extensions
         internal bool _settled = true;
         internal Vector3 _startPosition = new Vector3();
         [Tooltip("The currently active page")]
-        internal int _currentPage;
+        internal int _currentPage = 0;
         internal int _previousPage;
         internal int _halfNoVisibleItems;
         internal bool _moveStarted;
@@ -299,12 +301,12 @@ namespace UnityEngine.UI.Extensions
         }
 
         //Function for switching screens with buttons
-        public virtual void NextScreen()
+        protected virtual void NextScreen()
         {
             if (_currentPage < _screens - 1 || _isInfinate)
             {
                 if (!_lerp) StartScreenChange();
-
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true, volume = SettingData.SFXVolume });
                 _lerp = true;
                 CurrentPage = _currentPage + 1;
                 GetPositionforPage(_currentPage, ref _lerp_target);
@@ -314,12 +316,12 @@ namespace UnityEngine.UI.Extensions
         }
 
         //Function for switching screens with buttons
-        public virtual void PreviousScreen()
+        protected virtual void PreviousScreen()
         {
             if (_currentPage > 0 || _isInfinate)
             {
                 if (!_lerp) StartScreenChange();
-
+                AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.PlayerSkinSelection).Clip, oneShot = true, volume = SettingData.SFXVolume });
                 _lerp = true;
                 CurrentPage = _currentPage - 1;
                 GetPositionforPage(_currentPage, ref _lerp_target);
@@ -437,11 +439,14 @@ namespace UnityEngine.UI.Extensions
             {
                 if (PrevButton)
                 {
+                   // Debug.Log(targetScreen>0);
+                    
                     PrevButton.GetComponent<Button>().interactable = targetScreen > 0;
                 }
 
                 if (NextButton)
                 {
+                   // Debug.Log(targetScreen < _screensContainer.transform.childCount - 1);
                     NextButton.GetComponent<Button>().interactable = targetScreen < _screensContainer.transform.childCount - 1;
                 }
             }

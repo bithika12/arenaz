@@ -1,13 +1,11 @@
-﻿using System;
+﻿using RedApple;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class SceneManagement : RedAppleSingleton<SceneManagement>
+public class SceneManagement : Singleton<SceneManagement>
 {
     [SerializeField]
     private Image loaderImage;
@@ -19,20 +17,13 @@ public class SceneManagement : RedAppleSingleton<SceneManagement>
     private CanvasGroup mainCanvasGroup;
     string loadingString;
 
-    protected override void Awake()
-    {
-        DontDestroyOnLoad(this.gameObject);       
-    }
     private void Start()
     {
-        // LoadScene("LevelSelection");
         StartCoroutine(LoadSceneAtStart());
     }
     IEnumerator LoadSceneAtStart()
     {
-      //  Debug.Log("ghhhhhgh");
         yield return new WaitForSeconds(1f);
-        Debug.Log("ghhhhhgh");
         splashObj.SetActive(false);
         LoadScene("LevelSelection");
     }
@@ -57,7 +48,6 @@ public class SceneManagement : RedAppleSingleton<SceneManagement>
 	}
 
 	#region LoadScene
-
 	public void LoadScene(string sceneName)
 	{
         loaderImage.fillAmount = 0;
@@ -80,9 +70,5 @@ public class SceneManagement : RedAppleSingleton<SceneManagement>
         System.GC.Collect();
         loaderImage.DOFillAmount(1, 0.5f).OnUpdate(() => loadingText.text = loadingString+ (int)(loaderImage.fillAmount * 100) + "%...");	
 	}	
- 
 	#endregion
-
-
-	
 }

@@ -1,33 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace ArenaZ
+namespace RedApple
 {
-    [CreateAssetMenu(fileName = "ArenaZConfiguration", menuName = "ServerConfig")]
+    [CreateAssetMenu(menuName = "RedApple/Configuration")]
     public class Configuration : ScriptableObject
     {
         public ApiConfiguration Api = new ApiConfiguration();
-        public CommonConfiguration Common = new CommonConfiguration();
-        public PhotonConfiguration Photon = new PhotonConfiguration();
-
+        public IpApiConfiguration ipApi = new IpApiConfiguration();
+        public SocketConfiguration socketConfig = new SocketConfiguration();
+        
         [Serializable]
         public class ApiConfiguration
         {
-            public string Host = "http://skylect.local/";
+            public string Host = "http://52.66.82.72:3012/";
         }
 
         [Serializable]
-        public class CommonConfiguration
+        public class IpApiConfiguration
         {
-            public string DefaultLocale = "en-US";
-            public string DefaultLoadingPromptText = "loading_prompt";
+            public string ipHost = "https://freegeoip.app/";
         }
 
         [Serializable]
-        public class PhotonConfiguration
+        public class SocketConfiguration
         {
-            public string Address = "188.117.216.243";
-            public int Port = 15055;
+            public string socketHost = "http://192.168.2.73:3012/";
+            public List<string> SocketListenEvents = new List<string>();
         }
     }
 }

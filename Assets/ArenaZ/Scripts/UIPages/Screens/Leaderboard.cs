@@ -2,11 +2,11 @@
 using UnityEngine.UI;
 using ArenaZ.Manager;
 using ArenaZ.Screens;
+using RedApple;
 
 namespace ArenaZ.LeaderBoard
 {
-    [RequireComponent(typeof(UIScreen))]
-    public class Leaderboard : MonoBehaviour
+    public class Leaderboard : Singleton<Leaderboard>
     {
         [SerializeField] private Button leaderBoardBackButton;
 
@@ -30,9 +30,9 @@ namespace ArenaZ.LeaderBoard
             leaderBoardBackButton.onClick.RemoveListener(OnClickLeaderBoardBack);
         }
 
-        private void OnClickLeaderBoardBack()
+        public void OnClickLeaderBoardBack()
         {
-            UIManager.Instance.HideScreen(Page.LeaderBoard.ToString());
+            UIManager.Instance.HideScreen(Page.LeaderBoardPanel.ToString());
         }
     }
 }

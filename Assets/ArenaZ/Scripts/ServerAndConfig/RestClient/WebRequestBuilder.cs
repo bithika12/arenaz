@@ -8,8 +8,7 @@ namespace RedApple.Utils.Rest
     public class WebRequestBuilder : IDisposable
     {
         private UnityWebRequest webRequest;
-
-        public string url; // Change Private to Public by Manas only to check log
+        private string url;
         private string verb;
         private Dictionary<string, string> requestHeaders = new Dictionary<string, string>();
         private Dictionary<string, object> formData = new Dictionary<string, object>();
@@ -22,7 +21,7 @@ namespace RedApple.Utils.Rest
         {
             Verb(Verbs.GET);
         }
-
+       
         public WebRequestBuilder Url(string url)
         {
             this.url = url;
@@ -47,6 +46,7 @@ namespace RedApple.Utils.Rest
 
             return this;
         }
+
         public WebRequestBuilder Headers(IDictionary<string, string> headers)
         {
             foreach (var entry in headers)
@@ -156,15 +156,19 @@ namespace RedApple.Utils.Rest
                 {
                     if (item.Value is int)
                         formData.AddField(item.Key, Convert.ToInt32(item.Value));
-                    else if(item.Value is string)
+                    else if (item.Value is string)
                         formData.AddField(item.Key, item.Value.ToString());
                     else if (item.Value is byte[])
-                        formData.AddBinaryData(item.Key, (byte[])item.Value);
+                        formData.AddBinaryData(item.Key, (byte[]) item.Value);
                     else if (item.Value is bool)
-                        formData.AddField(item.Key, ((bool)item.Value) ? "1" : "0");
+                        formData.AddField(item.Key, ((bool) item.Value) ? "1" : "0");
                 }
 
                 webRequest = UnityWebRequest.Post(url, formData);
+            }
+            else if (Verbs.DELETE.ToString().Equals(verb))
+            {
+                webRequest = UnityWebRequest.Delete(url);
             }
             else
             {
