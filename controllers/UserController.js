@@ -176,6 +176,7 @@ exports.registration= function(req,res) {
 
     const ipInfo = req.ipInfo;
     console.log("pl"+ipInfo.country);
+    console.log("pl12"+JSON.stringify(ipInfo));
     let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
     console.log(countryNameDetails.name);
     //res.send(ipInfo);
@@ -223,6 +224,7 @@ exports.registration= function(req,res) {
         userName: req.body.userName,
         userType: "regular-player",
         countryName:ipInfo.country
+        //loginIp:ipInfo
         //countryName:countryNameDetails.name
         //userType: "registered-game-user"
     }
