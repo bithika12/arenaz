@@ -1118,6 +1118,41 @@ User.detailsUserCoin = function(condObj){
          })
      })
  }
+ //addUserCoin
+ User.addUserCoin = function(reqObj){
+     return new Promise((resolve,reject)=>{
+          let usercoins={
+                      user_name:reqObj.userName,
+                      type:reqObj.type,
+                      coins:reqObj.coin,
+                      reference:reqObj.reference
+                    }
+         userCoin.create(usercoins).then(response=> {
+
+          User.findOne({userName: reqObj.userName},{deviceDetails:0,resetOtp:0}).then(responses12=> {
+
+
+           let updatedCoin=parseInt(responses12.startCoin)+parseInt(reqObj.coin);
+
+             User.updateOne({userName:reqObj.userName},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });
+
+
+          ////update user 
+
+             }).catch(err=>{
+             reject(err);
+         })
+
+             //resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
 module.exports= User;
 
 

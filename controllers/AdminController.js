@@ -609,3 +609,13 @@ exports.getUserCoins = function (req,res) {
         res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch coin list"));
     })
 };
+//addUserCoins
+
+exports.addUserCoins = function (req,res) {
+    User.addUserCoin(req).then((coindetails)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            coindetails, 'User Coin List added successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to add coin"));
+    })
+};
