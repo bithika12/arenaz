@@ -612,7 +612,8 @@ exports.getUserCoins = function (req,res) {
 //addUserCoins
 
 exports.addUserCoins = function (req,res) {
-    User.addUserCoin(req).then((coindetails)=>{
+    let formData=req.body;
+    User.addUserCoin(formData).then((coindetails)=>{
         res.send(response.generate(constants.SUCCESS_STATUS,
             coindetails, 'User Coin List added successfully !!'));
     }).catch(err=>{
