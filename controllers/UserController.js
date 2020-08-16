@@ -223,7 +223,8 @@ exports.registration= function(req,res) {
         password: req.body.password,
         userName: req.body.userName,
         userType: "regular-player",
-        countryName:ipInfo.country
+        countryName:ipInfo.country,
+        loginIp:ipInfo.ip
         //loginIp:ipInfo
         //countryName:countryNameDetails.name
         //userType: "registered-game-user"

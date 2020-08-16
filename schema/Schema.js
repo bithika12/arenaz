@@ -38,7 +38,7 @@ var userSchema =  new Schema({
                         characterName      :  [{ characterName: String, status: Number,createdAt : Date, updatedAt:Date}],
                         //onlineStatus     :  {  type : String , enum: ['0', '1']  ,  default  : '0'},/* 0=>  offline ,1 => online */
                         loginType        :  {  type : String ,enum :["normal","social"],default :'normal'},
-                        status           :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
+                        status           :  {  type : String , enum: ['active','inactive','deleted','blocked','Duplicate'] , default : 'active'},
                         total_no_win     :  { type : Number , default  : 0},
                         isPlaying        :  {  type : String , enum: ['yes','no'] , default : 'no'},
                         socialLogin      :  [{ loginBy : String , uniqueLoginId : String }],
@@ -189,6 +189,14 @@ var versionSchema      = new Schema({
     status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'}
     
 });
+
+var userCoinSchema      = new Schema({
+    user_name : String,   
+    coins:Number,
+    reference:String,
+    type :  {  type : String , enum: ['Deposit','Withdrawal','Lost'] , default : 'Deposit','Won'},  
+    
+});
 //MODEL DECLARATION
 
 schema.roleModel   = mongoose.model('roles'  , roleSchema);
@@ -201,5 +209,6 @@ schema.coinModel   = mongoose.model('coins'  , coinSchema);
 schema.gameModel   = mongoose.model('games'  , gameSchema);
 schema.versionModel   = mongoose.model('appversions'  , versionSchema);
 schema.roomLogModel   = mongoose.model('roomlogs'  , roomlogSchema);
+schema.userCoinModel   = mongoose.model('user_coins'  , userCoinSchema);
 
 module.exports = schema;

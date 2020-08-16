@@ -17,7 +17,8 @@ const moment = require('moment');
  let Notification  = require(appRoot +'/models/Notification');
  let Coin = require('../schema/Schema').coinModel; 
  let Appversion=require('../schema/Schema').versionModel; 
-
+ 
+ let userCoin = require('../schema/Schema').userCoinModel;
  /** TOTAL USER **/
 User.totalUser =function(condObj){
     return  new Promise((resolve,reject) => {
@@ -87,7 +88,23 @@ msg+="Arena Z Team";
                       message          :  msg,
                       read_unread      : 0
                   }).then(function(notificationdetails){
-                      resolve(response);
+
+                    ////insert in user coin table ///////////
+
+                    //userCoin
+                    let usercoins={
+                      user_name:reqObj.userName,
+                      type:"Deposit",
+                      coins:50,
+                      reference:"Welcome Gift"
+                    }
+                    userCoin.create(reqObj).then(userCoinresponse => {
+                        resolve(response);
+                     }).catch(err => {
+                          reject(err);
+                     })
+                     ////usercoin
+                      //resolve(response);
                   }).catch(err => {
                       reject(err);
                   });
@@ -215,7 +232,8 @@ User.updateUserDetails =function(condObj,updateObj){
              console.log("update coin"+updateObj.startCoin);
              //let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin);
              //update 09-06/////////
-             let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin)*2;
+             let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin)*2 -parseInt(updateObj.startCoin);
+              //let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin)*2;
              console.log("win coin"+updatedCoin);
              console.log("responses.total_no_win"+responses.total_no_win);
              //console.log("")
@@ -768,7 +786,8 @@ User.resetPassword = function(condObj,updateObj){
                          email:entry1.email,
                          startCoin:entry1.startCoin,
                          userRank:key+1,
-                         cupNumber:entry1.cupNo
+                         cupNumber:entry1.cupNo,
+                         status:entry1.status
 
                      });
                      if(key==responses.length-1)
