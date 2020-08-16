@@ -194,7 +194,7 @@ var userCoinSchema      = new Schema({
     user_name : String,   
     coins:Number,
     reference:String,
-    type :  {  type : String , enum: ['Deposit','Withdrawal','Lost'] , default : 'Deposit','Won'},  
+    type :  {  type : String , enum: ['Deposit','Withdrawal','Lost','Won'] , default : 'Deposit'}
     
 });
 //MODEL DECLARATION
