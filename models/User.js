@@ -98,7 +98,7 @@ msg+="Arena Z Team";
                       coins:50,
                       reference:"Welcome Gift"
                     }
-                    userCoin.create(reqObj).then(userCoinresponse => {
+                    userCoin.create(usercoins).then(userCoinresponse => {
                         resolve(response);
                      }).catch(err => {
                           reject(err);
