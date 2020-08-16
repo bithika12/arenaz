@@ -17,6 +17,7 @@ const appRoot = require('app-root-path');
 const { updateMail,addMail,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
     fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
+
 // Role.createUser().then((details)=>{
 
 // })
@@ -596,5 +597,15 @@ exports.getUsers = function (req,res) {
             roledetails, 'User List fetched successfully !!'));
     }).catch(err=>{
         res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch role list"));
+    })
+};
+
+//getUserCoins
+exports.getUserCoins = function (req,res) {
+    User.detailsUserCoin().then((coindetails)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            coindetails, 'User Coin List fetched successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch coin list"));
     })
 };

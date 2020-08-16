@@ -115,5 +115,7 @@ router.post('/admin/delete-mail'/*authetication.authChecker*/,adminController.de
  ///user/leaderboard
 
 router.post('/admin/get-users'/*authetication.authChecker*/,adminController.getUsers);
+router.post('/admin/get-user-coins'/*authetication.authChecker*/,adminController.getUserCoins);
+
 
 module.exports = router;
