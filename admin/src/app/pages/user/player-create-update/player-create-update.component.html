@@ -50,12 +50,7 @@
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
 
-      <mat-form-field class="mt-6" fxFlex>
-        <mat-label>Status</mat-label>
-        <input cdkFocusInitial formControlName="status"  matInput><!-- [readonly]="true"-->
-
-        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
-      </mat-form-field>
+    
 
       <!--<mat-form-field  class="mt-6" fxFlex>
         <mat-label>Password</mat-label>
@@ -117,7 +112,7 @@
     <mat-form-field>
       <mat-label>Coins </mat-label>
       <mat-select formControlName="coin">
-        <mat-option *ngFor="let coin of coinList" [value]="coin.value ===coin ? selected : coin.value" >
+        <mat-option *ngFor="let coin of coinList" [value]="coin.value ===coin ? selected : coin.value"  disabled="disabled" >
           {{ coin.value }}
         </mat-option>
       </mat-select>
@@ -143,6 +138,13 @@
     <mat-form-field  class="mt-6" fxFlex>
       <mat-label>Password</mat-label>
       <input matInput type="password" cdkFocusInitial placeholder="Password" formControlName="password">
+      <!--<mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
+       <mat-error *ngIf="password.hasError('minlength')">Password must have at least {{minPw}} characters</mat-error>-->
+    </mat-form-field>
+
+     <mat-form-field  class="mt-6" fxFlex>
+      <mat-label>Status</mat-label>
+      <input matInput type="text" cdkFocusInitial placeholder="status" formControlName="status">
       <!--<mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
        <mat-error *ngIf="password.hasError('minlength')">Password must have at least {{minPw}} characters</mat-error>-->
     </mat-form-field>

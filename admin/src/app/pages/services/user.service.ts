@@ -40,6 +40,7 @@ export class UserService {
         "userEmail":editplayer.useremail,
         "roleName":editplayer.roleid,
         "roleId":editplayer.roleid,
+        "status":editplayer.status
       };
       //payloadObj
       console.log(editplayer);

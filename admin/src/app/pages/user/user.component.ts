@@ -184,7 +184,8 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
           coins: (!updatedPlayer.coins)?this.players[index].coins:updatedPlayer.coins,
           //vip_coins: (!updatedPlayer.vip_coins)?this.players[index].vip_coins:updatedPlayer.vip_coins,
           player_rank: (!updatedPlayer.player_rank)?this.players[index].player_rank:updatedPlayer.player_rank,
-          //rank_progression: (!updatedPlayer.rank_progression)?this.players[index].rank_progression:updatedPlayer.rank_progression,
+          player_status: (!updatedPlayer.status)?this.players[index].status:updatedPlayer.status,
+
         };
         this.players[index] = new Player(userObj);
         this.subject$.next(this.players);
