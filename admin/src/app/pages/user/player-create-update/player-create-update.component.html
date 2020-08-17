@@ -109,31 +109,21 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field>
+    <!--<mat-form-field>
       <mat-label>Coins </mat-label>
       <mat-select formControlName="coin">
-        <mat-option *ngFor="let coin of coinList" [value]="coin.value ===coin ? selected : coin.value"  disabled="disabled" >
+        <mat-option *ngFor="let coin of coinList" [value]="coin.value ===coin ? selected : coin.value" >
           {{ coin.value }}
         </mat-option>
       </mat-select>
-    </mat-form-field>
-   <!-- <mat-select #labelSelect="matSelect"
-                (selectionChange)=""
-                [value]="row.labels"
-                class="invisible w-0 h-0 text-sm"
-                fxFlex="0 1 0px"
-                multiple>
-      <mat-option *ngFor="let label of labels" [value]="label">
-        <div [style.background-color]="label.color"
-             class="h-6 w-6 align-middle ltr:mr-2 rtl:ml-2 rounded inline-block"></div>
-        <span>{{ label.text }}</span>
-      </mat-option>
-    </mat-select>-->
+    </mat-form-field>-->
 
-    <!-- <mat-form-field>
-      <mat-label>Notes</mat-label>
-      <textarea formControlName="notes" matInput></textarea>
-    </mat-form-field> -->
+    
+   <mat-form-field  class="mt-6" fxFlex>
+      <mat-label>Coins</mat-label>
+      <input matInput type="text" cdkFocusInitial placeholder="coin" formControlName="coin">
+     
+    </mat-form-field>
 
     <mat-form-field  class="mt-6" fxFlex>
       <mat-label>Password</mat-label>
