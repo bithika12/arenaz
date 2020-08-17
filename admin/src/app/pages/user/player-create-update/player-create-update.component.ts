@@ -120,7 +120,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
       coin:[this.defaults.startCoin || ''],
       username:[this.defaults.userName || ''],
       useremail:[this.defaults.email || ''],
-      password:[this.defaults.password || '']
+      password:[this.defaults.password || ''],
+      status:[this.defaults.status || '']
     });
   }
 

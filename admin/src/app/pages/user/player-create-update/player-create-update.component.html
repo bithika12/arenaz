@@ -50,6 +50,13 @@
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
 
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Status</mat-label>
+        <input cdkFocusInitial formControlName="status"  matInput><!-- [readonly]="true"-->
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
       <!--<mat-form-field  class="mt-6" fxFlex>
         <mat-label>Password</mat-label>
         <input matInput type="password" cdkFocusInitial placeholder="Password" formControlName="password">
