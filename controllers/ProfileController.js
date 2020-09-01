@@ -107,7 +107,8 @@ exports.updateProfileImage = function(req,res){
 
      let schema = Joi.object().keys({
          //userName:  Joi.string().required(),
-         coinNumber: Joi.number().required(),
+         coinNumber: Joi.optional(),
+         //coinNumber: Joi.number().required(),
          firstName: Joi.optional(),
          lastName:  Joi.optional(),
          roleName:  Joi.string().required(),
@@ -130,7 +131,7 @@ exports.updateProfileImage = function(req,res){
          let updateObj={
              firstName:req.body.firstName,
              lastName:req.body.lastName,
-             startCoin:req.body.coinNumber,
+             //startCoin:req.body.coinNumber,
              roleId:id1,
              status:req.body.status
 

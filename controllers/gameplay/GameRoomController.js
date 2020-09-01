@@ -307,6 +307,45 @@ io.on('connection', function (socket) {
     }
 
 
+    ///insert user room coin//
+    function insertUserCoin(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+                console.log("room log cont");
+                //reqobj.roomUsers
+                  console.log("ooo"+JSON.stringify(reqobj.roomUsers));
+                  if(reqobj.isWin==1){
+                 let userCoinArr=[];
+
+                 reqobj.roomUsers.forEach(function(val,key){
+                    console.log("winns"+val.isWin);
+           
+                    let usrObj={
+                       user_name: val.userName,
+                       type:(val.isWin==1)? 'Won' : 'Lost',
+                       coins:val.roomCoin,
+                       reference:val.roomName
+                     }
+
+                      userCoinArr.push(usrObj);
+                 })
+                 
+                  user.addUserCoinWin (userCoinArr).then(function (insertUserCoin) {
+                 
+                    callback(null, reqobj);
+
+                }).catch(err => {
+                    logger.print("***Room update error ", err);
+                })
+
+            }
+            else{
+               callback(null, reqobj); 
+            }
+            
+        })
+    }
+
+
     /**
      * @desc This function is used for throw dart
      * @param {String} accesstoken
@@ -332,6 +371,7 @@ io.on('connection', function (socket) {
                 gameOverProcess,
                 ////newly added log///
                 insertRoomLog,
+                insertUserCoin,
                 ////////////////
                 userNextStartDart,
                 dartTimer
@@ -1720,7 +1760,8 @@ io.on('connection', function (socket) {
                 updateRoom,
                 RoomUpdate,
                 gameStatusUpdateLeaveMod,
-                gameStatusUpdateOpponentLeaveMod  
+                gameStatusUpdateOpponentLeaveMod,
+                insertUserCoin  
 
             ], function (err, result) {
                 if (result) {
@@ -2571,7 +2612,8 @@ io.on('connection', function (socket) {
                     gameStatusUpdateDisconnect,
                     gameStatusUpdateOpponentDisconnect,
                     //new/////
-                    userStatusUpdate
+                    userStatusUpdate,
+                    insertUserCoin
                     // totalPlayerList,
                     // roomClosed,
                     // memoryRoomRemove
@@ -3290,7 +3332,26 @@ io.on('connection', function (socket) {
                                                  
                                                 user.findDetailsGame({_id:roomDetails1.opponentUserId}).then((secondUserTotalCup)=>{
 
+                                                /*code for user coin insert*/
+                                                     let userCoinArr=[];
+                                                        roomDetails1.roomUsers.forEach(function(val,key){
+                                                            console.log("winns"+val.isWin);
+                                                   
+                                                            let usrObj={
+                                                               user_name: val.userName,
+                                                               type:(val.isWin==1)? 'Won' : 'Lost',
+                                                               coins:val.roomCoin,
+                                                               reference:val.roomName
+                                                             }
 
+                                                              userCoinArr.push(usrObj);
+                                                         })
+                                                      user.addUserCoinWin (userCoinArr).then(function (insertUserCoin) {
+                                                     
+                                                        
+
+                                                    
+                                                /*code for user coin insert */
                                                // io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
                                                 io.to(roomDetails1.roomName).emit('gameOver', 
                                                     response.generate(constants.SUCCESS_STATUS, {
@@ -3316,6 +3377,11 @@ io.on('connection', function (socket) {
                                                     //gameStatus:"Win"
                                                 }, "Game is over"));
                                                 clearTimeout(this.interval); 
+
+                                                //user coin insert catch
+                                                }).catch(err => {
+                                                        logger.print("***Room update error ", err);
+                                                })
 
                                                 //////////
                                                   }).catch(secondUserTotalCupErr=>{

@@ -69,17 +69,32 @@ export class CoinService {
      console.log('roles api');
      console.log(this.headers);
     let payloadObj={userEmail:localStorage.getItem('email')}
-    return this.http.post(`${environment.BASE_URL}admin/coin-list`,payloadObj,{headers: this.headers});
+    return this.http.post(`${environment.BASE_URL}admin/get-user-coins`,payloadObj,{headers: this.headers});
   }
+
+  getAllUserLIsts() {
+      console.log('userlist api');
+      console.log(this.headers);
+       let payloadObj={userEmail:localStorage.getItem('email')}
+        return this.http.post(`${environment.BASE_URL}admin/get-users`,payloadObj,{headers: this.headers});
+    }
   //add coin
   //addCoin
   addCoin(coinDetails)
   {
-    let payloadObj=
+    /*let payloadObj=
       {
         "coinNumber":coinDetails.coin,
         "userEmail":localStorage.getItem('email')
+      };*/
+      let payloadObj=
+      {
+        "userName":coinDetails.user_name,
+        "type":coinDetails.type,
+        "coin":coinDetails.coins,
+        "reference":coinDetails.reference
       };
-     return this.http.post(`${environment.BASE_URL}admin/coin-add`,payloadObj,{headers: this.headers});
+      
+     return this.http.post(`${environment.BASE_URL}admin/add-user-coins`,payloadObj,{headers: this.headers});
   }
 }

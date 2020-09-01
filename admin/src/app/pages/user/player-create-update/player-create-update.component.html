@@ -117,17 +117,17 @@
         </mat-option>
       </mat-select>
     </mat-form-field>-->
-
+   
     
    <mat-form-field  class="mt-6" fxFlex>
       <mat-label>Coins</mat-label>
-      <input matInput type="text" cdkFocusInitial placeholder="coin" formControlName="coin">
+      <input matInput type="number" cdkFocusInitial placeholder="coin" formControlName="coin" [readonly]="buttonDisabled" >
      
     </mat-form-field>
 
     <mat-form-field  class="mt-6" fxFlex>
       <mat-label>Password</mat-label>
-      <input matInput type="password" cdkFocusInitial placeholder="Password" formControlName="password">
+      <input matInput type="password" cdkFocusInitial placeholder="Password must have at least 8 characters" formControlName="password">
       <!--<mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
        <mat-error *ngIf="password.hasError('minlength')">Password must have at least {{minPw}} characters</mat-error>-->
     </mat-form-field>

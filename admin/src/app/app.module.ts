@@ -7,6 +7,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VexModule } from '../@vex/vex.module';
 import { HttpClientModule } from '@angular/common/http';
 
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -14,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    MatSnackBarModule,
 
     // Vex
     VexModule

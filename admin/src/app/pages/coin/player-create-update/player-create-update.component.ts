@@ -85,13 +85,22 @@ export class PlayerCreateUpdateComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.getAllRoles().subscribe(Roles => {
+
+   this.coinService.getAllUserLIsts().subscribe(Roles => {
+      console.log(Roles);
+      //roleList: RoleList[] =Roles;
+      this.rolelists = Roles["result"];
+      console.log("this.rolelists"+this.rolelists);
+
+      //this.subject$.next(this.rolelists);
+    })
+    /*this.userService.getAllRoles().subscribe(Roles => {
       console.log(Roles);
       //roleList: RoleList[] =Roles;
       this.rolelists = Roles["result"];
 
       //this.subject$.next(this.rolelists);
-    })
+    })*/
     this.coinList = [
       { value: 10},
       { value: 50},
@@ -112,15 +121,15 @@ export class PlayerCreateUpdateComponent implements OnInit {
     this.form = this.fb.group({
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
-      firstname: [this.defaults.firstName || ''],
-      lastname: [this.defaults.lastName || ''],
-      contact_no: this.defaults.contact_no || '',
-      rolename:[this.defaults.roleName || ''],
-     // rolename:[this.defaults.roleName || ''],
-      roleid:[this.defaults.roleId || ''],
-      coin:[this.defaults.number || ''],
-      username:[this.defaults.userName || ''],
-      useremail:[this.defaults.email || ''],
+      user_name: [this.defaults.user_name || ''],
+      type: [this.defaults.type || ''],
+      reference: this.defaults.reference || '',
+      //rolename:[this.defaults.roleName || ''],
+     
+      //roleid:[this.defaults.roleId || ''],
+      coins:[this.defaults.coins || ''],
+      //username:[this.defaults.userName || ''],
+      //useremail:[this.defaults.email || ''],
       _id:[this.defaults._id || ''],
     });
   }

@@ -167,7 +167,8 @@ exports.getGameList = function (req,res) {
 };
 
 exports.addUser= function(req,res) {
-
+     const ipInfo = req.ipInfo;
+    // console.log("ipInfo"+JSON.stringify(ipInfo));
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
         userName: Joi.string().min(3).trim().required(),
@@ -189,7 +190,9 @@ exports.addUser= function(req,res) {
             result: result.error.name,
             message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
         };
-        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+        return res.status(constants.HTTP_OK_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+
+        //return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
     }
     else {
         if (!req.body.email || !req.body.userName || !req.body.password) {
@@ -208,7 +211,10 @@ exports.addUser= function(req,res) {
             roleId: mongoose.Types.ObjectId(req.body.roleId),
             startCoin:req.body.coinNumber,
             firstName:req.body.firstName,
-            lastName:req.body.lastName
+            lastName:req.body.lastName,
+            countryName:ipInfo.country,
+            loginIp:ipInfo.ip,
+            cupNo:3000
             //userType: "registered-game-user"
         }
         async.waterfall([
@@ -603,8 +609,42 @@ exports.getUsers = function (req,res) {
 //getUserCoins
 exports.getUserCoins = function (req,res) {
     User.detailsUserCoin().then((coindetails)=>{
-        res.send(response.generate(constants.SUCCESS_STATUS,
-            coindetails, 'User Coin List fetched successfully !!'));
+         let userObj={};
+         let userArr=[];
+        coindetails.forEach(function(val,key){
+               console.log("val"+coindetails.length);
+               console.log("key"+key);
+               User.findDetailsGame12({userName:val.user_name}).then((userdetails)=>{  
+                    console.log("userdetails"+(userdetails.startCoin));
+
+                    userObj={
+                        balance:(userdetails.startCoin),
+                        user_name:(!val.user_name) ? '' : val.user_name,
+                        coins:val.coins,
+                        reference:val.reference,
+                        type:val.type
+                        
+                    };
+                    
+                    userArr.push(userObj);
+
+
+                    if(key==coindetails.length-1){
+                        res.send(response.generate(constants.SUCCESS_STATUS,
+                          userArr, 'User Coin List fetched successfully !!'));
+
+                    }
+
+
+               }).catch(userdetailserr=>{
+                console.log("rtyy"+userdetailserr);
+                    res.send(response.error(constants.ERROR_STATUS,userdetailserr,"Unable to fetch role list"));
+                 })
+        });
+
+       
+        /*res.send(response.generate(constants.SUCCESS_STATUS,
+            coindetails, 'User Coin List fetched successfully !!'));*/
     }).catch(err=>{
         res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch coin list"));
     })

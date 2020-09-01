@@ -59,11 +59,15 @@ export class CoinComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input()
   columns: TableColumn<Player>[] = [
-    { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: true },
+    { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: false },
     { label: 'Image', property: 'image', type: 'image', visible: false },
     { label: 'Image', property: '_id', type: 'text', visible: false },
-    { label: 'Coin Number', property: 'number', type: 'text', visible: true },
-    { label: 'Actions', property: 'actions', type: 'button', visible: true }
+    { label: 'Coin Amount', property: 'coins', type: 'text', visible: true },
+    { label: 'Username', property: 'user_name', type: 'text', visible: true },
+    { label: 'Type', property: 'type', type: 'text', visible: true },
+    { label: 'Reference', property: 'reference', type: 'text', visible: true },
+    { label: 'Balance', property: 'balance', type: 'text', visible: true },
+    { label: 'Actions', property: 'actions', type: 'button', visible: false }
   ];
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 20, 50];

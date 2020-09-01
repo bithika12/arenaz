@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient , HttpHeaders } from '@angular/common/http';
+import { HttpRequest, HttpHeaders, HttpHandler, HttpEvent, HttpInterceptor,HttpClient ,HttpParams } from '@angular/common/http';
 
 import { environment } from './../../../environments/environment';
 import { AuthService } from '../auth/auth.service';
+import { Observable, of } from 'rxjs';
+import { tap, delay,map } from 'rxjs/operators';
+import { retry, catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -87,7 +90,10 @@ export class UserService {
     console.log(addPlayer);
     console.log(payloadObj);
     //addplayer
-    return this.http.post(`${environment.BASE_URL}admin/add-user`,payloadObj,{headers: this.headers});
+    return this.http.post(`${environment.BASE_URL}admin/add-user`,payloadObj,{headers: this.headers}) .pipe(map(fetchresult => {
+          console.log("fetchresult"+JSON.stringify(fetchresult));
+          return fetchresult;
+     }));
   }
 
 }

@@ -67,37 +67,38 @@ export class AppComponent {
       },
       {
         type: 'link',
-        label: 'User Module',
+        label: 'Users',
         route: '/user',
         icon: icAssigment
       },
       {
         type: 'link',
-        label: 'Match Player List',
-        route: '/dart',
-        icon: icAssigment
-      },
-      {
-        type: 'link',
-        label: 'Coin Module',
-        route: '/coin',
-        icon: icAssigment
-      },
-      {
-        type: 'link',
-        label: 'Game Module',
-        route: '/game',
-        icon: icAssigment
-      },
-      {
-        type: 'link',
-        label: 'Online User Module',
+        label: 'Online Users',
         route: '/online',
         icon: icAssigment
       },
       {
         type: 'link',
-        label: 'Mailbox Module',
+        label: 'Matches',
+        route: '/dart',
+        icon: icAssigment
+      },
+      {
+        type: 'link',
+        label: 'Coins',
+        route: '/coin',
+        icon: icAssigment
+      },
+      {
+        type: 'link',
+        label: 'Games',
+        route: '/game',
+        icon: icAssigment
+      },
+      
+      {
+        type: 'link',
+        label: 'Mailbox',
         route: '/mail',
         icon: icAssigment
       }

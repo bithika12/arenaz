@@ -62,7 +62,7 @@
           <mat-icon [icIcon]="icSearch"></mat-icon>
         </button>
 
-        <button [matMenuTriggerFor]="columnFilterMenu"
+        <button 
                 class="ml-4"
                 fxFlex="none"
                 mat-icon-button
@@ -203,7 +203,7 @@
         </ng-container>
 
         <tr *matHeaderRowDef="visibleColumns" mat-header-row></tr>
-        <tr (click)="updatePlayer(row)"
+        <tr 
             *matRowDef="let row; columns: visibleColumns;"
             @fadeInUp
             class="hover:bg-hover trans-ease-out cursor-pointer"
@@ -217,7 +217,7 @@
 
 </vex-page-layout>
 
-<mat-menu #columnFilterMenu="matMenu" xPosition="before" yPosition="below">
+<!--<mat-menu #columnFilterMenu="matMenu" xPosition="before" yPosition="below">
   <button (click)="toggleColumnVisibility(column, $event)" *ngFor="let column of columns"
           class="checkbox-item mat-menu-item">
     <mat-checkbox (click)="$event.stopPropagation()" [(ngModel)]="column.visible" color="primary">
@@ -237,4 +237,4 @@
       <span>Delete</span>
     </button>
   </ng-template>
-</mat-menu>
+</mat-menu>-->

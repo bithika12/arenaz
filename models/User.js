@@ -772,6 +772,7 @@ User.resetPassword = function(condObj,updateObj){
              let noRoleArr=[];
              responses.map(function(entry1,key) {
                  if (entry1.roleId) {
+                  let start_coins=entry1.startCoin+"("+entry1.startCoin+")";
                  Role.findOne({_id: entry1.roleId}, {_id: 1, name: 1, slug: 1}).then(roleResponse => {
                      totalArr.push({
 
@@ -784,10 +785,12 @@ User.resetPassword = function(condObj,updateObj){
                          firstName:entry1.firstName,
                          lastName:entry1.lastName,
                          email:entry1.email,
-                         startCoin:entry1.startCoin,
+                         startCoin:start_coins,
+                         //startCoin:entry1.startCoin,
                          userRank:key+1,
                          cupNumber:entry1.cupNo,
-                         status:entry1.status
+                         status:entry1.status,
+                         ip:entry1.loginIp
 
                      });
                      if(key==responses.length-1)
@@ -821,7 +824,23 @@ User.resetPassword = function(condObj,updateObj){
                      message          : "You are successfully created account",
                      read_unread      : 0
                  }).then(function(notificationdetails){
-                     resolve(response);
+                     //create user coin
+                     let usercoins={
+                      user_name:reqObj.userName,
+                      type:"Deposit",
+                      coins:reqObj.startCoin,
+                      reference:"Welcome Gift"
+                    }
+
+                    console.log("user"+usercoins);
+
+                    userCoin.create(usercoins).then(usercoinresponse=> {
+                          resolve(response);
+                       }).catch(usercoinerr => {
+                        console.log("err"+usercoinerr)
+                         reject(usercoinerr);
+                       });
+                    // resolve(response);
                  }).catch(err => {
                      reject(err);
                  });
@@ -1121,6 +1140,7 @@ User.detailsUserCoin = function(condObj){
  //addUserCoin
  User.addUserCoin = function(reqObj){
      return new Promise((resolve,reject)=>{
+          let updatedCoin;
           let usercoins={
                       user_name:reqObj.userName,
                       type:reqObj.type,
@@ -1131,8 +1151,15 @@ User.detailsUserCoin = function(condObj){
 
           User.findOne({userName: reqObj.userName},{deviceDetails:0,resetOtp:0}).then(responses12=> {
 
+           if(reqObj.type=="Withdrawal") {
+             updatedCoin=parseInt(responses12.startCoin)-parseInt(reqObj.coin);
 
-           let updatedCoin=parseInt(responses12.startCoin)+parseInt(reqObj.coin);
+           }
+           else{
+             updatedCoin=parseInt(responses12.startCoin)+parseInt(reqObj.coin);
+
+
+           }
 
              User.updateOne({userName:reqObj.userName},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
@@ -1153,6 +1180,31 @@ User.detailsUserCoin = function(condObj){
          })
      })
  }
+
+ //addUserCoin
+ User.addUserCoinWin = function(reqObj){
+     return new Promise((resolve,reject)=>{
+         
+         userCoin.insertMany(reqObj).then(response=> {       
+
+             resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
+
+ User.findDetailsGame12 = function(condObj){
+  console.log(" condObj",)
+  return  new Promise((resolve,reject) => {
+       User.findOne(condObj,{startCoin:1}).then(responses=> {
+        //User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
+              return resolve(responses);
+        }).catch(err => {
+              return reject(err);
+        });
+    });
+}
 module.exports= User;
 
 
