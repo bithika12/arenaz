@@ -17,6 +17,7 @@ const appRoot = require('app-root-path');
 const { updateMail,addMail,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
     fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
+const moment = require('moment');
 
 // Role.createUser().then((details)=>{
 
@@ -506,11 +507,40 @@ exports.getMailList = function (req,res) {
             })
 
             .then(resp => {
-                res.status(constants.HTTP_OK_STATUS).send({
+               //let new_time = moment(responses.created_at).format('YYYY-MM-DD HH:mm:ss');
+                 //console.log("resp"+JSON.stringify(resp));
+                 let notifyObj={};
+                 let notifyArr=[];
+                 resp.forEach(function(val,key){
+                    console.log("val"+val);
+                    let new_time = moment(val.created_at).format('YYYY-MM-DD HH:mm:ss');
+                    notifyObj={
+                        read_unread:val.read_unread,
+                        _id:val._id,
+                        received_by_user:val.received_by_user,
+                        message:val.message,
+                        created_at:new_time
+
+                    } 
+                    notifyArr.push(notifyObj);
+
+                    if(key==resp.length-1){
+
+                         res.status(constants.HTTP_OK_STATUS).send({
+                    status: constants.SUCCESS_STATUS,
+                    result: notifyArr,
+                    message: "Mail list fetched successfully."
+                })
+
+                    }
+
+
+                 })
+               /* res.status(constants.HTTP_OK_STATUS).send({
                     status: constants.SUCCESS_STATUS,
                     result: resp,
                     message: "Mail list fetched successfully."
-                })
+                })*/
             })
             .catch(err => {
                 res.status(constants.API_ERROR).send(err);
