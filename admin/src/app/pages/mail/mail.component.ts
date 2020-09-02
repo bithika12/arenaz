@@ -28,6 +28,8 @@ import { UserService } from '../../../app/pages/services/user.service';
 import { CoinService } from '../../../app/pages/services/coin.service';
 import { MailService } from '../../../app/pages/services/mail.service';
 import {Location} from "@angular/common";
+import * as moment from 'moment';
+
 @Component({
   selector: 'vex-user',
   templateUrl: './mail.component.html',

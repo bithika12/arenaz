@@ -157,7 +157,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
                         });
       }
       //if(User){
-      if(User['status']==200){
+      if(User['status']==1){
           console.log("ok");
         //this.router.navigate(['/user']);
         //this.ngOnInit();

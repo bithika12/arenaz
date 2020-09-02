@@ -765,20 +765,27 @@ User.resetPassword = function(condObj,updateObj){
   */
  User.findUserListAdmin   =   function(){
      return  new Promise((resolve,reject) => {
-         User.find().sort({cupNo:-1}).then(responses=> {
+         User.find({ userName: { $ne: "arena" } }).sort({cupNo:-1}).then(responses=> {
          //User.find().sort({userName:1}).then(responses=> {
          //User.find({status:"active"}).sort({userName:1}).then(responses=> {
+             console.log("responses"+JSON.stringify(responses));
+             console.log("responses"+responses.length);
+
              let totalArr=[];
              let noRoleArr=[];
+             //return resolve(responses)
              responses.map(function(entry1,key) {
-                 if (entry1.roleId) {
+                 console.log("key"+key);
+                // if (entry1.roleId) {
                   let start_coins=entry1.startCoin+"("+entry1.startCoin+")";
-                 Role.findOne({_id: entry1.roleId}, {_id: 1, name: 1, slug: 1}).then(roleResponse => {
+                 //Role.findOne({_id: entry1.roleId}, {_id: 1, name: 1, slug: 1}).then(roleResponse => {
+                     
+                   // console.log("roleResponse._id"+roleResponse._id);
                      totalArr.push({
-
-                         roleId: roleResponse._id,
+                           roleId:entry1.roleId,
                          //roleId: roleResponse._id,
-                         roleName: roleResponse.slug,
+                         //roleId: roleResponse._id,
+                        // roleName: roleResponse.slug,
                          //roleName: roleResponse.name,
                          userId:entry1.userId,
                          userName:entry1.userName,
@@ -793,12 +800,16 @@ User.resetPassword = function(condObj,updateObj){
                          ip:entry1.loginIp
 
                      });
-                     if(key==responses.length-1)
-                     return resolve(totalArr)
-                 }).catch(roleErr => {
+                     if(key===responses.length-1){
+                       console.log("totalArr.length"+totalArr.length);
+                        return resolve(totalArr)
+                     }
+                 /*}).catch(roleErr => {
+
                      reject(roleErr);
-                 });
-                 }
+                 });*/
+                 //}
+                 
              })
              //return resolve(totalArr);
          }).catch(err => {
@@ -1197,9 +1208,18 @@ User.detailsUserCoin = function(condObj){
  User.findDetailsGame12 = function(condObj){
   console.log(" condObj",)
   return  new Promise((resolve,reject) => {
-       User.findOne(condObj,{startCoin:1}).then(responses=> {
+       User.findOne({userName:condObj.userName},{startCoin:1}).then(responses=> {
         //User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
-              return resolve(responses);
+              console.log("responses"+JSON.stringify(responses));
+              let userObj={
+                        balance:responses.startCoin,
+                        user_name:(!condObj.result.user_name) ? '' : condObj.result.user_name,
+                        coins:condObj.result.coins,
+                        reference:condObj.result.reference,
+                        type:condObj.result.type
+                        
+                        };
+              return resolve(userObj);
         }).catch(err => {
               return reject(err);
         });

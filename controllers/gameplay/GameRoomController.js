@@ -2534,10 +2534,16 @@ io.on('connection', function (socket) {
                         if(gameresponses.game_time >0){
                           //game finished//////////////
                           console.log("game finished");
-                          if(findIndex==1)
+                          user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
+
+                            if(findIndex==1)
                                 allOnlineUsers[findIndexOpponent].roomName='';
                             else
                                 allOnlineUsers[findIndex].roomName='';
+                        
+                            }).catch(err => {
+                               console.log("user update error"+err);
+                            }); 
                         }
                         else{
 
@@ -2799,8 +2805,14 @@ io.on('connection', function (socket) {
 
             }
             else{
+                user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
+
                 logger.print("Room not found");
                 allOnlineUsers.splice(findIndex, 1);
+
+                }).catch(err => {
+                    reject(err);
+                 });
               }
         }
         else{

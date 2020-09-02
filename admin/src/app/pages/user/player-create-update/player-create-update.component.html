@@ -121,7 +121,7 @@
     
    <mat-form-field  class="mt-6" fxFlex>
       <mat-label>Coins</mat-label>
-      <input matInput type="number" cdkFocusInitial placeholder="coin" formControlName="coin" [readonly]="buttonDisabled" >
+      <input matInput type="number" cdkFocusInitial placeholder="coin(only numbers allowed)" formControlName="coin" [readonly]="buttonDisabled" >
      
     </mat-form-field>
 
@@ -134,7 +134,7 @@
 
      <mat-form-field  class="mt-6" fxFlex>
       <mat-label>Status</mat-label>
-      <input matInput type="text" cdkFocusInitial placeholder="status" formControlName="status">
+      <input matInput type="text" cdkFocusInitial placeholder="status(active,inactive,deleted,blocked,Duplicate)" formControlName="status">
       <!--<mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
        <mat-error *ngIf="password.hasError('minlength')">Password must have at least {{minPw}} characters</mat-error>-->
     </mat-form-field>

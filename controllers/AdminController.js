@@ -172,7 +172,9 @@ exports.addUser= function(req,res) {
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
         userName: Joi.string().min(3).trim().required(),
-        password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/).trim().required(),
+        password: Joi.string().required(),
+
+        //password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/).trim().required(),
         roleId: Joi.string().trim().required(),
         coinNumber: Joi.number().required(),
         firstName:Joi.string().trim().required(),
@@ -190,7 +192,7 @@ exports.addUser= function(req,res) {
             result: result.error.name,
             message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
         };
-        return res.status(constants.HTTP_OK_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+        return res.status(constants.HTTP_OK_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing! or invalid password"));
 
         //return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
     }
@@ -605,9 +607,52 @@ exports.getUsers = function (req,res) {
         res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch role list"));
     })
 };
+exports.getUserCoins =  (req,res)=> {
+         let userObj={};
+         let userArr=[];
+        return new Promise(function (resolve, reject) {
+           User.detailsUserCoin().then((coindetails)=>{
+               console.log("ok");
+               let promiseArr = [];
+               coindetails.forEach(function (val, key) {
+                        console.log("val"+val);
+                        //let bal=User.findDetailsGame12({userName:val.user_name});
+                        //console.log("bal"+JSON.stringify(bal));
+                         
+                    
+                        //userArr.push(userObj); 
+                        promiseArr.push(User.findDetailsGame12({userName:val.user_name,result:val}),
+                        );
 
+
+                    });
+                    return Promise.all(promiseArr).then(function (resArr) {
+                        console.log("resArr"+JSON.stringify(resArr));
+
+
+                        if (resArr.length) {
+                            //res.send(resArr);
+                              res.send(response.generate(constants.SUCCESS_STATUS,
+                          resArr, 'User Coin List fetched successfully !!'));
+                            
+                        }
+
+                    }).catch(function (err) {
+                        reject(err);
+                    });                 
+                 
+
+            }).catch(err=>{
+             res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch coin list"));
+           })
+
+        }); 
+        
+               
+   
+};
 //getUserCoins
-exports.getUserCoins = function (req,res) {
+exports.getUserCoinsrun = function (req,res) {
     User.detailsUserCoin().then((coindetails)=>{
          let userObj={};
          let userArr=[];
@@ -629,7 +674,7 @@ exports.getUserCoins = function (req,res) {
                     userArr.push(userObj);
 
 
-                    if(key==coindetails.length-1){
+                    if(key==coindetails.length-1 && coindetails.length==userArr.length){
                         res.send(response.generate(constants.SUCCESS_STATUS,
                           userArr, 'User Coin List fetched successfully !!'));
 

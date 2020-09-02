@@ -31,12 +31,24 @@
 
       <mat-form-field class="mt-6" fxFlex>
         <mat-label>Reference</mat-label>
-        <input cdkFocusInitial formControlName="reference" matInput>
+        <input cdkFocusInitial formControlName="reference" matInput >
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
 
-       <mat-form-field>
+
+
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Type</mat-label>
+        <input cdkFocusInitial formControlName="type" matInput placeholder="Deposit,Withdrawal">
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
+
+    </div>
+
+    <mat-form-field>
 
       <mat-label>Users</mat-label>
       <mat-select formControlName="user_name" >
@@ -46,19 +58,8 @@
           {{ brand.email }}
         </mat-option>
       </mat-select>
+      <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
     </mat-form-field>
-
-      <mat-form-field class="mt-6" fxFlex>
-        <mat-label>Type</mat-label>
-        <input cdkFocusInitial formControlName="type" matInput>
-
-        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
-      </mat-form-field>
-
-
-    </div>
-
-
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
