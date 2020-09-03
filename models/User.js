@@ -1162,7 +1162,7 @@ User.detailsUserCoin = function(condObj){
 
           User.findOne({userName: reqObj.userName},{deviceDetails:0,resetOtp:0}).then(responses12=> {
 
-           if(reqObj.type=="Withdrawal") {
+           if(reqObj.type=="Withdrawal" || reqObj.type=="Withdrawl" || reqObj.type=="withdrawl") {
              updatedCoin=parseInt(responses12.startCoin)-parseInt(reqObj.coin);
 
            }

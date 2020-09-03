@@ -194,7 +194,7 @@
           <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
             <button (click)="$event.stopPropagation()"
                     [matMenuTriggerData]="{ player: row }"
-                    [matMenuTriggerFor]="actionsMenu"
+                    [matMenuTriggerFor]=""
                     mat-icon-button
                     type="button">
               <mat-icon [icIcon]="icMoreHoriz"></mat-icon>

@@ -38,6 +38,8 @@ export interface Coin {
   styleUrls: ['./player-create-update.component.scss']
 })
 export class PlayerCreateUpdateComponent implements OnInit {
+  user_name:any;
+  selected=false;
 
   brands: Brand[] = [
     { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },
