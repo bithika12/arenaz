@@ -3,6 +3,9 @@ const appRoot = require('app-root-path');
 const Room = require(appRoot + '/models/Room');
 var Rooms = require('../schema/Schema').roomModel;
 var Coins = require('../schema/Schema').coinModel;
+//Versions
+var Versions = require('../schema/Schema').versionModel;
+
 let Notification = require(appRoot +'/schema/Schema').notificationModel;
 var underscore  = require('underscore');
 
@@ -539,6 +542,18 @@ const updateCoinAdmin =(condObj,updateObj) =>{
 
     });
 }
+//updateVersionAdmin
+const updateVersionAdmin =(condObj,updateObj) =>{
+    console.log("ok");
+    return  new Promise((resolve,reject) => {
+        Versions.updateOne(condObj,{ $set : updateObj }).then(responses=> {
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+
+    });
+}
 //fetch active users
 //fetchActiveUsers
 const fetchUserList =(condObj) =>{
@@ -753,7 +768,7 @@ const fetchHistoryUser = userId => {
     });
 };
 
-module.exports = { fetchHistoryUser,
+module.exports = { updateVersionAdmin,fetchHistoryUser,
     updateMail,addMail,fetchMail,updateGameAdmin,
     addMatch,fetchMatches,fetchUserList,
     updateCoinAdmin,updateRoomAdmin,addCoin,

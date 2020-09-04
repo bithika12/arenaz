@@ -30,6 +30,13 @@ export class CoinService {
        let payloadObj={userEmail:localStorage.getItem('email')}
         return this.http.post(`${environment.BASE_URL}admin/game-list`,payloadObj,{headers: this.headers});
     }
+    //fetch/app/version
+    getVersions() {
+      console.log('userlist api');
+      console.log(this.headers);
+       let payloadObj={userEmail:localStorage.getItem('email')}
+        return this.http.post(`${environment.BASE_URL}fetch/app/version`,payloadObj,{headers: this.headers});
+    }
 
     editUser(editplayer)
     {
@@ -55,6 +62,27 @@ export class CoinService {
       };*/
       //editplayer
         return this.http.post(`${environment.BASE_URL}admin/edit-coin`,payloadObj,{headers: this.headers});
+    }
+
+    
+
+     editVersion(editplayer)
+    {
+      let payloadObj=
+      {
+        "versionId":editplayer._id,
+        "app_version":editplayer.app_version,
+        
+        "userEmail":localStorage.getItem('email'),
+        "download_link":editplayer.download_link
+       
+      };
+      //payloadObj
+      console.log("edit"+editplayer);
+      console.log(payloadObj);
+     
+      //editplayer
+        return this.http.post(`${environment.BASE_URL}update/app/version`,payloadObj,{headers: this.headers});
     }
 
   deleteUser(editplayer)

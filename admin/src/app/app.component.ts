@@ -101,6 +101,12 @@ export class AppComponent {
         label: 'Mailbox',
         route: '/mail',
         icon: icAssigment
+      },
+      {
+        type: 'link',
+        label: 'Appversion',
+        route: '/appversion',
+        icon: icAssigment
       }
     ];
   }

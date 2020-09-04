@@ -14,7 +14,7 @@ var async = require('async');
 const validateInput = require('../utils/ParamsValidation');
 const response     = require('../utils/ResponseManeger');
 
- const { fetchHistoryAdmin,userValidChkAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName} = require(appRoot +'/models/FetchHistory');
+ const { updateVersionAdmin,fetchHistoryAdmin,userValidChkAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName} = require(appRoot +'/models/FetchHistory');
 /** Route function **/
 
 
@@ -365,6 +365,30 @@ exports.updatePassword = function (req,res){
   //         res.send({"status":'3',"result":err,"message":"Something went Wrong!!"});
   //     });
   // };
+
+
+  exports.updateVersion = function (req,res) {
+
+     if(!req.body.versionId || !req.body.userEmail){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={app_version:req.body.app_version,download_link:req.body.download_link};
+
+     userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            console.log("pll");
+            return updateVersionAdmin({_id: mongoose.Types.ObjectId(req.body.versionId)},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"version modified ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+
+
+ }
 
 
 

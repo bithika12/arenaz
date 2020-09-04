@@ -118,6 +118,7 @@ router.post('/admin/get-users'/*authetication.authChecker*/,adminController.getU
 router.post('/admin/get-user-coins'/*authetication.authChecker*/,adminController.getUserCoins);
 
 router.post('/admin/add-user-coins'/*authetication.authChecker*/,adminController.addUserCoins);
-
+//updateVersion
+router.post('/update/app/version',profileController.updateVersion);
 
 module.exports = router;

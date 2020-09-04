@@ -52,6 +52,12 @@ const childrenRoutes: VexRoutes = [
     path: 'mail',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/mail/mail.module').then(m => m.MailModule),
+  },
+  
+   {
+    path: 'appversion',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/appversion/appversion.module').then(m => m.DartModule),
   }
 ];
 const routes: Routes = [

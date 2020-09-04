@@ -186,6 +186,7 @@ var gameSchema      = new Schema({
 
 var versionSchema      = new Schema({
     app_version : String,
+    download_link : String,
     status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'}
     
 });
