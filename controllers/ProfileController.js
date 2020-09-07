@@ -394,7 +394,7 @@ exports.updatePassword = function (req,res){
  exports.fetchAppVersion = function (req,res) {
 
      let schema = Joi.object().keys({
-         userEmail: Joi.string().required(),
+         //userEmail: Joi.string().required(),
          app_version: Joi.string().required()
      });
 
