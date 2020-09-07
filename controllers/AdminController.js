@@ -217,7 +217,8 @@ exports.addUser= function(req,res) {
             lastName:req.body.lastName,
             countryName:ipInfo.country,
             loginIp:ipInfo.ip,
-            cupNo:3000
+            cupNo:3000,
+            userScore : 3000
             //userType: "registered-game-user"
         }
         async.waterfall([
