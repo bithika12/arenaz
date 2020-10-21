@@ -124,7 +124,19 @@ export class PlayerCreateUpdateComponent implements OnInit {
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
       app_version: [this.defaults.app_version || ''],
-     download_link: [this.defaults.download_link || ''],
+      download_link: [this.defaults.download_link || ''],
+      coin_price_usd: [this.defaults.coin_price_usd || ''],
+      //wallet_api_link
+      wallet_api_link: [this.defaults.wallet_api_link || ''],
+      wallet_key: [this.defaults.wallet_key || ''],
+      api_expiration_time: [this.defaults.api_expiration_time || ''],
+      e_currency_price_api: [this.defaults.e_currency_price_api || ''],
+      transaction_fee_withdrawl: [this.defaults.transaction_fee_withdrawl || ''],
+
+      transaction_fee_deposit: [this.defaults.transaction_fee_deposit || ''],
+
+      minimum_deposit: [this.defaults.minimum_deposit || ''],
+      minimum_withdrawl: [this.defaults.minimum_withdrawl || ''],
      _id:[this.defaults._id || ''],
     });
   }

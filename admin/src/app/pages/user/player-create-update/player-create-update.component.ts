@@ -42,6 +42,16 @@ export interface Coin {
 export class PlayerCreateUpdateComponent implements OnInit {
    buttonDisabled=false;
 
+   usertypeArr: any[] = [
+    { name: 'Active',value:'active' },
+    { name: 'Inactive',value:'inactive' },
+    { name: 'Deleted',value:'deleted' },
+    { name: 'Blocked',value:'blocked' },
+    { name: 'Duplicate',value:'Duplicate' }
+    
+    
+];
+
   brands: Brand[] = [
     { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },
     { value: 'Gucci', viewValue: 'Gucci' },

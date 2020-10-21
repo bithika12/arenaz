@@ -62,7 +62,7 @@ export class DartComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: false },
     { label: 'Image', property: 'image', type: 'image', visible: false },
     { label: 'Game Id', property: 'game_name', type: 'text', visible: true },
-    //{ label: 'Game Time', property: 'game_time', type: 'text', visible: true },
+    { label: 'Game Time', property: 'game_time', type: 'text', visible: true },
     { label: 'First Username', property: 'first_user', type: 'text', visible: true, cssClasses: ['font-medium'] },
     { label: 'Second Username', property: 'second_user', type: 'text', visible: true },
     { label: 'First User Score', property: 'first_user_score', type: 'text', visible: true, cssClasses: ['font-medium'] },

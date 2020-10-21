@@ -63,7 +63,26 @@ export class AppversionComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Image', property: 'image', type: 'image', visible: false },
     { label: 'Image', property: '_id', type: 'text', visible: false },
     { label: 'App Version', property: 'app_version', type: 'text', visible: true },  
-    { label: 'Download Link', property: 'download_link', type: 'text', visible: true },  
+    { label: 'Download Link', property: 'download_link', type: 'text', visible: true },
+
+    { label: 'Coin Price in USD', property: 'coin_price_usd', type: 'text', visible: true },
+
+    { label: 'Wallet API Link', property: 'wallet_api_link', type: 'text', visible: true },
+
+    { label: 'Wallet Key', property: 'wallet_key', type: 'text', visible: true },  
+
+    { label: 'API Expiration(Minutes) ', property: 'api_expiration_time', type: 'text', visible: true },  
+
+    { label: 'E-Currency Price API ', property: 'e_currency_price_api', type: 'text', visible: true },
+
+    { label: 'Transaction Fee Withdrawal ', property: 'transaction_fee_withdrawl', type: 'text', visible: true },
+
+    { label: 'Transaction Fee Deposit ', property: 'transaction_fee_deposit', type: 'text', visible: true },
+
+    { label: 'Minimum Deposit ', property: 'minimum_deposit', type: 'text', visible: true },
+
+    { label: 'Minimum Withdrawal  ', property: 'minimum_withdrawl', type: 'text', visible: true },
+    
     
     { label: 'Actions', property: 'actions', type: 'button', visible: true }
   ];

@@ -72,6 +72,10 @@ var userSchema =  new Schema({
 var roomSchema = new Schema({
     name          : String,
     status        : String,
+    game_name: {
+        type: String,
+        default: "arenaZ"
+    },
     users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,dartName:String,userName:String,cupNumber:Number,roomCoin:Number,totalCupWin:Number,firstName:String,lastName:String}],
     //users        : [{userId:String, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String}],
     created_at: {
@@ -187,6 +191,15 @@ var gameSchema      = new Schema({
 var versionSchema      = new Schema({
     app_version : String,
     download_link : String,
+    coin_price_usd : String,
+    wallet_api_link : String,
+    wallet_key : String,
+    api_expiration_time : String,
+    e_currency_price_api : String,
+    transaction_fee_withdrawl : String,
+    transaction_fee_deposit : String,
+    minimum_deposit : String,
+    minimum_withdrawl : String,
     status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'}
     
 });
@@ -195,6 +208,25 @@ var userCoinSchema      = new Schema({
     user_name : String,   
     coins:Number,
     reference:String,
+    type :  {  type : String , enum: ['Deposit','deposit','Withdrawal','withdrawl','Withdrawl','Lost','Won'] , default : 'Deposit'}
+    
+});
+
+var transactionSchema      = new Schema({
+    user_name : String,
+    user_confirmation: String,
+    amount: String,
+    amount_usd: String,
+    transaction_key: String,
+    status : {  type : String , enum: ['New','Cancelled','Expired','Completed']},  
+    created_at: {
+        type: Date,
+        default: Date.now
+    }, 
+    expired_at: {
+        type: Date,
+        default: Date.now
+    },  
     type :  {  type : String , enum: ['Deposit','deposit','Withdrawal','withdrawl','Withdrawl','Lost','Won'] , default : 'Deposit'}
     
 });
@@ -211,5 +243,6 @@ schema.gameModel   = mongoose.model('games'  , gameSchema);
 schema.versionModel   = mongoose.model('appversions'  , versionSchema);
 schema.roomLogModel   = mongoose.model('roomlogs'  , roomlogSchema);
 schema.userCoinModel   = mongoose.model('user_coins'  , userCoinSchema);
+schema.userTransactionModel   = mongoose.model('user_transactions'  , transactionSchema);
 
 module.exports = schema;

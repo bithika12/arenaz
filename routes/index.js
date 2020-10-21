@@ -29,7 +29,7 @@ router.get('/', function(req, res, next) {
   const fetchGameHistory = require(appRoot + '/controllers/GameHistoryController');
   const fetchNotification= require(appRoot + '/controllers/FetchNotificationController');
   const userLeaderBoard= require(appRoot + '/controllers/userLeaderBoardController');
-
+  const transactionController=require(appRoot + '/controllers/TransactionController');
 
 
 /**  LOGIN ROUTING **/
@@ -54,6 +54,16 @@ router.post('/change/notification/status',fetchNotification.changeStatus);
 router.post('/user/game/history',fetchGameHistory.userGame);
 router.post('/fetch/app/version',profileController.fetchVersion);
 router.post('/fetch/unread/message',fetchNotification.fetchUnreadMessage);
+router.post('/currency/price'/*authetication.authChecker*/,transactionController.currencyPrice);
+// /getUserDetails
+router.post('/user/get/coin'/*authetication.authChecker*/,transactionController.getUserDetails);
+//request deposit api
+router.post('/request/deposit'/*authetication.authChecker*/,transactionController.requestDeposit);
+
+router.post('/confirm/deposit'/*authetication.authChecker*/,transactionController.confirmDeposit);
+//cancelDeposit
+router.post('/cancel/deposit'/*authetication.authChecker*/,transactionController.cancelDeposit);
+
 
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD
@@ -122,5 +132,8 @@ router.post('/admin/add-user-coins'/*authetication.authChecker*/,adminController
 router.post('/update/app/version',profileController.updateVersion);
 //fetchAppVersion
 router.post('/get/app/version',profileController.fetchAppVersion);
+
+router.post('/admin/transaction-add'/*authetication.authChecker*/,adminController.addTransaction);
+router.post('/admin/delete-transaction'/*authetication.authChecker*/,adminController.deleteTransaction);
 
 module.exports = router;

@@ -1107,7 +1107,20 @@ User.detailsAdmin = function(condObj){
  User.fetchVersion = function(){
      console.log("po");
      return new Promise((resolve,reject)=>{
-         Appversion.find({status:"active"},{app_version:1,download_link:1}).then(response=> {
+          Appversion.find({status:"active"},{
+            app_version:1,
+            download_link:1,
+            coin_price_usd : 1,
+            wallet_api_link : 1,
+            wallet_key : 1,
+            api_expiration_time : 1,
+            e_currency_price_api : 1,
+            transaction_fee_withdrawl : 1,
+            transaction_fee_deposit : 1,
+            minimum_deposit : 1,
+            minimum_withdrawl : 1}).then(response=> {
+
+         //Appversion.find({status:"active"},{app_version:1,download_link:1}).then(response=> {
              console.log("versionres"+response);
              resolve(response)
          }).catch(err=>{
@@ -1141,7 +1154,7 @@ User.findDetailsGame = function(condObj){
 
 User.detailsUserCoin = function(condObj){
      return new Promise((resolve,reject)=>{
-         userCoin.find({},{_id: 1,user_name:1,coins:1,reference:1,type:1}).then(response=> {
+         userCoin.find({},{_id: 1,user_name:1,coins:1,reference:1,type:1}).sort({ _id: -1 }).then(response=> {
              resolve(response)
          }).catch(err=>{
              reject(err);
@@ -1225,6 +1238,35 @@ User.detailsUserCoin = function(condObj){
         });
     });
 }
+
+//update coin transaction
+User.updateUserCoinTransaction =function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+
+         User.findOne({userName: condObj.userName},{deviceDetails:0,resetOtp:0}).then(responses=> {
+             
+             console.log("user coin"+responses.startCoin);
+             
+             console.log("update coin"+updateObj);
+             //let updatedCoin=responses.startCoin+updateObj;
+             //updatedCoin=parseInt(updatedCoin);
+             let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj);
+              //let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin)*2;
+             console.log("win coin"+typeof(updatedCoin));
+             
+             
+             //let userScore=parseInt(responses.userScore)+parseInt(updateObj.userScore);
+             User.updateOne({userName:condObj.userName},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });
+         }).catch(err => {
+             return reject(err);
+         });
+
+     });
+ }
 module.exports= User;
 
 

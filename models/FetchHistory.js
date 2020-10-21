@@ -8,6 +8,8 @@ var Versions = require('../schema/Schema').versionModel;
 
 let Notification = require(appRoot +'/schema/Schema').notificationModel;
 var underscore  = require('underscore');
+//Transaction
+let Transaction = require(appRoot +'/schema/Schema').userTransactionModel;
 
 
 const Constants = require(appRoot + '/config/constants');
@@ -430,7 +432,8 @@ const fetchHistoryAdmin = userId => {
                         second_user:entry.users[1]['userName'],
                         first_user_score:entry.users[0]['total'],
                         second_user_score:entry.users[1]['total'],
-                        winner_user:winnerUserId
+                        winner_user:winnerUserId,
+                        game_time:entry.game_time
                     });
 
                  }
@@ -627,6 +630,41 @@ const fetchMail =(condObj,updateObj) =>{
 
     });
 }
+//fetch transaction
+const fetchTransaction =(condObj) =>{
+    return  new Promise((resolve,reject) => {
+        Transaction.find(condObj,
+            {status:1}).then(responses => {
+            //console.log("notis",responses);
+            //let new_time = moment(responses.created_at).format('YYYY-MM-DD HH:mm:ss');
+              //fetch user details/////
+              
+              resolve(responses);
+         
+
+        //})
+        })
+
+    });
+}
+//addTransaction
+const addTransaction =(updateObj) =>{
+    console.log("plll");
+    return  new Promise((resolve,reject) => {        
+                Transaction.create(updateObj).then(response => {
+                    console.log("plo9"+response._id)
+                    //let a=response.insertedId;
+                    //console.log("ppp"+a);
+
+                       
+                    return resolve(response._id);
+                }).catch(err => {
+                    return reject(err);
+                });
+            
+
+    });
+}
 const addMail =(updateObj) =>{
     return  new Promise((resolve,reject) => {
 
@@ -647,7 +685,20 @@ const addMail =(updateObj) =>{
 
     });
 }
+//updateTransaction
+const updateTransaction =(condObj,updateObj) =>{
+    return  new Promise((resolve,reject) => {
+        Transaction.deleteOne({"_id":condObj._id}
+        ).then(responses=> {                
 
+        //User.updateOne({"deviceDetails.accessToken":condObj.accessToken},{ $set : {status:"inactive"} }).then(responses=> {                
+          return resolve(responses);
+      }).catch(err => {
+          return reject(err);
+      }); 
+
+    });
+}
 const updateMail =(condObj,updateObj) =>{
     return  new Promise((resolve,reject) => {
         Notification.updateOne(condObj,{ $set : updateObj }).then(responses=> {
@@ -768,7 +819,29 @@ const fetchHistoryUser = userId => {
     });
 };
 
-module.exports = { updateVersionAdmin,fetchHistoryUser,
+const updateTransactionConfirm =(condObj,updateObj) =>{
+    return  new Promise((resolve,reject) => {
+        Transaction.updateOne(condObj,{ $set : updateObj }).then(responses=> {
+            return resolve(responses);
+        }).catch(err => {
+            return reject(err);
+        });
+
+    });
+}
+
+const chkValidTransaction =(condObj) =>{
+    return  new Promise((resolve,reject) => {
+        Transaction.findOne(condObj,{_id: 1,status:1,user_name:1,amount:1}).then(transactiondetails=> {
+            return resolve(transactiondetails);
+        }).catch(err => {
+            return reject(err);
+        });
+
+    });
+}
+
+module.exports = { chkValidTransaction,updateTransactionConfirm,fetchTransaction,updateTransaction,addTransaction,updateVersionAdmin,fetchHistoryUser,
     updateMail,addMail,fetchMail,updateGameAdmin,
     addMatch,fetchMatches,fetchUserList,
     updateCoinAdmin,updateRoomAdmin,addCoin,

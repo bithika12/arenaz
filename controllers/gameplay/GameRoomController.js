@@ -1761,7 +1761,9 @@ io.on('connection', function (socket) {
                 RoomUpdate,
                 gameStatusUpdateLeaveMod,
                 gameStatusUpdateOpponentLeaveMod,
-                insertUserCoin  
+                insertUserCoin,
+                //new
+                addNotification  
 
             ], function (err, result) {
                 if (result) {
@@ -2619,13 +2621,16 @@ io.on('connection', function (socket) {
                     gameStatusUpdateOpponentDisconnect,
                     //new/////
                     userStatusUpdate,
-                    insertUserCoin
+                    insertUserCoin,
+                    //new
+                    addNotification
                     // totalPlayerList,
                     // roomClosed,
                     // memoryRoomRemove
                 ], function (err, result) {
                     //allOnlineUsers.splice(findIndex, 1);
                     if (result) {
+                        console.log("result after disconnect"+JSON.stringify(result));
 
                         //allOnlineUsers=_.without(allOnlineUsers, _.findWhere(allOnlineUsers, {userId: req.userId}));
                         logger.print("win status after disconnecting"+result.isWin);
@@ -2779,6 +2784,7 @@ io.on('connection', function (socket) {
 
                        }                      
                        }).catch(secondUserTotalCupErr=>{
+                        console.log("uiiii");
                         console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
                        })
                         
@@ -3563,6 +3569,34 @@ io.on('connection', function (socket) {
            // }
        /* }).catch(err => {
         });*/
+    }
+
+
+    function addNotification(reqobj, callback) {
+        return new Promise((resolve, reject) => {
+            if (reqobj.isWin) {
+                room.updateRoomGameOver({roomName: reqobj.roomName,gameTotalTime:reqobj.gameTotalTime}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
+
+                    Notification.createNotification({
+                        //sent_by_user     : req.user_id ,
+                        received_by_user : reqobj.opponentUserId,
+                        subject          : "You are winner",
+                        message          : "You are winner",
+                        read_unread      : 0
+                    }).then(function(notificationdetails){
+                         callback(null, reqobj);
+                        
+
+                      //////
+                    });
+
+                }).catch(err => {
+                    logger.print("***Room update error ", err);
+                })
+            } else {
+                callback(null, reqobj);
+            }
+        })
     }  
 
 

@@ -38,19 +38,14 @@
 
 
 
-      <mat-form-field class="mt-6" fxFlex>
-        <mat-label>Type</mat-label>
-        <input cdkFocusInitial formControlName="type" matInput placeholder="Deposit,Withdrawal">
 
-        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
-      </mat-form-field>
 
 
     </div>
 
     <mat-form-field>
 
-      <mat-label>Users</mat-label>
+      <mat-label>UserEmail</mat-label>
       <mat-select formControlName="user_name" >
 
         <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==user_name ? selected : brand.userName" >
@@ -60,6 +55,35 @@
       </mat-select>
       <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
     </mat-form-field>
+
+
+    <mat-form-field>
+
+      <mat-label>UserName</mat-label>
+      <mat-select formControlName="user_name" >
+
+        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==user_name ? selected : brand.userName" >
+        
+          {{ brand.userName }}
+        </mat-option>
+      </mat-select>
+      <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+    </mat-form-field>
+
+
+    <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Type</mat-label>
+
+        <mat-select formControlName="type">
+            <mat-option *ngFor="let sub of usertypeArr" [value]="sub.name">
+              {{sub.name}}
+            </mat-option>
+          </mat-select>
+        <!--<input cdkFocusInitial formControlName="type" matInput placeholder="Deposit,Withdrawal">-->
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">

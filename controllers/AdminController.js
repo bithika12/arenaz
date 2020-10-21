@@ -14,7 +14,7 @@ const Joi = require('joi');
 var User  = require('../models/User');
 var Role  = require('../models/Role');
 const appRoot = require('app-root-path');
-const { updateMail,addMail,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
+const { updateMail,updateTransaction,addMail,addTransaction,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
     fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
 const moment = require('moment');
@@ -608,7 +608,27 @@ exports.editMail= function(req,res) {
             res.status(constants.API_ERROR).send(err);
         });
 }
+//deleteTransaction
 
+exports.deleteTransaction= function(req,res) {
+
+    if(!req.body.transactionId || !req.body.userEmail ){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={status:"inactive"};
+
+    userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            return updateTransaction({_id: mongoose.Types.ObjectId(req.body.transactionId)},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Transaction deleted ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+}
 
 exports.deleteMail= function(req,res) {
 
@@ -736,3 +756,56 @@ exports.addUserCoins = function (req,res) {
         res.send(response.error(constants.ERROR_STATUS,err,"Unable to add coin"));
     })
 };
+
+
+exports.addTransaction= function(req,res) {
+    console.log("jjjj")
+    let schema = Joi.object().keys({
+        userEmail: Joi.string().max(254).trim().required(),
+        //notificationId: Joi.string().required(),
+        user_name:Joi.string().required(),
+        type:Joi.string().required(),
+        expired_at:Joi.string().required(),
+        status:Joi.string().required(),
+        confirmation:Joi.string().required(),
+        amount:Joi.string().optional(),
+        amount_usd:Joi.string().required(),
+        transaction_key:Joi.string().required(),
+
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = {
+            status: constants.VALIDATION_ERROR,
+            result: result.error.name,
+            message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+        };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+        var userObj = {
+                        user_name : req.body.user_name,
+                        user_confirmation : req.body.confirmation,
+                        amount : req.body.amount,
+                        amount_usd : req.body.amount_usd,
+                        transaction_key : req.body.transaction_key,
+                        status : req.body.status,
+                        expired_at : req.body.expired_at,
+                        type : req.body.type
+        }
+        userValidChkAdmin(req.body.userEmail)
+            .then(validResponse => {
+
+                return addTransaction(userObj);
+            })
+            .then(resp=>{
+                res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Transaction added ."})
+            })
+            .catch(err=>{
+                res.status(constants.API_ERROR).send(err);
+            });
+    }
+}

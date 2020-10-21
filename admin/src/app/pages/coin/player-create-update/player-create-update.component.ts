@@ -41,6 +41,13 @@ export class PlayerCreateUpdateComponent implements OnInit {
   user_name:any;
   selected=false;
 
+  usertypeArr: any[] = [
+    { name: 'Deposit' },
+    { name: 'Withdrawl' }
+    
+    
+];
+
   brands: Brand[] = [
     { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },
     { value: 'Gucci', viewValue: 'Gucci' },

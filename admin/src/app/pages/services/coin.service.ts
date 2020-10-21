@@ -74,7 +74,18 @@ export class CoinService {
         "app_version":editplayer.app_version,
         
         "userEmail":localStorage.getItem('email'),
-        "download_link":editplayer.download_link
+        "download_link":editplayer.download_link,
+
+        "api_expiration_time": editplayer.api_expiration_time,
+
+        "coin_price_usd": editplayer.coin_price_usd,
+        "e_currency_price_api": editplayer.e_currency_price_api,
+        "minimum_deposit": editplayer.minimum_deposit,
+        "minimum_withdrawl": editplayer.minimum_withdrawl,
+        "transaction_fee_deposit": editplayer.transaction_fee_deposit,
+        "transaction_fee_withdrawl": editplayer.transaction_fee_withdrawl,
+        "wallet_api_link": editplayer.wallet_api_link,
+        "wallet_key": editplayer.wallet_key
        
       };
       //payloadObj
@@ -117,6 +128,7 @@ export class CoinService {
       };*/
       let payloadObj=
       {
+        /*"userName":(!coinDetails.user_name) ? coinDetails.user_email : coinDetails.user_name,*/
         "userName":coinDetails.user_name,
         "type":coinDetails.type,
         "coin":coinDetails.coins,

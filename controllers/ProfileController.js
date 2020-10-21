@@ -372,8 +372,20 @@ exports.updatePassword = function (req,res){
      if(!req.body.versionId || !req.body.userEmail){
         return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
-    let updateObj ={app_version:req.body.app_version,download_link:req.body.download_link};
-
+    let updateObj ={
+        app_version:req.body.app_version,
+        download_link:req.body.download_link,
+        coin_price_usd : req.body.coin_price_usd,
+        wallet_api_link : req.body.wallet_api_link,
+        wallet_key : req.body.wallet_key,
+        api_expiration_time : req.body.api_expiration_time,
+        e_currency_price_api : req.body.e_currency_price_api,
+        transaction_fee_withdrawl : req.body.transaction_fee_withdrawl,
+        transaction_fee_deposit : req.body.transaction_fee_deposit,
+        minimum_deposit : req.body.minimum_deposit,
+        minimum_withdrawl : req.body.minimum_withdrawl
+    };
+    console.log("updateObj"+updateObj)
      userValidChkAdmin(req.body.userEmail)
         .then(validResponse => {
             console.log("pll");
@@ -424,6 +436,20 @@ exports.updatePassword = function (req,res){
                     status:flag,
                     download_link:versionDetails[0].download_link
                 }
+
+                /*let versionObj={
+                    status:flag,
+                    coin_price_usd : versionDetails[0].coin_price_usd,
+                    wallet_api_link : versionDetails[0].wallet_api_link,
+                    wallet_key : versionDetails[0].wallet_key,
+                    api_expiration_time : versionDetails[0].api_expiration_time,
+                    e_currency_price_api : versionDetails[0].e_currency_price_api,
+                    transaction_fee_withdrawl : versionDetails[0].transaction_fee_withdrawl,
+                    transaction_fee_deposit : versionDetails[0].transaction_fee_deposit,
+                    minimum_deposit : versionDetails[0].minimum_deposit,
+                    minimum_withdrawl : versionDetails[0].minimum_withdrawl,
+                    download_link:versionDetails[0].download_link
+                }*/
              
              res.send(response.generate(constants.SUCCESS_STATUS,versionObj, 'Version details fetched successfully !!'));
          }

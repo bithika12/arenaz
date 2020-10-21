@@ -57,6 +57,8 @@ export class CoinComponent implements OnInit, AfterViewInit, OnDestroy {
   players: Player[];
   roles:[];
 
+  
+
   @Input()
   columns: TableColumn<Player>[] = [
     { label: 'Checkbox', property: 'checkbox', type: 'checkbox', visible: false },
