@@ -38,6 +38,7 @@ module.exports = {
     INVALID_AUTHERIZATION       : "5",
     INVALID_TOKEN               : "10",
     UNIQUIE_USERNAME            : "11",
+    VALIDATION_CHECK_ERR        : "12",
     /* Node mailer*/    
     TRANSPORTER                 : transporter,
     /* Link */

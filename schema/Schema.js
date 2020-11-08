@@ -214,11 +214,12 @@ var userCoinSchema      = new Schema({
 
 var transactionSchema      = new Schema({
     user_name : String,
+    user_email: String,
     user_confirmation: String,
     amount: String,
     amount_usd: String,
     transaction_key: String,
-    status : {  type : String , enum: ['New','Cancelled','Expired','Completed']},  
+    status : {  type : String , enum: ['New','Cancelled','Expired','Completed','Errror']},  
     created_at: {
         type: Date,
         default: Date.now
@@ -227,7 +228,7 @@ var transactionSchema      = new Schema({
         type: Date,
         default: Date.now
     },  
-    type :  {  type : String , enum: ['Deposit','deposit','Withdrawal','withdrawl','Withdrawl','Lost','Won'] , default : 'Deposit'}
+    type :  {  type : String , enum: ['Deposit','deposit','Withdraw','withdraw','Lost','Won'] , default : 'Deposit'}
     
 });
 //MODEL DECLARATION

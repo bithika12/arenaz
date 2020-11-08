@@ -832,12 +832,34 @@ const updateTransactionConfirm =(condObj,updateObj) =>{
 
 const chkValidTransaction =(condObj) =>{
     return  new Promise((resolve,reject) => {
-        Transaction.findOne(condObj,{_id: 1,status:1,user_name:1,amount:1}).then(transactiondetails=> {
+        Transaction.findOne(condObj,{_id: 1,status:1,user_name:1,user_email:1,expired_at:1,amount:1}).then(transactiondetails=> {
             return resolve(transactiondetails);
         }).catch(err => {
             return reject(err);
         });
+    });
+}
 
+const chkTransactionStatus =(condObj) =>{
+    return  new Promise((resolve,reject) => {
+        Transaction.findOne(condObj,{_id: 1,status:1,user_name:1,user_email:1,expired_at:1,amount:1}).then(transactiondetails=> {
+
+            var x = new moment(transactiondetails.expired_at);
+            var y = new moment();
+            var duration = moment.duration(x.diff(y)).as('minutes');
+           console.log(duration);
+            return resolve({
+                  _id: transactiondetails._id,
+                  user_name: transactiondetails.user_name,
+                  user_email: transactiondetails.user_email,
+                  amount: transactiondetails.amount,
+                  status: transactiondetails.status,
+                  expired_at: transactiondetails.expired_at,
+                  expire_in_minute : duration,           
+              });
+        }).catch(err => {
+            return reject(err);
+        });
     });
 }
 
@@ -847,4 +869,4 @@ module.exports = { chkValidTransaction,updateTransactionConfirm,fetchTransaction
     updateCoinAdmin,updateRoomAdmin,addCoin,
     fetchHistory,userValidChk,
     userValidChkAdmin,fetchHistoryAdmin,
-    updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin };
+    updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin,chkTransactionStatus };

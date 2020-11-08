@@ -48,9 +48,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
     { name: 'Deleted',value:'deleted' },
     { name: 'Blocked',value:'blocked' },
     { name: 'Duplicate',value:'Duplicate' }
-    
-    
-];
+  ];
 
   brands: Brand[] = [
     { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },

@@ -1267,6 +1267,28 @@ User.updateUserCoinTransaction =function(condObj,updateObj){
 
      });
  }
+
+ //update coin transaction after Withdraw
+User.updateUserCoinTransactionWithDraw =function(condObj,updateObj){
+     return  new Promise((resolve,reject) => {
+
+         User.findOne({userName: condObj.userName},{deviceDetails:0,resetOtp:0}).then(responses=> {
+             
+             let updatedCoin=parseInt(responses.startCoin)-parseInt(updateObj);             
+
+             User.updateOne({userName:condObj.userName},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+                condObj.total_amount = updatedCoin;
+                condObj.coinstatus = 'Updated';
+                 return resolve(condObj);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });
+         }).catch(err => {
+             return reject(err);
+         });
+
+     });
+ }
 module.exports= User;
 
 

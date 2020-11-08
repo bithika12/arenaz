@@ -95,7 +95,12 @@ export class AppComponent {
         route: '/game',
         icon: icAssigment
       },
-      
+      {
+        type: 'link',
+        label: 'Transaction',
+        route: '/transaction',
+        icon: icAssigment
+      },
       {
         type: 'link',
         label: 'Mailbox',

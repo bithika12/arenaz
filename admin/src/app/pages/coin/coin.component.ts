@@ -126,7 +126,7 @@ export class CoinComponent implements OnInit, AfterViewInit, OnDestroy {
     this.data$.pipe(
       filter<Player[]>(Boolean)
     ).subscribe(users => {
-      console.log(users);
+      
       this.players = users;
       this.dataSource.data = users;
     });
@@ -227,6 +227,7 @@ export class CoinComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     value = value.trim();
     value = value.toLowerCase();
+    console.log(value);
     this.dataSource.filter = value;
   }
 

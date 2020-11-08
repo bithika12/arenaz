@@ -60,9 +60,14 @@ router.post('/user/get/coin'/*authetication.authChecker*/,transactionController.
 //request deposit api
 router.post('/request/deposit'/*authetication.authChecker*/,transactionController.requestDeposit);
 
+router.post('/request/withdraw'/*authetication.authChecker*/,transactionController.requestWithdraw);
+
 router.post('/confirm/deposit'/*authetication.authChecker*/,transactionController.confirmDeposit);
 //cancelDeposit
 router.post('/cancel/deposit'/*authetication.authChecker*/,transactionController.cancelDeposit);
+//Check transaction status
+router.post('/check/transaction/status'/*authetication.authChecker*/,transactionController.checkTransactionStatus);
+
 
 
  /* FORGET PASSWORD RESET PASSWORD*/
