@@ -1,0 +1,94 @@
+<form (ngSubmit)="save()" [formGroup]="form">
+  <div fxLayout="row" fxLayoutAlign="start center" mat-dialog-title>
+    <!-- <img *ngIf="form.get('imageSrc').value" [src]="form.get('imageSrc').value" class="avatar mr-5"> -->
+
+    <h2 *ngIf="form.get('user_name').value"
+        class="headline m-0"
+        fxFlex="auto">{{ form.get('user_name').value}}</h2>
+    <h2 *ngIf="!form.get('user_name').value"
+        class="headline m-0"
+        fxFlex="auto">Transaction Manage</h2>
+    <button class="text-secondary" mat-dialog-close mat-icon-button type="button">
+      <mat-icon [icIcon]="icClose"></mat-icon>
+    </button>
+  </div>
+
+  <mat-divider class="-mx-6 text-border"></mat-divider>
+
+  <mat-dialog-content fxLayout="column">
+    <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="24px">
+      
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Transaction Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let sub of transactiontypeArr" [value]="sub.value">
+              {{sub.name}}
+            </mat-option>
+          </mat-select> 
+      <!--  <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon> -->
+      </mat-form-field>
+
+
+
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>User Name</mat-label>
+         <mat-select formControlName="user_name" [(ngModel)]="selectUsername" (selectionChange)="onUserChange($event)">
+          <mat-option *ngFor="let user of userlists"  [value]="user.userName" >
+          {{ user.userName }}
+        </mat-option>
+        </mat-select>
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>User Email</mat-label>
+          <mat-select formControlName="user_email" [(ngModel)]="selectUseremail" (selectionChange)="onEmailChange($event)">
+            <mat-option *ngFor="let user of userlists"  [value]="user.email">
+            {{ user.email }}
+          </mat-option>
+        </mat-select>
+
+       <!-- <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon> -->
+      </mat-form-field>
+   </div>
+
+    <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="24px">
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Transaction Key</mat-label>
+          <input cdkFocusInitial formControlName="transaction_key" matInput>
+      <!--  <mat-icon [icIcon]="fa-coins" class="mr-3" matPrefix></mat-icon> -->
+      </mat-form-field>
+      
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Status</mat-label>
+
+          <mat-select formControlName="status" [(ngModel)]="selectStatus">
+            <mat-option *ngFor="let tstatus of transactionStatus"  [value]="tstatus.value" >
+            {{ tstatus.name }}
+            </mat-option>
+          </mat-select>
+      </mat-form-field>     
+    </div>
+
+    <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="24px">
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Coin Amount</mat-label>
+          <input cdkFocusInitial formControlName="amount" matInput>
+       <!--  <mat-icon [icIcon]="fa-coins" class="mr-3" matPrefix></mat-icon> -->
+      </mat-form-field>
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Doller Amount</mat-label>
+          <input cdkFocusInitial formControlName="amount_usd" matInput>
+        <!-- <mat-icon [icIcon]="fa-coins" class="mr-3" matPrefix></mat-icon> -->
+      </mat-form-field>     
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">CANCEL</button>
+    <button *ngIf="isCreateMode()" color="primary" mat-button type="submit">CREATE TRANSACTION</button>
+    <button *ngIf="isUpdateMode()" color="primary" mat-button type="submit">UPDATE TRANSACTION</button>
+  </mat-dialog-actions>
+</form>
+
