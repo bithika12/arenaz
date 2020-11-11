@@ -220,6 +220,7 @@ var transactionSchema      = new Schema({
     amount_usd: String,
     transaction_key: String,
     status : {  type : String , enum: ['New','Cancelled','Expired','Completed','Errror']},  
+    delete_status : {  type : String , enum: ['Deleted','Active'], default : 'Active'},  
     created_at: {
         type: Date,
         default: Date.now

@@ -653,10 +653,6 @@ const addTransaction =(updateObj) =>{
     return  new Promise((resolve,reject) => {        
                 Transaction.create(updateObj).then(response => {
                     console.log("plo9"+response._id)
-                    //let a=response.insertedId;
-                    //console.log("ppp"+a);
-
-                       
                     return resolve(response._id);
                 }).catch(err => {
                     return reject(err);
@@ -665,6 +661,19 @@ const addTransaction =(updateObj) =>{
 
     });
 }
+
+const editTransaction =(condObj,updateObj) =>{
+   
+    return  new Promise((resolve,reject) => {
+        Transaction.updateOne(condObj,{ $set : updateObj }).then(responses=> {   
+        return resolve(responses);             
+      }).catch(err => {
+          return reject(err);
+      }); 
+
+    });
+}
+
 const addMail =(updateObj) =>{
     return  new Promise((resolve,reject) => {
 
@@ -699,6 +708,19 @@ const updateTransaction =(condObj,updateObj) =>{
 
     });
 }
+
+const updateTransactionStatusDelete =(condObj,updateObj) =>{
+   
+    return  new Promise((resolve,reject) => {
+        Transaction.updateOne(condObj,{ $set : updateObj }).then(responses=> {   
+        return resolve(responses);             
+      }).catch(err => {
+          return reject(err);
+      }); 
+
+    });
+}
+
 const updateMail =(condObj,updateObj) =>{
     return  new Promise((resolve,reject) => {
         Notification.updateOne(condObj,{ $set : updateObj }).then(responses=> {
@@ -847,6 +869,9 @@ const chkTransactionStatus =(condObj) =>{
             var x = new moment(transactiondetails.expired_at);
             var y = new moment();
             var duration = moment.duration(x.diff(y)).as('minutes');
+            var duration_inSecond =Math.round(duration * 60);
+
+
            console.log(duration);
             return resolve({
                   _id: transactiondetails._id,
@@ -856,6 +881,7 @@ const chkTransactionStatus =(condObj) =>{
                   status: transactiondetails.status,
                   expired_at: transactiondetails.expired_at,
                   expire_in_minute : duration,           
+                  expire_at_inSecond : duration_inSecond,           
               });
         }).catch(err => {
             return reject(err);
@@ -863,10 +889,45 @@ const chkTransactionStatus =(condObj) =>{
     });
 }
 
-module.exports = { chkValidTransaction,updateTransactionConfirm,fetchTransaction,updateTransaction,addTransaction,updateVersionAdmin,fetchHistoryUser,
+/*
+ * This function is used for fetch transaction list
+ * 
+*/
+ const findTransactionListAdmin   =   function(){
+    
+     return  new Promise((resolve,reject) => {
+         Transaction.find({delete_status:"Active"}).sort({created_at:-1}).then(responses=> {
+
+            /*let newresponses = [];
+            responses.map(function(entry) {
+                let new_created_at = moment(entry.created_at).format('YYYY-MM-DD HH:mm:ss');
+                let new_expired_at = moment(entry.expired_at).format('YYYY-MM-DD HH:mm:ss');
+                newresponses.push({
+                    type: entry.type,
+                    _id: entry._id,
+                    user_name: entry.user_name,
+                    user_email: entry.user_email,
+                    amount: entry.amount,
+                    amount_usd: entry.amount_usd,
+                    status: entry.status,
+                    created_at: new_created_at,
+                    expired_at: new_expired_at,
+                    transaction_key: entry.transaction_key,
+                    user_confirmation: entry.user_confirmation 
+                });
+            });*/
+
+            return resolve(responses) 
+         }).catch(err => {
+             return reject(err);
+         });
+     });
+ };
+
+module.exports = { chkValidTransaction,updateTransactionConfirm,fetchTransaction,updateTransaction,addTransaction,editTransaction,updateVersionAdmin,fetchHistoryUser,
     updateMail,addMail,fetchMail,updateGameAdmin,
     addMatch,fetchMatches,fetchUserList,
     updateCoinAdmin,updateRoomAdmin,addCoin,
     fetchHistory,userValidChk,
     userValidChkAdmin,fetchHistoryAdmin,
-    updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin,chkTransactionStatus };
+    updateProfileAdmin,modifyProfileDetails,fetchRoleName,fetchCoin,chkTransactionStatus,findTransactionListAdmin,updateTransactionStatusDelete };

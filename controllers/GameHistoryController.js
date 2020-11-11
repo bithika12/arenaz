@@ -14,6 +14,7 @@ let randomstring = require("randomstring");
 /** Import Model **/
 let User  = require('../models/User');
 const { fetchHistoryUser,userGame,fetchHistory,userValidChk} = require(appRoot +'/models/FetchHistory');
+const Games = require(appRoot +'/models/Game');
 
 /**
  * @desc This function is used for forgot password
@@ -88,3 +89,14 @@ exports.userGame= function(req,res) {
     }
 }
 
+// Fetch all games
+
+exports.gamesLists = function(req,res){
+    console.log('Reached game history controller....');
+    var condObj = {"status": "active"};
+    Games.allGames(condObj).then((allgames) => {
+        res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,result:allgames,message:"Game history fetched successfully."})
+    }).catch(err => {
+   res.status(constants.API_ERROR).send(err);
+  });
+}

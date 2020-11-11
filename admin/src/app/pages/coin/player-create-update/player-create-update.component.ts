@@ -81,7 +81,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
   icLocationCity = icLocationCity;
   icEditLocation = icEditLocation;
   icPhone = icPhone;
-
+  selectUsername
+  selectUseremail
   constructor(@Inject(MAT_DIALOG_DATA) public defaults: any,
               private dialogRef: MatDialogRef<PlayerCreateUpdateComponent>,
               private fb: FormBuilder,
@@ -99,6 +100,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
       console.log(Roles);
       //roleList: RoleList[] =Roles;
       this.rolelists = Roles["result"];
+
       console.log("this.rolelists"+this.rolelists);
 
       //this.subject$.next(this.rolelists);
@@ -125,12 +127,15 @@ export class PlayerCreateUpdateComponent implements OnInit {
       this.mode = 'update';
     } else {
       this.defaults = {} as Player;
+      this.selectUsername = (this.defaults.user_name) ? this.defaults.user_name : '';
+      this.selectUseremail = (this.defaults.user_email) ? this.defaults.user_email : '';
     }
 
     this.form = this.fb.group({
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
       user_name: [this.defaults.user_name || ''],
+      user_email: [this.defaults.user_email || ''],
       type: [this.defaults.type || ''],
       reference: this.defaults.reference || '',
       //rolename:[this.defaults.roleName || ''],
@@ -201,5 +206,17 @@ export class PlayerCreateUpdateComponent implements OnInit {
     this.subject$.next(this.tournaments);
   }*/
   //this.rolelists
+
+  onUserChange(event){
+    const index = this.rolelists.findIndex(x => x.userName === event.value);
+    console.log(index);
+    this.selectUseremail = this.rolelists[index].email
+  }
+
+  onEmailChange(event){
+    const index = this.rolelists.findIndex(x => x.email === event.value);
+    console.log(index);
+    this.selectUsername = this.rolelists[index].userName
+  }
 
 }

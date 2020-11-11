@@ -12,10 +12,11 @@ const password = require('../utils/PasswordManage');
 const Joi = require('joi');
 /**  Import model **/
 var User  = require('../models/User');
+var Transaction  = require('../models/Transaction');
 var Role  = require('../models/Role');
 const appRoot = require('app-root-path');
 const { updateMail,updateTransaction,addMail,addTransaction,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
-    fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail} = require(appRoot +'/models/FetchHistory');
+    fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail,transactionList,updateTransactionStatusDelete,findTransactionListAdmin,deleteTransaction,editTransaction} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
 const moment = require('moment');
 
@@ -608,27 +609,7 @@ exports.editMail= function(req,res) {
             res.status(constants.API_ERROR).send(err);
         });
 }
-//deleteTransaction
 
-exports.deleteTransaction= function(req,res) {
-
-    if(!req.body.transactionId || !req.body.userEmail ){
-        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
-    }
-    let updateObj ={status:"inactive"};
-
-    userValidChkAdmin(req.body.userEmail)
-        .then(validResponse => {
-            return updateTransaction({_id: mongoose.Types.ObjectId(req.body.transactionId)},updateObj);
-            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
-        })
-        .then(resp=>{
-            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Transaction deleted ."})
-        })
-        .catch(err=>{
-            res.status(constants.API_ERROR).send(err);
-        });
-}
 
 exports.deleteMail= function(req,res) {
 
@@ -758,19 +739,56 @@ exports.addUserCoins = function (req,res) {
 };
 
 
+
+/* --------- Started On 09.11.2020 (Transaction Purpose )--------- */
+
+exports.transactionList = function (req,res) {
+    console.log('Reached to transaction list');
+    findTransactionListAdmin().then((transactionList)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            transactionList, 'Transaction List fetched successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch transaction list"));
+    })
+};
+
+//deleteTransaction
+
+exports.deleteTransaction= function(req,res) {
+    console.log('deleteTransaction');
+    if(!req.body.transactionId || !req.body.userEmail ){
+        return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+    }
+    let updateObj ={delete_status:"Deleted"};
+
+    userValidChkAdmin(req.body.userEmail)
+        .then(validResponse => {
+            console.log('validResponse');
+            console.log(validResponse);
+            return updateTransactionStatusDelete({_id: mongoose.Types.ObjectId(req.body.transactionId)},updateObj);
+            //return updateProfileAdmin({_id: res.userData. _id},updateObj);
+        })
+        .then(resp=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Transaction deleted ."})
+        })
+        .catch(err=>{
+            res.status(constants.API_ERROR).send(err);
+        });
+}
+
+// Add Transaction
 exports.addTransaction= function(req,res) {
-    console.log("jjjj")
+    console.log(req);
+    
     let schema = Joi.object().keys({
-        userEmail: Joi.string().max(254).trim().required(),
-        //notificationId: Joi.string().required(),
+        user_email: Joi.string().max(254).trim().required(),
         user_name:Joi.string().required(),
         type:Joi.string().required(),
-        expired_at:Joi.string().required(),
         status:Joi.string().required(),
-        confirmation:Joi.string().required(),
         amount:Joi.string().optional(),
         amount_usd:Joi.string().required(),
         transaction_key:Joi.string().required(),
+
 
     });
     const {body} = req;
@@ -786,26 +804,78 @@ exports.addTransaction= function(req,res) {
         return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
     }
     else {
+
+        var travelTime = moment().add(30, 'minutes').format('hh:mm A');
+        let curdate= moment().format('YYYY-MM-DD');
+        let expired_at=curdate+" "+travelTime;
+
+
+
         var userObj = {
                         user_name : req.body.user_name,
-                        user_confirmation : req.body.confirmation,
+                        user_email : req.body.user_email,
                         amount : req.body.amount,
                         amount_usd : req.body.amount_usd,
                         transaction_key : req.body.transaction_key,
                         status : req.body.status,
-                        expired_at : req.body.expired_at,
-                        type : req.body.type
+                        expired_at : expired_at,
+                        type : req.body.type,
+                        user_confirmation : req.body.transaction_key
         }
-        userValidChkAdmin(req.body.userEmail)
-            .then(validResponse => {
+       
+        addTransaction(userObj).then((transactionDetails)=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Transaction added ."})
+        }).catch(err=>{
+            res.send(response.error(constants.ERROR_STATUS,err,"Unable to add Transaction"));
+        });
+    }
+}
 
-                return addTransaction(userObj);
-            })
-            .then(resp=>{
-                res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Transaction added ."})
-            })
-            .catch(err=>{
-                res.status(constants.API_ERROR).send(err);
-            });
+
+// Edit Transaction
+exports.editTransaction= function(req,res) {
+    console.log(req);
+    
+    let schema = Joi.object().keys({
+        user_email: Joi.string().max(254).trim().required(),
+        user_name:Joi.string().required(),
+        type:Joi.string().required(),
+        status:Joi.string().required(),
+        amount:Joi.string().optional(),
+        amount_usd:Joi.string().required(),
+        transaction_key:Joi.string().required(),
+        transaction_id:Joi.string().required(),
+
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = {
+            status: constants.VALIDATION_ERROR,
+            result: result.error.name,
+            message: result.error.details[0].message.replace(new RegExp('"', "g"), '')
+        };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+
+        var userObj = {
+                        user_name           : req.body.user_name,
+                        user_email          : req.body.user_email,
+                        amount              : req.body.amount,
+                        amount_usd          : req.body.amount_usd,
+                        transaction_key     : req.body.transaction_key,
+                        status              : req.body.status,
+                        type                : req.body.type,
+                        user_confirmation   : req.body.transaction_key
+        }
+       
+        editTransaction({_id: mongoose.Types.ObjectId(req.body.transaction_id)},userObj).then((transactionDetails)=>{
+            res.status(constants.HTTP_OK_STATUS).send({status:constants.SUCCESS_STATUS,message:"Transaction Edited..."})
+        }).catch(err=>{
+            res.send(response.error(constants.ERROR_STATUS,err,"Unable to add Transaction"));
+        });
     }
 }

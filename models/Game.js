@@ -38,7 +38,23 @@ var Game = require('../schema/Schema').gameModel;
          })
      })
  }
+Game.allGames = function(condObj){
+  return new Promise((resolve,reject)=>{
+    var condNewObj;
+    if(condObj){
+      condNewObj = condObj;
+    }else{
+      condNewObj = {};
+    }
 
+   Game.find(condNewObj).then(response=> {
+       resolve(response)
+   }).catch(err=>{
+       reject(err);
+   })
+
+  });
+}
 
  module.exports= Game;
 

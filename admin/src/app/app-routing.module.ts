@@ -22,6 +22,11 @@ const childrenRoutes: VexRoutes = [
     loadChildren: () => import('./pages/user/user.module').then(m => m.UserModule),
   },
   {
+    path: 'transaction',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/transaction/transaction.module').then(m => m.TransactionModule),
+  },
+  {
     path: 'dart',
     canActivate: [AuthGuard],
     loadChildren: () => import('./pages/dart/dart.module').then(m => m.DartModule),

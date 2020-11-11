@@ -10,7 +10,7 @@ const timeManage  = require('../utils/TimeManager');
 const password = require('../utils/PasswordManage');
 /*Include model */
 var Version = require('../schema/Schema').versionModel;
-
+let Transaction = require('../schema/Schema').userTransactionModel;
 
 Version.details = function(condObj){
   return new Promise((resolve,reject)=>{  
@@ -21,10 +21,14 @@ Version.details = function(condObj){
     	 reject(err);
     }) 	
   })
-}
+} 
+
+
 
 
 
  module.exports= Version;
+// module.exports= {details,findTransactionListAdmin};
+ //module.exports= Transaction;
 
 

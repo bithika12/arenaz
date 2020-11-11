@@ -4,7 +4,7 @@
 
     <h2 *ngIf="form.get('user_name').value || form.get('user_name').value"
         class="headline m-0"
-        fxFlex="auto">{{ form.get('user_name').value + ' ' + form.get('user_name').value }}</h2>
+        fxFlex="auto">{{ form.get('user_name').value }}</h2>
     <h2 *ngIf="!form.get('user_name').value && !form.get('user_name').value"
         class="headline m-0"
         fxFlex="auto">Coin Manage</h2>
@@ -46,10 +46,9 @@
     <mat-form-field>
 
       <mat-label>UserEmail</mat-label>
-      <mat-select formControlName="user_name" >
+      <mat-select formControlName="user_email" [(ngModel)]="selectUseremail" (selectionChange)="onEmailChange($event)">
 
-        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==user_name ? selected : brand.userName" >
-        
+        <mat-option *ngFor="let brand of rolelists"  [value]="brand.email" >
           {{ brand.email }}
         </mat-option>
       </mat-select>
@@ -60,9 +59,9 @@
     <mat-form-field>
 
       <mat-label>UserName</mat-label>
-      <mat-select formControlName="user_name" >
+      <mat-select formControlName="user_name" [(ngModel)]="selectUsername" (selectionChange)="onUserChange($event)">
 
-        <mat-option *ngFor="let brand of rolelists"  [value]="brand._id ==user_name ? selected : brand.userName" >
+        <mat-option *ngFor="let brand of rolelists"  [value]="brand.userName" >
         
           {{ brand.userName }}
         </mat-option>

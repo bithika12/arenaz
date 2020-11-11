@@ -67,6 +67,8 @@ router.post('/confirm/deposit'/*authetication.authChecker*/,transactionControlle
 router.post('/cancel/deposit'/*authetication.authChecker*/,transactionController.cancelDeposit);
 //Check transaction status
 router.post('/check/transaction/status'/*authetication.authChecker*/,transactionController.checkTransactionStatus);
+// Get Games
+router.post('/game/allgames'/*authetication.authChecker*/,fetchGameHistory.gamesLists);
 
 
 
@@ -139,6 +141,10 @@ router.post('/update/app/version',profileController.updateVersion);
 router.post('/get/app/version',profileController.fetchAppVersion);
 
 router.post('/admin/transaction-add'/*authetication.authChecker*/,adminController.addTransaction);
+router.post('/admin/edit-transaction'/*authetication.authChecker*/,adminController.editTransaction);
 router.post('/admin/delete-transaction'/*authetication.authChecker*/,adminController.deleteTransaction);
+
+// Transaction Purpose
+router.post('/admin/transaction-list',adminController.transactionList);
 
 module.exports = router;

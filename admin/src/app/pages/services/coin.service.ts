@@ -130,6 +130,7 @@ export class CoinService {
       {
         /*"userName":(!coinDetails.user_name) ? coinDetails.user_email : coinDetails.user_name,*/
         "userName":coinDetails.user_name,
+        "userEmail":coinDetails.user_name,
         "type":coinDetails.type,
         "coin":coinDetails.coins,
         "reference":coinDetails.reference

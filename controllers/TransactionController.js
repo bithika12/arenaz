@@ -72,6 +72,11 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
                             let curdate= moment().format('YYYY-MM-DD');
                             console.log("curdate"+curdate);
                             let expired_at=curdate+" "+travelTime;
+
+                            var x = new moment(expired_at);
+                            var y = new moment();
+                            var duration = moment.duration(x.diff(y)).as('minutes');
+                            var duration_second = Math.round(duration * 60);
                             
                             var transactionObj = {
                               //user_name : userObj.user_name,
@@ -89,6 +94,8 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
                              let responseObj={
                                address_part:lastPart,
                                expired_at:expired_at,
+                               //expired_at_inMinute:duration,
+                               expired_at_inSecond:duration_second,
                                transactionId:resTransV1
                              }
                              callback (null,responseObj);
@@ -573,6 +580,7 @@ exports.requestDeposit = function (req,res) {
           var x = new moment(result.expired_at);
           var y = new moment();
           var duration = moment.duration(x.diff(y)).as('minutes');
+          var duration_second = duration * 60;
 
           // Interval checking for status and update
           var intervalCheck = setInterval(function(){ 
@@ -712,11 +720,11 @@ exports.requestWithdraw = function (req,res) {
 
    exports.checkTransactionStatus = function (req,res) {
 
-    if(!req.body.userEmail || !req.body.transaction_id){
+    if(!req.body.userEmail || !req.body.transactionId){
       return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
 
-    var userObj  ={user_email: req.body.userEmail,_id: mongoose.Types.ObjectId(req.body.transaction_id)}
+    var userObj  ={user_email: req.body.userEmail,_id: mongoose.Types.ObjectId(req.body.transactionId)}
     async.waterfall([
       getTransactionStatus(userObj),
       apiCheckTransactionStatusUpdate,
@@ -777,7 +785,8 @@ exports.requestWithdraw = function (req,res) {
                               amount            : userObj.amount,
                               status            : userObj.status,
                               expired_at        : userObj.expired_at,
-                              expire_in_minute  : userObj.expire_in_minute
+                             // expire_in_minute  : userObj.expire_in_minute
+                              expire_at_inSecond  : userObj.expire_at_inSecond
                             }
 
           if(userObj.status == 'Expired'){ 
