@@ -3,6 +3,8 @@ const appRoot = require('app-root-path');
 const Room = require(appRoot + '/models/Room');
 var Rooms = require('../schema/Schema').roomModel;
 var Coins = require('../schema/Schema').coinModel;
+var Game = require('../schema/Schema').gameModel;
+
 //Versions
 var Versions = require('../schema/Schema').versionModel;
 
@@ -386,75 +388,126 @@ const fetchHistoryAdmin12 = userId => {
 const fetchHistoryAdmin = userId => {
 
     return new Promise((resolve, reject) => {
+        Game.allGames({status:'active'}).then(function (respos) {
+            Room.findHistoryAdmin(userId).then(function (responseParams) {
+                if(responseParams.length >0){
+                    let chart = [];
+                    let gameStatus;
+                    let winnerUsername;
+                    let winnerScore;
+                    let winnerCup;
+                    let loserUsername;
+                    let loserScore;
+                    let loserCup;
+                    let firstUser;
+                    let secondUser;
+                    let firstScore;
+                    let secondScore;
 
-        Room.findHistoryAdmin(userId).then(function (responseParams) {
-            if(responseParams.length >0){
-                let chart = [];
-                let gameStatus;
-                let winnerUsername;
-                let winnerScore;
-                let winnerCup;
-                let loserUsername;
-                let loserScore;
-                let loserCup;
-                let firstUser;
-                let secondUser;
-                let firstScore;
-                let secondScore;
+                    let gameobj = respos;
+                    console.log(responseParams);
+                    responseParams.map(function(entry) {
+                        if(entry.updated_at){ 
+                            console.log('Game ID ==>  '+ entry.game_id);      
 
-                responseParams.map(function(entry) {
-                    if(entry.updated_at){ 
-                    console.log("plo123"+JSON.stringify(entry.users));    
-                    //console.log(entry.users);
-                   // let upDate=entry.updated_at;
-                    //let updatedTime=upDate.getTime();//in seconds
-                    //let currentTime=new Date().getTime();
-                    //const diff = currentTime - updatedTime;
-                    //let timeWithCurrent = Math.floor(diff / 1000 % 60);
-                    let winnerUserId;
-                    if(entry.users[0]['isWin']==1){
-                        winnerUserId=entry.users[0]['userName'];
-                    }
-                    else if(entry.users[0]['isWin']==0){
-                         winnerUserId=entry.users[1]['userName'];
-                    }
-                    else if(entry.users[0]['isWin']==2){
-                         winnerUserId=entry.users[1]['userName'] + "  and  "+entry.users[0]['userName'];
-                    }
-                    //let winnerUserId=(entry.users[0]['isWin']==1 ? entry.users[0]['userName'] : entry.users[1]['userName']);
-                    //let entusers=entry.users;
-                    chart.push({
-                        //game_time: entry.game_time,
-                        //updated_at: entry.updated_at,
-                        //last_time:timeWithCurrent,
-                        game_name:entry.name,
-                        first_user:entry.users[0]['userName'],
-                        second_user:entry.users[1]['userName'],
-                        first_user_score:entry.users[0]['total'],
-                        second_user_score:entry.users[1]['total'],
-                        winner_user:winnerUserId,
-                        game_time:entry.game_time
+                            let winnerUserId;
+                            let FirstUserWinStatus;
+                            let SecondUserWinStatus;
+                            let SecondDisconnectStatus="Completed";
+                            let FirstDisconnectStatus="Completed";
+                            let matchName = "null";
+
+                            if(entry.game_id){
+                                let index = respos.findIndex(x => x._id.toString() == entry.game_id.toString());
+                                
+                                matchName = gameobj[index].name;
+                            }
+
+                            //console.log(gameobj);
+                            console.log(entry.game_id+'===>'+matchName);
+
+                            switch(entry.users[0]['status']){
+                                case 'inactive':
+                                    FirstDisconnectStatus =" (Disconnected)";
+                                    break;
+                                case 'leave' :
+                                    FirstDisconnectStatus =" (Leave)";
+                                    break;
+                                default:
+                                    FirstDisconnectStatus ="";
+                                    break;
+                            }
+
+                            switch(entry.users[1]['status']){
+                                case 'inactive':
+                                    SecondDisconnectStatus =" (Disconnected)";
+                                    break;
+                                case 'leave' :
+                                    SecondDisconnectStatus =" (Leave)";
+                                    break;
+                                default:
+                                    SecondDisconnectStatus ="";
+                                    break;
+                            }
+
+                            if(entry.users[0]['isWin']==1){
+                                winnerUserId=entry.users[0]['userName'];
+                                FirstUserWinStatus = "Won";
+                                SecondUserWinStatus = "Lost";
+                                
+                            }
+                            else if(entry.users[0]['isWin']==0){
+                                 winnerUserId=entry.users[1]['userName'];
+                                 FirstUserWinStatus = "Lost";
+                                 SecondUserWinStatus = "Won";
+                            }
+                            else if(entry.users[0]['isWin']==2){
+                                winnerUserId=entry.users[1]['userName'] + "  and  "+entry.users[0]['userName'];
+                                FirstUserWinStatus = "Draw";
+                                SecondUserWinStatus = "Draw";
+                                FirstDisconnectStatus ="";
+                                SecondDisconnectStatus ="";
+                            }
+
+                           
+                            chart.push({
+                                game_name:entry.name,
+                                first_user:entry.users[0]['userName'],
+                                second_user:entry.users[1]['userName'],
+                                first_user_score:entry.users[0]['total'],
+                                second_user_score:entry.users[1]['total'],
+                                winner_user:winnerUserId,
+                                game_time:entry.game_time,
+                                firstUserWinStatus:FirstUserWinStatus+FirstDisconnectStatus,
+                                secondUserWinStatus:SecondUserWinStatus+SecondDisconnectStatus,
+                                firstdisconnectStatus:FirstDisconnectStatus,
+                                seconddisconnectStatus:SecondDisconnectStatus,
+                                matchName : matchName,
+                            });
+
+                         }
+                     else{
+                        console.log("po0");
+                     }
                     });
 
-                 }
-                 else{
-                    console.log("po0");
-                 }
-                });
+                    //console.log(chart);
+                    resolve(chart);
+                }
+                else{
+                    resolve({status:Constants.SUCCESS_STATUS,message:"No Data Found"});
+                }
 
-                console.log(chart);
-                resolve(chart);
-            }
-            else{
-                resolve({status:Constants.SUCCESS_STATUS,message:"No Data Found"});
-            }
-
+            }).catch(function (fetchHistoryErr) {
+                reject({status:Constants.API_ERROR,message:fetchHistoryErr});
+            });
 
         }).catch(function (fetchHistoryErr) {
-            reject({status:Constants.API_ERROR,message:fetchHistoryErr});
-        });
+            
+        }); 
     });
 };
+
 const updateProfileAdmin =(condObj,updateObj) =>{
     return  new Promise((resolve,reject) => {
         if(updateObj.password)

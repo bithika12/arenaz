@@ -873,6 +873,7 @@ io.on('connection', function (socket) {
                         //find user already in room
                         room.createRoom({
                             userId: req.userId,
+                            gameId: req.gameId,
                             userName: req.userName,
                             colorName: req.colorName,
                             raceName: req.raceName,

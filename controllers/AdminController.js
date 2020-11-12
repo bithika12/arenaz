@@ -697,6 +697,7 @@ exports.getUserCoinsrun = function (req,res) {
                     userObj={
                         balance:(userdetails.startCoin),
                         user_name:(!val.user_name) ? '' : val.user_name,
+                        user_email:(!val.email) ? '' : val.email,
                         coins:val.coins,
                         reference:val.reference,
                         type:val.type

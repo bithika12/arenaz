@@ -21,6 +21,7 @@ var Game = require('../schema/Schema').gameModel;
    })
 }
  Game.details = function(condObj){
+  
   return new Promise((resolve,reject)=>{  
     Role.findOne(condObj,{_id: 1,name:1,slug:1}).then(response=> {
          resolve(response)

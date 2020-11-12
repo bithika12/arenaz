@@ -13,7 +13,7 @@ var Roomlog = require(appRoot + '/schema/Schema').roomLogModel;
 
 
 
-room.createRoom = function(condObj){
+room.createRoom_old_12112020 = function(condObj){
     return new Promise((resolve,reject) => {
 
 
@@ -145,6 +145,139 @@ room.createRoom = function(condObj){
 
 }
 
+room.createRoom = function(condObj){
+    return new Promise((resolve,reject) => {
+
+
+        Room.aggregate([
+            {$match :{"status":"open"}},
+            { "$redact": {
+                    "$cond": {
+                        "if": {
+                            "$lt": [
+                                { "$size": {
+                                        "$concatArrays": [
+                                            { "$ifNull": [ "$users", [] ] }
+                                        ]
+                                    } },
+                                constants.GAME_MAXIMUM_USER
+                            ]
+                        },
+                        "then": "$$KEEP",
+                        "else": "$$PRUNE"
+                    }
+                }},
+            { "$project": { "_id": 1 ,name:1,users:1} }
+        ]).limit(1).then(responses=> {
+            if(!responses|| responses.length ==0 ){
+                roomObj ={ name : 'RM'+new Date().getTime(),
+                           "status":"open",
+                           game_id:mongoose.Types.ObjectId(condObj.gameId),
+                           users : {userId : condObj.userId ,
+                                     status: "active",
+                                       total:"199",
+                                       score:"0",
+                                       //score:"199",
+                                       //total:"333",
+                                       //score:"333",
+                                       isWin:0,
+                                       turn:0,
+                                       dartPoint:"",
+                                       userName:condObj.userName,
+                                       colorName:condObj.colorName,
+                                       raceName:condObj.raceName,
+                                       dartName:condObj.dartName,
+                                       total_no_win:0,
+                                       cupNumber:0,
+                                       roomCoin:condObj.roomCoin,
+                                       firstName:condObj.firstName,
+                                       lastName:condObj.lastName
+                                        }}
+
+                console.log(" roomObj",roomObj)
+                Room.create(roomObj).then(responses=> {
+                    resolve({ roomName : responses.name ,_id :responses._id });
+                }).catch(err => {
+                    reject(err);
+                });
+            }else {
+                if (responses[0].users[0]['roomCoin'] != condObj.roomCoin) {
+                    //add user to a seperate room
+                     let roomObj ={
+                         name : 'RM'+new Date().getTime(),
+                        "status":"open",
+                        game_id:mongoose.Types.ObjectId(condObj.gameId),
+                        users : {userId : condObj.userId ,
+                            status: "active",
+                            total:"199",
+                            score:"0",
+                            //score:"199",
+                            //total:"333",
+                            //score:"333",
+                            isWin:0,
+                            turn:0,
+                            dartPoint:"",
+                            userName:condObj.userName,
+                            colorName:condObj.colorName,
+                            raceName:condObj.raceName,
+                            dartName:condObj.dartName,
+                            total_no_win:0,
+                            cupNumber:0,
+                            roomCoin:condObj.roomCoin,
+                            firstName:condObj.firstName,
+                            lastName:condObj.lastName
+                             }}
+
+                    console.log(" roomObj",roomObj)
+                    Room.create(roomObj).then(responses=> {
+                        resolve({ roomName : responses.name ,_id :responses._id });
+                    }).catch(err => {
+                        reject(err);
+                    });
+                }
+                else {
+                updateObj = {}
+                Room.updateOne({"_id": responses[0]._id},
+                    {
+                        $push: {
+                            users: {
+                                userId: condObj.userId,
+                                status: "active",
+                                total: 199,
+                                score: 0,
+                                //score: 199,
+                                //total: 333,
+                               // score: 333,
+                                isWin: 0,
+                                turn: 0,
+                                userName: condObj.userName,
+                                colorName: condObj.colorName,
+                                raceName: condObj.raceName,
+                                dartName: condObj.dartName,
+                                total_no_win: 0,
+                                cupNumber: 0,
+                                roomCoin: condObj.roomCoin,
+                                firstName:condObj.firstName,
+                                lastName:condObj.lastName
+                            }
+                        }
+                    },
+                    {multi: true}).then(updateRoomDetails => {
+                    return resolve({roomName: responses[0].name, _id: responses[0]._id});
+
+                }).catch(err => {
+                    reject(err);
+                });
+
+                // }
+              }
+            }
+        }).catch(err => {
+            reject(err);
+        });
+    })
+
+}
 
 
 room.createBot =function (room_name,reqestObj) {
@@ -610,7 +743,7 @@ room.updateRoomAfterWait = function(condObj){
 room.findHistoryAdmin = function(userId){
     //console.log(" fetch game history  ",condObj)
     return new Promise((resolve,reject) => {
-        Room.find({game_time: {$gt : 0},status:"closed"}, {_id: 1, name:1, users:1, game_time:1,updated_at:1}).sort({"_id":-1}).then(responses=> {
+        Room.find({game_time: {$gt : 0},status:"closed"}, {_id: 1,game_id:1, name:1, users:1, game_time:1,updated_at:1}).sort({"_id":-1}).then(responses=> {
             return resolve(responses);
         }).catch(err => {
             return reject(err);

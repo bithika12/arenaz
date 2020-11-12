@@ -66,6 +66,7 @@ export class CoinComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Image', property: '_id', type: 'text', visible: false },
     { label: 'Coin Amount', property: 'coins', type: 'text', visible: true },
     { label: 'Username', property: 'user_name', type: 'text', visible: true },
+    { label: 'Email', property: 'user_email', type: 'text', visible: true },
     { label: 'Type', property: 'type', type: 'text', visible: true },
     { label: 'Reference', property: 'reference', type: 'text', visible: true },
     { label: 'Balance', property: 'balance', type: 'text', visible: true },

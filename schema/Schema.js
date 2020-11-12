@@ -72,9 +72,10 @@ var userSchema =  new Schema({
 var roomSchema = new Schema({
     name          : String,
     status        : String,
-    game_name: {
-        type: String,
-        default: "arenaZ"
+    game_name     : String,
+    game_id: {
+        type: Schema.Types.ObjectId
+        
     },
     users        : [{userId:Schema.Types.ObjectId, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String,colorName:String,raceName:String,dartName:String,userName:String,cupNumber:Number,roomCoin:Number,totalCupWin:Number,firstName:String,lastName:String}],
     //users        : [{userId:String, status: String ,total:String,score:String,isWin:Number,turn:Number,dartPoint:String}],
