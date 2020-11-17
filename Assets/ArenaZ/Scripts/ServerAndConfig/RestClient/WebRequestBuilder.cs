@@ -99,6 +99,22 @@ namespace RedApple.Utils.Rest
         }
 
         /// <summary>
+        /// Attaches multipart form data class to the rest call.
+        /// </summary>
+        /// <param name="a_DataDict">Class data</param>
+        public WebRequestBuilder FormData(IDictionary<string, string> a_DataDict)
+        {
+            foreach (var item in a_DataDict)
+            {
+                if (formData.ContainsKey(item.Key))
+                    formData[item.Key] = item.Value;
+                else
+                    formData.Add(item.Key, item.Value);
+            }
+            return this;
+        }
+
+        /// <summary>
         /// Attaches multipart form data to the rest call.
         /// </summary>
         /// <param name="name">The key of the data value</param>

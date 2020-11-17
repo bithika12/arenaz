@@ -45,11 +45,13 @@ namespace ArenaZ.Screens
         [Space(5)]
         [SerializeField] private Settings settings;
         [SerializeField] private PlayerColorChooser playerColorChooser;
+        [SerializeField] private GameObject loadingPanel;
 
         private bool gotInitialize = false;
 
         private void Start()
-        {           
+        {
+            loadingPanel.SetActive(true);
             GettingButtonReferences();
             ShowFirstText();
 
@@ -126,6 +128,7 @@ namespace ArenaZ.Screens
             {
                 LoadDefaultData();
             }
+            loadingPanel.SetActive(false);
         }
 
         private void OnErrorGetSelectionData(RestUtil.RestCallError obj)

@@ -64,5 +64,16 @@
         public const string FETCH_LEADERBOARD = "user/board";
 
         public const string FETCH_UNREAD_MESSAGE = "fetch/unread/message";
+
+        public const string APP_VERSION_CHECK = "get/app/version";
+        public const string GAME_ALLGAMES = "game/allgames";
+
+        public const string WALLET_USER_GET_COIN = "user/get/coin";
+        public const string WALLET_CURRENCY_PRICE = "currency/price";
+        public const string WALLET_REQUEST_DEPOSIT = "request/deposit";
+        public const string WALLET_REQUEST_WITHDRAW = "request/withdraw";
+        public const string WALLET_CANCEL_DEPOSIT = "cancel/deposit";
+        public const string WALLET_CONFIRM_DEPOSIT = "confirm/deposit";
+        public const string WALLET_CHECK_TRANSACTION_STATUS = "check/transaction/status";
     }
 }

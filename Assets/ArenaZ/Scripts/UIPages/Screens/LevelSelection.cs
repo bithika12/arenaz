@@ -18,6 +18,7 @@ namespace ArenaZ.LevelMangement
         [SerializeField] private List<Button> unavailabeLevelButtons = new List<Button>();
         [SerializeField] private Button backButton;
         [SerializeField] private Button comingSoonCloseButton;
+        [SerializeField] private Button depositButton;
 
         [Header("Text Fields")]
         [Space(5)]
@@ -82,6 +83,7 @@ namespace ArenaZ.LevelMangement
             unavailabeLevelButtons.ForEach(x => x.onClick.AddListener(OnClickUnavailableLevel));
             comingSoonCloseButton.onClick.AddListener(OnClickComingSoonClose);
             backButton.onClick.AddListener(OnClickBack);
+            depositButton.onClick.AddListener(openDepositCoinPanel);
         }
 
         private void ReleaseButtonReferences()
@@ -91,6 +93,7 @@ namespace ArenaZ.LevelMangement
             unavailabeLevelButtons.ForEach(x => x.onClick.RemoveListener(OnClickUnavailableLevel));
             comingSoonCloseButton.onClick.RemoveListener(OnClickComingSoonClose);
             backButton.onClick.RemoveListener(OnClickBack);
+            depositButton.onClick.RemoveListener(openDepositCoinPanel);
         }
         #endregion
 
@@ -101,6 +104,11 @@ namespace ArenaZ.LevelMangement
             UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.none);
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
             UIManager.Instance.HideScreenImmediately(Page.RegionPopup.ToString());
+        }
+
+        private void openDepositCoinPanel()
+        {
+            UIManager.Instance.ShowScreen(Page.WalletDepositRequestPanel.ToString());
         }
 
         public void OnSelectionGameplayType(GameType gameType)

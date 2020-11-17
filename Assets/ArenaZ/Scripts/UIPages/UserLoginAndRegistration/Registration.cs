@@ -28,8 +28,13 @@ namespace ArenaZ.RegistrationUser
         [Header("Integer")]
         [Space(5)]
         private float PopUpduration;
-        RegularExpression checking = new RegularExpression();
+        
+        [Header("Class Ref")]
+        [Space(5)]
+        [SerializeField] private MapHandler mapHandlerRef;
+        [SerializeField] private Wallet.WalletHandler walletHandlerRef;
 
+        RegularExpression checking = new RegularExpression();
         private string password;
 
         //Public Variables
@@ -114,6 +119,9 @@ namespace ArenaZ.RegistrationUser
             OnClickRegisterPopUpClose();
             AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName, AccountAccessType.Registration, true);
             Settings.Instance.setSelectedColorImage(EColor.DarkBlue.ToString());
+
+            mapHandlerRef.GetGames();
+            walletHandlerRef.GetWalletDetails();
         }
 
         private void storeUserData(CreateAccount userDetails)

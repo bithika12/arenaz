@@ -7,6 +7,11 @@ using Newtonsoft.Json;
 using RestUtil = RedApple.Utils.RestUtil;
 using RestError = RedApple.Utils.RestUtil.RestCallError;
 using ArenaZ.Manager;
+using ArenaZ;
+using ArenaZ.Wallet;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RedApple
 {
@@ -26,8 +31,7 @@ namespace RedApple
             restUtil = RestUtil.Initialize(this);
         }
 
-        #region UserProfile
-
+        #region API Call Methods
         public static void UpdateUserProfile<T>(string name, string locaton, Action<T> onCompletion,
             Action<RestError> onError)
         {           
@@ -40,9 +44,7 @@ namespace RedApple
             addUserAuthHeader(ref builder);
             sendWebRequest(builder, onCompletion, onError);
         }
-
-        #endregion
-        #region USER_LOGIN_REGISTRATION
+        
         public static void UserRegistration(string email_id, string name, string password, Action<CreateAccount> onCompletionRegistration, Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
@@ -100,7 +102,6 @@ namespace RedApple
 
             sendWebRequest(webRqstbuilder, OnCompleteForgotPassword, restError);
         }
-        #endregion
 
         public static void GetUnreadMailCount(string email_id, Action<UnreadMailCountData> onCompletionSaveData, Action<RestError> restError)
         {
@@ -212,6 +213,134 @@ namespace RedApple
             sendWebRequest(webRqstBuilder, a_OnComplete, a_RestError);
         }
 
+        public static void AppVersionCheck(string appVersion, Action<VersionCheckerResponse> onCompletionLogin, Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.APP_VERSION_CHECK))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.APP_VERSION, appVersion);
+
+            sendWebRequest(webRqstBuilder, onCompletionLogin, restError);
+        }
+
+        //public static void WalletDetails(WalletDetailsRequest a_RequestObj, Action<WalletDetailsResponse> a_OnComplete, Action<RestError> a_OnError)
+        //{
+        //    IDictionary<string, string> t_ClassData = null;
+        //    t_ClassData = t_ClassData.ObjectToDictionaryField<WalletDetailsRequest>(a_RequestObj);
+
+        //    if (t_ClassData != null && t_ClassData.Any())
+        //    {
+        //        WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+        //            .Url(getApiUrl(Urls.WALLET_USER_GET_COIN))
+        //            .Verb(Verbs.POST)
+        //            .ContentType(ContentTypes.FORM)
+        //            .FormData(t_ClassData);
+
+        //        sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        //    }
+        //}
+
+        public static void WalletDetails(WalletDetailsRequest a_RequestObj, Action<WalletDetailsResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_USER_GET_COIN))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_RequestObj.UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void WalletConvertedCoin(ConvertedCoinRequest a_RequestObj, Action<ConvertedCoinResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_CURRENCY_PRICE))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("coin_number", a_RequestObj.CoinNumber)
+                .FormData("userEmail", a_RequestObj.UserEmail)
+                .FormData("transactionType", a_RequestObj.TransactionType);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void WalletRequestDeposit(RequestDepositRequest a_RequestObj, Action<RequestDepositResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_REQUEST_DEPOSIT))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_RequestObj.UserEmail)
+                .FormData("coinAmount", a_RequestObj.CoinAmount)
+                .FormData("user_name", a_RequestObj.UserName)
+                .FormData("amount_usd", a_RequestObj.AmountUsd.ToString());
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void WalletRequestWithdraw(RequestWithdrawRequest a_RequestObj, Action<RequestWithdrawResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_REQUEST_WITHDRAW))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_RequestObj.UserEmail)
+                .FormData("coinAmount", a_RequestObj.CoinAmount)
+                .FormData("user_name", a_RequestObj.UserName)
+                .FormData("amount_usd", a_RequestObj.AmountUsd.ToString())
+                .FormData("wallet_key", a_RequestObj.WalletKey);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void WalletCancelDeposit(CancelDepositRequest a_RequestObj, Action<CancelDepositResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_CANCEL_DEPOSIT))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_RequestObj.UserEmail)
+                .FormData("transactionId", a_RequestObj.TransactionId);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void WalletConfirmDeposit(ConfirmDepositRequest a_RequestObj, Action<ConfirmDepositResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_CONFIRM_DEPOSIT))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_RequestObj.UserEmail)
+                .FormData("transactionId", a_RequestObj.TransactionId);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void WalletTransactionStatus(TransactionStatusRequest a_RequestObj, Action<TransactionStatusResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_CHECK_TRANSACTION_STATUS))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_RequestObj.UserEmail)
+                .FormData("transactionId", a_RequestObj.TransactionId);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void GetGameList(Action<GameListResponse> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                    .Url(getApiUrl(Urls.GAME_ALLGAMES))
+                    .Verb(Verbs.POST)
+                    .ContentType(ContentTypes.FORM);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+        #endregion
+
         private static void sendWebRequest(WebRequestBuilder builder, Action onCompletion, Action<RestError> onError)
         {
             if (!GameManager.Instance.InternetConnection())
@@ -240,7 +369,7 @@ namespace RedApple
                         onCompletion?.Invoke(response.Result);
                     } catch(Exception e)
                     {
-
+                        Debug.LogError($"Rest Api Sent Error: {e.ToString()}");
                     }
                     
                 },

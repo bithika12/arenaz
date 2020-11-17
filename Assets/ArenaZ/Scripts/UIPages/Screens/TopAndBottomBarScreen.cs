@@ -19,6 +19,9 @@ namespace ArenaZ.Screens
         [SerializeField] private Button mailButton;
         [SerializeField] private Button settingButton;
 
+        [SerializeField] private Button depositButton;
+        [SerializeField] private Button withdrawButton;
+
         [SerializeField] private Text userCoinCount;
         [SerializeField] private Text userCupCount;
 
@@ -51,6 +54,9 @@ namespace ArenaZ.Screens
             mailButton.onClick.AddListener(MailButtonClicked);
             settingButton.onClick.AddListener(SettingButtonClicked);
             infoButton.onClick.AddListener(InfoButtonClicked);
+
+            depositButton.onClick.AddListener(openDepositCoinPanel);
+            withdrawButton.onClick.AddListener(withdrawDepositCoinPanel);
         }
 
         private void ReleaseButtonReferences()
@@ -60,6 +66,9 @@ namespace ArenaZ.Screens
             mailButton.onClick.RemoveListener(MailButtonClicked);
             settingButton.onClick.RemoveListener(SettingButtonClicked);
             infoButton.onClick.RemoveListener(InfoButtonClicked);
+
+            depositButton.onClick.RemoveListener(openDepositCoinPanel);
+            withdrawButton.onClick.RemoveListener(withdrawDepositCoinPanel);
         }
         #endregion
 
@@ -93,6 +102,16 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.ShowScreen(Page.PlayerMatchHistoryPanel.ToString(),Hide.previous);
+        }
+
+        private void openDepositCoinPanel()
+        {
+            UIManager.Instance.ShowScreen(Page.WalletDepositRequestPanel.ToString());
+        }
+
+        private void withdrawDepositCoinPanel()
+        {
+            UIManager.Instance.ShowScreen(Page.WalletWithdrawPanel.ToString());
         }
     }
 }

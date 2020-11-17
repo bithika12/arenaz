@@ -66,5 +66,6 @@
         public const string LANGUAGE_NAME = "languageName";
 
         public const string NOTIFICATION_ID = "notificationId";
+        public const string APP_VERSION = "app_version";
     }
 }

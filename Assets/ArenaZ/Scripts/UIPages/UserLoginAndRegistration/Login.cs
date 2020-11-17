@@ -29,8 +29,12 @@ namespace ArenaZ.LoginUser
         [Space(5)]
         [SerializeField] private int PopUpduration;
 
-        RegularExpression regExp = new RegularExpression();
+        [Header("Class Ref")]
+        [Space(5)]
+        [SerializeField] private MapHandler mapHandlerRef;
+        [SerializeField] private Wallet.WalletHandler walletHandlerRef;
 
+        RegularExpression regExp = new RegularExpression();
         private string password;
 
         private void Awake()
@@ -109,6 +113,9 @@ namespace ArenaZ.LoginUser
             storeUserData(loggedinProfile);
             AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName, AccountAccessType.Login, false);
             OnClickLoginPopUpClose();
+
+            mapHandlerRef.GetGames();
+            walletHandlerRef.GetWalletDetails();
         }
 
         private void storeUserData(UserLogin userLogin)

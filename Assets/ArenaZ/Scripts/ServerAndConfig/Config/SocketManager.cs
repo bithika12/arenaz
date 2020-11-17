@@ -99,6 +99,7 @@ namespace RedApple
             {
                 AccessToken = User.UserAccessToken,
                 RoomCoin = t_RoomCoin,
+                GameId = User.UserSelectedGame
             };
             string gameReqJsonData = DataConverter.SerializeObject(gameRequest);
             Debug.Log("Game Request: " + gameReqJsonData);
@@ -309,6 +310,8 @@ public struct GameRequest
     public string AccessToken { get; set; }
     [JsonProperty("roomCoin")]
     public int RoomCoin { get; set; }
+    [JsonProperty("gameId")]
+    public string GameId { get; set; }
 }
 
 [Serializable]

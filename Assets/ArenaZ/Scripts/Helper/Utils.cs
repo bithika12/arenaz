@@ -43,6 +43,10 @@ public enum Page
     NewUserCongratulationOverlay,
     SurrenderedPopupPanel,
     ReconnectCountdownPanel,
+    VersionCheckPanel,
+    WalletDepositRequestPanel,
+    WalletDepositConfirmPanel,
+    WalletWithdrawPanel,
 }
 
 public enum ERace
@@ -230,6 +234,7 @@ public static class User
     public static string RoomName;
     public static int UserCoin;
     public static int UserCup;
+    public static string UserSelectedGame;
 }
 
 public static class SettingData
@@ -262,7 +267,6 @@ public static class ConstantInteger
     public const int timerValue = 10;
     public const int autoLoginWait = 1;
 }
-
 
 public static class ConstantStrings
 {
