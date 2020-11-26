@@ -239,7 +239,7 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
 
             let resultValue={
               dollar_amount:dollar_value,
-              btc_amount:btc_value,
+              btc_amount:btc_value.toFixed(8),
               transaction_fee:t_fee
             }
 
@@ -441,7 +441,7 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
         var userObj  ={coin_number: req.body.coin_number,transaction_type: req.body.transactionType,email: req.body.userEmail}
        
         if(req.body.transactionType=='withdraw'){
-            if(req.body.coin_number < appList.minimum_withdrawl){
+            if(parseInt(req.body.coin_number) < parseInt(appList.minimum_withdrawl)){
               return res.send(response.error(constants.VALIDATION_CHECK_ERR,{},"Coins will be equal or more than minimum withdrawal amount"));
             }else{
               async.waterfall([
@@ -455,7 +455,7 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
                     ],
                     function (err, result1) {
                       if(result1){
-                        if(req.body.coin_number > result1.startCoin){
+                        if(parseInt(req.body.coin_number) > parseInt(result1.startCoin)){
                           return res.send(response.error(constants.VALIDATION_CHECK_ERR,{},"Coins entered should not be more than the existing coins"));
                         }else{
                           res.send(response.generate(constants.SUCCESS_STATUS,result, 'Currency details fetched successfully !!'));
@@ -471,8 +471,8 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
           }
         }else{
 
-          if(req.body.coin_number < appList.minimum_deposit){
-            return res.send(response.error(constants.VALIDATION_CHECK_ERR,{},"Coins will be equal or more than minimum withdrawal amount"));
+          if(parseInt(req.body.coin_number) < parseInt(appList.minimum_deposit)){
+            return res.send(response.error(constants.VALIDATION_CHECK_ERR,{},"Coins will be equal or more than minimum deposit amount"));
           }else{
             async.waterfall([
               getPriceDetails(userObj)
