@@ -24,14 +24,14 @@
     <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="24px">
       <mat-form-field class="mt-6" fxFlex>
         <mat-label>Coin Amount</mat-label>
-        <input cdkFocusInitial formControlName="coins" matInput>
+        <input cdkFocusInitial formControlName="coins" matInput required>
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
 
       <mat-form-field class="mt-6" fxFlex>
         <mat-label>Reference</mat-label>
-        <input cdkFocusInitial formControlName="reference" matInput >
+        <input cdkFocusInitial formControlName="reference" matInput required>
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
@@ -46,7 +46,7 @@
     <mat-form-field>
 
       <mat-label>UserEmail</mat-label>
-      <mat-select formControlName="user_email" [(ngModel)]="selectUseremail" (selectionChange)="onEmailChange($event)">
+      <mat-select formControlName="user_email" [(ngModel)]="selectUseremail" (selectionChange)="onEmailChange($event)" required>
 
         <mat-option *ngFor="let brand of rolelists"  [value]="brand.email" >
           {{ brand.email }}
@@ -59,7 +59,7 @@
     <mat-form-field>
 
       <mat-label>UserName</mat-label>
-      <mat-select formControlName="user_name" [(ngModel)]="selectUsername" (selectionChange)="onUserChange($event)">
+      <mat-select formControlName="user_name" [(ngModel)]="selectUsername" (selectionChange)="onUserChange($event)" required>
 
         <mat-option *ngFor="let brand of rolelists"  [value]="brand.userName" >
         
@@ -73,7 +73,7 @@
     <mat-form-field class="mt-6" fxFlex>
         <mat-label>Type</mat-label>
 
-        <mat-select formControlName="type">
+        <mat-select formControlName="type" required>
             <mat-option *ngFor="let sub of usertypeArr" [value]="sub.name">
               {{sub.name}}
             </mat-option>

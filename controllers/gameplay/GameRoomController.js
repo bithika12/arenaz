@@ -184,8 +184,9 @@ io.on('connection', function (socket) {
         function gameOverProcess(reqobj, callback) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin) {
-                room.updateRoomGameOver({roomName: reqobj.roomName,gameTotalTime:reqobj.gameTotalTime}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
 
+                room.updateRoomGameOver({roomName: reqobj.roomName,gameTotalTime:reqobj.gameTotalTime}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
+                  
                     Notification.createNotification({
                         //sent_by_user     : req.user_id ,
                         received_by_user : reqobj.userId,
@@ -201,6 +202,7 @@ io.on('connection', function (socket) {
                         
                         logger.print("***Game Notification added ");
                         logger.print("***Game over successfully ");
+                        setTimeout(function() {
                         io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
                         io.to(reqobj.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                            // userId: reqobj.userId,
@@ -221,6 +223,7 @@ io.on('connection', function (socket) {
                             secondUserTotalCup: secondUserTotalCup.cupNo
                             //gameStatus:"Win"
                         }, "Game is over"));
+                        }, 3 * 1000);
                         callback(null, reqobj);
 
                         ////
@@ -3372,6 +3375,7 @@ io.on('connection', function (socket) {
                                                     
                                                 /*code for user coin insert */
                                                // io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
+                                                setTimeout(function() {
                                                 io.to(roomDetails1.roomName).emit('gameOver', 
                                                     response.generate(constants.SUCCESS_STATUS, {
                                                    // userId: reqobj.userId,
@@ -3395,6 +3399,8 @@ io.on('connection', function (socket) {
 
                                                     //gameStatus:"Win"
                                                 }, "Game is over"));
+                                                //add timeout
+                                                }, 3 * 1000);
                                                 clearTimeout(this.interval); 
 
                                                 //user coin insert catch
@@ -3471,6 +3477,7 @@ io.on('connection', function (socket) {
                          
                                                  user.findDetailsGame({_id:roomDetails1.opponentUserId}).then((secondUserTotalCup)=>{
                                                // io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
+                                                setTimeout(function() {
                                                 io.to(roomDetails1.roomName).emit('gameOver', 
                                                     response.generate(constants.SUCCESS_STATUS, {
                                                    // userId: reqobj.userId,
@@ -3492,6 +3499,8 @@ io.on('connection', function (socket) {
                                                     secondUserTotalCup: secondUserTotalCup.cupNo
                                                     //gameStatus:"Win"
                                                 }, "Game is over"));
+                                                //add timeout
+                                                }, 3 * 1000);
                                                 clearTimeout(this.interval); 
 
 

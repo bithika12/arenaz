@@ -1154,7 +1154,10 @@ User.findDetailsGame = function(condObj){
 
 User.detailsUserCoin = function(condObj){
      return new Promise((resolve,reject)=>{
-         userCoin.find({},{_id: 1,user_name:1,email:1,coins:1,reference:1,type:1}).sort({ _id: -1 }).then(response=> {
+
+         userCoin.find({},{_id: 1,user_name:1,email:1,coins:1,reference:1,type:1}).sort({ email: 'asc' }).then(response=> {
+
+         //userCoin.find({},{_id: 1,user_name:1,email:1,coins:1,reference:1,type:1}).sort({ _id: -1 }).sort({ email: 'asc' }).then(response=> {
              resolve(response)
          }).catch(err=>{
              reject(err);
@@ -1223,7 +1226,7 @@ User.detailsUserCoin = function(condObj){
   return  new Promise((resolve,reject) => {
        User.findOne({userName:condObj.userName},{startCoin:1,email:1}).then(responses=> {
         //User.findOne({email: condObj.email},{deviceDetails:0,resetOtp:0}).then(responses=> {
-              console.log("responses"+JSON.stringify(responses));
+             // console.log("responses"+JSON.stringify(responses));
               let userObj={
                         balance:responses.startCoin,
                         user_name:(!condObj.result.user_name) ? '' : condObj.result.user_name,

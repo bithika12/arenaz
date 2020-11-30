@@ -1,5 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+//import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {FormControl, FormGroup, FormsModule, FormBuilder, FormArray, Validators} from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Player } from '../interfaces/player.model';
 import icMoreVert from '@iconify/icons-ic/twotone-more-vert';
@@ -90,6 +92,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
               private router: Router,
               private location: Location,
               private coinService:CoinService,
+              private snackbar: MatSnackBar
 
               ) {
   }
@@ -141,6 +144,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
       //rolename:[this.defaults.roleName || ''],
      
       //roleid:[this.defaults.roleId || ''],
+      //coins:[this.defaults.coins || [Validators.required]],
       coins:[this.defaults.coins || ''],
       //username:[this.defaults.userName || ''],
       //useremail:[this.defaults.email || ''],
@@ -161,10 +165,44 @@ export class PlayerCreateUpdateComponent implements OnInit {
     if (!coins.imageSrc) {
       coins.imageSrc = 'assets/img/avatars/1.jpg';
     }
+    console.log("coins value"+(coins.length));
+    console.log("coins value string"+JSON.stringify(coins))
+    if(coins.user_name=='' 
+    || coins.user_email ==""    
+    || coins.type ==""
+    || coins.reference ==""
+    || coins.coins ==""
+    
+    ){
+      console.log("not");
+         this.snackbar.open("All fields are required",'OK',{
+                          verticalPosition: 'top',
+                          horizontalPosition:'right'
+                        });
+    }
+    else {
     this.coinService.addCoin(coins).subscribe(User => {
-      location.reload();
-      this.dialogRef.close(coins);
+
+
+    if(User['status']==1){
+          console.log("ok");
+        
+        location.reload();
+        this.dialogRef.close(coins);
+      }
+
+      else{
+         console.log("not");
+         this.snackbar.open(User['message'],'OK',{
+                          verticalPosition: 'top',
+                          horizontalPosition:'right'
+                        });
+      }
+      //location.reload();
+      //this.dialogRef.close(coins);
     });
+
+    }
   }
 
   updatePlayer() {

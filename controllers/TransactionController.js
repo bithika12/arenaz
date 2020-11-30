@@ -63,7 +63,9 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
                                 console.log("err");
                             }
                             else {
-                            var travelTime = moment().add(30, 'minutes').format('hh:mm A');
+                            var travelTime = moment().add(appList.api_expiration_time, 'minutes').format('hh:mm A');
+                            //var travelTime = moment().add(30, 'minutes').format('hh:mm A');
+
                             
 
                             console.log("travelTime"+travelTime);
@@ -397,6 +399,7 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
   
   function updateCoinUserWithdraw(userObj,callback){
       return function(callback){
+        console.log("update call");
         User.updateUserCoinTransactionWithDraw({userName:userObj.user_name},userObj.amount).then((appList) => {
           
           callback (null,appList);
@@ -503,7 +506,10 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
        let resObj={
         minimum_deposit:appList.minimum_deposit,
         minimum_withdrawl:appList.minimum_withdrawl,
-        user_total_coin:userObj.startCoin
+        user_total_coin:userObj.startCoin,
+        transaction_fee_withdrawl:appList.transaction_fee_withdrawl,
+        transaction_fee_deposit:appList.transaction_fee_deposit
+
       }
       callback (null,resObj);
 
@@ -917,8 +923,10 @@ function saveWithdrawRequest(userObj){
                 if(lastPart=="Success!"){
                    var api_status = 'New';
                 }
-
-                var travelTime  = moment().add(30, 'minutes').format('hh:mm A');
+                //appList.api_expiration_time
+                var travelTime  = moment().add(appList.api_expiration_time, 'minutes').format('hh:mm A');
+ 
+                //var travelTime  = moment().add(30, 'minutes').format('hh:mm A');
                 let curtime     = moment().format('hh:mm A');
                 let curdate     = moment().format('YYYY-MM-DD');
                 let expired_at  = curdate+" "+travelTime;
@@ -951,4 +959,6 @@ function saveWithdrawRequest(userObj){
       }) 
     }
   }
+
+  
 

@@ -644,10 +644,10 @@ exports.getUserCoins =  (req,res)=> {
          let userArr=[];
         return new Promise(function (resolve, reject) {
            User.detailsUserCoin().then((coindetails)=>{
-               console.log("ok");
+               console.log("get coins");
                let promiseArr = [];
                coindetails.forEach(function (val, key) {
-                        console.log("val"+val);
+                        //console.log("val"+val);
                         //let bal=User.findDetailsGame12({userName:val.user_name});
                         //console.log("bal"+JSON.stringify(bal));
                          
@@ -659,7 +659,7 @@ exports.getUserCoins =  (req,res)=> {
 
                     });
                     return Promise.all(promiseArr).then(function (resArr) {
-                        console.log("resArr"+JSON.stringify(resArr));
+                        //console.log("resArr"+JSON.stringify(resArr));
 
 
                         if (resArr.length) {

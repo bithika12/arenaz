@@ -14,7 +14,18 @@ let Transaction = require('../schema/Schema').userTransactionModel;
 
 Version.details = function(condObj){
   return new Promise((resolve,reject)=>{  
-    Version.findOne({status:"active"},{_id: 1,minimum_deposit:1,minimum_withdrawl:1,coin_price_usd:1,transaction_fee_deposit:1,transaction_fee_withdrawl:1,e_currency_price_api:1,wallet_api_link:1,wallet_key:1}).then(response=> {
+    Version.findOne({status:"active"},
+    	{_id: 1,
+    	minimum_deposit:1,
+    	minimum_withdrawl:1,
+    	coin_price_usd:1,
+    	transaction_fee_deposit:1,
+    	transaction_fee_withdrawl:1,
+    	e_currency_price_api:1,
+    	wallet_api_link:1,
+    	wallet_key:1,
+    	api_expiration_time:1
+    }).then(response=> {
          console.log("op")
          resolve(response)
     }).catch(err=>{
