@@ -647,7 +647,7 @@ exports.getUserCoins =  (req,res)=> {
                console.log("get coins");
                let promiseArr = [];
                coindetails.forEach(function (val, key) {
-                        //console.log("val"+val);
+                        console.log("val"+val);
                         //let bal=User.findDetailsGame12({userName:val.user_name});
                         //console.log("bal"+JSON.stringify(bal));
                          
