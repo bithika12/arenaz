@@ -17,7 +17,8 @@ const moment = require('moment');
  let Notification  = require(appRoot +'/models/Notification');
  let Coin = require('../schema/Schema').coinModel; 
  let Appversion=require('../schema/Schema').versionModel; 
- 
+ let Transaction  = require('../models/Transaction');
+
  let userCoin = require('../schema/Schema').userCoinModel;
  /** TOTAL USER **/
 User.totalUser =function(condObj){
@@ -39,9 +40,25 @@ User.countUser = function(condObj){
       });
   });
 }
-
+//fetchFreeCoin
+User.fetchFreeCoin =function(reqObj){
+    return  new Promise((resolve,reject) => {
+      console.log("ppp")
+     
+      Transaction.details().then((appList) => {
+         let new_account_gift_coins=appList.new_account_gift_coins;
+          console.log("new_account_gift_coins"+new_account_gift_coins);
+          //reqObj.new_account_gift_coins=appList.new_account_gift_coins;
+          resolve(appList);
+      }).catch(fetchErr => {
+                       reject(fetchErr);
+                      });       
+        
+    });
+}
 //CREATE
-User.createUser = function(reqObj){
+User.createUser = function(reqObj,version){
+    console.log("reqObj.new_account_gift_coins"+version.new_account_gift_coins);
       return new Promise((resolve,reject)=>{
       /*let msg="Welcome to Arena Z!\
 In the Arena you can test your skills and wage a war against other players.\
@@ -65,9 +82,13 @@ msg+="Arena Z Team";
 
 
       reqObj.password  =  password.hashPassword(reqObj.password);
-      let startCoin = reqObj.userType =='regular-player'
-              ? 50
+      
+       let startCoin = reqObj.userType =='regular-player'
+              ? version.new_account_gift_coins
               : 0;
+      /*let startCoin = reqObj.userType =='regular-player'
+              ? 50
+              : 0;*/
 
       /*let startCoin = reqObj.userType =='regular-player'
               ? 3000
@@ -95,7 +116,7 @@ msg+="Arena Z Team";
                     let usercoins={
                       user_name:reqObj.userName,
                       type:"Deposit",
-                      coins:50,
+                      coins:version.new_account_gift_coins,
                       reference:"Welcome Gift"
                     }
                     userCoin.create(usercoins).then(userCoinresponse => {
@@ -1118,7 +1139,9 @@ User.detailsAdmin = function(condObj){
             transaction_fee_withdrawl : 1,
             transaction_fee_deposit : 1,
             minimum_deposit : 1,
-            minimum_withdrawl : 1}).then(response=> {
+            minimum_withdrawl : 1,
+            new_account_gift_coins:1
+          }).then(response=> {
 
          //Appversion.find({status:"active"},{app_version:1,download_link:1}).then(response=> {
              console.log("versionres"+response);

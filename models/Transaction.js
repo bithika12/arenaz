@@ -24,7 +24,8 @@ Version.details = function(condObj){
     	e_currency_price_api:1,
     	wallet_api_link:1,
     	wallet_key:1,
-    	api_expiration_time:1
+    	api_expiration_time:1,
+      new_account_gift_coins:1
     }).then(response=> {
          console.log("op")
          resolve(response)

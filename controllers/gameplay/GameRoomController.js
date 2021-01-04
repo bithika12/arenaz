@@ -187,13 +187,13 @@ io.on('connection', function (socket) {
 
                 room.updateRoomGameOver({roomName: reqobj.roomName,gameTotalTime:reqobj.gameTotalTime}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
                   
-                    Notification.createNotification({
+                    /*Notification.createNotification({
                         //sent_by_user     : req.user_id ,
                         received_by_user : reqobj.userId,
                         subject          : "You are winner",
                         message          : "You are winner",
                         read_unread      : 0
-                    }).then(function(notificationdetails){
+                    }).then(function(notificationdetails){*/
 
                         user.findDetailsGame({_id:reqobj.userId}).then((firstUserTotalCup)=>{
                         console.log("firstUserTotalCup"+firstUserTotalCup.cupNo);    
@@ -237,7 +237,8 @@ io.on('connection', function (socket) {
                       })
 
                       //////
-                    });
+                      //notification brace
+                    //});
 
                 }).catch(err => {
                     logger.print("***Room update error ", err);
@@ -3339,13 +3340,13 @@ io.on('connection', function (socket) {
                                         //game over call ///////
                                         room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {
                                             console.log("update room db");
-                                            Notification.createNotification({
+                                            /*Notification.createNotification({
                                                 //sent_by_user     : req.user_id ,
                                                 received_by_user : roomDetails1.userId,
                                                 subject          : "You are winner",
                                                 message          : "You are winner",
                                                 read_unread      : 0
-                                            }).then(function(notificationdetails){
+                                            }).then(function(notificationdetails){*/
                                                 logger.print("***Game Notification added ");
                                                 logger.print("***Game over successfully ");
 
@@ -3419,7 +3420,8 @@ io.on('connection', function (socket) {
 
 
                                                 //////////
-                                            });
+                                                //notification brace
+                                            //});
 
                                             }).catch(err => {
                                                 logger.print("***Room update error ", err);
@@ -3587,18 +3589,19 @@ io.on('connection', function (socket) {
             if (reqobj.isWin) {
                 room.updateRoomGameOver({roomName: reqobj.roomName,gameTotalTime:reqobj.gameTotalTime}, {userObj: reqobj.roomUsers}).then(function (updateRoom) {
 
-                    Notification.createNotification({
+                    /*Notification.createNotification({
                         //sent_by_user     : req.user_id ,
                         received_by_user : reqobj.opponentUserId,
                         subject          : "You are winner",
                         message          : "You are winner",
                         read_unread      : 0
-                    }).then(function(notificationdetails){
+                    }).then(function(notificationdetails){*/
                          callback(null, reqobj);
                         
 
                       //////
-                    });
+                      //notification brace
+                    //});
 
                 }).catch(err => {
                     logger.print("***Room update error ", err);
@@ -3863,5 +3866,356 @@ io.on('connection', function (socket) {
     });
 
 });
+
+
+//with notification logic .31.12.2020
+function gameTimer1Old(roomObj) {
+       // inmRoom.gameTimerStart({roomName: roomObj.roomName}).then(function (roomDetails) {
+            //if (roomDetails) {
+                //new code 26 th mar//
+                 //let g = 20;
+                 //let g = 20;
+                 let g = 360;
+                 //let g = 360;
+                //logger.print("  ************  first turn loop start");
+                let timer2 = setTimeout(function gameStartTimmer2(gameStartObj2) {
+                    //if(g===20){
+                    if(g===360){  
+                        //game_time_remain//
+                        let updateCreateTime=moment().format('MM/DD/YYYY HH:mm:ss');
+                        //update memory room with create time/////
+                        console.log("updateCreateTime"+updateCreateTime);
+                        roomDatastore.update({roomName: roomObj.roomName},
+                         {$set: {createtime:updateCreateTime}},
+                          //room.update({roomName : userObj.roomName},{ $set: { users: updateArr.finalArr.users }},
+                          function (err, updateroomresult) {
+
+                             console.log("game time start");
+                             io.to(roomObj.roomName).emit('gameTimer',
+                              response.generate(constants.SUCCESS_STATUS, {totalGameTime: 360}, "Your game time start"));
+                           }); 
+                      
+                       //console.log("game time start");
+                      //io.to(roomObj.roomName).emit('gameTimer',
+                      //response.generate(constants.SUCCESS_STATUS, {totalGameTime: 360}, "Your game time start"));
+
+
+                    }
+
+                    g--;
+
+                    if(g===10){
+                      console.log(g);
+                      
+                      console.log("only 10 sec remaining"); 
+
+                      RoomDb.findOne({name:gameStartObj2.roomName}, {_id: 1,game_time:1, name:1}).then(gameresponses=> {
+                        console.log("gameresponses.game_time"+gameresponses.game_time);
+                        if(gameresponses.game_time >0){
+                          //game finished//////////////
+                          console.log("game finished not required 10 sec listen");
+                        }
+                        else{
+                         room.updateRoomDetails({roomName: roomObj.roomName}, {game_time_remain: g}).then(function (gameremainOver) {
+
+
+                           io.to(gameStartObj2.roomName).emit('gameTimer', 
+                           response.generate(constants.SUCCESS_STATUS, {gameFinish:1},
+                          "Only 10 seconds remaining"));
+
+                         gameStartObj2.g = g;
+                         timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2); 
+                          ////
+
+                          }).catch(err => {
+                             logger.print("***Room update error ", err);
+                         })
+
+
+                        }
+
+                      }).catch(err => {
+                        console.log("error"+err);
+                        reject(err);
+                      });
+
+                       
+
+                    }
+
+                    else if (g === 0) {
+                        console.log("only 0 sec remaining");
+                        console.log(g);
+                        //game winner loser clculation///////////////
+                        inmRoom.winAfterTimerEnd(gameStartObj2.roomName).then(function(roomDetails){
+                            console.log("game calculation done");
+                            console.log("roomDetails.userCoin"+roomDetails.userCoin);
+                            if(roomDetails.isWin==1){
+                            //console.log("gameres"+roomDetails.gameres.length);
+                            inmRoom.updateInmemoryRoomMod12(roomDetails).then(function(roomDetails1){
+                              console.log("roomdetails",roomDetails1)
+                              let roomDetailsAll=roomDetails1;
+                              //if (roomDetails1.isWin) {
+                                //user update with coin
+                                 user.updateUserCoin({userId: roomDetails1.userId},
+                                  {startCoin: roomDetails1.availableCoin,
+                                    cupNo:roomDetails1.cupNumber,
+                                    userScore:roomDetails1.totalGameScores
+                                }).then(function (userStatusUpdate) {
+                                     console.log("user update"); 
+                                     //opponent user update ///////
+                                     let findIndex = roomDetails1.roomUsers.findIndex(elemt => (elemt.userId!=roomDetails1.userId));
+                                     let userOppo=roomDetails1.roomUsers[findIndex].userId;
+                                      console.log("opponent user"+userOppo);
+                                     user.updateUserCoinOpponent({userId: userOppo},
+                                      {startCoin: roomDetails1.availableCoin,
+                                        cupNo:roomDetails1.opponentCup,
+                                        userScore:roomDetails1.gameScoreOpponent
+                                    }).then(function (userStatusUpdateOpponent) {
+                                        console.log("opponent user update");
+                                        //game over call ///////
+                                        room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {
+                                            console.log("update room db");
+                                            Notification.createNotification({
+                                                //sent_by_user     : req.user_id ,
+                                                received_by_user : roomDetails1.userId,
+                                                subject          : "You are winner",
+                                                message          : "You are winner",
+                                                read_unread      : 0
+                                            }).then(function(notificationdetails){
+                                                logger.print("***Game Notification added ");
+                                                logger.print("***Game over successfully ");
+
+                                                user.findDetailsGame({_id:roomDetails1.userId}).then((firstUserTotalCup)=>{
+                                                console.log("firstUserTotalCup"+firstUserTotalCup.cupNo);    
+                                                 
+                                                user.findDetailsGame({_id:roomDetails1.opponentUserId}).then((secondUserTotalCup)=>{
+
+                                                /*code for user coin insert*/
+                                                     let userCoinArr=[];
+                                                        roomDetails1.roomUsers.forEach(function(val,key){
+                                                            console.log("winns"+val.isWin);
+                                                   
+                                                            let usrObj={
+                                                               user_name: val.userName,
+                                                               type:(val.isWin==1)? 'Won' : 'Lost',
+                                                               coins:val.roomCoin,
+                                                               reference:val.roomName
+                                                             }
+
+                                                              userCoinArr.push(usrObj);
+                                                         })
+                                                      user.addUserCoinWin (userCoinArr).then(function (insertUserCoin) {
+                                                     
+                                                        
+
+                                                    
+                                                /*code for user coin insert */
+                                               // io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
+                                                setTimeout(function() {
+                                                io.to(roomDetails1.roomName).emit('gameOver', 
+                                                    response.generate(constants.SUCCESS_STATUS, {
+                                                   // userId: reqobj.userId,
+                                                    firstUserId: roomDetails1.userId,
+                                                    firstUserGameStatus: "Win",
+                                                    secondUserId:roomDetails1.opponentUserId,
+                                                    secondUserGameStatus: "Lose",
+                                                    roomName: roomDetails1.roomName,
+
+                                                    firstUserCupNumber: roomDetails1.cupNumber,
+                                                    secondUserCupNumber: roomDetails1.opponentCup,
+
+                                                    firstUserCoinNumber: roomDetails1.availableCoin,
+                                                    secondUserCoinNumber: roomDetails1.opponentCoin,
+
+                                                    completeStatus:1,
+
+                                                    firstUserTotalCup: firstUserTotalCup.cupNo,
+                                                    secondUserTotalCup: secondUserTotalCup.cupNo
+
+
+                                                    //gameStatus:"Win"
+                                                }, "Game is over"));
+                                                //add timeout
+                                                }, 3 * 1000);
+                                                clearTimeout(this.interval); 
+
+                                                //user coin insert catch
+                                                }).catch(err => {
+                                                        logger.print("***Room update error ", err);
+                                                })
+
+                                                //////////
+                                                  }).catch(secondUserTotalCupErr=>{
+                                                    console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                                                   })
+
+                                                   }).catch(firstUserTotalCupErr=>{
+                                                    console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
+                                                  })
+
+
+                                                //////////
+                                            });
+
+                                            }).catch(err => {
+                                                logger.print("***Room update error ", err);
+                                            })
+                                        //clearTimeout(this.interval); 
+                                     });
+                                       
+                                     
+                                });
+                             /* } else {
+                                logger.print("***No calculation as game already finish ", err);
+                                
+                             }*/
+                               
+                            }).catch(err=>{
+                                //callback("err", null);
+                            })
+
+                        }
+
+                            else if(roomDetails.isWin==2){
+                            //console.log("gameres"+roomDetails.gameres.length);
+                            inmRoom.updateInmemoryRoomMod12(roomDetails).then(function(roomDetails1){
+                              console.log("roomdetails",roomDetails1)
+                              let roomDetailsAll=roomDetails1;
+                              //if (roomDetails1.isWin) {
+                                //user update with coin
+                                 /*user.updateUserCoin({userId: roomDetails1.userId},
+                                  {startCoin: roomDetails1.availableCoin,
+                                    cupNo:roomDetails1.cupNumber,
+                                    userScore:roomDetails1.totalGameScores
+                                }).then(function (userStatusUpdate) {*/
+                                     console.log("user update"); 
+                                     //opponent user update ///////
+                                     let findIndex = roomDetails1.roomUsers.findIndex(elemt => (elemt.userId!=roomDetails1.userId));
+                                     let userOppo=roomDetails1.roomUsers[findIndex].userId;
+                                      console.log("opponent user"+userOppo);
+                                      /*user.updateUserCoin(
+                                        {userId: userOppo}, 
+                                        {startCoin: roomDetails1.availableCoin,
+                                            cupNo:roomDetails1.opponentCup,
+                                            userScore:roomDetails1.gameScoreOpponent
+                                        }).then(function (userStatusUpdateOpponent) {*/
+                                        console.log("opponent user update");
+                                        //game over call ///////
+                                        room.updateRoomGameOver({roomName: roomDetails1.roomName,gameTotalTime:roomDetails1.gameTotalTime}, {userObj: roomDetails1.roomUsers}).then(function (gameOver) {
+                                            console.log("update room db");
+                                              logger.print("***Game draw added ");
+                                                logger.print("***Game draw successfully ");
+
+                                                 
+
+                                                 user.findDetailsGame({_id:roomDetails1.userId}).then((firstUserTotalCup)=>{
+                                                  console.log("firstUserTotalCup"+firstUserTotalCup.cupNo);    
+                         
+                                                 user.findDetailsGame({_id:roomDetails1.opponentUserId}).then((secondUserTotalCup)=>{
+                                               // io.sockets.to(socket.id).emit('gameWin',response.generate( constants.SUCCESS_STATUS,{},"You won the match!"));
+                                                setTimeout(function() {
+                                                io.to(roomDetails1.roomName).emit('gameOver', 
+                                                    response.generate(constants.SUCCESS_STATUS, {
+                                                   // userId: reqobj.userId,
+                                                    firstUserId: roomDetails1.userId,
+                                                    firstUserGameStatus: "Draw",
+                                                    secondUserId:roomDetails1.opponentUserId,
+                                                    secondUserGameStatus: "Draw",
+                                                    roomName: roomDetails1.roomName,
+
+                                                    firstUserCupNumber: roomDetails1.cupNumber,
+                                                    secondUserCupNumber: roomDetails1.opponentCup,
+
+                                                    firstUserCoinNumber: roomDetails1.availableCoin,
+                                                    secondUserCoinNumber: roomDetails1.opponentCoin,
+
+                                                    completeStatus:1,
+
+                                                    firstUserTotalCup: firstUserTotalCup.cupNo,
+                                                    secondUserTotalCup: secondUserTotalCup.cupNo
+                                                    //gameStatus:"Win"
+                                                }, "Game is over"));
+                                                //add timeout
+                                                }, 3 * 1000);
+                                                clearTimeout(this.interval); 
+
+
+                                                ////////////////////
+
+                                                }).catch(secondUserTotalCupErr=>{
+                                                console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                                               })
+
+                                               }).catch(firstUserTotalCupErr=>{
+                                                console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
+                                              })
+
+
+                                                ///////////////////
+
+
+                                            }).catch(err => {
+                                                logger.print("***Room update error ", err);
+                                            })
+                                        //clearTimeout(this.interval); 
+                                     //update coin////   
+                                     //});
+                                       
+                                     
+                                //});
+                                /////update coin////
+                             /* } else {
+                                logger.print("***No calculation as game already finish ", err);
+                                
+                             }*/
+                               
+                            }).catch(err=>{
+                                //callback("err", null);
+                            })
+
+                        }
+                        else{
+                          logger.print("***No calculation as game already finish ", err);
+
+                        }
+
+
+
+                           //clearTimeout(this.interval);
+                           //callback(null, gameStartObj2);
+                         }).catch(err => {
+                         });    
+                        //console.log("first turn i turn 0 "+roomDetails.userId+gameStartObj1.roomName);
+                        //clearTimeout(this.interval);
+                        //callback(null, gameStartObj2);
+                        //logger.print("Next turn sent after game request"+roomDetails.userId);
+                        //io.to(gameStartObj1.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+                    }
+                    
+                    
+                     else {
+                        room.updateRoomDetails({roomName: roomObj.roomName}, {game_time_remain: g}).then(function (gameremainOver) {
+                           console.log("game timer running");
+                           console.log(g);
+                           gameStartObj2.g = g;
+                           timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);
+
+                         }).catch(err => {
+                             logger.print("***Room update error ", err);
+                         })
+                        /*console.log("game timer running");
+                        console.log(g);
+                        gameStartObj2.g = g;
+                        timer2 = setTimeout(gameStartTimmer2, 1000, gameStartObj2);*/
+                    }
+                }, 1000, roomObj);
+                //new code///////////
+                //logger.print("Next turn sent after game request"+roomDetails.userId);
+                //io.to(roomObj.roomName).emit('nextTurn', response.generate(constants.SUCCESS_STATUS, {userId: roomDetails.userId}, "Next User"));
+           // }
+       /* }).catch(err => {
+        });*/
+    } 
 
 

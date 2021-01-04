@@ -201,7 +201,8 @@ var versionSchema      = new Schema({
     transaction_fee_deposit : String,
     minimum_deposit : String,
     minimum_withdrawl : String,
-    status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'}
+    status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
+    new_account_gift_coins:Number
     
 });
 

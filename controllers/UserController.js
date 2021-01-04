@@ -109,14 +109,21 @@ function createUserAdmin(reqObj,callback){
         callback (err,null);
     });
 }
-function createUser(reqObj,callback){
-    User.createUser(reqObj).then((user) => {
+function createUser(reqObj,version,callback){
+    User.createUser(reqObj,version).then((user) => {
         callback (null,user);
     }).catch(err => {
         callback (err,null);
     });
 }
-
+//fetchFreeCoin
+function fetchFreeCoin(reqObj,callback){
+    User.fetchFreeCoin(reqObj).then((user) => {
+        callback (null,reqObj,user);
+    }).catch(err => {
+        callback (err,null);
+    });
+}
 function createNotification(reqObj,callback){
 
     Notification.createNotification({
@@ -175,10 +182,16 @@ function updateLogIn(user,callback) {
 exports.registration= function(req,res) {
 
     const ipInfo = req.ipInfo;
-    console.log("pl"+ipInfo.country);
-    console.log("pl12"+JSON.stringify(ipInfo));
-    let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
+    //console.log("pl"+ipInfo.country);
+    //console.log("pl12"+JSON.stringify(ipInfo));
+    if(!ipInfo.country){
+        console.log("nn")
+    }
+    else {
+        let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
+    
     console.log(countryNameDetails.name);
+}
     //res.send(ipInfo);
 
     let schema = Joi.object().keys({
@@ -223,8 +236,8 @@ exports.registration= function(req,res) {
         password: req.body.password,
         userName: req.body.userName,
         userType: "regular-player",
-        countryName:ipInfo.country,
-        loginIp:ipInfo.ip
+        countryName:(!ipInfo.country) ? "" : ipInfo.country,
+        loginIp:(!ipInfo.ip) ? "" : ipInfo.ip
         //loginIp:ipInfo
         //countryName:countryNameDetails.name
         //userType: "registered-game-user"
@@ -233,6 +246,7 @@ exports.registration= function(req,res) {
             //checkUnique(userObj),
             checkUniqueEmailUserName(userObj),
             //checkRole,
+            fetchFreeCoin,
             createUser
 
         ],
@@ -247,7 +261,7 @@ exports.registration= function(req,res) {
                     email: result.email,
                     score: result.score,
                     "accessToken": result.deviceDetails[0].accessToken,
-                    "userCoin":50,
+                    "userCoin":result.startCoin,
                     "userCup":3000
                     //"userCoin":3000,
                     //"userCup":0

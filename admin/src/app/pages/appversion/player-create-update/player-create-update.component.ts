@@ -137,6 +137,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
 
       minimum_deposit: [this.defaults.minimum_deposit || ''],
       minimum_withdrawl: [this.defaults.minimum_withdrawl || ''],
+      new_account_gift_coins: [this.defaults.new_account_gift_coins || ''],
+      
      _id:[this.defaults._id || ''],
     });
   }
