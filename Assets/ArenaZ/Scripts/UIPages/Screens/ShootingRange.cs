@@ -26,7 +26,8 @@ namespace ArenaZ.GameMode
         [SerializeField] private Button coinButton50;
         [SerializeField] private Button coinButton100;
         [SerializeField] private Button coinButton250;
-        [SerializeField] private Button coinButton500;        
+        [SerializeField] private Button coinButton500;
+        [SerializeField] private Button depositButton;
 
         [Header("User Image")]
         [SerializeField] private Image userFrame;
@@ -129,6 +130,7 @@ namespace ArenaZ.GameMode
             coinButton100.onClick.AddListener(() => OnClickStartGameWithCoinValue(100));
             coinButton250.onClick.AddListener(() => OnClickStartGameWithCoinValue(250));
             coinButton500.onClick.AddListener(() => OnClickStartGameWithCoinValue(500));
+            depositButton.onClick.AddListener(openDepositCoinPanel);
         }
 
         private void ReleaseButtonReferences()
@@ -141,6 +143,7 @@ namespace ArenaZ.GameMode
             coinButton100.onClick.RemoveAllListeners();
             coinButton250.onClick.RemoveAllListeners();
             coinButton500.onClick.RemoveAllListeners();
+            depositButton.onClick.RemoveListener(openDepositCoinPanel);
         }
         #endregion
 
@@ -149,6 +152,11 @@ namespace ArenaZ.GameMode
             SocketListener.Listen(SocketListenEvents.connectedRoom.ToString(), OnConnectedRoom);
             SocketListener.Listen(SocketListenEvents.noUser.ToString(), OnNoUser);
             SocketListener.Listen(SocketListenEvents.gameStart.ToString(), OnGameStart);
+        }
+
+        private void openDepositCoinPanel()
+        {
+            UIManager.Instance.ShowScreen(Page.WalletDepositRequestPanel.ToString());
         }
 
         private void PlayShinyEffect()

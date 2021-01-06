@@ -71,6 +71,7 @@ namespace ArenaZ.Manager
 
         [SerializeField] private CameraController cameraController;
         [SerializeField] private UiPopup popup;
+        [SerializeField] private UiTrainingPopup trainingPopup;
 
         [SerializeField] private GameObject winPopup;
         [SerializeField] private GameObject loosePopup;
@@ -189,21 +190,32 @@ namespace ArenaZ.Manager
             countdownTimerText.text = string.Empty;
             resetTimerImages();
             GetDartGameObj();
+
             onSwitchTurn(Player.None);
             cameraController.SetFocus(true);
             cameraController.SetCameraPosition(Player.Self);
+
             UIManager.Instance.HideScreen(Page.UIPanel.ToString());
             UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(), Hide.none);
             UIManager.Instance.ShowScreen(Page.GameplayUIPanel.ToString(), Hide.none);
-            InitializeOnGameStartSequences();
-            gameStatus = EGameStatus.Playing;
-            PlayerType = Player.Self;
 
             setUserProfileImage(User.UserName, User.UserRace, User.UserColor);
 
             trainingScoreHandler.Initialize();
             clearOpponentData();
-            StartCoroutine(onNextTurnTraining(2.0f));
+
+            if (trainingPopup != null)
+            {
+                trainingPopup.Show("Shooting Range", "Each round you have 3 tries to score as high as you can in order to lower your points down to 0. If you hit more than your remaining points, it’s a “Bust” and that round will not count. In order to decrease your points as fast as possible you can aim at the inner rings to receive double or triple points.",
+                () =>
+                {
+                    InitializeOnGameStartSequences();
+                    gameStatus = EGameStatus.Playing;
+                    PlayerType = Player.Self;
+
+                    StartCoroutine(onNextTurnTraining(2.0f));
+                });
+            }
         }
 
         public void StopTraining()

@@ -78,6 +78,12 @@ namespace ArenaZ.LoginUser
 
         private void onClickUserLogin(string emailID, string password)
         {
+            emailID = emailID.NonWhitespaceStr();
+            password = password.NonWhitespaceStr();
+
+            logInIf_userEmail.text = emailID;
+            logInIf_password.text = password;
+
             Debug.Log("Logging in");
             //if (GetMessageWhenFaultCheckOnLogin(emailID, Checking.EmailID) != null)
             //{

@@ -8,6 +8,12 @@ using RedApple.Utils;
 
 namespace ArenaZ.Wallet
 {
+    public interface IWalletEvent
+    {
+        void OnReceiveWalletDetails(WalletDetailsResponse a_WalletDetailsResponse);
+        void OnCompleteWalletAction();
+    }
+
     public class WalletHandler : MonoBehaviour
     {
         [SerializeField] private WalletDetailsResponse walletDetailsResponseObj;
@@ -16,6 +22,19 @@ namespace ArenaZ.Wallet
         [SerializeField] private ConfirmDepositResponse confirmDepositResponseObj;
         [SerializeField] private CancelDepositResponse cancelDepositResponseObj;
         [SerializeField] private RequestWithdrawResponse requestWithdrawResponseObj;
+
+        private List<IWalletEvent> iWalletEventSubscribers = new List<IWalletEvent>();
+
+        public void SubscribeToEvent(IWalletEvent a_Subscriber, bool a_Subscribe)
+        {
+            if (a_Subscribe)
+            {
+                if (!iWalletEventSubscribers.Contains(a_Subscriber))
+                    iWalletEventSubscribers.Add(a_Subscriber);
+            }
+            else
+                iWalletEventSubscribers.Remove(a_Subscriber);
+        }
 
         public WalletDetailsResponse GetWalletDetailsResponse() => walletDetailsResponseObj;
 
@@ -43,6 +62,7 @@ namespace ArenaZ.Wallet
         private void onReceiveDetails(WalletDetailsResponse a_Obj)
         {
             walletDetailsResponseObj = a_Obj;
+            iWalletEventSubscribers.ForEach(x => x.OnReceiveWalletDetails(walletDetailsResponseObj));
         }
 
         private void onError(RestUtil.RestCallError a_Obj)
@@ -53,6 +73,7 @@ namespace ArenaZ.Wallet
         public void OnCompleteAction()
         {
             GameMode.ShootingRange.Instance.Refresh();
+            iWalletEventSubscribers.ForEach(x => x.OnCompleteWalletAction());
         }
     }
 }

@@ -100,7 +100,7 @@ namespace ArenaZ.LevelMangement
         private void SettingButtonClicked()
         {
             Settings.Instance.FromMainMenu = false;
-            // UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
+            //UIManager.Instance.HideScreenImmediately(Page.LogOutAlertOverlay.ToString());
             UIManager.Instance.ShowScreen(Page.SettingsPanel.ToString(), Hide.none);
             UIManager.Instance.HideScreenImmediately(Page.PlayerColorChooser.ToString());
             UIManager.Instance.HideScreenImmediately(Page.RegionPopup.ToString());

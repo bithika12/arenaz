@@ -74,6 +74,10 @@ namespace ArenaZ.RegistrationUser
 
         private void OnClickUserRegistration()
         {
+            regIf_userEmail.text = regIf_userEmail.text.NonWhitespaceStr();
+            regIf_UserName.text = regIf_UserName.text.NonWhitespaceStr();
+            regIf_UserPassword.text = regIf_UserPassword.text.NonWhitespaceStr();
+
             if (GetMessageWhenFaultCheckOnRegistration(regIf_userEmail.text, Checking.EmailID) != null)
             {
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnRegistration(regIf_userEmail.text, Checking.EmailID), PopUpduration);

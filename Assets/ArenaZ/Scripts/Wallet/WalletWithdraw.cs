@@ -5,34 +5,54 @@ using TMPro;
 using ArenaZ.Manager;
 using RedApple;
 using RedApple.Utils;
+using DG.Tweening;
 
 namespace ArenaZ.Wallet
 {
-    public class WalletWithdraw : MonoBehaviour
+    public class WalletWithdraw : MonoBehaviour, IWalletEvent
     {
         [SerializeField] private WalletHandler walletHandlerRef;
         [SerializeField] private TMP_InputField amountField, walletKeyField, dollarField, bitcoinField;
-        [SerializeField] private TextMeshProUGUI receivingDollarText;
-        [SerializeField] private GameObject confirmWindow, confirmationWindow;
+        [SerializeField] private TextMeshProUGUI receivingDollarText, minimumAmountHintText, transactionFeeText, walletKeyWarningText, notEnoughCoinsWarningText;
+        [SerializeField] private GameObject notEnoughCoinsWarningWindow, confirmWindow, confirmationWindow;
+        [SerializeField] private int walletKeyMinimumLength = 10;
 
+        private bool requestInProgress = false;                                                                        
         private int withdrawAmount = 0;
+        private int minimumWithdrawlAmount = 0;
+
+        private Sequence warningSequence;
 
         private void Start()
         {
+            walletHandlerRef.SubscribeToEvent(this, true);
             amountField.onValueChanged.AddListener(onAmountValueChange);
         }
 
         private void onAmountValueChange(string a_Value)
         {
+            if (requestInProgress)
+                return;
+
             if (!string.IsNullOrEmpty(a_Value) && !string.IsNullOrWhiteSpace(a_Value))
             {
-                int t_Amount = GenericExtensions.GetLeadingInt(a_Value);
-                if (t_Amount > 0)
+                withdrawAmount = GenericExtensions.GetLeadingInt(a_Value);
+                if (withdrawAmount >= minimumWithdrawlAmount)
                 {
-                    withdrawAmount = t_Amount;
-                    ConvertedCoinRequest t_Request = new ConvertedCoinRequest() { UserEmail = User.UserEmailId, CoinNumber = t_Amount, TransactionType = "withdraw" };
+                    ConvertedCoinRequest t_Request = new ConvertedCoinRequest() { UserEmail = User.UserEmailId, CoinNumber = withdrawAmount, TransactionType = "withdraw" };
                     RestManager.WalletConvertedCoin(t_Request, onConversion, onError);
                 }
+                else
+                {
+                    dollarField.text = string.Empty;
+                    bitcoinField.text = string.Empty;
+                }
+            }
+            else
+            {
+                withdrawAmount = 0;
+                dollarField.text = string.Empty;
+                bitcoinField.text = string.Empty;
             }
         }
 
@@ -50,12 +70,38 @@ namespace ArenaZ.Wallet
 
         public void RequestWithdraw()
         {
-            int t_MinimumWithdrawl = 0;
-            int.TryParse(walletHandlerRef.GetWalletDetailsResponse().MinimumWithdrawl, out t_MinimumWithdrawl);
-            if (withdrawAmount >= t_MinimumWithdrawl && withdrawAmount <= User.UserCoin && !string.IsNullOrEmpty(walletKeyField.text) && !string.IsNullOrWhiteSpace(walletKeyField.text))
+            if (requestInProgress)
+                return;
+
+            walletKeyField.text = walletKeyField.text.NonWhitespaceStr();
+            int t_WalletKeyLength = walletKeyField.text.Length;
+
+            if (withdrawAmount >= minimumWithdrawlAmount && withdrawAmount <= User.UserCoin && !string.IsNullOrEmpty(walletKeyField.text) && !string.IsNullOrWhiteSpace(walletKeyField.text) && t_WalletKeyLength >= walletKeyMinimumLength)
             {
+                requestInProgress = true;
                 RequestWithdrawRequest t_Request = new RequestWithdrawRequest() { AmountUsd = walletHandlerRef.GetConvertedCoinResponse().DollarAmount, CoinAmount = withdrawAmount, UserEmail = User.UserEmailId, UserName = User.UserName, WalletKey = walletKeyField.text };
-                RestManager.WalletRequestWithdraw(t_Request, onRequest, onError);
+                RestManager.WalletRequestWithdraw(t_Request, onRequest, (error) =>
+                {
+                    onError(error);
+                    requestInProgress = false;
+                });
+            }
+            else
+            {
+                // Do nothing....
+            }
+
+            if (t_WalletKeyLength < walletKeyMinimumLength)
+            {
+                flashNotAValidWalletKeyWarning();
+            }
+            if (withdrawAmount > User.UserCoin)
+            {
+                notEnoughCoinsWarningWindow.SetActive(true);
+            }
+            else
+            {
+                // Do nothing....
             }
         }
 
@@ -64,12 +110,21 @@ namespace ArenaZ.Wallet
             walletHandlerRef.SetRequestWithdrawResponse(a_Obj);
             confirmWindow.SetActive(true);
             withdrawAmount = 0;
+            requestInProgress = false;
         }
 
         public void ConfirmWithdraw()
         {
+            if (requestInProgress)
+                return;
+
+            requestInProgress = true;
             ConfirmDepositRequest t_Request = new ConfirmDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
-            RestManager.WalletConfirmDeposit(t_Request, onConfirm, onError);
+            RestManager.WalletConfirmDeposit(t_Request, onConfirm, (error) =>
+            {
+                onError(error);
+                requestInProgress = false;
+            });
         }
 
         private void onConfirm(ConfirmDepositResponse a_Obj)
@@ -78,14 +133,24 @@ namespace ArenaZ.Wallet
             walletHandlerRef.SetConfirmDepositResponse(a_Obj);
 
             receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount} in bitcoins in your wallet soon.");
+
             confirmWindow.SetActive(false);
             confirmationWindow.SetActive(true);
+            requestInProgress = false;
         }
 
         public void CancelWithdraw()
         {
+            if (requestInProgress)
+                return;
+
+            requestInProgress = true;
             CancelDepositRequest t_Request = new CancelDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
-            RestManager.WalletCancelDeposit(t_Request, onCancel, onError);
+            RestManager.WalletCancelDeposit(t_Request, onCancel, (error) =>
+            {
+                onError(error);
+                requestInProgress = false;
+            });
 
             CloseWindow();
         }
@@ -93,20 +158,56 @@ namespace ArenaZ.Wallet
         private void onCancel(CancelDepositResponse a_Obj)
         {
             walletHandlerRef.SetCancelDepositResponse(a_Obj);
+            requestInProgress = false;
         }
 
         public void CloseWindow()
         {
+            resetAttributes();
+            confirmWindow.SetActive(false);
+            confirmationWindow.SetActive(false);
+            UIManager.Instance.HideScreen(Page.WalletWithdrawPanel.ToString());
+        }
+
+        private void resetAttributes()
+        {
+            requestInProgress = false;
             withdrawAmount = 0;
             amountField.text = string.Empty;
             dollarField.text = string.Empty;
             bitcoinField.text = string.Empty;
             walletKeyField.text = string.Empty;
             receivingDollarText.text = string.Empty;
+        }
 
-            confirmWindow.SetActive(false);
-            confirmationWindow.SetActive(false);
-            UIManager.Instance.HideScreen(Page.WalletWithdrawPanel.ToString());
+        private void flashNotAValidWalletKeyWarning()
+        {
+            warningSequence.Kill();
+            warningSequence = DOTween.Sequence();
+            warningSequence.Append(walletKeyWarningText.DOFade(1.0f, .5f));
+            warningSequence.AppendInterval(3.0f);
+            warningSequence.Append(walletKeyWarningText.DOFade(0.0f, .5f));
+            warningSequence.Play();
+        }
+
+        private void OnDestroy()
+        {
+            walletHandlerRef.SubscribeToEvent(this, false);
+        }
+
+        public void OnReceiveWalletDetails(WalletDetailsResponse a_WalletDetailsResponse)
+        {
+            minimumAmountHintText.text = string.Format($"Minimum amount of {a_WalletDetailsResponse.MinimumWithdrawl} is required to Withdraw.");
+            notEnoughCoinsWarningText.text = string.Format($"You have {User.UserCoin} and cannot withdraw more than this amount.");
+            transactionFeeText.text = string.Format($"The amount below reflects a {a_WalletDetailsResponse.TransactionFeeWithdrawl}% transaction fee.");
+
+            minimumWithdrawlAmount = 0;
+            int.TryParse(a_WalletDetailsResponse.MinimumWithdrawl, out minimumWithdrawlAmount);
+        }
+
+        public void OnCompleteWalletAction()
+        {
+
         }
     }
 }

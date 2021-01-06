@@ -112,4 +112,11 @@ public static class GenericExtensions
     {
         return Int32.Parse(new string(input.Trim().TakeWhile(c => char.IsDigit(c) || c == '.').ToArray()));
     }
+
+    // Get replaced non whitespace string
+    public static string NonWhitespaceStr(this string targetString, string a_ReplaceWith = "")
+    {
+        return targetString.Replace(" ", a_ReplaceWith);
+        //return Regex.Replace(targetString, @"\s+", "");
+    }
 }

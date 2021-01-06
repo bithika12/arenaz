@@ -25,6 +25,10 @@ namespace ArenaZ.Wallet
         public string MinimumWithdrawl;
         [JsonProperty("user_total_coin")]
         public int UserTotalCoin;
+        [JsonProperty("transaction_fee_withdrawl")]
+        public string TransactionFeeWithdrawl = "0";
+        [JsonProperty("transaction_fee_deposit")]
+        public string TransactionFeeDeposit = "0";
     }
 
     [System.Serializable]
