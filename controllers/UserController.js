@@ -262,6 +262,7 @@ exports.registration= function(req,res) {
                     score: result.score,
                     "accessToken": result.deviceDetails[0].accessToken,
                     "userCoin":result.startCoin,
+                    "new_account_gift_coins":result.startCoin,
                     "userCup":3000
                     //"userCoin":3000,
                     //"userCup":0

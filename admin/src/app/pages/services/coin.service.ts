@@ -86,7 +86,7 @@ export class CoinService {
         "transaction_fee_withdrawl": editplayer.transaction_fee_withdrawl,
         "wallet_api_link": editplayer.wallet_api_link,
         "wallet_key": editplayer.wallet_key,
-        "new_account_gift_coins": editplayer.new_account_gift_coins
+        "new_account_gift_coins": (!editplayer.new_account_gift_coins) ? 0 : editplayer.new_account_gift_coins
        
       };
       //payloadObj
