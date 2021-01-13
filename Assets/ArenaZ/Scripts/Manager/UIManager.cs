@@ -39,6 +39,7 @@ namespace ArenaZ.Manager
         public Action<string, string> showProfilePic;
         public Action<string> setUserName;
         public Action<string, string> setCoinAndCup;
+        public Action<bool> swipeUp;
 
         protected override void Awake()
         {
@@ -148,7 +149,9 @@ namespace ArenaZ.Manager
             if (!allPages.ContainsKey(screenName) || allPages[screenName].gameObject.activeInHierarchy)
                 return;
             if (allPages.ContainsKey(screenName))
-                allPages[screenName].ShowGameObjWithAnim();
+            {
+                allPages[screenName].ShowGameObjWithAnim();              
+            }
         }
 
         public void ShowCharacterName(string name)

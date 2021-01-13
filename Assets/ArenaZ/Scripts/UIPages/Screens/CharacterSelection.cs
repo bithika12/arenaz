@@ -35,7 +35,7 @@ namespace ArenaZ.Screens
         [Space(5)]
         [SerializeField] private HorizontalScrollSnap horizontalScrollSnap;
 
-        public readonly string[] raceNames = { ERace.Canines.ToString(), ERace.Kepler.ToString(), ERace.Cyborg.ToString(), ERace.CyborgSecond.ToString(), ERace.Human.ToString(), ERace.Ebot.ToString(), ERace.KeplerSecond.ToString(),ERace.KeplerFemale.ToString(),ERace.KeplerFemaleSecond.ToString(),ERace.HumanSecond.ToString() };
+        public readonly string[] raceNames = { ERace.Canines.ToString(), ERace.Kepler.ToString(), ERace.Cyborg.ToString(), ERace.CyborgSecond.ToString(), ERace.Human.ToString(), ERace.Ebot.ToString(), ERace.KeplerSecond.ToString(),ERace.HumanFemale.ToString(),ERace.HumanFemaleSecond.ToString(),ERace.HumanFemaleThird.ToString(),ERace.EbotSecond.ToString(), ERace.EbotThird.ToString(), ERace.CaninesSecond.ToString(), ERace.CaninesThird.ToString() };
         //Public Fields
         public static Action<string> setDart;
 
@@ -47,6 +47,7 @@ namespace ArenaZ.Screens
         [SerializeField] private PlayerColorChooser playerColorChooser;
         [SerializeField] private GameObject loadingPanel;
 
+        private List<string> allColors = new List<string>();
         private bool gotInitialize = false;
 
         private void Start()
@@ -54,10 +55,11 @@ namespace ArenaZ.Screens
             loadingPanel.SetActive(true);
             GettingButtonReferences();
             ShowFirstText();
-
+            allColors = playerColorChooser.ColorButtonNames;
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(PageChecker);
             UIManager.Instance.setUserName += SetUserName;
             PlayerColorChooser.setColorAfterChooseColor += SetColorOnCharacter;
+            UIManager.Instance.swipeUp += changeColorAccordingToSwipe;
 
             Invoke("Initialize", 1.5f);
         }
@@ -139,7 +141,7 @@ namespace ArenaZ.Screens
 
         private void OnClickCloseNewUserCongratulation()
         {
-            UIManager.Instance.HideScreen(Page.NewUserCongratulationOverlay.ToString());
+            UIManager.Instance.HideScreen(Page.NewUserCongratulationPanel.ToString());
         }
 
         private void LoadDefaultData()
@@ -175,6 +177,32 @@ namespace ArenaZ.Screens
             newUserCongratulationBtn.onClick.RemoveAllListeners();
         }
         #endregion
+
+        private void changeColorAccordingToSwipe(bool upSwipe)
+        {
+            Debug.Log("Index down " + allColors.Count);
+            int index = allColors.IndexOf(User.UserColor);
+            if (upSwipe)
+            {
+                index++;
+                if (index > allColors.Count-1)
+                {
+                    index = 0;
+                }
+                Debug.Log("Index Up " + index);
+            }
+            else
+            {
+                index--;
+                if (index < 0)
+                {
+                    index = allColors.Count - 1;
+                }
+                Debug.Log("Index down " + index);
+            }
+            SetColorOnCharacter(allColors[index]);
+            playerColorChooser.SetSelectedColor(allColors[index]);
+        }
 
         public void SetColorOnCharacter(string colorName)
         {

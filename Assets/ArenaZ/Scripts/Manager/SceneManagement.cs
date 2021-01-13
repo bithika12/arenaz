@@ -14,19 +14,31 @@ public class SceneManagement : Singleton<SceneManagement>
     [SerializeField]
     private Text loadingText;
     [SerializeField]
+    private Text loadingInfoText;
+    [SerializeField]
     private CanvasGroup mainCanvasGroup;
+    [SerializeField]
+    private string[] infoTexts;
     string loadingString;
 
     private void Start()
     {
         StartCoroutine(LoadSceneAtStart());
+        showRandomLoadingInfoText();
     }
+
+    private void showRandomLoadingInfoText()
+    {
+        loadingInfoText.text = infoTexts[Random.Range(0,infoTexts.Length)];
+    }
+
     IEnumerator LoadSceneAtStart()
     {
         yield return new WaitForSeconds(1f);
         splashObj.SetActive(false);
         LoadScene("LevelSelection");
     }
+
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnOpenScene;

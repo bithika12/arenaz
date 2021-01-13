@@ -4,6 +4,7 @@ using ArenaZ.Manager;
 using System.Collections;
 using ArenaZ.SettingsManagement;
 using RedApple;
+using System;
 
 namespace ArenaZ.Screens
 {
@@ -21,6 +22,7 @@ namespace ArenaZ.Screens
         [SerializeField] private int delayToOpenCharacterUI;
 
         [SerializeField] private CharacterSelection characterSelection;
+        [SerializeField] private NewUserCongratulation newUserCongratulation;
 
         private void Start()
         {
@@ -49,12 +51,12 @@ namespace ArenaZ.Screens
         #endregion
 
         #region UI_Functionalities
-        public void TasksAfterLogin(string userName, AccountAccessType type, bool newUser)
+        public void TasksAfterLogin(string userName, AccountAccessType type, bool newUser, string coinValue ="")
         {
-            StartCoroutine(DoTasksAfterLogin(userName, type, newUser));
+            StartCoroutine(DoTasksAfterLogin(userName, type, newUser, coinValue));
         }
 
-        private IEnumerator DoTasksAfterLogin(string userName,AccountAccessType accessType, bool newUser)
+        private IEnumerator DoTasksAfterLogin(string userName,AccountAccessType accessType, bool newUser, string coinValue = "")
         {
             float delay = 0f;
             if (accessType == AccountAccessType.Registration)
@@ -77,7 +79,10 @@ namespace ArenaZ.Screens
 
             yield return new WaitForSeconds(0.5f);
             if (newUser)
-                UIManager.Instance.ShowScreen(Page.NewUserCongratulationOverlay.ToString());
+            {
+                UIManager.Instance.ShowScreen(Page.NewUserCongratulationPanel.ToString());
+                newUserCongratulation.setWelComeText(coinValue);
+            }            
         }
 
 

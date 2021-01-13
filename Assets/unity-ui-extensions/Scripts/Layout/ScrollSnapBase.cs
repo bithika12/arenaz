@@ -87,6 +87,8 @@ namespace UnityEngine.UI.Extensions
         [Tooltip("Pixel size to buffer around Mask Area. (optional)")]
         public float MaskBuffer = 1;
 
+        public bool PageIsChanging { get; set; }
+
         public int CurrentPage
         {
             get
@@ -518,6 +520,7 @@ namespace UnityEngine.UI.Extensions
         /// </summary>
         internal void ScreenChange()
         {
+            PageIsChanging = true;
             OnSelectionPageChangedEvent.Invoke(_currentPage);
         }
 
@@ -529,6 +532,7 @@ namespace UnityEngine.UI.Extensions
             OnSelectionChangeEndEvent.Invoke(_currentPage);
             _settled = true;
             _moveStarted = false;
+            PageIsChanging = false;
         }
 
         /// <summary>

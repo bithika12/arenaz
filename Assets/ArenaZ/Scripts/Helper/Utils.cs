@@ -40,7 +40,7 @@ public enum Page
     DeleteAccountAlertOverlay,
     TrainingPlayerWinPanel,
     NotEnoughCoinOverlay,
-    NewUserCongratulationOverlay,
+    NewUserCongratulationPanel,
     SurrenderedPopupPanel,
     ReconnectCountdownPanel,
     VersionCheckPanel,
@@ -59,9 +59,13 @@ public enum ERace
     Human,
     Ebot,
     KeplerSecond,
-    KeplerFemale,
-    KeplerFemaleSecond,
-    HumanSecond
+    HumanFemale,
+    HumanFemaleSecond,
+    HumanFemaleThird,
+    EbotSecond,
+    EbotThird,
+    CaninesSecond,
+    CaninesThird
 }
 
 public enum ButtonType
@@ -214,6 +218,11 @@ public enum EGameOverStatus
     Draw,
 }
 
+public static class DownloadUrl
+{
+    public static string url;
+}
+
 public static class GameResources
 {
     public const string characterImageFolderPath = "Characters";
@@ -308,4 +317,6 @@ public static class ConstantStrings
     public const string turnCancelled = "TurnCancelled";
 
     public const string emptyFieldWarning = "This field can't be empty!";
+    public const string newAccountWelcomeFirst = "You have successfully created a new account. As a welcome gift we have deposited";
+    public const string newAccountWelcomeSecond = "free coins into your account so you can start playing.";
 }

@@ -121,7 +121,10 @@ namespace ArenaZ.RegistrationUser
             storeUserData(registeredProfile);
             UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.successFullyRegisterd, PopUpduration);
             OnClickRegisterPopUpClose();
-            AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName, AccountAccessType.Registration, true);
+            if (registeredProfile.UserCoin > 0)
+            {
+                AccountAccess.Instance.TasksAfterLogin(registeredProfile.UserName, AccountAccessType.Registration, true, registeredProfile.UserCoin.ToString());
+            }
             Settings.Instance.setSelectedColorImage(EColor.DarkBlue.ToString());
 
             mapHandlerRef.GetGames();

@@ -10,20 +10,13 @@ namespace ArenaZ.Screens
 {
 	public class PlayerColorChooser : MonoBehaviour
 	{
-        [SerializeField] private Button darkGreenButton;
-        [SerializeField] private Button lightBlueButton;
-        [SerializeField] private Button yellowButton;
-        [SerializeField] private Button whiteButton;
-        [SerializeField] private Button redButton;
-        [SerializeField] private Button greyButton;
-        [SerializeField] private Button darkBlueButton;
-        [SerializeField] private Button orangeButton;
-        [SerializeField] private Button lightGreenButton;
-        [SerializeField] private Button tealButton;
+        [SerializeField] private List<Button> colorButtons;
 
         [SerializeField] private Image selectedColorImage;
         [SerializeField] private List<ColorButtonData> colorButtonDatas = new List<ColorButtonData>();
 
+        private List<string> colorButtonNames = new List<string>();
+        public List<string> ColorButtonNames { get { return colorButtonNames; } }
         public static Action<string> setColorAfterChooseColor;
 
         private void Start()
@@ -38,30 +31,12 @@ namespace ArenaZ.Screens
         #region BUTTON_REFERENCES
         private void gettingButtonReferences()
         {
-            darkGreenButton.onClick.AddListener(()=> onClickSetDartAndCharacterColor(darkGreenButton));
-            lightBlueButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(lightBlueButton));
-            yellowButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(yellowButton));
-            whiteButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(whiteButton));
-            redButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(redButton));
-            greyButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(greyButton));
-            darkBlueButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(darkBlueButton));
-            orangeButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(orangeButton));
-            lightGreenButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(lightGreenButton));
-            tealButton.onClick.AddListener(() => onClickSetDartAndCharacterColor(tealButton));
+            colorButtons.ForEach(button => { button.onClick.AddListener(() => onClickSetDartAndCharacterColor(button)); colorButtonNames.Add(button.GetComponent<ButtonImageChanger>().GetButtonType); });
         }
 
         private void releaseButtonReferences()
         {
-            darkGreenButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(darkGreenButton));
-            lightBlueButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(lightBlueButton));
-            yellowButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(yellowButton));
-            whiteButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(whiteButton));
-            redButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(redButton));
-            greyButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(greyButton));
-            darkBlueButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(darkBlueButton));
-            orangeButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(orangeButton));
-            lightGreenButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(lightGreenButton));
-            tealButton.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(tealButton));
+            colorButtons.ForEach(button => { button.onClick.RemoveListener(() => onClickSetDartAndCharacterColor(button)); });
         }
         #endregion
         private void onClickSetDartAndCharacterColor(Button myButton)

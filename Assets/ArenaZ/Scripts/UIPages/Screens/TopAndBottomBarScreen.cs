@@ -18,6 +18,7 @@ namespace ArenaZ.Screens
         [SerializeField] private Button infoButton;
         [SerializeField] private Button mailButton;
         [SerializeField] private Button settingButton;
+        [SerializeField] private Button shareButton;
 
         [SerializeField] private Button depositButton;
         [SerializeField] private Button withdrawButton;
@@ -25,12 +26,14 @@ namespace ArenaZ.Screens
         [SerializeField] private Text userCoinCount;
         [SerializeField] private Text userCupCount;
 
+        private ShareFile shareFile;
         public int count = 0;
 
         private void Start()
         {
             GettingButtonReferences();
             UIManager.Instance.setCoinAndCup += refreshValues;
+            shareFile = GetComponent<ShareFile>();
         }
 
         private void refreshValues(string coinCount, string cupCount)
@@ -54,6 +57,7 @@ namespace ArenaZ.Screens
             mailButton.onClick.AddListener(MailButtonClicked);
             settingButton.onClick.AddListener(SettingButtonClicked);
             infoButton.onClick.AddListener(InfoButtonClicked);
+            shareButton.onClick.AddListener(onClickShare);
 
             depositButton.onClick.AddListener(openDepositCoinPanel);
             withdrawButton.onClick.AddListener(withdrawDepositCoinPanel);
@@ -66,6 +70,7 @@ namespace ArenaZ.Screens
             mailButton.onClick.RemoveListener(MailButtonClicked);
             settingButton.onClick.RemoveListener(SettingButtonClicked);
             infoButton.onClick.RemoveListener(InfoButtonClicked);
+            shareButton.onClick.RemoveListener(onClickShare);
 
             depositButton.onClick.RemoveListener(openDepositCoinPanel);
             withdrawButton.onClick.RemoveListener(withdrawDepositCoinPanel);
@@ -112,6 +117,11 @@ namespace ArenaZ.Screens
         private void withdrawDepositCoinPanel()
         {
             UIManager.Instance.ShowScreen(Page.WalletWithdrawPanel.ToString());
+        }
+
+        private void onClickShare()
+        {
+            shareFile.Share();
         }
     }
 }

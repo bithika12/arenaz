@@ -25,8 +25,14 @@ public class VersionChecker : MonoBehaviour
     private void OnVersionCheckComplete(VersionCheckerResponse a_Response)
     {
         response = a_Response;
-        if (a_Response != null && !a_Response.Status)
-            UIManager.Instance.ShowScreen(Page.VersionCheckPanel.ToString());
+        if (a_Response != null)
+        {
+            DownloadUrl.url = a_Response.DownloadLink;
+            if (!a_Response.Status)
+            {
+                UIManager.Instance.ShowScreen(Page.VersionCheckPanel.ToString());
+            }
+        }
     }
 
     private void OnErrorVersionCheck(RestUtil.RestCallError a_ErrorObj)
