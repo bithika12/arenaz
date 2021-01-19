@@ -15,6 +15,7 @@ using RedApple.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Elendow.SpritedowAnimator;
 
 namespace ArenaZ.Manager
 {
@@ -77,6 +78,7 @@ namespace ArenaZ.Manager
         [SerializeField] private GameObject loosePopup;
         [SerializeField] private GameObject winPopupBG;
         [SerializeField] private GameObject loosePopupBG;
+        [SerializeField] private GameObject dartBoard;
         [SerializeField] private Vector3 winnerPopupOriginalScale = new Vector3();
 
         [SerializeField] private TrainingScoreHandler trainingScoreHandler;
@@ -111,6 +113,9 @@ namespace ArenaZ.Manager
 
         [Header("Others")]
         [SerializeField] private float dartDragForce = 0.0f;
+        [SerializeField] private SpriteAnimator winAnimation;
+        [SerializeField] private SpriteAnimator loseAnimation;
+        [SerializeField] private SpriteAnimator boardAppearAnimation;
 
         private GeneralTimer genericTimer;
 
@@ -172,6 +177,11 @@ namespace ArenaZ.Manager
             ShootingRange.Instance.setUsersData += setAllUserData;
             genericTimer = new GeneralTimer(this, ConstantInteger.timerValue);
 
+            boardAppearAnimation.gameObject.SetActive(false);
+            winAnimation.onFinish.AddListener(onCompleteWinAnimation);
+            loseAnimation.onFinish.AddListener(onCompleteLoseAnimation);
+            boardAppearAnimation.onFinish.AddListener(onCompleteBoardAnim);
+
             startMainMenuBGMusic();
         }
 
@@ -185,6 +195,19 @@ namespace ArenaZ.Manager
             return gamePlayMode;
         }
 
+        public void PlayBoardAnimation()
+        {           
+            dartBoard.SetActive(false);
+            boardAppearAnimation.gameObject.SetActive(true);
+            boardAppearAnimation.Play();
+        }
+
+        private void onCompleteBoardAnim()
+        {
+            dartBoard.SetActive(true);
+            boardAppearAnimation.gameObject.SetActive(false);
+        }
+
         public void StartTraining()
         {
             countdownTimerText.text = string.Empty;
@@ -194,6 +217,8 @@ namespace ArenaZ.Manager
             onSwitchTurn(Player.None);
             cameraController.SetFocus(true);
             cameraController.SetCameraPosition(Player.Self);
+
+            PlayBoardAnimation();
 
             UIManager.Instance.HideScreen(Page.UIPanel.ToString());
             UIManager.Instance.ShowScreen(Page.GameplayPanel.ToString(), Hide.none);
@@ -645,71 +670,109 @@ namespace ArenaZ.Manager
                 Destroy(currentDart.gameObject);
         }
 
+        private void onCompleteWinAnimation()
+        {
+            winPopupBG.SetActive(false);
+            if (gamePlayMode == EGamePlayMode.Multiplayer)
+                onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
+            else if (gamePlayMode == EGamePlayMode.Training)
+                onOpenWinloosePopUp(Page.TrainingPlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
+            //AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameWin).Clip, oneShot = true, volume = SettingData.SFXVolume });
+
+            UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
+            UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
+            cameraController.SetFocus(false);
+
+            if (gamePlayMode == EGamePlayMode.Multiplayer)
+            {
+                PlayerWinScreen.Refresh();
+                ShootingRangeScreen.Refresh();
+            }
+            else if (gamePlayMode == EGamePlayMode.Training)
+            {
+                TrainingPlayerWinScreen.Refresh();
+            }
+        }
+
+        private void onCompleteLoseAnimation()
+        {
+            loosePopupBG.SetActive(false);
+            onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
+            //AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameLose).Clip, oneShot = true, volume = SettingData.SFXVolume });
+
+            UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
+            UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
+            cameraController.SetFocus(false);
+
+            PlayerLooseScreen.Refresh();
+            ShootingRangeScreen.Refresh();
+        }
+
         private void displayPopup(bool a_Won)
         {
             if (a_Won)
             {
-                loosePopup.transform.localScale = Vector3.zero;
+                //loosePopup.transform.localScale = Vector3.zero;
                 loosePopupBG.SetActive(false);
 
-                winPopup.transform.localScale = Vector3.zero;
+                //winPopup.transform.localScale = Vector3.zero;
                 winPopupBG.SetActive(true);
-
+                winAnimation.Play();
                 AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameWin).Clip, oneShot = true, volume = SettingData.SFXVolume });
-                Sequence t_Sequence = DOTween.Sequence();
-                t_Sequence.Append(winPopup.transform.DOScale(winnerPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
-                t_Sequence.AppendInterval(1.0f);
-                t_Sequence.AppendCallback(() => 
-                {
-                    winPopupBG.SetActive(false);
-                    if (gamePlayMode == EGamePlayMode.Multiplayer)
-                        onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
-                    else if (gamePlayMode == EGamePlayMode.Training)
-                        onOpenWinloosePopUp(Page.TrainingPlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
-                    //AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameWin).Clip, oneShot = true, volume = SettingData.SFXVolume });
-                    
-                    UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
-                    UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
-                    cameraController.SetFocus(false);
+                //Sequence t_Sequence = DOTween.Sequence();
+                //t_Sequence.Append(winPopup.transform.DOScale(winnerPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
+                //t_Sequence.AppendInterval(1.0f);
+                //t_Sequence.AppendCallback(() =>
+                //{
+                //    winPopupBG.SetActive(false);
+                //    if (gamePlayMode == EGamePlayMode.Multiplayer)
+                //        onOpenWinloosePopUp(Page.PlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
+                //    else if (gamePlayMode == EGamePlayMode.Training)
+                //        onOpenWinloosePopUp(Page.TrainingPlayerWinPanel, User.UserName, User.UserRace, User.UserColor);
+                //    //AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameWin).Clip, oneShot = true, volume = SettingData.SFXVolume });
 
-                    if (gamePlayMode == EGamePlayMode.Multiplayer)
-                    {
-                        PlayerWinScreen.Refresh();
-                        ShootingRangeScreen.Refresh();
-                    }
-                    else if (gamePlayMode == EGamePlayMode.Training)
-                    {
-                        TrainingPlayerWinScreen.Refresh();
-                    }
-                });
-                t_Sequence.Play();
+                //    UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
+                //    UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
+                //    cameraController.SetFocus(false);
+
+                //    if (gamePlayMode == EGamePlayMode.Multiplayer)
+                //    {
+                //        PlayerWinScreen.Refresh();
+                //        ShootingRangeScreen.Refresh();
+                //    }
+                //    else if (gamePlayMode == EGamePlayMode.Training)
+                //    {
+                //        TrainingPlayerWinScreen.Refresh();
+                //    }
+                //});
+                //t_Sequence.Play();
             }
             else
             {
-                winPopup.transform.localScale = Vector3.zero;
+                //winPopup.transform.localScale = Vector3.zero;
                 winPopupBG.SetActive(false);
 
-                loosePopup.transform.localScale = Vector3.zero;
+                //loosePopup.transform.localScale = Vector3.zero;
                 loosePopupBG.SetActive(true);
-
+                loseAnimation.Play();
                 AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameLose).Clip, oneShot = true, volume = SettingData.SFXVolume });
-                Sequence t_Sequence = DOTween.Sequence();
-                t_Sequence.Append(loosePopup.transform.DOScale(winnerPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
-                t_Sequence.AppendInterval(1.0f);
-                t_Sequence.AppendCallback(() => 
-                {
-                    loosePopupBG.SetActive(false);
-                    onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
-                    //AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameLose).Clip, oneShot = true, volume = SettingData.SFXVolume });
+                //Sequence t_Sequence = DOTween.Sequence();
+                //t_Sequence.Append(loosePopup.transform.DOScale(winnerPopupOriginalScale, 1.0f).SetEase(Ease.InBounce));
+                //t_Sequence.AppendInterval(1.0f);
+                //t_Sequence.AppendCallback(() =>
+                //{
+                //    loosePopupBG.SetActive(false);
+                //    onOpenWinloosePopUp(Page.PlayerLoosePanel, User.UserName, User.UserRace, User.UserColor);
+                //    AudioPlayer.Play(new AudioPlayerData() { audioClip = DataHandler.Instance.GetAudioClipData(EAudioClip.GameLose).Clip, oneShot = true, volume = SettingData.SFXVolume });
 
-                    UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
-                    UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
-                    cameraController.SetFocus(false);
+                //    UIManager.Instance.HideScreenImmediately(Page.GameplayPanel.ToString());
+                //    UIManager.Instance.HideScreenImmediately(Page.GameplayUIPanel.ToString());
+                //    cameraController.SetFocus(false);
 
-                    PlayerLooseScreen.Refresh();
-                    ShootingRangeScreen.Refresh();
-                });
-                t_Sequence.Play();
+                //    PlayerLooseScreen.Refresh();
+                //    ShootingRangeScreen.Refresh();
+                //});
+                //t_Sequence.Play();
             }
             resetTimerImages();
         }
@@ -733,7 +796,7 @@ namespace ArenaZ.Manager
                 }
                 if (t_GameTimerData.Result.GameFinish == 1)
                 {
-                    countdownTimerText.DOColor(Color.red, 1.0f).SetLoops(-1, LoopType.Yoyo);
+                    countdownTimerText.DOColor(Color.red, 1.0f).SetLoops(-1, DG.Tweening.LoopType.Yoyo);
                     startCountdownMusic();
                 }
             }

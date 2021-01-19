@@ -16,6 +16,12 @@ namespace ArenaZ.Screens
 
         public void Show(string title, string message, Action a_OnProcced)
         {
+            StartCoroutine(ShowPopUp(title, message, a_OnProcced));
+        }
+
+        private IEnumerator ShowPopUp(string title, string message, Action a_OnProcced)
+        {
+            yield return new WaitForSeconds(2.5f);
             UIManager.Instance.ShowScreen(Page.TrainingPopupPanel.ToString(), Hide.none);
 
             titleText.text = title;
