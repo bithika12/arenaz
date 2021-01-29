@@ -84,7 +84,11 @@ const fetchNotificationUnreadCount = userId => {
     return new Promise((resolve, reject) => {
 
      //fetch notifications
-        Notifications.notifications1({received_by_user:userId,read_unread:0
+
+     Notifications.notifications1({received_by_user:userId,read_unread:0,created_at:{
+        $gte: new Date((new Date().getTime() - (35 * 24 * 60 * 60 * 1000)))
+    }
+       // Notifications.notifications1({received_by_user:userId,read_unread:0
 }).then(function (responseParams) {
           //Notifications.notifications1({received_by_user:userId}).then(function (responseParams) {
 
