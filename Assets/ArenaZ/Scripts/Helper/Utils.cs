@@ -48,6 +48,7 @@ public enum Page
     WalletDepositConfirmPanel,
     WalletWithdrawPanel,
     TrainingPopupPanel,
+    CheckInternetConnectionPanel
 }
 
 public enum ERace

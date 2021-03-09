@@ -345,7 +345,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             Instance.restUtil.Send(builder, handler => { onCompletion?.Invoke(); },
@@ -357,7 +357,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             Instance.restUtil.Send(builder,
@@ -381,7 +381,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             Instance.restUtil.Send(builder,

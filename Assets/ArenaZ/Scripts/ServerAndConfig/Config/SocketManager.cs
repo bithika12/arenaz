@@ -74,7 +74,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             AccesToken acToken = new AccesToken
@@ -91,7 +91,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             int t_RoomCoin = PlayerPrefs.GetInt(ConstantStrings.ROOM_VALUE, 10);
@@ -110,7 +110,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             Debug.Log("RoomName: " + User.RoomName);
@@ -128,7 +128,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             Debug.Log("Leave RoomName: " + User.RoomName);
@@ -146,7 +146,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             ColorRequest colorRequest = new ColorRequest
@@ -166,7 +166,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             string hitPoint = Regex.Replace(point.ToString(), @"\s+", "");
@@ -190,7 +190,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             Debug.Log("RoomName: " + User.RoomName);
@@ -211,7 +211,7 @@ namespace RedApple
         {
             if (!GameManager.Instance.InternetConnection())
             {
-                UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                 return;
             }
             // {"accessToken":"de103012-0cbe-4256-8222-4e5eb172f040","roomName":"RM1589509679450"}

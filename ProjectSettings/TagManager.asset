@@ -42,3 +42,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Animation
+    uniqueID: 3574064591
+    locked: 0

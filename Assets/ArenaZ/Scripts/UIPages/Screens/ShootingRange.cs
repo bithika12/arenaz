@@ -286,7 +286,7 @@ namespace ArenaZ.GameMode
             {
                 if (!GameManager.Instance.InternetConnection())
                 {
-                    UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                    //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                     return;
                 }
 

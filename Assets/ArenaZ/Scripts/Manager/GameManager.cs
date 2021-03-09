@@ -1395,7 +1395,7 @@ namespace ArenaZ.Manager
                 {
                     if (a_SocketState == SocketManager.ESocketStatus.Disconnected)
                     {
-                        UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                        //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
                         //CheckForInternetOnGameplay();
                     }
                 }
