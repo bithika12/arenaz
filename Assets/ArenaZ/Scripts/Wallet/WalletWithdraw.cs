@@ -6,6 +6,7 @@ using ArenaZ.Manager;
 using RedApple;
 using RedApple.Utils;
 using DG.Tweening;
+using UnityEngine.UI;
 
 namespace ArenaZ.Wallet
 {
@@ -16,6 +17,8 @@ namespace ArenaZ.Wallet
         [SerializeField] private TextMeshProUGUI receivingDollarText, minimumAmountHintText, transactionFeeText, walletKeyWarningText, notEnoughCoinsWarningText;
         [SerializeField] private GameObject notEnoughCoinsWarningWindow, confirmWindow, confirmationWindow;
         [SerializeField] private int walletKeyMinimumLength = 10;
+        [SerializeField] private Button requestWithdrawButton;
+        [SerializeField] private Text requestWithdrawButtonText;
 
         private bool requestInProgress = false;                                                                        
         private int withdrawAmount = 0;
@@ -25,6 +28,7 @@ namespace ArenaZ.Wallet
 
         private void Start()
         {
+            enableRequestButton(false);
             walletHandlerRef.SubscribeToEvent(this, true);
             amountField.onValueChanged.AddListener(onAmountValueChange);
         }
@@ -39,21 +43,30 @@ namespace ArenaZ.Wallet
                 withdrawAmount = GenericExtensions.GetLeadingInt(a_Value);
                 if (withdrawAmount >= minimumWithdrawlAmount)
                 {
+                    enableRequestButton(true);
                     ConvertedCoinRequest t_Request = new ConvertedCoinRequest() { UserEmail = User.UserEmailId, CoinNumber = withdrawAmount, TransactionType = "withdraw" };
                     RestManager.WalletConvertedCoin(t_Request, onConversion, onError);
                 }
                 else
                 {
-                    dollarField.text = string.Empty;
-                    bitcoinField.text = string.Empty;
+                    enableRequestButton(false);
+                    dollarField.text = "INVALID";
+                    bitcoinField.text = "INVALID";
                 }
             }
             else
             {
+                enableRequestButton(false);
                 withdrawAmount = 0;
                 dollarField.text = string.Empty;
                 bitcoinField.text = string.Empty;
             }
+        }
+
+        private void enableRequestButton(bool a_State)
+        {
+            requestWithdrawButton.interactable = a_State;
+            requestWithdrawButtonText.color = a_State ? Color.white : Color.gray;
         }
 
         private void onConversion(ConvertedCoinResponse a_Obj)
@@ -171,6 +184,7 @@ namespace ArenaZ.Wallet
 
         private void resetAttributes()
         {
+            enableRequestButton(false);
             requestInProgress = false;
             withdrawAmount = 0;
             amountField.text = string.Empty;
@@ -199,7 +213,11 @@ namespace ArenaZ.Wallet
         {
             minimumAmountHintText.text = string.Format($"Minimum amount of {a_WalletDetailsResponse.MinimumWithdrawl} is required to Withdraw.");
             notEnoughCoinsWarningText.text = string.Format($"You have {User.UserCoin} and cannot withdraw more than this amount.");
-            transactionFeeText.text = string.Format($"The amount below reflects a {a_WalletDetailsResponse.TransactionFeeWithdrawl}% transaction fee.");
+
+            if (float.TryParse(a_WalletDetailsResponse.TransactionFeeDeposit, out float t_TransactionFeeDeposit))
+                transactionFeeText.text = t_TransactionFeeDeposit > 0.0f ? string.Format($"The amount above reflects a {a_WalletDetailsResponse.TransactionFeeWithdrawl}% transaction fee.") : "";
+            else
+                transactionFeeText.text = "";
 
             minimumWithdrawlAmount = 0;
             int.TryParse(a_WalletDetailsResponse.MinimumWithdrawl, out minimumWithdrawlAmount);

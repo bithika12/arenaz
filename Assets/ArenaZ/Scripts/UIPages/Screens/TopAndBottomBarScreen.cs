@@ -22,6 +22,7 @@ namespace ArenaZ.Screens
 
         [SerializeField] private Button depositButton;
         [SerializeField] private Button withdrawButton;
+        [SerializeField] private Button walletHistoryButton;
 
         [SerializeField] private Text userCoinCount;
         [SerializeField] private Text userCupCount;

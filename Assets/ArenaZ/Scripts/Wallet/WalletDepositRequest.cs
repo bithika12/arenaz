@@ -7,6 +7,7 @@ using RedApple;
 using System;
 using RedApple.Utils;
 using DG.Tweening;
+using UnityEngine.UI;
 
 namespace ArenaZ.Wallet
 {
@@ -17,6 +18,8 @@ namespace ArenaZ.Wallet
         [SerializeField] private TMP_InputField amountField, dollarField, bitcoinField;
         [SerializeField] private TextMeshProUGUI minimumAmountHintText, transactionFeeText, warningText;
         [SerializeField] private GameObject warningWindow;
+        [SerializeField] private Button requestDepositButton;
+        [SerializeField] private Text requestDepositButtonText;
 
         private bool requestInProgress = false;
         private int depositAmount = 0;
@@ -24,6 +27,7 @@ namespace ArenaZ.Wallet
 
         private void Start()
         {
+            enableRequestButton(false);
             walletHandlerRef.SubscribeToEvent(this, true);
             amountField.onValueChanged.AddListener(onAmountValueChange);
         }
@@ -38,21 +42,30 @@ namespace ArenaZ.Wallet
                 depositAmount = GenericExtensions.GetLeadingInt(a_Value);
                 if (depositAmount >= minimumDepositAmount)
                 {
+                    enableRequestButton(true);
                     ConvertedCoinRequest t_Request = new ConvertedCoinRequest() { UserEmail = User.UserEmailId, CoinNumber = depositAmount, TransactionType = "deposit" };
                     RestManager.WalletConvertedCoin(t_Request, onConversion, onError);
                 }
                 else
                 {
-                    dollarField.text = string.Empty;
-                    bitcoinField.text = string.Empty;
+                    enableRequestButton(false);
+                    dollarField.text = "INVALID";
+                    bitcoinField.text = "INVALID";
                 }
             }
             else
             {
+                enableRequestButton(false);
                 depositAmount = 0;
                 dollarField.text = string.Empty;
                 bitcoinField.text = string.Empty;
             }
+        }
+
+        private void enableRequestButton(bool a_State)
+        {
+            requestDepositButton.interactable = a_State;
+            requestDepositButtonText.color = a_State ? Color.white : Color.gray;
         }
 
         private void onConversion(ConvertedCoinResponse a_Obj)
@@ -110,6 +123,7 @@ namespace ArenaZ.Wallet
 
         private void resetAttributes()
         {
+            enableRequestButton(false);
             requestInProgress = false;
             depositAmount = 0;
             amountField.text = string.Empty;
@@ -126,7 +140,11 @@ namespace ArenaZ.Wallet
         {
             minimumAmountHintText.text = string.Format($"Minimum amount of {a_WalletDetailsResponse.MinimumDeposit} is required for deposit.");
             warningText.text = string.Format($"Please enter at least {a_WalletDetailsResponse.MinimumDeposit} to make a deposit. If you accidentally deposit a different amount, our support team will adjust it and the correct amount will reflect your account.");
-            transactionFeeText.text = string.Format($"The amount below reflects a {a_WalletDetailsResponse.TransactionFeeDeposit}% transaction fee.");
+
+            if (float.TryParse(a_WalletDetailsResponse.TransactionFeeDeposit, out float t_TransactionFeeDeposit))
+                transactionFeeText.text = t_TransactionFeeDeposit > 0.0f ? string.Format($"The amount above reflects a {a_WalletDetailsResponse.TransactionFeeDeposit}% transaction fee.") : "";
+            else
+                transactionFeeText.text = "";
 
             minimumDepositAmount = 0;
             int.TryParse(a_WalletDetailsResponse.MinimumDeposit, out minimumDepositAmount);

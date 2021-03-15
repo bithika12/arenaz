@@ -11,7 +11,7 @@ public class DisplayVersion : MonoBehaviour {
 
     void Awake() {
         foreach(Text text in texts) {
-            text.text = string.Format("{0}{1}", prefix, Application.version);
+            text.text = string.Format("{0} {1}", prefix, Application.version);
         }
     }
 }

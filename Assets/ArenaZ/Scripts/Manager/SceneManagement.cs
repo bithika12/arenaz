@@ -63,7 +63,7 @@ public class SceneManagement : Singleton<SceneManagement>
 	public void LoadScene(string sceneName)
 	{
         loaderImage.fillAmount = 0;
-        loadingText.text = loadingString +"0%...";
+        loadingText.text = loadingString +"0%";
         mainCanvasGroup.gameObject.SetActive(true);
         mainCanvasGroup.alpha = 0;
         mainCanvasGroup.DOFade(1, 0.5f).OnComplete(()=> StartCoroutine(StartLoadScene(sceneName)));      
@@ -76,11 +76,11 @@ public class SceneManagement : Singleton<SceneManagement>
 		while(!async.isDone)
 		{           
 			loaderImage.fillAmount = Mathf.Lerp(loaderImage.fillAmount, async.progress,0.3f);            
-            loadingText.text = loadingString + (int)(loaderImage.fillAmount * 100) + "%...";
+            loadingText.text = loadingString + (int)(loaderImage.fillAmount * 100) + "%";
 			yield return null;
 		}
         System.GC.Collect();
-        loaderImage.DOFillAmount(1, 0.5f).OnUpdate(() => loadingText.text = loadingString+ (int)(loaderImage.fillAmount * 100) + "%...");	
+        loaderImage.DOFillAmount(1, 0.5f).OnUpdate(() => loadingText.text = loadingString+ (int)(loaderImage.fillAmount * 100) + "%");	
 	}	
 	#endregion
 }
