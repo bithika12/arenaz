@@ -8,6 +8,7 @@ using System;
 using RedApple.Utils;
 using DG.Tweening;
 using UnityEngine.UI;
+using System.Globalization;
 
 namespace ArenaZ.Wallet
 {
@@ -71,7 +72,7 @@ namespace ArenaZ.Wallet
         private void onConversion(ConvertedCoinResponse a_Obj)
         {
             walletHandlerRef.SetConvertedCoinResponse(a_Obj);
-            dollarField.text = a_Obj.DollarAmount.ToString();
+            dollarField.text = a_Obj.DollarAmount.ToString("N", new CultureInfo("en-US"));
             bitcoinField.text = a_Obj.BtcAmount.ToString();
         }
 

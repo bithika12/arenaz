@@ -7,15 +7,24 @@ using System;
 using RedApple.Utils;
 using ArenaZ.Manager;
 using DG.Tweening;
+using System.Globalization;
 
 namespace ArenaZ.Wallet
 {
+    [System.Serializable]
+    public class DepositStatusWindow
+    {
+        public string Id;
+        public GameObject WindowObj;
+    }
+
     public class WalletDepositConfirm : MonoBehaviour
     {
         [SerializeField] private WalletHandler walletHandlerRef;
         [SerializeField] private CountdownTimer countdownTimerRef;
         [SerializeField] private TMP_InputField amountField, walletKeyField, dollarField, bitcoinField;
         [SerializeField] private TextMeshProUGUI countdownTimerText, toastText;
+        [SerializeField] private List<DepositStatusWindow> depositStatusWindows = new List<DepositStatusWindow>();
 
         private bool requestInProgress = false;
         private Sequence toastSequence;
@@ -23,7 +32,7 @@ namespace ArenaZ.Wallet
         public void Initialize(int a_Amount)
         {
             amountField.text = a_Amount.ToString();
-            dollarField.text = walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString();
+            dollarField.text = walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString("N", new CultureInfo("en-US"));
             bitcoinField.text = walletHandlerRef.GetConvertedCoinResponse().BtcAmount.ToString();
             walletKeyField.text = walletHandlerRef.GetRequestDepositResponse().TransactionId;
 
@@ -38,17 +47,34 @@ namespace ArenaZ.Wallet
             requestInProgress = true;
             ConfirmDepositRequest t_Request = new ConfirmDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestDepositResponse().TransactionId };
             RestManager.WalletConfirmDeposit(t_Request, onConfirm, onError);
-
-            UIManager.Instance.HideScreen(Page.WalletDepositConfirmPanel.ToString());
         }
 
         private void onConfirm(ConfirmDepositResponse a_Obj)
         {
+            loadScreenPostConfirmation(a_Obj.ApiStat);
             walletHandlerRef.OnCompleteAction();
             walletHandlerRef.SetConfirmDepositResponse(a_Obj);
 
             requestInProgress = false;
             resetAttributes();
+        }
+
+        private void loadScreenPostConfirmation(string a_ConfirmationState)
+        {
+            Debug.Log($"OnConfirm: {a_ConfirmationState}");
+            for (int i = 0; i < depositStatusWindows.Count; i++)
+            {
+                if (string.Equals(depositStatusWindows[i].Id, a_ConfirmationState))
+                    depositStatusWindows[i].WindowObj.SetActive(true);
+                else
+                    depositStatusWindows[i].WindowObj.SetActive(false);
+            }
+        }
+
+        public void OnCloseScreen()
+        {
+            loadScreenPostConfirmation("");
+            UIManager.Instance.HideScreen(Page.WalletDepositConfirmPanel.ToString());
         }
 
         private void onError(RestUtil.RestCallError a_Obj)
@@ -65,8 +91,7 @@ namespace ArenaZ.Wallet
             CancelDepositRequest t_Request = new CancelDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestDepositResponse().TransactionId };
             RestManager.WalletCancelDeposit(t_Request, onCancel, onError);
 
-            UIManager.Instance.HideScreen(Page.WalletDepositConfirmPanel.ToString());
-
+            OnCloseScreen();
             resetAttributes();
         }
 
