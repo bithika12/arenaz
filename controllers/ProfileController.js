@@ -384,7 +384,10 @@ exports.updatePassword = function (req,res){
         transaction_fee_deposit : req.body.transaction_fee_deposit,
         minimum_deposit : req.body.minimum_deposit,
         minimum_withdrawl : req.body.minimum_withdrawl,
-        new_account_gift_coins : req.body.new_account_gift_coins
+        new_account_gift_coins : req.body.new_account_gift_coins,
+        master_message : req.body.master_message,
+        allow_mini_account_withdrawal : req.body.allow_mini_account_withdrawal,
+        support_email : req.body.support_email
     };
     console.log("updateObj"+updateObj)
      userValidChkAdmin(req.body.userEmail)

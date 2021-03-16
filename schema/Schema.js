@@ -202,7 +202,10 @@ var versionSchema      = new Schema({
     minimum_deposit : String,
     minimum_withdrawl : String,
     status :  {  type : String , enum: ['active','inactive','delete'] , default : 'active'},
-    new_account_gift_coins:Number
+    new_account_gift_coins:Number,
+    master_message:String,
+    allow_mini_account_withdrawal:String,
+    support_email:String
     
 });
 

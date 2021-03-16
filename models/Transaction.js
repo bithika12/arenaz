@@ -25,13 +25,29 @@ Version.details = function(condObj){
     	wallet_api_link:1,
     	wallet_key:1,
     	api_expiration_time:1,
-      new_account_gift_coins:1
+      new_account_gift_coins:1,
+      master_message:1,
+      allow_mini_account_withdrawal:1,
+      support_email:1
     }).then(response=> {
          console.log("op")
          resolve(response)
     }).catch(err=>{
     	 reject(err);
     }) 	
+  })
+} 
+
+
+Version.trandetails = function(condObj){
+  return new Promise((resolve,reject)=>{  
+    Transaction.findOne(condObj,
+      {_id: 1,status:1,user_name:1,user_email:1,expired_at:1,amount:1,created_at:1,user_confirmation:1}).then(response=> {
+         console.log("op")
+         resolve(response)
+    }).catch(err=>{
+       reject(err);
+    })  
   })
 } 
 

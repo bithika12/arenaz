@@ -917,7 +917,7 @@ const chkValidTransaction =(condObj) =>{
 
 const chkTransactionStatus =(condObj) =>{
     return  new Promise((resolve,reject) => {
-        Transaction.findOne(condObj,{_id: 1,status:1,user_name:1,user_email:1,expired_at:1,amount:1}).then(transactiondetails=> {
+        Transaction.findOne(condObj,{_id: 1,status:1,user_name:1,user_email:1,expired_at:1,amount:1,created_at:1,user_confirmation:1}).then(transactiondetails=> {
 
             var x = new moment(transactiondetails.expired_at);
             var y = new moment();
@@ -934,7 +934,9 @@ const chkTransactionStatus =(condObj) =>{
                   status: transactiondetails.status,
                   expired_at: transactiondetails.expired_at,
                   expire_in_minute : duration,           
-                  expire_at_inSecond : duration_inSecond,           
+                  expire_at_inSecond : duration_inSecond,
+                  created_at:transactiondetails.created_at,           
+                  user_confirmation:transactiondetails.user_confirmation
               });
         }).catch(err => {
             return reject(err);

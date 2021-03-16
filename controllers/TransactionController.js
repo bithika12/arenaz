@@ -7,7 +7,7 @@ var mongoose = require('mongoose');
 const validateInput = require('../utils/ParamsValidation');
 const response  = require('../utils/ResponseManeger');
 //const jwtTokenManage   = require('../utils/JwtTokenManage');
-
+//let Notification  = require(appRoot +'/models/Notification');
 const password = require('../utils/PasswordManage');
 const Joi = require('joi');
 /**  Import model **/
@@ -23,6 +23,8 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
   const moment = require('moment');
   const axios = require('axios');
   var CircularJSON = require('circular-json');
+let Notification  = require(appRoot +'/models/Notification');
+let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
 
 
   function saveDepositV1(userObj){
@@ -396,8 +398,21 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
         });
       }
   }
+   function updateCoinUserWithdraw(userObj,callback){
+      //return function(callback){
+        console.log("update call"+JSON.stringify(userObj));
+        User.updateUserCoinTransactionWithDraw({userName:userObj.user_name},userObj.amount).then((appList) => {
+          console.log("ok12");
+          userObj.result=appList;
+          callback (null,userObj);
+
+        }).catch(fetchErr => {
+          callback (fetchErr,null);
+        });
+     // }
+  }
   
-  function updateCoinUserWithdraw(userObj,callback){
+  function updateCoinUserWithdrawold(userObj,callback){
       return function(callback){
         console.log("update call");
         User.updateUserCoinTransactionWithDraw({userName:userObj.user_name},userObj.amount).then((appList) => {
@@ -508,8 +523,10 @@ const {chkValidTransaction,updateTransactionConfirm, updateMail,updateTransactio
         minimum_withdrawl:appList.minimum_withdrawl,
         user_total_coin:userObj.startCoin,
         transaction_fee_withdrawl:appList.transaction_fee_withdrawl,
-        transaction_fee_deposit:appList.transaction_fee_deposit
-
+        transaction_fee_deposit:appList.transaction_fee_deposit,
+        master_message:appList.master_message,
+        allow_mini_account_withdrawal:appList.allow_mini_account_withdrawal,
+        support_email:appList.support_email
       }
       callback (null,resObj);
 
@@ -630,6 +647,9 @@ exports.requestDeposit = function (req,res) {
 //This will hit after confirm button hit in coin deposit
 
 exports.confirmDeposit = function (req,res) {
+  //let a1="2021-03-16T07:56:46.359Z";
+  //let time=moment(a1).format('MM/DD/YYYY hh:mm a');
+  //console.log(time);
   if(!req.body.userEmail || !req.body.transactionId){
     return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
   }
@@ -651,8 +671,29 @@ exports.confirmDeposit = function (req,res) {
   ],
   function (err, result) {
     if(result){
-      res.send(response.generate(constants.SUCCESS_STATUS,
+      console.log("resultconfirm"+JSON.stringify(result));
+      User.findDetailsByEmail({email:result.user_email}).then((userDet)=>{
+        console.log("userDet"+userDet._id);
+        let msg="You have requested to buy "+result.amount+" coins on "+moment(result.created_at).format('MM/DD/YYYY hh:mm a')+" . Your receive code is %"+ result.user_confirmation+" %.  You will only have 30 minutes to make this transaction before this request expires. Once you have completed the transaction, your account will reflect the new coins once you restart the app.";
+        Notification.createNotification({
+                        //sent_by_user     : req.user_id ,
+                        received_by_user : userDet._id,
+                        subject          : "Confirm Deposit",
+                        message          : msg,
+                        read_unread      : 0
+                    }).then(function(notificationdetails){
+                       res.send(response.generate(constants.SUCCESS_STATUS,
+                       result, 'Transaction confirmed successfully !!'));
+                    });
+
+      
+
+      });
+
+      
+      /*res.send(response.generate(constants.SUCCESS_STATUS,
         result, 'Transaction confirmed successfully !!'));
+       */
     }else{
       res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
     }
@@ -683,9 +724,7 @@ exports.cancelDeposit = function (req,res) {
 };
 
   /* ---------------- 03.11.2020 ------------------ */
-
-  //This will hit after request button click in deposit form
-exports.requestWithdraw = function (req,res) {
+  exports.requestWithdraw123 = function (req,res) {
   if(!req.body.userEmail || !req.body.coinAmount || !req.body.wallet_key){
     return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
   }
@@ -696,22 +735,100 @@ exports.requestWithdraw = function (req,res) {
       ],
       function (err, result) {
         if(result){
+          console.log("res123"+JSON.stringify(result));
           var userObj1  ={user_name:req.body.user_name,amount:req.body.coinAmount}
           async.waterfall([
             updateCoinUserWithdraw(userObj1),
             //fetchCoinUser
             ],function (err, result1) {
-              if(result1){
+              if(result1){                
+
                 resultObj={
                   transaction_details : result,
                   user_details        : result1
                 }
                 res.send(response.generate(constants.SUCCESS_STATUS,resultObj, 'Transaction details fetched successfully !!'));
+              
+
               }else{
                 res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
               }
 
             });
+
+        }else{
+          res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
+        }
+
+      });
+  };
+  //This will hit after request button click in deposit form
+exports.requestWithdraw = function (req,res) {
+  if(!req.body.userEmail || !req.body.coinAmount || !req.body.wallet_key){
+    return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+  }
+  
+  var userObj  ={user_name:req.body.user_name,amount_usd:req.body.amount_usd,email: req.body.userEmail,coinAmount:req.body.coinAmount,transaction_key:req.body.wallet_key}
+    async.waterfall([
+      saveWithdrawRequest(userObj),
+      updateCoinUserWithdraw
+      ],
+      function (err, result) {
+        if(result){
+          console.log("res123"+JSON.stringify(result))
+          //var userObj1  ={user_name:req.body.user_name,amount:req.body.coinAmount}
+          /*async.waterfall([
+            updateCoinUserWithdraw(userObj1),
+            //fetchCoinUser
+            ],function (err, result1) {*/
+              if(result){
+                //console.log("plll12"+JSON.stringify(result1));
+                Transaction.trandetails({_id:mongoose.Types.ObjectId(result.transactionId)}).then(transactionValidStatus=> {
+                  console.log("transactionValidStatus"+transactionValidStatus);
+                //AddTrans.chkTransactionStatus({_id:mongoose.Types.ObjectId(result1.transaction_details.transactionId)}).then((transactionValidStatus) => {
+                              //callback (null,transactionValidStatus);
+                   User.findDetailsByEmail({email:req.body.userEmail}).then((userDet)=>{
+                  console.log("userDet"+userDet._id);
+                  let msg="You have requested to withdraw "+transactionValidStatus.amount+" coins on "+moment(transactionValidStatus.created_at).format('MM/DD/YYYY hh:mm a')+". The receive code submitted is %"+transactionValidStatus.user_confirmation+"%.  The transaction will complete within 48 hours. Once we process your request the transaction status will be set to ‘Completed’.  If there are any issues the transaction will be canceled and coins returned back to your account."
+                  //let msg="You have requested to withdraw "+transactionValidStatus.amount+" coins on "+moment(transactionValidStatus.created_at).format('MM/DD/YYYY hh:mm a')+" . Your receive code is %"+ transactionValidStatus.user_confirmation+" %.  You will only have 30 minutes to make this transaction before this request expires. Once you have completed the transaction, your account will reflect the new coins once you restart the app.";
+                  Notification.createNotification({
+                                  //sent_by_user     : req.user_id ,
+                                  received_by_user : userDet._id,
+                                  subject          : "Confirm Withdraw",
+                                  message          : msg,
+                                  read_unread      : 0
+                              }).then(function(notificationdetails){
+                                 resultObj={
+                                  transaction_details : result,
+                                  user_details        : result.result
+                               }
+                              res.send(response.generate(constants.SUCCESS_STATUS,resultObj, 'Transaction details fetched successfully !!'));
+                              });
+
+      
+
+                   });
+
+
+                }).catch(fetchErr => {
+                  console.log("fetchErr"+fetchErr);
+                 res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
+
+                  //callback (fetchErr,null);
+                });
+
+                /*resultObj={
+                  transaction_details : result,
+                  user_details        : result1
+                }
+                res.send(response.generate(constants.SUCCESS_STATUS,resultObj, 'Transaction details fetched successfully !!'));
+              */
+
+              }else{
+                res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
+              }
+
+            //});
 
         }else{
           res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
@@ -772,6 +889,7 @@ exports.requestWithdraw = function (req,res) {
   }
 
   function apiCheckTransactionStatusUpdate(userObj,callback){
+    console.log("userObj"+JSON.stringify(userObj));
     Transaction.details().then((appList) => {
       let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
         axios.get(api_url).then(function (response) {
@@ -792,7 +910,9 @@ exports.requestWithdraw = function (req,res) {
                               status            : userObj.status,
                               expired_at        : userObj.expired_at,
                              // expire_in_minute  : userObj.expire_in_minute
-                              expire_at_inSecond  : userObj.expire_at_inSecond
+                              expire_at_inSecond  : userObj.expire_at_inSecond,
+                              created_at:userObj.created_at,
+                              user_confirmation:userObj.user_confirmation 
                             }
 
           if(userObj.status == 'Expired'){ 
@@ -942,8 +1062,18 @@ function saveWithdrawRequest(userObj){
                   let responseObj={
                                     status       :api_status,
                                     expired_at   :expired_at,
-                                    transactionId:resTransV1
+                                    transactionId:resTransV1,
+                                    user_email : userObj.email,                              
+                                    amount : userObj.coinAmount,
+                                    user_name : userObj.user_name,
                                   }
+
+                  /*let responseObj={
+                                    status       :api_status,
+                                    expired_at   :expired_at,
+                                    transactionId:resTransV1
+                                  }*/
+                     console.log("responseObj"+JSON.stringify(responseObj));             
                     callback (null,responseObj);
                 }).catch(function (error) {
                    console.log(error);
@@ -959,6 +1089,34 @@ function saveWithdrawRequest(userObj){
       }) 
     }
   }
+
+
+  exports.getMasterDetails = function (req,res) {
+  if(!req.body.userEmail ){
+    return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
+  }
+
+  var userObj  ={email: req.body.userEmail}
+  async.waterfall([
+    getUserCoins(userObj),
+    getCoinMinimumDeposit
+
+    ],
+    function (err, result) {
+      if(result){
+        console.log("result"+JSON.stringify(result));
+        let res1={
+          master_message:result.master_message,
+          allow_mini_account_withdrawal:result.allow_mini_account_withdrawal,
+          support_email:result.support_email
+        }
+        res.send(response.generate(constants.SUCCESS_STATUS,
+          res1, 'User details fetched successfully !!'));
+      }else{
+        res.send(response.error(constants.ERROR_STATUS,err,"Invalid authentication!!"));
+      }
+    });
+};
 
   
 

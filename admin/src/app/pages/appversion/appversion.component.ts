@@ -84,6 +84,12 @@ export class AppversionComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Minimum Withdrawal  ', property: 'minimum_withdrawl', type: 'text', visible: true },
     
     { label: 'New Account Gift Coins  ', property: 'new_account_gift_coins', type: 'text', visible: true },
+
+    { label: 'Master Message  ', property: 'master_message', type: 'text', visible: true },
+
+    { label: 'Allow Minimum Account Withdrawal  ', property: 'allow_mini_account_withdrawal', type: 'text', visible: true },
+
+    { label: 'Support Email  ', property: 'support_email', type: 'text', visible: true },
     
     
     { label: 'Actions', property: 'actions', type: 'button', visible: true }

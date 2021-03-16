@@ -147,4 +147,6 @@ router.post('/admin/delete-transaction'/*authetication.authChecker*/,adminContro
 // Transaction Purpose
 router.post('/admin/transaction-list',adminController.transactionList);
 
+router.post('/user/get/master'/*authetication.authChecker*/,transactionController.getMasterDetails);
+
 module.exports = router;

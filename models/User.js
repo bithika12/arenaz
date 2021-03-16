@@ -1140,7 +1140,10 @@ User.detailsAdmin = function(condObj){
             transaction_fee_deposit : 1,
             minimum_deposit : 1,
             minimum_withdrawl : 1,
-            new_account_gift_coins:1
+            new_account_gift_coins:1,
+            master_message:1,
+            allow_mini_account_withdrawal:1,
+            support_email:1
           }).then(response=> {
 
          //Appversion.find({status:"active"},{app_version:1,download_link:1}).then(response=> {
