@@ -105,6 +105,7 @@ namespace ArenaZ.SettingsManagement
             playerColorButton.onClick.AddListener(onClickPlayerColor);
             regionButton.onClick.AddListener(onClickRegion);
             deleteAccountButton.onClick.AddListener(onClickDeleteAccount);
+            supportButton.onClick.AddListener(onClickSupport);
 
             MusicToggle.onValueChanged.AddListener(delegate
             {
@@ -124,6 +125,7 @@ namespace ArenaZ.SettingsManagement
             playerColorButton.onClick.RemoveListener(onClickPlayerColor);
             regionButton.onClick.RemoveListener(onClickRegion);
             deleteAccountButton.onClick.RemoveListener(onClickDeleteAccount);
+            supportButton.onClick.RemoveListener(onClickSupport);
 
             MusicToggle.onValueChanged.RemoveListener(delegate
             {
@@ -246,6 +248,11 @@ namespace ArenaZ.SettingsManagement
                 Debug.Log("Not Logged Out");
                 GoToLogIn();
             }
+        }
+
+        private void onClickSupport()
+        {
+            sendEmail("soumenkoley1991@gmail.com", string.Format($"ArenaZ: Support – {User.UserId}"), "Hello World!");
         }
 
         public void AfterCompleteLogout()
@@ -391,5 +398,12 @@ namespace ArenaZ.SettingsManagement
             soundBtnUpdatedOnStart = true;
         }
         #endregion
+
+        private void sendEmail(string a_ToEmail, string a_EmailSubject, string a_EmailBody)
+        {
+            a_EmailSubject = System.Uri.EscapeUriString(a_EmailSubject);
+            a_EmailBody = System.Uri.EscapeUriString(a_EmailBody);
+            Application.OpenURL("mailto:" + a_ToEmail + "?subject=" + a_EmailSubject + "&body=" + a_EmailBody);
+        }
     }
 }
