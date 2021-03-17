@@ -774,8 +774,11 @@ exports.transactionListUser = function (req,res) {
             //console.log("val"+val.created_at);
             userArr.push(tranObj);
             if(key===transactionList.length-1){
+                let res1={
+                    totalTransactionList:userArr
+                }
                 res.send(response.generate(constants.SUCCESS_STATUS,
-              userArr, 'Transaction List fetched successfully !!')); 
+              res1, 'Transaction List fetched successfully !!')); 
             }
 
         });
@@ -911,3 +914,205 @@ exports.editTransaction= function(req,res) {
         });
     }
 }
+
+//checkNewTransaction
+exports.checkNewTransaction12= async function(req,res) {
+
+    //trandetails
+    let newTransactionList=await Transaction.trandetails({status:"New"});
+    
+
+    /*Transaction.details().then((appList) => {
+      let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
+        axios.get(api_url).then(function (response) {
+          // handle success
+          //console.log("ok"+(response.data));
+          //console.log("ok1"+CircularJSON.stringify(response));
+          let lastPart = response.data.split("-->").pop();
+          if(lastPart == 'Completed,500'){
+            lastPart = lastPart.split(",", 1)[0];
+          }
+          console.log("lastPart"+lastPart);
+          
+          var newresponse = {
+                              _id               : userObj._id,
+                              user_name         : userObj.user_name,
+                              user_email        : userObj.user_email,
+                              amount            : userObj.amount,
+                              status            : userObj.status,
+                              expired_at        : userObj.expired_at,
+                             // expire_in_minute  : userObj.expire_in_minute
+                              expire_at_inSecond  : userObj.expire_at_inSecond,
+                              created_at:userObj.created_at,
+                              user_confirmation:userObj.user_confirmation 
+                            }
+
+          if(userObj.status == 'Expired'){ 
+            console.log('Transaction Already expired in system!');
+            newresponse.apiStat = lastPart;
+            newresponse.dbStat  = 5;
+            newresponse.msg     = 'Transaction Already expired!';
+            callback (null,newresponse);                   
+            
+          }else if(userObj.status == 'Cancelled'){
+            console.log('Transaction Already cancelled!');
+            newresponse.apiStat = lastPart;
+            newresponse.dbStat  = 6;
+            newresponse.msg     = 'Transaction Already cancelled!';
+            callback (null,newresponse);
+          }else{
+            if(lastPart==userObj.status){
+              console.log('Status Same in DB and API');
+
+              newresponse.apiStat = lastPart;
+              newresponse.dbStat  = 0;
+              newresponse.msg     = 'Status Same in DB and API';
+              callback (null,newresponse);
+            }else{
+              console.log('Status are different in DB and API');
+
+              if((userObj.status == "New") && (lastPart == "Completed")){
+                console.log('Transaction Completed from New');
+                AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
+
+                  newresponse.apiStat = lastPart;
+                  newresponse.dbStat  = 1;
+                  newresponse.msg     = 'Transaction Completed from New';
+                  callback (null,newresponse);
+                }).catch(fetchErr => {
+                  callback (fetchErr,null);
+                });
+              }else if((userObj.status == "New") && (lastPart == "Expired")){
+                console.log('Transaction Expired from New');
+               
+                AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
+                  newresponse.apiStat = lastPart;
+                  newresponse.dbStat  = 2;
+                  newresponse.msg     = 'Transaction Expired from New';
+                  callback (null,newresponse);
+                }).catch(fetchErr => {
+                  callback (fetchErr,null);
+                });
+                
+              }else if((userObj.status == "Completed") && (lastPart == "Expired")){
+                console.log('Transaction Expired from Completed');
+                
+                 AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
+                  newresponse.apiStat = lastPart;
+                  newresponse.dbStat  = 3;
+                  newresponse.msg     = 'Transaction Expired from Completed';
+                  callback (null,newresponse);
+                }).catch(fetchErr => {
+                  callback (fetchErr,null);
+                });
+
+                callback (null,newresponse);
+
+              }else if(userObj.status == "Expired"){
+                
+                console.log('Transaction Already expired!');
+                newresponse.apiStat = lastPart;
+                newresponse.dbStat  = 4;
+                newresponse.msg     = 'Transaction Already expired!';
+                callback (null,newresponse);
+              }
+            }
+
+          }  
+        }).catch(function (error) {
+            
+            console.log(error);
+        });
+    }).catch(fetchErr => {
+      
+      callback (fetchErr,null);
+    });*/
+    
+}
+function findDetailsStatus(userObj){
+    return  new Promise((resolve,reject) => {
+
+    Transaction.details().then((appList) => {
+      let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
+        axios.get(api_url).then(function (response) {
+          // handle success
+          //console.log("ok"+(response.data));
+          //console.log("ok1"+CircularJSON.stringify(response));
+          let lastPart = response.data.split("-->").pop();
+          if(lastPart == 'Completed,500'){
+            lastPart1 = lastPart.split(",", 1)[0];
+            api_amount= lastPart.split(",", 1)[1];
+            console.log("api_amount"+api_amount);
+          }
+          console.log("lastPart"+lastPart1);
+           if(lastPart1 == "Completed"){
+                console.log('Transaction Completed from New');
+                AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart1,amount:api_amount}).then((appList) => {
+
+                  User.updateUserCoinTransaction({userName:userObj.user_name},userObj.amount).then((userresList) => {
+                      
+                    return resolve(true);  
+
+                }).catch(fetchErr => {
+                      return reject(fetchErr);
+                });
+                  
+                }).catch(fetchErr => {
+                    return reject(fetchErr);
+                  
+                });
+              }
+
+          })
+    })
+
+});
+
+}
+
+exports.checkNewTransaction =  (req,res)=> {
+         let userObj={};
+         let userArr=[];
+        return new Promise(function (resolve, reject) {
+           Transaction.trandetails({status:"New",type:"Deposit"}).then((newTrandetails)=>{
+               console.log("get new"+JSON.stringify(newTrandetails));
+               /*let promiseArr = [];
+
+               console.log("coindetails 123"+JSON.stringify(newTrandetails))
+               newTrandetails.forEach(function (val, key) {
+                        console.log("val"+val);
+                        
+                         
+                    
+                        //userArr.push(userObj); 
+                        promiseArr.push(findDetailsStatus({transaction_id:val._id}),
+                        );
+
+
+                    });
+                    return Promise.all(promiseArr).then(function (resArr) {
+                        //console.log("resArr"+JSON.stringify(resArr));
+
+
+                        if (resArr.length) {
+                            //res.send(resArr);
+                              res.send(response.generate(constants.SUCCESS_STATUS,
+                              resArr, 'Transaction updated !!'));
+                            
+                        }
+
+                    }).catch(function (err) {
+                        reject(err);
+                    });                 
+                 
+
+            }).catch(err=>{
+             res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch coin list"));
+           */
+           })
+
+        }); 
+        
+               
+   
+};

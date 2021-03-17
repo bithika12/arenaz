@@ -150,4 +150,6 @@ router.post('/admin/transaction-list',adminController.transactionList);
 
 router.post('/user/get/master'/*authetication.authChecker*/,transactionController.getMasterDetails);
 
+router.post('/admin/check/new/transaction'/*authetication.authChecker*/,adminController.checkNewTransaction);
+
 module.exports = router;
