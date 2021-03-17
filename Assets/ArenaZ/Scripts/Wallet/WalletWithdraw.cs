@@ -21,10 +21,11 @@ namespace ArenaZ.Wallet
         [SerializeField] private Button requestWithdrawButton;
         [SerializeField] private Text requestWithdrawButtonText;
 
-        private bool requestInProgress = false;                                                                        
+        private bool requestInProgress = false;
+        private bool allowMiniAccountWithdrawal = false;
         private int withdrawAmount = 0;
         private int minimumWithdrawlAmount = 0;
-
+        
         private Sequence warningSequence;
 
         private void Start()
@@ -42,17 +43,35 @@ namespace ArenaZ.Wallet
             if (!string.IsNullOrEmpty(a_Value) && !string.IsNullOrWhiteSpace(a_Value))
             {
                 withdrawAmount = GenericExtensions.GetLeadingInt(a_Value);
-                if (withdrawAmount >= minimumWithdrawlAmount)
+                if (allowMiniAccountWithdrawal)
                 {
-                    enableRequestButton(true);
-                    ConvertedCoinRequest t_Request = new ConvertedCoinRequest() { UserEmail = User.UserEmailId, CoinNumber = withdrawAmount, TransactionType = "withdraw" };
-                    RestManager.WalletConvertedCoin(t_Request, onConversion, onError);
+                    if (withdrawAmount > 0)
+                    {
+                        enableRequestButton(true);
+                        ConvertedCoinRequest t_Request = new ConvertedCoinRequest() { UserEmail = User.UserEmailId, CoinNumber = withdrawAmount, TransactionType = "withdraw" };
+                        RestManager.WalletConvertedCoin(t_Request, onConversion, onError);
+                    }
+                    else
+                    {
+                        enableRequestButton(false);
+                        dollarField.text = "INVALID";
+                        bitcoinField.text = "INVALID";
+                    }
                 }
                 else
                 {
-                    enableRequestButton(false);
-                    dollarField.text = "INVALID";
-                    bitcoinField.text = "INVALID";
+                    if (withdrawAmount >= minimumWithdrawlAmount)
+                    {
+                        enableRequestButton(true);
+                        ConvertedCoinRequest t_Request = new ConvertedCoinRequest() { UserEmail = User.UserEmailId, CoinNumber = withdrawAmount, TransactionType = "withdraw" };
+                        RestManager.WalletConvertedCoin(t_Request, onConversion, onError);
+                    }
+                    else
+                    {
+                        enableRequestButton(false);
+                        dollarField.text = "INVALID";
+                        bitcoinField.text = "INVALID";
+                    }
                 }
             }
             else
@@ -222,6 +241,9 @@ namespace ArenaZ.Wallet
 
             minimumWithdrawlAmount = 0;
             int.TryParse(a_WalletDetailsResponse.MinimumWithdrawl, out minimumWithdrawlAmount);
+
+            if (!string.IsNullOrEmpty(a_WalletDetailsResponse.AllowMiniAccountWithdrawal))
+                allowMiniAccountWithdrawal = string.Equals(a_WalletDetailsResponse.AllowMiniAccountWithdrawal.ToUpper(), "YES") ? true : false;
         }
 
         public void OnCompleteWalletAction()

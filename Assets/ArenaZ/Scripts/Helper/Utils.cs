@@ -48,7 +48,8 @@ public enum Page
     WalletDepositConfirmPanel,
     WalletWithdrawPanel,
     TrainingPopupPanel,
-    CheckInternetConnectionPanel
+    CheckInternetConnectionPanel,
+    NewNoticePanel,
 }
 
 public enum ERace
@@ -246,6 +247,7 @@ public static class User
     public static int UserCoin;
     public static int UserCup;
     public static string UserSelectedGame;
+    public static string SupportEmailAddress;
 }
 
 public static class SettingData

@@ -330,12 +330,34 @@ namespace RedApple
             sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
         }
 
+        public static void GetWalletHistory(string a_UserEmail, Action<WalletHistoryList> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.WALLET_HISTORY))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_UserEmail);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
         public static void GetGameList(Action<GameListResponse> a_OnComplete, Action<RestError> a_OnError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
                     .Url(getApiUrl(Urls.GAME_ALLGAMES))
                     .Verb(Verbs.POST)
                     .ContentType(ContentTypes.FORM);
+
+            sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
+        }
+
+        public static void GetMasterData(string a_UserEmail, Action<MasterData> a_OnComplete, Action<RestError> a_OnError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.GET_MASTER_DATA))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData("userEmail", a_UserEmail);
 
             sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
         }

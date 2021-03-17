@@ -78,11 +78,13 @@ namespace ArenaZ.Screens
             SocketManager.Instance.AddUser();
 
             yield return new WaitForSeconds(0.5f);
-            if (newUser)
+            int t_UserCoin = 0;
+            int.TryParse(coinValue, out t_UserCoin);
+            if (newUser && t_UserCoin > 0)
             {
                 UIManager.Instance.ShowScreen(Page.NewUserCongratulationPanel.ToString());
-                newUserCongratulation.setWelComeText(coinValue);
-            }            
+                newUserCongratulation.SetWelComeText(coinValue);
+            }
         }
 
 

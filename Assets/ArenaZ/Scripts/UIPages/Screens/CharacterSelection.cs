@@ -46,6 +46,7 @@ namespace ArenaZ.Screens
         [SerializeField] private Settings settings;
         [SerializeField] private PlayerColorChooser playerColorChooser;
         [SerializeField] private GameObject loadingPanel;
+        [SerializeField] private NewNotice newNoticeRef;
 
         private List<string> allColors = new List<string>();
         private bool gotInitialize = false;
@@ -131,6 +132,26 @@ namespace ArenaZ.Screens
                 LoadDefaultData();
             }
             loadingPanel.SetActive(false);
+            displayMasterData();
+        }
+
+        private void displayMasterData()
+        {
+            RestManager.GetMasterData(User.UserEmailId, (result) =>
+            {
+                if (result != null)
+                {
+                    User.SupportEmailAddress = result.SupportEmail;
+                    if (!string.IsNullOrEmpty(result.MasterMessage))
+                    {
+                        UIManager.Instance.ShowScreen(Page.NewNoticePanel.ToString());
+                        newNoticeRef.SetMasterMessageText(result.MasterMessage);
+                    }
+                }
+            }, (error) =>
+            {
+                Debug.LogError(error.Error);
+            });
         }
 
         private void OnErrorGetSelectionData(RestUtil.RestCallError obj)

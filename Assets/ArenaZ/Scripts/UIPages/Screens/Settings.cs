@@ -252,7 +252,7 @@ namespace ArenaZ.SettingsManagement
 
         private void onClickSupport()
         {
-            sendEmail("soumenkoley1991@gmail.com", string.Format($"ArenaZ: Support – {User.UserId}"), "Hello World!");
+            sendEmail(User.SupportEmailAddress, string.Format($"ArenaZ: Support – {User.UserId}"), "Hello World!");
         }
 
         public void AfterCompleteLogout()
