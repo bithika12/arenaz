@@ -15,7 +15,7 @@ var User  = require('../models/User');
 var Transaction  = require('../models/Transaction');
 var Role  = require('../models/Role');
 const appRoot = require('app-root-path');
-const { updateMail,updateTransaction,addMail,addTransaction,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
+const { findTransactionListUser,updateMail,updateTransaction,addMail,addTransaction,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
     fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail,transactionList,updateTransactionStatusDelete,findTransactionListAdmin,deleteTransaction,editTransaction} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
 const moment = require('moment');
@@ -753,7 +753,37 @@ exports.transactionList = function (req,res) {
         res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch transaction list"));
     })
 };
+//transactionListUser
+exports.transactionListUser = function (req,res) {
+    console.log('Reached to transaction list');
+    findTransactionListUser().then((transactionList)=>{
+        let userArr=[];
 
+        transactionList.forEach(function(val,key){
+           // console.log("val"+val.created_at);
+           let new_time = moment(val.created_at).format('DD/MM/YYYY hh:mm a');
+                    let tranObj={
+                        datetime:new_time,
+                        type:val.type,
+                        amount:val.amount,
+                        code:val.user_confirmation,
+                        status:val.status
+
+                    }
+            //val.created_at=moment(val.created_at).format('MM/DD/YYYY hh:mm a');
+            //console.log("val"+val.created_at);
+            userArr.push(tranObj);
+            if(key===transactionList.length-1){
+                res.send(response.generate(constants.SUCCESS_STATUS,
+              userArr, 'Transaction List fetched successfully !!')); 
+            }
+
+        });
+       
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch transaction list"));
+    })
+};
 //deleteTransaction
 
 exports.deleteTransaction= function(req,res) {

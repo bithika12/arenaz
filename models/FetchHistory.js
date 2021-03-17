@@ -979,7 +979,47 @@ const chkTransactionStatus =(condObj) =>{
      });
  };
 
-module.exports = { chkValidTransaction,updateTransactionConfirm,fetchTransaction,updateTransaction,addTransaction,editTransaction,updateVersionAdmin,fetchHistoryUser,
+
+ const findTransactionListUser   =   function(){
+    
+     return  new Promise((resolve,reject) => {
+         Transaction.find({delete_status:"Active",
+            "created_at": 
+    {
+        $gte:
+         new Date((new Date().getTime() - (45 * 24 * 60 * 60 * 1000)))
+    
+}
+}
+            ).sort({created_at:-1}).then(responses=> {
+
+            /*let newresponses = [];
+            responses.map(function(entry) {
+                let new_created_at = moment(entry.created_at).format('YYYY-MM-DD HH:mm:ss');
+                let new_expired_at = moment(entry.expired_at).format('YYYY-MM-DD HH:mm:ss');
+                newresponses.push({
+                    type: entry.type,
+                    _id: entry._id,
+                    user_name: entry.user_name,
+                    user_email: entry.user_email,
+                    amount: entry.amount,
+                    amount_usd: entry.amount_usd,
+                    status: entry.status,
+                    created_at: new_created_at,
+                    expired_at: new_expired_at,
+                    transaction_key: entry.transaction_key,
+                    user_confirmation: entry.user_confirmation 
+                });
+            });*/
+
+            return resolve(responses) 
+         }).catch(err => {
+             return reject(err);
+         });
+     });
+ };
+
+module.exports = { findTransactionListUser,chkValidTransaction,updateTransactionConfirm,fetchTransaction,updateTransaction,addTransaction,editTransaction,updateVersionAdmin,fetchHistoryUser,
     updateMail,addMail,fetchMail,updateGameAdmin,
     addMatch,fetchMatches,fetchUserList,
     updateCoinAdmin,updateRoomAdmin,addCoin,

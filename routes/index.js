@@ -70,6 +70,7 @@ router.post('/check/transaction/status'/*authetication.authChecker*/,transaction
 // Get Games
 router.post('/game/allgames'/*authetication.authChecker*/,fetchGameHistory.gamesLists);
 
+router.post('/transaction-list-user',adminController.transactionListUser);
 
 
  /* FORGET PASSWORD RESET PASSWORD*/
