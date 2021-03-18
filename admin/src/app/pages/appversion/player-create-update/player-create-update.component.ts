@@ -47,7 +47,12 @@ export class PlayerCreateUpdateComponent implements OnInit {
     { value: 'Prada', viewValue: 'Prada' },
     { value: 'Chanel', viewValue: 'Chanel' },
   ];
-
+usertypeArr: any[] = [
+    { name: 'Yes' },
+    { name: 'No' }
+    
+    
+];
   coins: Coin[] = [
     { value: 50},
     { value: 100},

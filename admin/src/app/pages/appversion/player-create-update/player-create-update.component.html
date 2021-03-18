@@ -119,12 +119,25 @@
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
 
-      <mat-form-field class="mt-6" fxFlex>
+    <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Allow Minimum Account </mat-label>
+
+        <mat-select formControlName="allow_mini_account_withdrawal" required>
+            <mat-option *ngFor="let sub of usertypeArr" [value]="sub.name">
+              {{sub.name}}
+            </mat-option>
+          </mat-select>
+        <!--<input cdkFocusInitial formControlName="type" matInput placeholder="Deposit,Withdrawal">-->
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
+      <!--<mat-form-field class="mt-6" fxFlex>
         <mat-label>Allow Minimum Account Withdrawal</mat-label>
         <input cdkFocusInitial formControlName="allow_mini_account_withdrawal" matInput >
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
-      </mat-form-field>
+      </mat-form-field>-->
 
         <mat-form-field class="mt-6" fxFlex>
         <mat-label>Support Email</mat-label>

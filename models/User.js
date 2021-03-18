@@ -1326,6 +1326,43 @@ User.updateUserCoinTransactionWithDraw =function(condObj,updateObj){
 
      });
  }
+ async function userUPdate(condObj,updatedCoin){
+  return  new Promise(async (resolve,reject) => {
+    User.updateOne({userName:condObj.userName},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });
+           });
+ }
+
+ User.updateUserCoinTransactionAdmin =async function(condObj,updateObj){
+     return  new Promise(async (resolve,reject) => {
+
+         User.findOne({userName: condObj.userName},{deviceDetails:0,resetOtp:0}).then(responses=> {
+             
+             console.log("user coin"+responses.startCoin);
+             
+             console.log("update coin"+updateObj);
+             //let updatedCoin=responses.startCoin+updateObj;
+             //updatedCoin=parseInt(updatedCoin);
+             let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj);
+              //let updatedCoin=parseInt(responses.startCoin)+parseInt(updateObj.startCoin)*2;
+             console.log("win coin"+typeof(updatedCoin));
+             let updatedResponses=userUPdate(condObj,updatedCoin);
+             
+             //let userScore=parseInt(responses.userScore)+parseInt(updateObj.userScore);
+             /*User.updateOne({userName:condObj.userName},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });*/
+         }).catch(err => {
+             return reject(err);
+         });
+
+     });
+ }
 module.exports= User;
 
 

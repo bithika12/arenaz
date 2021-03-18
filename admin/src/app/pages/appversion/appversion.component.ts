@@ -56,6 +56,12 @@ export class AppversionComponent implements OnInit, AfterViewInit, OnDestroy {
   data$: Observable<Player[]> = this.subject$.asObservable();
   players: Player[];
   roles:[];
+   usertypeArr: any[] = [
+    { name: 'Deposit' },
+    { name: 'Withdrawl' }
+    
+    
+];
 
   @Input()
   columns: TableColumn<Player>[] = [

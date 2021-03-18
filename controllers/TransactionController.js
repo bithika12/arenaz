@@ -616,7 +616,9 @@ exports.requestDeposit = function (req,res) {
                   console.log(condition);
                     if (condition.dbStat == 1) {
                         async.waterfall([
-                            updateCoinUserDeposit(condition),
+                            noCoinUpdate(condition),
+                            /*updated on 18.03.21*/
+                            //updateCoinUserDeposit(condition),
                         ], callback);
                     }else{
                        async.waterfall([
@@ -660,7 +662,9 @@ exports.confirmDeposit = function (req,res) {
     function (condition, callback) {
         if (condition.dbStat == 1) {
             async.waterfall([
-                updateCoinUserDeposit(condition),
+                /*updated on 18.03.21*/
+                  noCoinUpdate(condition),
+                //updateCoinUserDeposit(condition),
             ], callback);
         }else{
            async.waterfall([
@@ -941,38 +945,38 @@ exports.requestWithdraw = function (req,res) {
 
               if((userObj.status == "New") && (lastPart == "Completed")){
                 console.log('Transaction Completed from New');
-                AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
+                //AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
 
                   newresponse.apiStat = lastPart;
                   newresponse.dbStat  = 1;
                   newresponse.msg     = 'Transaction Completed from New';
                   callback (null,newresponse);
-                }).catch(fetchErr => {
+                /*}).catch(fetchErr => {
                   callback (fetchErr,null);
-                });
+                });*/
               }else if((userObj.status == "New") && (lastPart == "Expired")){
                 console.log('Transaction Expired from New');
                
-                AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
+                //AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
                   newresponse.apiStat = lastPart;
                   newresponse.dbStat  = 2;
                   newresponse.msg     = 'Transaction Expired from New';
                   callback (null,newresponse);
-                }).catch(fetchErr => {
+                /*}).catch(fetchErr => {
                   callback (fetchErr,null);
-                });
+                });*/
                 
               }else if((userObj.status == "Completed") && (lastPart == "Expired")){
                 console.log('Transaction Expired from Completed');
                 
-                 AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
+                 //AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart}).then((appList) => {
                   newresponse.apiStat = lastPart;
                   newresponse.dbStat  = 3;
                   newresponse.msg     = 'Transaction Expired from Completed';
                   callback (null,newresponse);
-                }).catch(fetchErr => {
+                /*}).catch(fetchErr => {
                   callback (fetchErr,null);
-                });
+                });*/
 
                 callback (null,newresponse);
 

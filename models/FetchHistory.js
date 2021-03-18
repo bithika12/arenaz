@@ -980,10 +980,10 @@ const chkTransactionStatus =(condObj) =>{
  };
 
 
- const findTransactionListUser   =   function(){
+ const findTransactionListUser   =   function(user_name){
     
      return  new Promise((resolve,reject) => {
-         Transaction.find({delete_status:"Active",
+         Transaction.find({user_name:user_name,delete_status:"Active",
             "created_at": 
     {
         $gte:

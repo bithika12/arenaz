@@ -19,7 +19,8 @@ const { findTransactionListUser,updateMail,updateTransaction,addMail,addTransact
     fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail,transactionList,updateTransactionStatusDelete,findTransactionListAdmin,deleteTransaction,editTransaction} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
 const moment = require('moment');
-
+const axios = require('axios');
+var AddTrans  = require('../models/FetchHistory');
 // Role.createUser().then((details)=>{
 
 // })
@@ -756,7 +757,7 @@ exports.transactionList = function (req,res) {
 //transactionListUser
 exports.transactionListUser = function (req,res) {
     console.log('Reached to transaction list');
-    findTransactionListUser().then((transactionList)=>{
+    findTransactionListUser(req.body.user_name).then((transactionList)=>{
         let userArr=[];
 
         transactionList.forEach(function(val,key){
@@ -1029,39 +1030,107 @@ exports.checkNewTransaction12= async function(req,res) {
     });*/
     
 }
-function findDetailsStatus(userObj){
+ function findDetailsStatus(userObj) {
+     return new Promise((resolve) => {
+         setTimeout(() => {
+
+      Transaction.details().then((appList) => {
+      let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
+        axios.get(api_url).then(function (response) {
+          
+          let lastPart = response.data.split("-->").pop();
+          let lastPart1;
+          let lastPart2;
+          let api_amount;
+          if(lastPart == 'Completed,500'){
+            console.log("geting completed");
+            lastPart2 = lastPart.split(",");
+            lastPart1=lastPart2[0];
+            api_amount=lastPart2[1];
+            
+            console.log("api_amount"+api_amount);
+            console.log('Transaction Completed from New'+JSON.stringify(userObj));
+                //return resolve(true);
+                //setTimeout(function() {
+                AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart1,amount:api_amount}).then((appList) => {
+                  console.log("transaction update");
+                  
+                  //setTimeout(function() {
+                    
+                     User.updateUserCoinTransactionAdmin({userName:userObj.user_name},userObj.amount).then((userresList) => {
+                     console.log("user update"); 
+                          return resolve(true);  
+
+                        }).catch(fetchErr => {
+                            console.log("er");
+                              //return reject(fetchErr);
+                        });
+
+                    // }, 8 * 1000);   
+                               
+                   
+               }).catch(fetchErr => {
+                    return reject(fetchErr);
+                  
+                });
+
+               // }, 1 * 1000);  
+
+          }
+
+          })
+    })
+             //console.log("Resolving " + value);
+             //resolve(value);
+         }, Math.floor(Math.random() * 1000));
+     });
+   }
+function findDetailsStatusold(userObj){
     return  new Promise((resolve,reject) => {
+        console.log("finddetails");
 
     Transaction.details().then((appList) => {
       let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
         axios.get(api_url).then(function (response) {
-          // handle success
-          //console.log("ok"+(response.data));
-          //console.log("ok1"+CircularJSON.stringify(response));
+          
           let lastPart = response.data.split("-->").pop();
+          let lastPart1;
+          let lastPart2;
+          let api_amount;
           if(lastPart == 'Completed,500'){
-            lastPart1 = lastPart.split(",", 1)[0];
-            api_amount= lastPart.split(",", 1)[1];
+            console.log("geting completed");
+            lastPart2 = lastPart.split(",");
+            lastPart1=lastPart2[0];
+            api_amount=lastPart2[1];
+            
             console.log("api_amount"+api_amount);
-          }
-          console.log("lastPart"+lastPart1);
-           if(lastPart1 == "Completed"){
-                console.log('Transaction Completed from New');
+            console.log('Transaction Completed from New'+JSON.stringify(userObj));
+                //return resolve(true);
+                //setTimeout(function() {
                 AddTrans.updateTransactionConfirm({_id:userObj._id},{status:lastPart1,amount:api_amount}).then((appList) => {
-
-                  User.updateUserCoinTransaction({userName:userObj.user_name},userObj.amount).then((userresList) => {
-                      
-                    return resolve(true);  
-
-                }).catch(fetchErr => {
-                      return reject(fetchErr);
-                });
+                  console.log("transaction update");
                   
-                }).catch(fetchErr => {
+                  setTimeout(function() {
+                    
+                     User.updateUserCoinTransaction({userName:userObj.user_name},userObj.amount).then((userresList) => {
+                     console.log("user update"); 
+                          return resolve(true);  
+
+                        }).catch(fetchErr => {
+                              return reject(fetchErr);
+                        });
+
+                     }, 8 * 1000);   
+                               
+                   
+               }).catch(fetchErr => {
                     return reject(fetchErr);
                   
                 });
-              }
+
+               // }, 1 * 1000);  
+
+          }
 
           })
     })
@@ -1070,28 +1139,53 @@ function findDetailsStatus(userObj){
 
 }
 
-exports.checkNewTransaction =  (req,res)=> {
+function userCoinStatus(userObj){
+    return  new Promise((resolve,reject) => {
+        
+                  User.updateUserCoinTransaction({userName:userObj.user_name},userObj.amount).then((userresList) => {
+                     console.log("user update"); 
+                    return resolve(true);  
+
+                }).catch(fetchErr => {
+                      return reject(fetchErr);
+                });
+                  
+              });  
+
+          }
+        
+          
+           
+
+      
+    
+
+
+
+
+
+exports.checkNewTransactionold =  (req,res)=> {
          let userObj={};
          let userArr=[];
         return new Promise(function (resolve, reject) {
            Transaction.trandetails({status:"New",type:"Deposit"}).then((newTrandetails)=>{
                console.log("get new"+JSON.stringify(newTrandetails));
-               /*let promiseArr = [];
+               let promiseArr = [];
 
-               console.log("coindetails 123"+JSON.stringify(newTrandetails))
+               console.log("coindetails 123"+typeof(newTrandetails))
                newTrandetails.forEach(function (val, key) {
-                        console.log("val"+val);
+                        console.log("val");
                         
                          
                     
                         //userArr.push(userObj); 
-                        promiseArr.push(findDetailsStatus({transaction_id:val._id}),
+                        promiseArr.push(findDetailsStatus(val),
                         );
 
 
                     });
                     return Promise.all(promiseArr).then(function (resArr) {
-                        //console.log("resArr"+JSON.stringify(resArr));
+                        console.log("resArr"+JSON.stringify(resArr));
 
 
                         if (resArr.length) {
@@ -1108,7 +1202,7 @@ exports.checkNewTransaction =  (req,res)=> {
 
             }).catch(err=>{
              res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch coin list"));
-           */
+           
            })
 
         }); 
@@ -1116,3 +1210,73 @@ exports.checkNewTransaction =  (req,res)=> {
                
    
 };
+
+
+ 
+   
+   function test() {
+       const promises = [];
+
+       Transaction.trandetails({status:"New",type:"Deposit"}).then((newTrandetails)=>{
+        console.log("get new"+JSON.stringify(newTrandetails));
+          if(newTrandetails.length >0){
+          newTrandetails.forEach(function (val, key) {
+            promises.push(findDetailsStatus(val));
+          })
+
+         }
+         else{
+            console.log("no new deposit found");
+            res.send(response.generate(constants.SUCCESS_STATUS,
+                              {}, 'No New deposit found !!'));
+         }
+       });
+       
+       
+       
+       Promise.all(promises)
+           .then((results) => {
+               console.log("All done", results);
+                res.send(response.generate(constants.SUCCESS_STATUS,
+                              {}, 'Transaction updated !!'));
+           })
+           .catch((e) => {
+                console.log("errt"+e);
+                res.send(response.error(constants.ERROR_STATUS,e,"Unable to update Transaction"));
+               // Handle errors here
+           });
+   }
+   exports.checkNewTransaction =  (req,res)=> {
+   //test();
+
+   const promises = [];
+
+       Transaction.trandetails({status:"New",type:"Deposit"}).then((newTrandetails)=>{
+        console.log("get new"+JSON.stringify(newTrandetails));
+          if(newTrandetails.length >0){
+          newTrandetails.forEach(function (val, key) {
+            promises.push(findDetailsStatus(val));
+          })
+
+         }
+         /*else{
+            console.log("no new deposit found");
+            res.send(response.generate(constants.SUCCESS_STATUS,
+                              {}, 'No New deposit found !!'));
+         }*/
+       });
+       
+       
+       
+       Promise.all(promises)
+           .then((results) => {
+               console.log("All done", results);
+                res.send(response.generate(constants.SUCCESS_STATUS,
+                              {}, 'Transaction updated !!'));
+           })
+           .catch((e) => {
+                console.log("errt"+e);
+                res.send(response.error(constants.ERROR_STATUS,e,"Unable to update Transaction"));
+               // Handle errors here
+           });
+   }
