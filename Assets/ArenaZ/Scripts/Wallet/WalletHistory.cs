@@ -6,6 +6,7 @@ using RedApple;
 using RedApple.Utils;
 using System;
 using System.Linq;
+using ArenaZ.Manager;
 
 public class WalletHistory : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class WalletHistory : MonoBehaviour
     public void Initialize()
     {
         clearCells();
-        RestManager.GetWalletHistory(User.UserEmailId, onReceiveData, (error) =>
+        RestManager.GetWalletHistory(User.UserName, onReceiveData, (error) =>
         {
             Debug.LogError(error.Error);
         });
@@ -47,6 +48,12 @@ public class WalletHistory : MonoBehaviour
             }
             activeHistoryCells.Clear();
         }
+    }
+
+    public void CloseWindow()
+    {
+        UIManager.Instance.HideScreen(Page.WalletHistoryPanel.ToString());
+        clearCells();
     }
 }
 

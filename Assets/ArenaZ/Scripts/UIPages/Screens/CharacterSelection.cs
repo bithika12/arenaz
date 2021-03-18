@@ -24,7 +24,6 @@ namespace ArenaZ.Screens
         [SerializeField] private Button arenaButton;
         [SerializeField] private Button trainingButton;
         [SerializeField] private Button rankingButton;
-        [SerializeField] private Button newUserCongratulationBtn;
 
         [Header("Text Fields")]
         [Space(5)]
@@ -160,11 +159,6 @@ namespace ArenaZ.Screens
             LoadDefaultData();
         }
 
-        private void OnClickCloseNewUserCongratulation()
-        {
-            UIManager.Instance.HideScreen(Page.NewUserCongratulationPanel.ToString());
-        }
-
         private void LoadDefaultData()
         {
             SetColorOnCharacter(UIManager.Instance.StartColorName);
@@ -187,7 +181,6 @@ namespace ArenaZ.Screens
             arenaButton.onClick.AddListener(()=> OnClickArena(GameType.normal));
             trainingButton.onClick.AddListener(()=> OnClickArena(GameType.training));
             rankingButton.onClick.AddListener(OnclickRanking);
-            newUserCongratulationBtn.onClick.AddListener(OnClickCloseNewUserCongratulation);
         }
 
         private void ReleaseButtonReferences()
@@ -195,7 +188,6 @@ namespace ArenaZ.Screens
             arenaButton.onClick.RemoveListener(()=> OnClickArena(GameType.normal));
             trainingButton.onClick.RemoveListener(()=> OnClickArena(GameType.training));
             rankingButton.onClick.RemoveListener(OnclickRanking);
-            newUserCongratulationBtn.onClick.RemoveAllListeners();
         }
         #endregion
 

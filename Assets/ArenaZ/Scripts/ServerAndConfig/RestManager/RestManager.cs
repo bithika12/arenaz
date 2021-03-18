@@ -330,13 +330,13 @@ namespace RedApple
             sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
         }
 
-        public static void GetWalletHistory(string a_UserEmail, Action<WalletHistoryList> a_OnComplete, Action<RestError> a_OnError)
+        public static void GetWalletHistory(string a_UserName, Action<WalletHistoryList> a_OnComplete, Action<RestError> a_OnError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
                 .Url(getApiUrl(Urls.WALLET_HISTORY))
                 .Verb(Verbs.POST)
                 .ContentType(ContentTypes.FORM)
-                .FormData("userEmail", a_UserEmail);
+                .FormData("user_name", a_UserName);
 
             sendWebRequest(webRqstBuilder, a_OnComplete, a_OnError);
         }

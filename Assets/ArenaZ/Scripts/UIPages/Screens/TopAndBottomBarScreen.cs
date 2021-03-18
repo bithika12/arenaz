@@ -27,6 +27,8 @@ namespace ArenaZ.Screens
         [SerializeField] private Text userCoinCount;
         [SerializeField] private Text userCupCount;
 
+        [SerializeField] private WalletHistory walletHistory;
+
         private ShareFile shareFile;
         public int count = 0;
 
@@ -62,6 +64,7 @@ namespace ArenaZ.Screens
 
             depositButton.onClick.AddListener(openDepositCoinPanel);
             withdrawButton.onClick.AddListener(withdrawDepositCoinPanel);
+            walletHistoryButton.onClick.AddListener(walletHistoryPanel);
         }
 
         private void ReleaseButtonReferences()
@@ -75,6 +78,7 @@ namespace ArenaZ.Screens
 
             depositButton.onClick.RemoveListener(openDepositCoinPanel);
             withdrawButton.onClick.RemoveListener(withdrawDepositCoinPanel);
+            walletHistoryButton.onClick.RemoveListener(walletHistoryPanel);
         }
         #endregion
 
@@ -118,6 +122,12 @@ namespace ArenaZ.Screens
         private void withdrawDepositCoinPanel()
         {
             UIManager.Instance.ShowScreen(Page.WalletWithdrawPanel.ToString());
+        }
+
+        private void walletHistoryPanel()
+        {
+            UIManager.Instance.ShowScreen(Page.WalletHistoryPanel.ToString());
+            walletHistory.Initialize();
         }
 
         private void onClickShare()

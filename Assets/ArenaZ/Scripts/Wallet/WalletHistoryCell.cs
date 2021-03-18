@@ -11,8 +11,10 @@ public class WalletHistoryCell : MonoBehaviour
     [SerializeField] private TextMeshProUGUI type;
     [SerializeField] private TextMeshProUGUI amount;
     [SerializeField] private GameObject copyIconGO;
-    [SerializeField] private TMP_InputField code;
+    [SerializeField] private TextMeshProUGUI code;
     [SerializeField] private TextMeshProUGUI status;
+
+    [SerializeField] private Color color1, color2;
 
     [SerializeField] private List<Button> copyButtons = new List<Button>();
 
@@ -26,11 +28,23 @@ public class WalletHistoryCell : MonoBehaviour
         walletHistoryDataObj = a_WalletHistoryData;
 
         setDateTime(a_WalletHistoryData.DateTime);
-        type.text = a_WalletHistoryData.Type;
+        setType(a_WalletHistoryData.Type);
         amount.text = a_WalletHistoryData.Amount;
         setCopyStatus(string.Equals(a_WalletHistoryData.Status.ToUpper(), "NEW"));
         code.text = a_WalletHistoryData.Code;
-        status.text = a_WalletHistoryData.Status;
+        setStatus(a_WalletHistoryData.Status);
+    }
+
+    private void setType(string a_Data)
+    {
+        type.text = a_Data;
+        type.color = string.Equals(a_Data.ToUpper(), "WITHDRAW") ? color2 : color1;
+    }
+
+    private void setStatus(string a_Data)
+    {
+        status.text = a_Data;
+        status.color = string.Equals(a_Data.ToUpper(), "COMPLETED") ? color2 : color1;
     }
 
     private void setCopyStatus(bool a_Status)
@@ -47,9 +61,10 @@ public class WalletHistoryCell : MonoBehaviour
             if (t_StrArr.Length == 3)
             {
                 StringBuilder t_Str = new StringBuilder();
-                t_Str.Append(string.Format($"{t_StrArr[0]}\n"));
+                t_Str.Append(string.Format($"{t_StrArr[0]}/\n"));
                 t_Str.Append(t_StrArr[1]);
                 t_Str.Append(t_StrArr[2].ToUpper());
+                dateTime.text = t_Str.ToString();
             }
         }
     }

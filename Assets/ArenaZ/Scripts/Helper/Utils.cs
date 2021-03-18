@@ -50,6 +50,7 @@ public enum Page
     TrainingPopupPanel,
     CheckInternetConnectionPanel,
     NewNoticePanel,
+    WalletHistoryPanel,
 }
 
 public enum ERace
