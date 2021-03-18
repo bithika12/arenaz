@@ -74,6 +74,18 @@
                 type="button">
           <mat-icon [icIcon]="icAdd"></mat-icon>
         </button>
+        
+        <button (click)="checkTransaction()"
+                class="ml-4"
+                color="primary"
+                fxFlex="none"
+                mat-mini-fab
+                matTooltip="Check New Transaction"
+                type="button">
+          <mat-icon [icIcon]="icEdit"></mat-icon>         
+          
+        </button>
+        
       </div>
 
       <table @stagger [dataSource]="dataSource" class="w-full" mat-table matSort>

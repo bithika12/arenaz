@@ -23,6 +23,7 @@ import { FormControl } from '@angular/forms';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { MatSelectChange } from '@angular/material/select';
 import theme from '../../../@vex/utils/tailwindcss';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { TransactionService } from '../../../app/pages/services/transaction.service';
 
@@ -89,7 +90,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private dialog: MatDialog, private transactionService:TransactionService) {
+  constructor(private dialog: MatDialog, private transactionService:TransactionService,private snackbar: MatSnackBar) {
   }
 
   get visibleColumns() {
@@ -137,6 +138,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+  checkTransaction(){
+    this.transactionService.checkTransaction().subscribe(transaction => {
+        if(transaction){
+            console.log("ok");
+            this.snackbar.open("Transaction updated !!",'OK',{
+                          verticalPosition: 'top',
+                          horizontalPosition:'right'
+                        });
+        }
+      });
+    }
 
   createPlayer() {
     this.dialog.open(PlayerCreateUpdateComponent).afterClosed().subscribe((player: Player) => {

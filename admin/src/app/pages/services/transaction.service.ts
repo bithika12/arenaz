@@ -87,6 +87,14 @@ export class TransactionService {
         return this.http.post(`${environment.BASE_URL}admin/get-users`,payloadObj,{headers: this.headers});
     }
 
+    //checkTransaction
+     checkTransaction() {
+      
+      console.log(this.headers);
+       let payloadObj={userEmail:localStorage.getItem('email')}
+        return this.http.post(`${environment.BASE_URL}admin/check/new/transaction`,{headers: this.headers});
+    }
+
 }
 
 

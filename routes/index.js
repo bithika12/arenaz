@@ -152,4 +152,6 @@ router.post('/user/get/master'/*authetication.authChecker*/,transactionControlle
 
 router.post('/admin/check/new/transaction'/*authetication.authChecker*/,adminController.checkNewTransaction);
 
+//router.get('/admin/check/new/transaction'/*authetication.authChecker*/,adminController.checkNewTransaction);
+
 module.exports = router;
