@@ -8,6 +8,7 @@ using RedApple.Utils;
 using ArenaZ.Manager;
 using DG.Tweening;
 using System.Globalization;
+using ArenaZ.Screens;
 
 namespace ArenaZ.Wallet
 {
@@ -57,6 +58,8 @@ namespace ArenaZ.Wallet
 
             requestInProgress = false;
             resetAttributes();
+
+            CharacterSelection.Instance.GetUnreadMail();
         }
 
         private void loadScreenPostConfirmation(string a_ConfirmationState)

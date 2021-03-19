@@ -8,6 +8,7 @@ using RedApple.Utils;
 using DG.Tweening;
 using UnityEngine.UI;
 using System.Globalization;
+using ArenaZ.Screens;
 
 namespace ArenaZ.Wallet
 {
@@ -144,6 +145,8 @@ namespace ArenaZ.Wallet
             confirmWindow.SetActive(true);
             withdrawAmount = 0;
             requestInProgress = false;
+
+            CharacterSelection.Instance.GetUnreadMail();
         }
 
         public void ConfirmWithdraw()
@@ -170,6 +173,8 @@ namespace ArenaZ.Wallet
             confirmWindow.SetActive(false);
             confirmationWindow.SetActive(true);
             requestInProgress = false;
+
+            CharacterSelection.Instance.GetUnreadMail();
         }
 
         public void CancelWithdraw()
@@ -192,6 +197,8 @@ namespace ArenaZ.Wallet
         {
             walletHandlerRef.SetCancelDepositResponse(a_Obj);
             requestInProgress = false;
+
+            CharacterSelection.Instance.GetUnreadMail();
         }
 
         public void CloseWindow()

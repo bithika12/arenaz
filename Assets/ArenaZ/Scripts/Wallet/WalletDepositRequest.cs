@@ -9,6 +9,7 @@ using RedApple.Utils;
 using DG.Tweening;
 using UnityEngine.UI;
 using System.Globalization;
+using ArenaZ.Screens;
 
 namespace ArenaZ.Wallet
 {
@@ -114,6 +115,8 @@ namespace ArenaZ.Wallet
             UIManager.Instance.HideScreen(Page.WalletDepositRequestPanel.ToString());
             UIManager.Instance.ShowScreen(Page.WalletDepositConfirmPanel.ToString());
             resetAttributes();
+
+            CharacterSelection.Instance.GetUnreadMail();
         }
 
         public void ClosePanel()
