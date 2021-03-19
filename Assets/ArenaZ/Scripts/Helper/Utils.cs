@@ -68,7 +68,8 @@ public enum ERace
     EbotSecond,
     EbotThird,
     CaninesSecond,
-    CaninesThird
+    CaninesThird,
+    EbotFourth
 }
 
 public enum ButtonType
