@@ -993,7 +993,7 @@ function userCoinStatus(userObj){
            
 exports.checkNewTransaction =  (req,res)=> {
    //test();
-
+   console.log("admin check new tran cron called");
    const promises = [];
 
        Transaction.trandetails({status:"New",type:"Deposit"}).then((newTrandetails)=>{
@@ -1016,6 +1016,7 @@ exports.checkNewTransaction =  (req,res)=> {
        Promise.all(promises)
            .then((results) => {
                console.log("All done", results);
+                console.log("admin check new tran cron call ended");
                 res.send(response.generate(constants.SUCCESS_STATUS,
                               {}, 'Transaction updated !!'));
            })

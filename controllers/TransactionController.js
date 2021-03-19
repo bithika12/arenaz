@@ -606,7 +606,7 @@ exports.requestDeposit = function (req,res) {
           var duration_second = duration * 60;
 
           // Interval checking for status and update
-          var intervalCheck = setInterval(function(){ 
+          //var intervalCheck = setInterval(function(){ 
 
              async.waterfall([
                 getTransactionStatus(userObj1),
@@ -632,11 +632,11 @@ exports.requestDeposit = function (req,res) {
                    // console.log(err);
                     if((duration < 0) || (result.status=='Expired') || (result.status=='Completed') || (result.status=='Cancelled')){
                       console.log('================ Stop Interval Timer ======================');
-                      clearInterval(intervalCheck);
+                      //clearInterval(intervalCheck);
                     }
                 });
            
-           }, 30000);
+           //}, 30000);
 
 
         }else{
