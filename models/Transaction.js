@@ -41,8 +41,9 @@ Version.details = function(condObj){
 
 Version.trandetails = function(condObj){
   return new Promise((resolve,reject)=>{  
+    //.limit(10)
     Transaction.find(condObj,
-      {_id: 1,status:1,user_name:1,user_email:1,expired_at:1,amount:1,created_at:1,user_confirmation:1}).limit(10).then(response=> {
+      {_id: 1,status:1,user_name:1,user_email:1,expired_at:1,amount:1,created_at:1,user_confirmation:1}).then(response=> {
          console.log("op111")
          resolve(response)
     }).catch(err=>{
