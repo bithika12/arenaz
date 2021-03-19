@@ -929,6 +929,7 @@ exports.editTransaction= function(req,res) {
           let lastPart1;
           let lastPart2;
           let api_amount;
+          console.log("lastPartfirst"+lastPart);
           if(lastPart == 'Completed,500'){
             console.log("geting completed");
             lastPart2 = lastPart.split(",");
