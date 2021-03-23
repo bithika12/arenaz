@@ -678,7 +678,7 @@ exports.confirmDeposit = function (req,res) {
       console.log("resultconfirm"+JSON.stringify(result));
       User.findDetailsByEmail({email:result.user_email}).then((userDet)=>{
         console.log("userDet"+userDet._id);
-        let msg="You have requested to buy "+result.amount+" coins on "+moment(result.created_at).format('MM/DD/YYYY hh:mm a')+" . Your receive code is %"+ result.user_confirmation+" %.  You will only have 30 minutes to make this transaction before this request expires. Once you have completed the transaction, your account will reflect the new coins once you restart the app.";
+        let msg="You have requested to buy "+result.amount+" coins on "+moment(result.created_at).format('MM/DD/YYYY hh:mm a')+" . Your receive code is "+ result.user_confirmation+" .  You will only have 30 minutes to make this transaction before this request expires. Once you have completed the transaction, your account will reflect the new coins once you restart the app.";
         Notification.createNotification({
                         //sent_by_user     : req.user_id ,
                         received_by_user : userDet._id,
@@ -793,7 +793,7 @@ exports.requestWithdraw = function (req,res) {
                               //callback (null,transactionValidStatus);
                    User.findDetailsByEmail({email:req.body.userEmail}).then((userDet)=>{
                   console.log("userDet"+userDet._id);
-                  let msg="You have requested to withdraw "+transactionValidStatus.amount+" coins on "+moment(transactionValidStatus.created_at).format('MM/DD/YYYY hh:mm a')+". The receive code submitted is %"+transactionValidStatus.user_confirmation+"%.  The transaction will complete within 48 hours. Once we process your request the transaction status will be set to ‘Completed’.  If there are any issues the transaction will be canceled and coins returned back to your account."
+                  let msg="You have requested to withdraw "+transactionValidStatus.amount+" coins on "+moment(transactionValidStatus.created_at).format('MM/DD/YYYY hh:mm a')+". The receive code submitted is "+transactionValidStatus.user_confirmation+".  The transaction will complete within 48 hours. Once we process your request the transaction status will be set to ‘Completed’.  If there are any issues the transaction will be canceled and coins returned back to your account."
                   //let msg="You have requested to withdraw "+transactionValidStatus.amount+" coins on "+moment(transactionValidStatus.created_at).format('MM/DD/YYYY hh:mm a')+" . Your receive code is %"+ transactionValidStatus.user_confirmation+" %.  You will only have 30 minutes to make this transaction before this request expires. Once you have completed the transaction, your account will reflect the new coins once you restart the app.";
                   Notification.createNotification({
                                   //sent_by_user     : req.user_id ,

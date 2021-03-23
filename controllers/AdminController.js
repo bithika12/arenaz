@@ -21,6 +21,7 @@ const UserController  = require('../controllers/UserController');
 const moment = require('moment');
 const axios = require('axios');
 var AddTrans  = require('../models/FetchHistory');
+//var cron = require('node-cron');
 // Role.createUser().then((details)=>{
 
 // })
@@ -1027,3 +1028,36 @@ exports.checkNewTransaction =  (req,res)=> {
                // Handle errors here
            });
    }
+
+
+
+
+
+// Run game at every 30 mint.
+//cron.schedule('*/1 * * * * ', function() {
+/*const promises = [];
+
+       Transaction.trandetails({status:"New",type:"Deposit"}).then((newTrandetails)=>{
+        console.log("get new"+JSON.stringify(newTrandetails));
+          if(newTrandetails.length >0){
+          newTrandetails.forEach(function (val, key) {
+            promises.push(findDetailsStatus(val));
+          })
+
+         }
+         
+       });
+       
+       
+       
+       Promise.all(promises)
+           .then((results) => {
+               console.log("All done", results);
+                console.log("admin check new tran cron call ended");
+                
+           })
+           .catch((e) => {
+                console.log("errt"+e);
+                
+           });
+});*/
