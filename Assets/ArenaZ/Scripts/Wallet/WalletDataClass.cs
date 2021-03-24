@@ -52,7 +52,7 @@ namespace ArenaZ.Wallet
         [JsonProperty("dollar_amount")]
         public double DollarAmount;
         [JsonProperty("btc_amount")]
-        public double BtcAmount;
+        public string BtcAmount;
         [JsonProperty("transaction_fee")]
         public string TransactionFee;
     }

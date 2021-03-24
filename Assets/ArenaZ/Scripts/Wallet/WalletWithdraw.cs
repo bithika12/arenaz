@@ -94,7 +94,7 @@ namespace ArenaZ.Wallet
         {
             walletHandlerRef.SetConvertedCoinResponse(a_Obj);
             dollarField.text = a_Obj.DollarAmount.ToString("N", new CultureInfo("en-US"));
-            bitcoinField.text = a_Obj.BtcAmount.ToString();
+            bitcoinField.text = a_Obj.BtcAmount;
         }
 
         private void onError(RestUtil.RestCallError a_Obj)
