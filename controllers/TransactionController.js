@@ -459,7 +459,7 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
         var userObj  ={coin_number: req.body.coin_number,transaction_type: req.body.transactionType,email: req.body.userEmail}
        
         if(req.body.transactionType=='withdraw'){
-            if(parseInt(req.body.coin_number) < parseInt(appList.minimum_withdrawl)){
+            if(parseInt(req.body.coin_number) < parseInt(appList.minimum_withdrawl) && appList.allow_mini_account_withdrawal=="No"){
               return res.send(response.error(constants.VALIDATION_CHECK_ERR,{},"Coins will be equal or more than minimum withdrawal amount"));
             }else{
               async.waterfall([
@@ -489,7 +489,7 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
           }
         }else{
 
-          if(parseInt(req.body.coin_number) < parseInt(appList.minimum_deposit)){
+          if(parseInt(req.body.coin_number) < parseInt(appList.minimum_deposit) && appList.allow_mini_account_withdrawal=="No"){
             return res.send(response.error(constants.VALIDATION_CHECK_ERR,{},"Coins will be equal or more than minimum deposit amount"));
           }else{
             async.waterfall([

@@ -1216,6 +1216,9 @@ User.detailsUserCoin = function(condObj){
 
 
            }
+           if(updatedCoin <0){
+              updatedCoin=0;
+           }
 
              User.updateOne({userName:reqObj.userName},{ $set : {startCoin:updatedCoin} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
