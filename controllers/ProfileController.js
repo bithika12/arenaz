@@ -387,7 +387,8 @@ exports.updatePassword = function (req,res){
         new_account_gift_coins : req.body.new_account_gift_coins,
         master_message : req.body.master_message,
         allow_mini_account_withdrawal : req.body.allow_mini_account_withdrawal,
-        support_email : req.body.support_email
+        support_email : req.body.support_email,
+        market_volatility:req.body.market_volatility
     };
     console.log("updateObj"+updateObj)
      userValidChkAdmin(req.body.userEmail)

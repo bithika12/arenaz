@@ -205,7 +205,8 @@ var versionSchema      = new Schema({
     new_account_gift_coins:Number,
     master_message:String,
     allow_mini_account_withdrawal:String,
-    support_email:String
+    support_email:String,
+    market_volatility:String
     
 });
 

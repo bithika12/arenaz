@@ -92,7 +92,11 @@ export class CoinService {
 
         "allow_mini_account_withdrawal": (!editplayer.allow_mini_account_withdrawal) ? "" : editplayer.allow_mini_account_withdrawal,
 
-        "support_email": (!editplayer.support_email) ? "" : editplayer.support_email
+        "support_email": (!editplayer.support_email) ? "" : editplayer.support_email,
+
+        "market_volatility": (!editplayer.market_volatility) ? "" : editplayer.market_volatility,
+
+        
        
       };
       //payloadObj

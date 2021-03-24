@@ -149,6 +149,8 @@ usertypeArr: any[] = [
       allow_mini_account_withdrawal: [this.defaults.allow_mini_account_withdrawal || ''],
 
       support_email: [this.defaults.support_email || ''],
+
+      market_volatility:[this.defaults.market_volatility || ''],
       
      _id:[this.defaults._id || ''],
     });

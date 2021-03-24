@@ -28,7 +28,8 @@ Version.details = function(condObj){
       new_account_gift_coins:1,
       master_message:1,
       allow_mini_account_withdrawal:1,
-      support_email:1
+      support_email:1,
+      market_volatility:1
     }).then(response=> {
          console.log("op")
          resolve(response)
