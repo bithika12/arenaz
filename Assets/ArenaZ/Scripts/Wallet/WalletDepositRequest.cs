@@ -18,7 +18,7 @@ namespace ArenaZ.Wallet
         [SerializeField] private WalletHandler walletHandlerRef;
         [SerializeField] private WalletDepositConfirm walletDepositConfirmRef;
         [SerializeField] private TMP_InputField amountField, dollarField, bitcoinField;
-        [SerializeField] private TextMeshProUGUI minimumAmountHintText, transactionFeeText, warningText;
+        [SerializeField] private TextMeshProUGUI minimumAmountHintText, transactionFeeText, warningText, marketVolatilityText;
         [SerializeField] private GameObject warningWindow;
         [SerializeField] private Button requestDepositButton;
         [SerializeField] private Text requestDepositButtonText;
@@ -144,7 +144,8 @@ namespace ArenaZ.Wallet
         {
             minimumAmountHintText.text = string.Format($"Minimum amount of {a_WalletDetailsResponse.MinimumDeposit} is required for deposit.");
             warningText.text = string.Format($"Please enter at least {a_WalletDetailsResponse.MinimumDeposit} to make a deposit. If you accidentally deposit a different amount, our support team will adjust it and the correct amount will reflect your account.");
-
+            marketVolatilityText.text = a_WalletDetailsResponse.MarketVolatility;
+            
             if (float.TryParse(a_WalletDetailsResponse.TransactionFeeDeposit, out float t_TransactionFeeDeposit))
                 transactionFeeText.text = t_TransactionFeeDeposit > 0.0f ? string.Format($"The amount above reflects a {a_WalletDetailsResponse.TransactionFeeDeposit}% transaction fee.") : "";
             else

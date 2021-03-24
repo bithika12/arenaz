@@ -16,7 +16,7 @@ namespace ArenaZ.Wallet
     {
         [SerializeField] private WalletHandler walletHandlerRef;
         [SerializeField] private TMP_InputField amountField, walletKeyField, dollarField, bitcoinField;
-        [SerializeField] private TextMeshProUGUI receivingDollarText, minimumAmountHintText, transactionFeeText, walletKeyWarningText, notEnoughCoinsWarningText;
+        [SerializeField] private TextMeshProUGUI receivingDollarText, minimumAmountHintText, transactionFeeText, walletKeyWarningText, notEnoughCoinsWarningText, marketVolatilityText;
         [SerializeField] private GameObject notEnoughCoinsWarningWindow, confirmWindow, confirmationWindow;
         [SerializeField] private int walletKeyMinimumLength = 10;
         [SerializeField] private Button requestWithdrawButton;
@@ -240,7 +240,8 @@ namespace ArenaZ.Wallet
         {
             minimumAmountHintText.text = string.Format($"Minimum amount of {a_WalletDetailsResponse.MinimumWithdrawl} is required to Withdraw.");
             notEnoughCoinsWarningText.text = string.Format($"You have {User.UserCoin} and cannot withdraw more than this amount.");
-
+            marketVolatilityText.text = a_WalletDetailsResponse.MarketVolatility;
+            
             if (float.TryParse(a_WalletDetailsResponse.TransactionFeeDeposit, out float t_TransactionFeeDeposit))
                 transactionFeeText.text = t_TransactionFeeDeposit > 0.0f ? string.Format($"The amount above reflects a {a_WalletDetailsResponse.TransactionFeeWithdrawl}% transaction fee.") : "";
             else

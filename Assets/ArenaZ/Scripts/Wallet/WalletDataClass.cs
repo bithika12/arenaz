@@ -31,6 +31,8 @@ namespace ArenaZ.Wallet
         public string TransactionFeeDeposit = "0";
         [JsonProperty("allow_mini_account_withdrawal")]
         public string AllowMiniAccountWithdrawal;
+        [JsonProperty("market_volatility")] 
+        public string MarketVolatility;
     }
 
     [System.Serializable]
