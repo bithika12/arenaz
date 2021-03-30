@@ -168,7 +168,7 @@ namespace ArenaZ.Wallet
             walletHandlerRef.OnCompleteAction();
             walletHandlerRef.SetConfirmDepositResponse(a_Obj);
 
-            receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount} in bitcoins in your wallet soon.");
+            receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString("N", new CultureInfo("en-US"))} in bitcoins in your wallet soon.");
 
             confirmWindow.SetActive(false);
             confirmationWindow.SetActive(true);
