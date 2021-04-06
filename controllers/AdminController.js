@@ -763,7 +763,9 @@ exports.transactionListUser = function (req,res) {
 
         transactionList.forEach(function(val,key){
            // console.log("val"+val.created_at);
-           let new_time = moment(val.created_at).format('DD/MM/YYYY hh:mm a');
+          let new_time = moment(val.created_at).format('MM/DD/YY hh:mm a');
+
+           //let new_time = moment(val.created_at).format('DD/MM/YYYY hh:mm a');
                     let tranObj={
                         datetime:new_time,
                         type:val.type,

@@ -991,7 +991,7 @@ const chkTransactionStatus =(condObj) =>{
     
 }
 }
-            ).sort({created_at:-1}).then(responses=> {
+            ).sort({created_at:-1}).limit(10).then(responses=> {
 
             /*let newresponses = [];
             responses.map(function(entry) {
