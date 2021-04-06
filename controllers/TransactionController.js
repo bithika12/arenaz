@@ -776,6 +776,8 @@ exports.cancelDeposit = function (req,res) {
   Transaction.details().then((appList) => {
 
   if(appList.allow_mini_account_withdrawal=="Yes"){
+
+    console.log("allow_mini_account_withdrawal"+appList.allow_mini_account_withdrawal);
        
 
        var userObj  ={user_name:req.body.user_name,amount_usd:req.body.amount_usd,email: req.body.userEmail,coinAmount:req.body.coinAmount,transaction_key:req.body.wallet_key}
@@ -794,6 +796,7 @@ exports.cancelDeposit = function (req,res) {
               if(result){
                 //console.log("plll12"+JSON.stringify(result1));
                 Transaction.trandetails({_id:mongoose.Types.ObjectId(result.transactionId)}).then(transactionValidStatus=> {
+                  transactionValidStatus=transactionValidStatus[0];
                   console.log("transactionValidStatus"+transactionValidStatus);
                 //AddTrans.chkTransactionStatus({_id:mongoose.Types.ObjectId(result1.transaction_details.transactionId)}).then((transactionValidStatus) => {
                               //callback (null,transactionValidStatus);
@@ -849,6 +852,7 @@ exports.cancelDeposit = function (req,res) {
    }
 
 else{
+  console.log("allow_mini_account_withdrawal"+appList.allow_mini_account_withdrawal);
    User.findDetailsByEmail({email:req.body.userEmail}).then((userDet)=>{
    //check user current balance
     if(userDet.startCoin < appList.minimum_withdrawl ){
@@ -874,7 +878,8 @@ else{
               if(result){
                 //console.log("plll12"+JSON.stringify(result1));
                 Transaction.trandetails({_id:mongoose.Types.ObjectId(result.transactionId)}).then(transactionValidStatus=> {
-                  console.log("transactionValidStatus"+transactionValidStatus);
+                  transactionValidStatus=transactionValidStatus[0];
+                  console.log("transactionValidStatus"+transactionValidStatus[0]);
                 //AddTrans.chkTransactionStatus({_id:mongoose.Types.ObjectId(result1.transaction_details.transactionId)}).then((transactionValidStatus) => {
                               //callback (null,transactionValidStatus);
                    User.findDetailsByEmail({email:req.body.userEmail}).then((userDet)=>{

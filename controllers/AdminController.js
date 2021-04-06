@@ -21,6 +21,7 @@ const UserController  = require('../controllers/UserController');
 const moment = require('moment');
 const axios = require('axios');
 var AddTrans  = require('../models/FetchHistory');
+var CircularJSON = require('circular-json');
 //var cron = require('node-cron');
 // Role.createUser().then((details)=>{
 
@@ -922,11 +923,15 @@ exports.editTransaction= function(req,res) {
 
  function findDetailsStatus(userObj) {
      return new Promise((resolve) => {
+        console.log("starting to process");
          setTimeout(() => {
 
       Transaction.details().then((appList) => {
       let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
+        console.log("axios api url",api_url);
         axios.get(api_url).then(function (response) {
+
+          console.log("axios response"+CircularJSON.stringify(response.data));
           
           let lastPart = response.data.split("-->").pop();
           let lastPart1;
@@ -1003,6 +1008,7 @@ exports.checkNewTransaction =  (req,res)=> {
        Transaction.trandetails({status:"New",type:"Deposit"}).then((newTrandetails)=>{
         console.log("get new"+JSON.stringify(newTrandetails));
           if(newTrandetails.length >0){
+            console.log("new");
           newTrandetails.forEach(function (val, key) {
             promises.push(findDetailsStatus(val));
           })
