@@ -47,17 +47,16 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
                          let api_url=appList.wallet_api_link+appList.wallet_key+
                          "&type=Deposit&transid="+resTransV1+"&amt="+userObj.coinAmount
 
-                         console.log("api_url"+api_url)
+                         
 
                          axios.get(api_url)
                          .then(function (response) {
                             // handle success
 
-                            console.log("ok"+ CircularJSON.stringify(response.data));
-                            console.log("ok1"+response.data);
+                            
                             
                             let lastPart = response.data.split("-->").pop();
-                            console.log("klllP"+lastPart);
+                            
 
                             //save it to transaction
                             if(lastPart=="Error!"){
@@ -146,7 +145,7 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
            let api_url=appList.wallet_api_link+appList.wallet_key+
            "&type=Deposit&transid=123456789&amt="+userObj.coinAmount
 
-           console.log("api_url"+api_url)
+           
 
            axios.get(api_url)
            .then(function (response) {
@@ -168,12 +167,7 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
               let curdate= moment().format('YYYY-MM-DD');
               console.log("curdate"+curdate);
               let expired_at=curdate+" "+travelTime;
-              /*if("02:40 PM" >= "02:46 PM" ){
-                console.log("expired")
-              }
-              else{
-                console.log("not expire");
-              }*/
+              
               var transactionObj = {
                 user_name : userObj.user_name,
                 user_confirmation : lastPart,
@@ -261,20 +255,7 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
           callback (fetchErr,null);
         });
 
-         /*axios.get('https://www.qqxm.com/arz/currencyprice.cfm?gtc=dsjS3')
-          .then(function (response) {
-            // handle success
-            console.log("ok"+ CircularJSON.stringify(response.data));
-            console.log("ok1"+response.data);
-             //callback (null,response);
-          })
-          .catch(function (error) {
-            // handle error
-            console.log(error);
-          })
-          .then(function () {
-            // always executed
-          });*/
+         
 
         }
 
