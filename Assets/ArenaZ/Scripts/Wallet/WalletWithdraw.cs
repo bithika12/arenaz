@@ -112,13 +112,16 @@ namespace ArenaZ.Wallet
 
             if (withdrawAmount >= minimumWithdrawlAmount && withdrawAmount <= User.UserCoin && !string.IsNullOrEmpty(walletKeyField.text) && !string.IsNullOrWhiteSpace(walletKeyField.text) && t_WalletKeyLength >= walletKeyMinimumLength)
             {
-                requestInProgress = true;
-                RequestWithdrawRequest t_Request = new RequestWithdrawRequest() { AmountUsd = walletHandlerRef.GetConvertedCoinResponse().DollarAmount, CoinAmount = withdrawAmount, UserEmail = User.UserEmailId, UserName = User.UserName, WalletKey = walletKeyField.text };
-                RestManager.WalletRequestWithdraw(t_Request, onRequest, (error) =>
-                {
-                    onError(error);
-                    requestInProgress = false;
-                });
+                confirmWindow.SetActive(true);
+
+
+                //requestInProgress = true;
+                //RequestWithdrawRequest t_Request = new RequestWithdrawRequest() { AmountUsd = walletHandlerRef.GetConvertedCoinResponse().DollarAmount, CoinAmount = withdrawAmount, UserEmail = User.UserEmailId, UserName = User.UserName, WalletKey = walletKeyField.text };
+                //RestManager.WalletRequestWithdraw(t_Request, onRequest, (error) =>
+                //{
+                //    onError(error);
+                //    requestInProgress = false;
+                //});
             }
             else
             {
@@ -142,9 +145,17 @@ namespace ArenaZ.Wallet
         private void onRequest(RequestWithdrawResponse a_Obj)
         {
             walletHandlerRef.SetRequestWithdrawResponse(a_Obj);
-            confirmWindow.SetActive(true);
+            //confirmWindow.SetActive(true);
             withdrawAmount = 0;
             requestInProgress = false;
+
+
+            walletHandlerRef.OnCompleteAction();
+            receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString("N", new CultureInfo("en-US"))} in bitcoins in your wallet soon.");
+
+            confirmWindow.SetActive(false);
+            confirmationWindow.SetActive(true);
+
 
             CharacterSelection.Instance.GetUnreadMail();
         }
@@ -155,51 +166,59 @@ namespace ArenaZ.Wallet
                 return;
 
             requestInProgress = true;
-            ConfirmDepositRequest t_Request = new ConfirmDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
-            RestManager.WalletConfirmDeposit(t_Request, onConfirm, (error) =>
+            RequestWithdrawRequest t_Request = new RequestWithdrawRequest() { AmountUsd = walletHandlerRef.GetConvertedCoinResponse().DollarAmount, CoinAmount = withdrawAmount, UserEmail = User.UserEmailId, UserName = User.UserName, WalletKey = walletKeyField.text };
+            RestManager.WalletRequestWithdraw(t_Request, onRequest, (error) =>
             {
                 onError(error);
                 requestInProgress = false;
             });
+
+            //requestInProgress = true;
+            //ConfirmDepositRequest t_Request = new ConfirmDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
+            //RestManager.WalletConfirmDeposit(t_Request, onConfirm, (error) =>
+            //{
+            //    onError(error);
+            //    requestInProgress = false;
+            //});
         }
 
-        private void onConfirm(ConfirmDepositResponse a_Obj)
-        {
-            walletHandlerRef.OnCompleteAction();
-            walletHandlerRef.SetConfirmDepositResponse(a_Obj);
+        //private void onConfirm(ConfirmDepositResponse a_Obj)
+        //{
+        //    walletHandlerRef.OnCompleteAction();
+        //    walletHandlerRef.SetConfirmDepositResponse(a_Obj);
 
-            receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString("N", new CultureInfo("en-US"))} in bitcoins in your wallet soon.");
+        //    receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString("N", new CultureInfo("en-US"))} in bitcoins in your wallet soon.");
 
-            confirmWindow.SetActive(false);
-            confirmationWindow.SetActive(true);
-            requestInProgress = false;
+        //    confirmWindow.SetActive(false);
+        //    confirmationWindow.SetActive(true);
+        //    requestInProgress = false;
 
-            CharacterSelection.Instance.GetUnreadMail();
-        }
+        //    CharacterSelection.Instance.GetUnreadMail();
+        //}
 
         public void CancelWithdraw()
         {
             if (requestInProgress)
                 return;
 
-            requestInProgress = true;
-            CancelDepositRequest t_Request = new CancelDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
-            RestManager.WalletCancelDeposit(t_Request, onCancel, (error) =>
-            {
-                onError(error);
-                requestInProgress = false;
-            });
+            //requestInProgress = true;
+            //CancelDepositRequest t_Request = new CancelDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
+            //RestManager.WalletCancelDeposit(t_Request, onCancel, (error) =>
+            //{
+            //    onError(error);
+            //    requestInProgress = false;
+            //});
 
             CloseWindow();
         }
 
-        private void onCancel(CancelDepositResponse a_Obj)
-        {
-            walletHandlerRef.SetCancelDepositResponse(a_Obj);
-            requestInProgress = false;
+        //private void onCancel(CancelDepositResponse a_Obj)
+        //{
+        //    walletHandlerRef.SetCancelDepositResponse(a_Obj);
+        //    requestInProgress = false;
 
-            CharacterSelection.Instance.GetUnreadMail();
-        }
+        //    CharacterSelection.Instance.GetUnreadMail();
+        //}
 
         public void CloseWindow()
         {
