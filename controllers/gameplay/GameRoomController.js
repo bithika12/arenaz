@@ -25,6 +25,7 @@ let _ = require('underscore');
 let dartArray=[];
 let Timer_Started=true;
 const moment=require("moment");
+var mongoose = require('mongoose');
 //let g;
 
 /*room.createRoom({userId : "5de7ac25c9dba27a72be9023"}).then(function(result){
@@ -67,7 +68,7 @@ io.on('connection', function (socket) {
 
 
     function updateRoomModified(reqobj,callback){
-        console.log("po");
+        
         inmRoom.updateInmemoryRoomMod12(reqobj).then(function(roomDetails){
           console.log("roomdetails",roomDetails)
             callback(null, roomDetails);
@@ -119,7 +120,7 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
             if (reqobj.isWin==1) {
             //if (reqobj.isWin) {
-                console.log("12"+reqobj.opponentCup);
+                
                 //user update with coin
                 //reqobj.roomUsers
                 let findIndex = reqobj.roomUsers.findIndex(elemt => (elemt.userId!=reqobj.userId));
@@ -316,7 +317,7 @@ io.on('connection', function (socket) {
         return new Promise((resolve, reject) => {
                 console.log("room log cont");
                 //reqobj.roomUsers
-                  console.log("ooo"+JSON.stringify(reqobj.roomUsers));
+                  
                   if(reqobj.isWin==1){
                  let userCoinArr=[];
 
@@ -488,23 +489,7 @@ io.on('connection', function (socket) {
             }, 30000,reqobj);
         }
     }
-    function waitingForUserOrg(reqobj) {
-        let count    = 0;
-        return function (callback) {
-            var i = constants.GAME_TIMMER;
-            logger.print("  ************  game start call");
-            let timer = setTimeout(function gameStartTimmer(gameStartObj) {
-                i--;
-                if (i === 0) {
-                    clearTimeout(this.interval);
-                    callback(null, gameStartObj);
-                } else {
-                    gameStartObj.i = i
-                    timer = setTimeout(gameStartTimmer, 1000, gameStartObj);
-                }
-            }, 1000, reqobj);
-        }
-    }
+    
 
     function gameStartMod(reqobj) {
         return function (callback) {
@@ -839,7 +824,7 @@ io.on('connection', function (socket) {
             console.log("findCoin"+findCoin);
 
            if(findCoin==-1){
-               console.log("pl0"); 
+                
                io.sockets.to(socket.id).emit('invalidCoin', 
                response.generate(constants.SUCCESS_STATUS,
                 {coin: req.roomCoin
@@ -964,7 +949,7 @@ io.on('connection', function (socket) {
                                         });
                                     }
                                     if (joineeDetails.users.length === 2) {
-                                        callback();
+                                        //callback();
                                         async.waterfall([
                                             gameStartMod({roomName: roomName}),
                                             //userStatusUpdateAfterGamerequest,
@@ -1342,6 +1327,119 @@ io.on('connection', function (socket) {
             }
         }
     });
+    function opponentUserSearch(req) {
+        return new Promise((resolve, reject) => {
+            user.updatePointDetails({_id: req.userId}, {
+                total_no_win: 1
+
+            }).then(function (updateWinningDetails) {
+                //users.rank = users.totalUserKill
+               /* io.to(req.roomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
+                    userId: req.userId,
+                    roomName: req.roomName
+                }, "Game is over"));*/
+               let userArr=[];
+               let obj={userId:req.userId};
+               userArr.push(obj);
+                resolve(userArr)
+                //resolve(req.userId)
+                //callback(null, req);
+            }).catch(err => {
+                reject(err);
+                //io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
+            });
+        })
+    }
+
+    socket.on('send_message', function (req) {
+        //let currentSocketId = socket.id;
+        logger.print("Player send messages");
+        let userOpponentUserId;
+        RoomDb.findOne({name:req.roomName},
+         {_id: 1,game_time:1, name:1,users:1}).then(gameresponses=> { 
+               userArr=gameresponses.users;
+               console.log("userArr"+JSON.stringify(userArr));
+               let findIndexOppo = userArr.findIndex(elemt => elemt.userName != req.userName);
+                if(findIndexOppo!=-1)
+                  userOpponentUserName=userArr[findIndexOppo].userName;
+              
+              let obj={
+                message:req.message,
+                from_user_name:req.userName,
+                to_user_name:userOpponentUserName,
+                room_name:req.roomName
+              }
+
+              Notification.createMessage(obj).then(function(notificationdetails){
+                   let currentSocketId = socket.id;
+
+                   console.log("currentSocketId"+currentSocketId);
+
+                   let findIndex = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId == currentSocketId
+        });
+        let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+            return elemt.socketId != currentSocketId
+        });
+
+        console.log("findIndexOpponent"+findIndexOpponent);
+
+        console.log("opponent socket"+allOnlineUsers[findIndexOpponent].socketId);
+
+        io.sockets.to(allOnlineUsers[findIndexOpponent].socketId).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
+                    userId: req.userName,
+                    roomName: req.roomName,
+                    message:req.message,
+                    message_id:notificationdetails._id
+                }, "Message sent"));
+
+                    /* io.to(req.roomName).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
+                    userId: req.userName,
+                    roomName: req.roomName,
+                    message:req.message
+                }, "Message sent"));   */
+                        });
+
+         });
+        
+        
+
+    });
+
+    socket.on('render_message', function (req) {
+        Notification.viewMessage({userName: req.userName}).then(function (result) {
+        if(result) {
+            let mesageRes={
+                messageList:result
+            }
+
+            io.sockets.to(socket.id).emit('renderMessage', response.generate(constants.SUCCESS_STATUS, mesageRes, "Message sent")); 
+                
+        }else{
+            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, "something wrong"));
+        }
+   }).catch(err => {
+            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+   }); 
+    });
+
+    socket.on('ack_message', function (req) {
+        console.log("req.messageId"+req.messageId);
+        Notification.acknowledgeMessage({_id: mongoose.Types.ObjectId(req.messageId)}).then(function (result) {
+        if(result) {
+            
+               console.log("message acknowledged");
+            //io.sockets.to(socket.id).emit('ackMessage', response.generate(constants.SUCCESS_STATUS, mesageRes, "Message sent")); 
+                
+        }else{
+            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, "something wrong"));
+        }
+   }).catch(err => {
+            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+   }); 
+    });
+
+
     socket.on('disconnecting', function (req) {
         let currentSocketId = socket.id;
         logger.print("disconnecting 12222 socket id while disconnecting"+ " " +currentSocketId)
@@ -2283,7 +2381,7 @@ io.on('connection', function (socket) {
               ///////new/////////////////////
               let k=13;
               darttimer = setTimeout(function gameStartTimmer4(gameStartObj4) {
-                console.log("lp"+darttimer);
+                
                 Timer_Started = false;
                 if(k===13){
                    io.to(reqobj.roomName).emit('gameThrow', response.generate(constants.SUCCESS_STATUS, {
@@ -2322,7 +2420,7 @@ io.on('connection', function (socket) {
                               callback(null, gameStartObj4);
                             }
                             else{
-                                console.log("plo"+Timer_Started);
+                                
 
                                 console.log("no dart thrown dart timer working");
                                 clearTimeout(this.interval);
@@ -2404,7 +2502,7 @@ io.on('connection', function (socket) {
                               callback(null, gameStartObj4);
                             }
                             else{
-                                console.log("plo"+Timer_Started);
+                                
 
                                 console.log("no dart thrown dart timer working");
                                 clearTimeout(this.interval);
@@ -2789,7 +2887,7 @@ io.on('connection', function (socket) {
 
                        }                      
                        }).catch(secondUserTotalCupErr=>{
-                        console.log("uiiii");
+                        
                         console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
                        })
                         

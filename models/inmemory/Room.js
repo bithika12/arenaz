@@ -1135,7 +1135,7 @@ room.userLeave = function (condObj, updateObj) {
                         gameSeconds=360;
                     }
                    
-
+               console.log("*** userarr in player leave ***"+JSON.stringify(userOpponentUserId));
 
                 let onStatus;
                 let findIndex = userArr.findIndex(elemt => elemt.userId === condObj.userId);
@@ -1143,6 +1143,8 @@ room.userLeave = function (condObj, updateObj) {
                 let findIndexOppo = userArr.findIndex(elemt => elemt.userId != condObj.userId);
                 if(findIndexOppo!=-1)
                   userOpponentUserId=userArr[findIndexOppo].userId;
+                console.log("*** userOpponentUserId in player leave ***"+userOpponentUserId);
+
                 if(findIndexOppo!=-1){
                      UserDb.checkOnlineOrNot({_id:userArr[findIndexOppo].userId,onlineStatus:1}).then((userOnlineOpponnentStatusRes)=>{
                         
