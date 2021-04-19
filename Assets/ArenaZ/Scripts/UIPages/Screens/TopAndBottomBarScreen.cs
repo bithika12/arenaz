@@ -4,8 +4,8 @@ using ArenaZ.Manager;
 using RedApple;
 using System.Collections.Generic;
 using System;
-using ArenaZ.GameMode;
 using ArenaZ.SettingsManagement;
+using ArenaZ.GameMode;
 
 namespace ArenaZ.Screens
 {
@@ -29,7 +29,7 @@ namespace ArenaZ.Screens
         [SerializeField] private Text userCupCount;
 
         [SerializeField] private WalletHistory walletHistory;
-        [SerializeField] private ShootingRange shootingRangeRef;
+        [SerializeField] private ShootingRange shootingRange;
 
         private ShareFile shareFile;
         public int count = 0;
@@ -43,6 +43,7 @@ namespace ArenaZ.Screens
 
         private void refreshValues(string coinCount, string cupCount)
         {
+            Debug.Log("-----------------refreshValues-----------------");
             if (userCoinCount != null)
                 userCoinCount.text = coinCount;
             if (userCupCount != null)
@@ -65,7 +66,7 @@ namespace ArenaZ.Screens
             shareButton.onClick.AddListener(onClickShare);
 
             depositButton.onClick.AddListener(openDepositCoinPanel);
-            withdrawButton.onClick.AddListener(openWithdrawCoinPanel);
+            withdrawButton.onClick.AddListener(withdrawDepositCoinPanel);
             walletHistoryButton.onClick.AddListener(walletHistoryPanel);
         }
 
@@ -79,7 +80,7 @@ namespace ArenaZ.Screens
             shareButton.onClick.RemoveListener(onClickShare);
 
             depositButton.onClick.RemoveListener(openDepositCoinPanel);
-            withdrawButton.onClick.RemoveListener(openWithdrawCoinPanel);
+            withdrawButton.onClick.RemoveListener(withdrawDepositCoinPanel);
             walletHistoryButton.onClick.RemoveListener(walletHistoryPanel);
         }
         #endregion
@@ -118,13 +119,13 @@ namespace ArenaZ.Screens
 
         private void openDepositCoinPanel()
         {
-            shootingRangeRef.Refresh();
+            shootingRange.Refresh();
             UIManager.Instance.ShowScreen(Page.WalletDepositRequestPanel.ToString());
         }
 
-        private void openWithdrawCoinPanel()
+        private void withdrawDepositCoinPanel()
         {
-            shootingRangeRef.Refresh();
+            shootingRange.Refresh();
             UIManager.Instance.ShowScreen(Page.WalletWithdrawPanel.ToString());
         }
 
