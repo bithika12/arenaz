@@ -5,6 +5,7 @@ using RedApple;
 using System.Collections.Generic;
 using System;
 using ArenaZ.SettingsManagement;
+using ArenaZ.GameMode;
 
 namespace ArenaZ.Screens
 {
@@ -28,6 +29,7 @@ namespace ArenaZ.Screens
         [SerializeField] private Text userCupCount;
 
         [SerializeField] private WalletHistory walletHistory;
+        [SerializeField] private ShootingRange shootingRange;
 
         private ShareFile shareFile;
         public int count = 0;
@@ -41,6 +43,7 @@ namespace ArenaZ.Screens
 
         private void refreshValues(string coinCount, string cupCount)
         {
+            Debug.Log("-----------------refreshValues-----------------");
             if (userCoinCount != null)
                 userCoinCount.text = coinCount;
             if (userCupCount != null)
@@ -116,11 +119,13 @@ namespace ArenaZ.Screens
 
         private void openDepositCoinPanel()
         {
+            shootingRange.Refresh();
             UIManager.Instance.ShowScreen(Page.WalletDepositRequestPanel.ToString());
         }
 
         private void withdrawDepositCoinPanel()
         {
+            shootingRange.Refresh();
             UIManager.Instance.ShowScreen(Page.WalletWithdrawPanel.ToString());
         }
 

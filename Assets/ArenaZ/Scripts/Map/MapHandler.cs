@@ -15,15 +15,6 @@ namespace ArenaZ
         [SerializeField] private List<MapElement> mapElements = new List<MapElement>();
         private List<GameData> gameDatas = new List<GameData>();
 
-        private void Start()
-        {
-#if UNITY_EDITOR
-            Debug.unityLogger.logEnabled = true;
-#else
-            Debug.unityLogger.logEnabled = false;
-#endif
-        }
-
         public void GetGames()
         {
             RestManager.GetGameList(onComplete, onError);

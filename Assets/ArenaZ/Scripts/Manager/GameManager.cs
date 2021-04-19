@@ -163,11 +163,11 @@ namespace ArenaZ.Manager
         {
             touchBehaviour = GetComponent<TouchBehaviour>();
             
-#if UNITY_EDITOR
-            Debug.unityLogger.logEnabled = true;
-#else
-             Debug.unityLogger.logEnabled=false;
-#endif
+//#if UNITY_EDITOR
+//            Debug.unityLogger.logEnabled = true;
+//#else
+//            Debug.unityLogger.logEnabled=false;
+//#endif
         }
 
         private void Start()

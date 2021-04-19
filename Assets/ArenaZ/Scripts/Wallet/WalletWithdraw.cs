@@ -113,15 +113,6 @@ namespace ArenaZ.Wallet
             if (withdrawAmount >= minimumWithdrawlAmount && withdrawAmount <= User.UserCoin && !string.IsNullOrEmpty(walletKeyField.text) && !string.IsNullOrWhiteSpace(walletKeyField.text) && t_WalletKeyLength >= walletKeyMinimumLength)
             {
                 confirmWindow.SetActive(true);
-
-
-                //requestInProgress = true;
-                //RequestWithdrawRequest t_Request = new RequestWithdrawRequest() { AmountUsd = walletHandlerRef.GetConvertedCoinResponse().DollarAmount, CoinAmount = withdrawAmount, UserEmail = User.UserEmailId, UserName = User.UserName, WalletKey = walletKeyField.text };
-                //RestManager.WalletRequestWithdraw(t_Request, onRequest, (error) =>
-                //{
-                //    onError(error);
-                //    requestInProgress = false;
-                //});
             }
             else
             {
@@ -134,6 +125,7 @@ namespace ArenaZ.Wallet
             }
             if (withdrawAmount > User.UserCoin)
             {
+                notEnoughCoinsWarningText.text = string.Format($"You have {User.UserCoin} and cannot withdraw more than this amount.");
                 notEnoughCoinsWarningWindow.SetActive(true);
             }
             else
@@ -145,7 +137,6 @@ namespace ArenaZ.Wallet
         private void onRequest(RequestWithdrawResponse a_Obj)
         {
             walletHandlerRef.SetRequestWithdrawResponse(a_Obj);
-            //confirmWindow.SetActive(true);
             withdrawAmount = 0;
             requestInProgress = false;
 
@@ -172,53 +163,15 @@ namespace ArenaZ.Wallet
                 onError(error);
                 requestInProgress = false;
             });
-
-            //requestInProgress = true;
-            //ConfirmDepositRequest t_Request = new ConfirmDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
-            //RestManager.WalletConfirmDeposit(t_Request, onConfirm, (error) =>
-            //{
-            //    onError(error);
-            //    requestInProgress = false;
-            //});
         }
-
-        //private void onConfirm(ConfirmDepositResponse a_Obj)
-        //{
-        //    walletHandlerRef.OnCompleteAction();
-        //    walletHandlerRef.SetConfirmDepositResponse(a_Obj);
-
-        //    receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString("N", new CultureInfo("en-US"))} in bitcoins in your wallet soon.");
-
-        //    confirmWindow.SetActive(false);
-        //    confirmationWindow.SetActive(true);
-        //    requestInProgress = false;
-
-        //    CharacterSelection.Instance.GetUnreadMail();
-        //}
 
         public void CancelWithdraw()
         {
             if (requestInProgress)
                 return;
 
-            //requestInProgress = true;
-            //CancelDepositRequest t_Request = new CancelDepositRequest() { UserEmail = User.UserEmailId, TransactionId = walletHandlerRef.GetRequestWithdrawResponse().TransactionDetailsObj.TransactionId };
-            //RestManager.WalletCancelDeposit(t_Request, onCancel, (error) =>
-            //{
-            //    onError(error);
-            //    requestInProgress = false;
-            //});
-
             CloseWindow();
         }
-
-        //private void onCancel(CancelDepositResponse a_Obj)
-        //{
-        //    walletHandlerRef.SetCancelDepositResponse(a_Obj);
-        //    requestInProgress = false;
-
-        //    CharacterSelection.Instance.GetUnreadMail();
-        //}
 
         public void CloseWindow()
         {
@@ -258,7 +211,6 @@ namespace ArenaZ.Wallet
         public void OnReceiveWalletDetails(WalletDetailsResponse a_WalletDetailsResponse)
         {
             minimumAmountHintText.text = string.Format($"Minimum amount of {a_WalletDetailsResponse.MinimumWithdrawl} is required to Withdraw.");
-            notEnoughCoinsWarningText.text = string.Format($"You have {User.UserCoin} and cannot withdraw more than this amount.");
             marketVolatilityText.text = a_WalletDetailsResponse.MarketVolatility;
             
             if (float.TryParse(a_WalletDetailsResponse.TransactionFeeDeposit, out float t_TransactionFeeDeposit))
