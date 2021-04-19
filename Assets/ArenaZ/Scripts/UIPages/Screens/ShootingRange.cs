@@ -103,9 +103,7 @@ namespace ArenaZ.GameMode
                 if (userCupCount != null)
                     userCupCount.text = userSelectionDetails.UserCup.ToString();
 
-                Debug.Log($"Before: {User.UserCoin} - {userSelectionDetails.UserCoin}");
                 User.UserCoin = userSelectionDetails.UserCoin;
-                Debug.Log($"After: {User.UserCoin} - {userSelectionDetails.UserCoin}");
                 User.UserCup = userSelectionDetails.UserCup;
                 UIManager.Instance.setCoinAndCup?.Invoke(User.UserCoin.ToString(), User.UserCup.ToString());
             }

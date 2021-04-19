@@ -384,17 +384,16 @@ namespace RedApple
             }
             Instance.restUtil.Send(builder,
                 handler =>
-                {                   
+                {
                     try
                     {
                         var response = DataConverter.DeserializeObject<ApiResponseFormat<T>>(handler.text);
                         onCompletion?.Invoke(response.Result);
-                    }
-                    catch (Exception e)
+                    } catch(Exception e)
                     {
                         Debug.LogError($"Rest Api Sent Error: {e.ToString()}");
                     }
-
+                    
                 },
                 restError => interceptError(restError, () => onError?.Invoke(restError), onError));
         }

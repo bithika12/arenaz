@@ -4,7 +4,10 @@ using ArenaZ.Manager;
 using RedApple;
 using System.Collections.Generic;
 using System;
+<<<<<<< HEAD
 using ArenaZ.GameMode;
+=======
+>>>>>>> parent of 1e8790f... Minor Changes
 using ArenaZ.SettingsManagement;
 
 namespace ArenaZ.Screens
@@ -29,7 +32,10 @@ namespace ArenaZ.Screens
         [SerializeField] private Text userCupCount;
 
         [SerializeField] private WalletHistory walletHistory;
+<<<<<<< HEAD
         [SerializeField] private ShootingRange shootingRangeRef;
+=======
+>>>>>>> parent of 1e8790f... Minor Changes
 
         private ShareFile shareFile;
         public int count = 0;
@@ -118,13 +124,19 @@ namespace ArenaZ.Screens
 
         private void openDepositCoinPanel()
         {
+<<<<<<< HEAD
             shootingRangeRef.Refresh();
+=======
+>>>>>>> parent of 1e8790f... Minor Changes
             UIManager.Instance.ShowScreen(Page.WalletDepositRequestPanel.ToString());
         }
 
         private void openWithdrawCoinPanel()
         {
+<<<<<<< HEAD
             shootingRangeRef.Refresh();
+=======
+>>>>>>> parent of 1e8790f... Minor Changes
             UIManager.Instance.ShowScreen(Page.WalletWithdrawPanel.ToString());
         }
 
