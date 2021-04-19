@@ -140,14 +140,12 @@ namespace ArenaZ.Wallet
             withdrawAmount = 0;
             requestInProgress = false;
 
-
             walletHandlerRef.OnCompleteAction();
             receivingDollarText.text = string.Format($"You will receive ${walletHandlerRef.GetConvertedCoinResponse().DollarAmount.ToString("N", new CultureInfo("en-US"))} in bitcoins in your wallet soon.");
 
             confirmWindow.SetActive(false);
             confirmationWindow.SetActive(true);
-
-
+            
             CharacterSelection.Instance.GetUnreadMail();
         }
 
