@@ -240,6 +240,25 @@ var transactionSchema      = new Schema({
 });
 //MODEL DECLARATION
 
+var messageSchema      = new Schema({
+    seen_status : Number,
+    message: String,
+    from_user_name: String,
+    to_user_name: String,
+    room_name: String,
+    
+    created_at: {
+        type: Date,
+        default: Date.now
+    }, 
+    updated_at: {
+        type: Date,
+        default: Date.now
+    }
+    
+    
+});
+
 schema.roleModel   = mongoose.model('roles'  , roleSchema);
 schema.moduleModel = mongoose.model('modules', modulesSchema);
 schema.avatarModel = mongoose.model('avatar' , avatarSchema);
@@ -252,5 +271,7 @@ schema.versionModel   = mongoose.model('appversions'  , versionSchema);
 schema.roomLogModel   = mongoose.model('roomlogs'  , roomlogSchema);
 schema.userCoinModel   = mongoose.model('user_coins'  , userCoinSchema);
 schema.userTransactionModel   = mongoose.model('user_transactions'  , transactionSchema);
+//messageSchema
+schema.messageModel   = mongoose.model('messages'  , messageSchema);
 
 module.exports = schema;

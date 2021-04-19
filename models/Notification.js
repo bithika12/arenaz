@@ -6,6 +6,7 @@ let Mongoose = require('mongoose');
 //let mongoose = require(appRoot +'/config/mongoose');
 const moment=require("moment");
 let  Notifications ={};
+let messageSchema = require(appRoot +'/schema/Schema').messageModel;
 //mongoose.set('debug', true);
 
 Notifications.notifications1 =function(reqObj){
@@ -52,4 +53,22 @@ Notifications.createNotification =function(reqObj){
     });
 };
 
+//createMessage
+Notifications.createMessage =function(reqObj){
+    //console.log(reqObj);return false;
+    return new Promise((resolve,reject) => {
+        messageSchema.create(reqObj).then(responses => {
+            resolve(responses);
+        })
+    });
+};
+//acknowledgeMessage
+Notifications.acknowledgeMessage =function(reqObj){
+    //console.log(reqObj);return false;
+    return new Promise((resolve,reject) => {
+        messageSchema.update(reqObj, {$set: {seen_status:1}}).then(responses => {
+            resolve(responses);
+        })
+    });
+};
 module.exports =Notifications;
