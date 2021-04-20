@@ -3289,7 +3289,10 @@ io.on('connection', function (socket) {
                             if(findIndex==1)
                                 allOnlineUsers[findIndexOpponent].roomName='';
                             else
-                                allOnlineUsers[findIndex].roomName='';
+                                {
+                                if(allOnlineUsers[findIndex])    
+                                 allOnlineUsers[findIndex].roomName='';
+                                }
 
                             io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 //userId: result.userId,
