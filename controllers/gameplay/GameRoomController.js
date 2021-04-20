@@ -2967,7 +2967,13 @@ io.on('connection', function (socket) {
                                 if(findIndex==1)
                                    allOnlineUsers[findIndexOpponent].roomName='';
                                 else
-                                    allOnlineUsers[findIndex].roomName='';
+                                {
+                                    if(!allOnlineUsers[findIndex].roomName)
+                                      console.log("not found");
+                                    else
+                                        allOnlineUsers[findIndex].roomName='';
+                                }
+                                    
                               
                                   io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                     //userId: result.userId,
@@ -3290,8 +3296,11 @@ io.on('connection', function (socket) {
                                 allOnlineUsers[findIndexOpponent].roomName='';
                             else
                                 {
-                                if(allOnlineUsers[findIndex])    
-                                 allOnlineUsers[findIndex].roomName='';
+                                if(!allOnlineUsers[findIndex].roomName)    
+                                    console.log("not found");
+                                else
+                                    allOnlineUsers[findIndex].roomName='';
+
                                 }
 
                             io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
