@@ -817,7 +817,215 @@ io.on('connection', function (socket) {
         }
     }
 
-    function processGameRequest(req, callback) {
+     function processGameRequest(req, callback) {
+        if (req.userId && req.userName) {
+            let coinArr=[10,50,100,250,500];
+            let findCoin = coinArr.findIndex(elemt => elemt === req.roomCoin);
+            console.log("findCoin"+findCoin);
+
+           if(findCoin==-1){
+               console.log("pl0"); 
+               io.sockets.to(socket.id).emit('invalidCoin', 
+               response.generate(constants.SUCCESS_STATUS,
+                {coin: req.roomCoin
+               }, "User enter coin is not valid !"));  
+               callback();
+            }
+            else {
+            user.getUserSocketDetails({userId: req.userId}).then((userDetails) => {
+                var findIndex = allOnlineUsers.findIndex(function (elemt) {
+                    return elemt.userId == req.userId
+                });
+                 console.log("process"+findIndex);
+                 console.log(allOnlineUsers.length);
+                 console.log("req user room"+allOnlineUsers[findIndex].roomName);
+
+                 //if(allOnlineUsers.length==0)
+                 //if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
+                if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
+                    io.sockets.to(req.socketId).emit('errorJoin',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
+                    console.log("   connectedRoom   :"+findIndex+allOnlineUsers[findIndex].roomName,response.generate( constants.ERROR_STATUS,{},"User cannot join"))
+                    callback();
+
+
+                /*if (findIndex == -1 || allOnlineUsers[findIndex].roomName != '') {
+                    io.sockets.to(req.socketId).emit('error', response.generate(constants.ERROR_STATUS, {}, "User cannot join"));
+                    callback();*/
+                } else {
+                    //if(findIndex != -1 ){
+                    let userSocketId = allOnlineUsers[findIndex].socketId;
+                    if (io.sockets.sockets[userSocketId] != undefined) {
+                        //update user online status
+                        user.updateUserOnlineStatus({
+                            userId: req.userId
+                        }).then(function (statusResult) {
+                        //find user already in room
+                        room.createRoom({
+                            userId: req.userId,
+                            userName: req.userName,
+                            colorName: req.colorName,
+                            raceName: req.raceName,
+                            dartName: req.dartname,
+                            roomCoin: req.roomCoin,
+                            totalCupWin:req.cupNumbers,
+                            firstName: req.firstName,
+                            lastName: req.lastName
+                        }).then(function (result) {
+                            let roomName = result.roomName;
+                            userObj = {
+                                userId: req.userId,
+                                //score: 333,
+                                //total: 333,
+                                score: 0,
+                                roundscore:0,
+                                //score: 199,
+                                total: 199,
+                                status: "active",
+                                isWin: 0,
+                                turn: 0,
+                                dartPoint: "",
+                                userName: req.userName,
+                                colorName: req.colorName,
+                                raceName: req.raceName,
+                                dartName: req.dartname,
+                                total_no_win: 0,
+                                cupNumber: 0,
+                                roomCoin: req.roomCoin,
+                                totalCupWin:req.cupNumbers,
+                                firstName: req.firstName,
+                                lastName: req.lastName,
+                                totalGameScore:0,
+
+                                ////////////
+                                hitScore:0,
+                                scoreMultiplier:0
+
+                            };
+                            inmRoom.roomJoineeCreation({
+                                roomId: result._id,
+                                roomName: result.roomName,
+                                roomCoin: req.roomCoin
+                            }, {userObj: userObj}).then((joineeDetails) => {
+                                io.to(roomName).emit('enterUser', response.generate(constants.SUCCESS_STATUS, {user: userObj}, "Player enter to the room"));
+                                io.of('/').connected[userSocketId].join(roomName, function () {
+                                    allOnlineUsers[findIndex].roomName = roomName;
+                                    io.sockets.to(socket.id).emit('connectedRoom', response.generate(constants.SUCCESS_STATUS, {
+                                        roomName: roomName,
+                                        users: joineeDetails.users
+                                    }, "You are waiting in a room !"));
+                                    //fetch user colorname,racename//////
+                                    //user.fetchColorMod(roomName,joineeDetails.users).then((allRacerDetails)=> {
+
+                                    if (joineeDetails.users.length === 1 && roomName != undefined) {
+                                        callback();
+                                        async.waterfall([
+                                            waitingForUser({roomName: roomName}),
+                                            gameStart,
+                                            //userStatusUpdateAfterGamerequest
+                                        ], function (err, result) {
+                                            //console.log("result print"+result.status);
+                                            if (result) {
+                                                logger.print("***Done  ", result);
+                                                io.sockets.to(socket.id).emit('userJoined', response.generate(constants.SUCCESS_STATUS, {
+                                                    roomName: roomName,
+                                                    users: joineeDetails.users
+                                                }, "User enter in a room !"));
+                                                //io.sockets.to(roomName).emit('gameStart',response.generate( constants.SUCCESS_STATUS,{roomName: roomName,users :joineeDetails.users },"Game start !"));
+                                                if (!result.status) {
+                                                    logger.print("wait status found");
+                                                    io.sockets.to(socket.id).emit('userJoin', response.generate(constants.SUCCESS_STATUS, {
+                                                        roomName: roomName,
+                                                        users: joineeDetails.users
+                                                    }, "User enter in a room !"));
+                                                }
+                                                else{
+                                                    logger.print("Room close while no opponent found after 3 sec");
+                                                }
+
+                                            } else
+                                                logger.print("***GAME START ERROR ", err);
+                                            io.sockets.to(socket.id).emit('error1', response.generate(constants.ERROR_STATUS, {message: err}));
+                                        });
+                                    }
+                                    if (joineeDetails.users.length === 2) {
+                                        callback();
+                                        async.waterfall([
+                                            gameStartMod({roomName: roomName}),
+                                            //userStatusUpdateAfterGamerequest,
+                                            userNextStart,
+                                            //////////////
+                                            gameTimer                                        
+                                            
+                                            
+                                        ], function (err, result) {
+                                            if (result) {
+
+                                                io.sockets.to(socket.id).emit('userJoin', response.generate(constants.SUCCESS_STATUS, {
+                                                    roomName: roomName,
+                                                    users: joineeDetails.users
+                                                }, "User enter in a room !"));
+                                                logger.print("***Done  ", result);
+                                                io.sockets.to(roomName).emit('gameStart', response.generate(constants.SUCCESS_STATUS, {
+                                                    roomName: roomName,
+                                                    users: joineeDetails.users
+                                                }, "Game start !"));
+                                            } else
+                                                logger.print("***GAME START ERROR ", err);
+                                            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
+
+                                        });
+                                    }
+                                    // Otherwise, send an error message back to the player.
+                                    else {
+                                        // io.sockets.to(roomName).emit('NoUser', response.generate(constants.ERROR_STATUS, {message: "Unable to found room"}));
+                                        callback();
+                                    }
+                                    /*}).catch(err=>{
+                                            io.sockets.to(socket.id).emit('error',response.generate( constants.ERROR_STATUS,{message:err}));
+                                            callback();
+                                        })*/
+
+                                })/*.catch(err => {
+                                    io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
+                                    callback();
+                                })*/
+
+                            }).catch(err => {
+                                io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: err}));
+                                callback();
+                            })
+                        }).catch(err => {
+                            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to create room"}));
+                            callback();
+                        })
+
+                     }).catch(userStatusUpdateErr => {
+                            logger.print("unable to update user online status");
+                            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "Unable to update online status"}));
+                            callback();
+                        })
+
+
+                    } else {
+                        io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "No socket Id found"}));
+                        callback();
+                    }
+                }
+
+            }).catch(err => {
+                console.log("eror while fetch socket");
+                io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, err));
+                callback();
+            })
+
+        }
+        } else {
+            io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {message: "User not found"}));
+            callback();
+        }
+    }
+
+    function processGameRequestOld(req, callback) {
         if (req.userId && req.userName) {
             let coinArr=[10,50,100,250,500];
             let findCoin = coinArr.findIndex(elemt => elemt === req.roomCoin);
