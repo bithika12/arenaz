@@ -63,7 +63,7 @@ namespace RedApple
         {
             OldSocketId = CurrentSocketId;
         }
-
+      
         public bool SocketIdsMatching()
         {
             return OldSocketId.Equals(CurrentSocketId);
@@ -85,6 +85,24 @@ namespace RedApple
             Debug.Log("Add User");
             Debug.Log("Access Token: " + addUserJsonData);
             socket.EmitJson(SocketEmitEvents.addUser.ToString(), addUserJsonData);
+        }
+
+        public void SendUserMessage(String message)
+        {
+            if (!GameManager.Instance.InternetConnection())
+            {
+                //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
+                return;
+            }
+            SendMessageData sendMessageData = new SendMessageData
+            {
+                AccessToken = User.UserAccessToken,
+                RoomName = User.RoomName,
+                Message = message
+
+            };
+            string SendUserMessageJsonData = DataConverter.SerializeObject(sendMessageData);
+            socket.EmitJson(SocketEmitEvents.send_message.ToString(), SendUserMessageJsonData);
         }
 
         public void GameRequest()
@@ -301,6 +319,17 @@ public struct AccesToken
 {
     [JsonProperty("accessToken")]
     public string AccessToken { get; set; }
+}
+
+[Serializable]
+public struct SendMessageData
+{
+    [JsonProperty("accessToken")]
+    public string AccessToken { get; set; }
+    [JsonProperty("roomName")]
+    public string RoomName { get; set; }
+    [JsonProperty("message")]
+    public string Message { get; set; }
 }
 
 [Serializable]

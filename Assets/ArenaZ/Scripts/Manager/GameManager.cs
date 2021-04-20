@@ -313,6 +313,7 @@ namespace ArenaZ.Manager
             SocketListener.Listen(SocketListenEvents.rejoinFailure.ToString(), onRejoinFailure);
             SocketListener.Listen(SocketListenEvents.temporaryDisconnect.ToString(), onTemporaryDisconnect);
             SocketListener.Listen(SocketListenEvents.opponentReconnect.ToString(), onOpponentReconnect);
+            SocketListener.Listen(SocketListenEvents.sendMessage.ToString(), OnMessageReceived);
         }
 
         private void setDartColor(string colorName, GameObject dartGameObj)
@@ -1190,6 +1191,11 @@ namespace ArenaZ.Manager
                 SocketManager.Instance.UpdateOldSocketId();
                 SocketManager.Instance.ReJoinRequest();
             }
+        }
+
+        private void OnMessageReceived(string obj)
+        {
+            Debug.LogError(obj);
         }
 
         private void doReJoinRequest()

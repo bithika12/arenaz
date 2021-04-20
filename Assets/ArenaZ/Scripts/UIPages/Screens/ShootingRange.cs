@@ -53,6 +53,7 @@ namespace ArenaZ.GameMode
 
         private void Start()
         {
+            Debug.LogError("Shooting Range Start");
             GettingButtonReferences();
             ListenSocketEvents();
             CharacterSelection.setDart += SetDartImage;

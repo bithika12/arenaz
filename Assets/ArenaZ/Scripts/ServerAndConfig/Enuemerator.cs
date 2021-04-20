@@ -8,6 +8,7 @@ public enum SocketEmitEvents
     leave,
     gameRequestCancel,
     reJoin,
+    send_message,
 }
 
 public enum SocketListenEvents
@@ -27,4 +28,6 @@ public enum SocketListenEvents
     rejoinFailure,
     temporaryDisconnect,
     opponentReconnect,
+    sendMessage,
+
 }

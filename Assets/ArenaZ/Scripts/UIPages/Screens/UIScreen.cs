@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using TMPro;
-
+using RedApple;
 
 namespace ArenaZ.Screens
 {
@@ -78,5 +78,15 @@ namespace ArenaZ.Screens
             component.enabled = value;
         }
 
+        /*Update To be delete*/
+        private void Update()
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                SocketManager.Instance.SendUserMessage("Hello World");
+            }
+        }
+
     }
+
 }

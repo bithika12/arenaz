@@ -34,3 +34,4 @@ MonoBehaviour:
     - rejoinFailure
     - temporaryDisconnect
     - opponentReconnect
+    - sendMessage
