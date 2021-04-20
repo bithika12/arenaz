@@ -2962,6 +2962,8 @@ io.on('connection', function (socket) {
                             }).then(function (roomDetails) {
                                 allOnlineUsers.splice(findIndex, 1);
                                 //allOnlineUsers[findIndex].roomName='';
+                                console.log("2965 allOnlineUsers"+JSON.stringify(allOnlineUsers));
+                                
                                 if(findIndex==1)
                                    allOnlineUsers[findIndexOpponent].roomName='';
                                 else
