@@ -71,4 +71,15 @@ Notifications.acknowledgeMessage =function(reqObj){
         })
     });
 };
+//viewMessage
+Notifications.viewMessage =function(reqObj){
+    //console.log(reqObj);return false;
+    return new Promise((resolve,reject) => {
+       messageSchema.find(reqObj,{from_user_name:1,message:1,created_at:1,to_user_name:1,room_name:1,seen_status:1,_id:1}).then(responses => {
+
+        //messageSchema.update(reqObj, {$set: {seen_status:1}}).then(responses => {
+            resolve(responses);
+        })
+    });
+};
 module.exports =Notifications;

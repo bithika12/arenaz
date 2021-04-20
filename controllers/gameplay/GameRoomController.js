@@ -841,8 +841,8 @@ io.on('connection', function (socket) {
                  console.log("req user room"+allOnlineUsers[findIndex].roomName);
 
                  //if(allOnlineUsers.length==0)
-                 //if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
-                if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
+                 if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
+                //if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
                     io.sockets.to(req.socketId).emit('errorJoin',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
                     console.log("   connectedRoom   :"+findIndex+allOnlineUsers[findIndex].roomName,response.generate( constants.ERROR_STATUS,{},"User cannot join"))
                     callback();
@@ -1407,7 +1407,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('render_message', function (req) {
-        Notification.viewMessage({userName: req.userName}).then(function (result) {
+        Notification.viewMessage({to_user_name: req.userName,seen_status:0}).then(function (result) {
         if(result) {
             let mesageRes={
                 messageList:result
