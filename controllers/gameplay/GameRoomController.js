@@ -1559,7 +1559,7 @@ io.on('connection', function (socket) {
         })
     }
 
-    socket.on('send_message', function (req) {
+    socket.on('sendMessage', function (req) {
         //let currentSocketId = socket.id;
         logger.print("Player send messages");
         let userOpponentUserId;
@@ -1601,6 +1601,9 @@ io.on('connection', function (socket) {
                     message:req.message,
                     message_id:notificationdetails._id
                 }, "Message sent"));
+
+
+          
 
         /*io.sockets.to(allOnlineUsers[findIndexOpponent].socketId).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
                     userId: req.userName,
