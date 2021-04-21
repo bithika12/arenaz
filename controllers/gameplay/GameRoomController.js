@@ -2823,7 +2823,7 @@ io.on('connection', function (socket) {
 
      socket.on('disconnect', function (req) {
         let currentSocketId = socket.id;
-        logger.print("socket id while disconnecting"+ " " +currentSocketId);
+        logger.print("*** socket id while disconnecting"+ " " +currentSocketId);
              
 
         let findIndex = allOnlineUsers.findIndex(function (elemt) {
@@ -2832,11 +2832,14 @@ io.on('connection', function (socket) {
         let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
             return elemt.socketId != currentSocketId
         });
-         console.log(findIndex);
+         console.log("*** findIndex value"+findIndex);
+         console.log("*** allOnlineUsers[findIndex]"+allOnlineUsers[findIndex].userId);
+        console.log("*** allOnlineUsers"+JSON.stringify(allOnlineUsers));
+
         if (findIndex != -1) {
             let userRoomName = allOnlineUsers[findIndex].roomName;
             if (userRoomName != '') {
-                logger.print("room name while disconnecting"+ userRoomName);
+                logger.print("*** room name while disconnecting"+ userRoomName);
                 //io.to(userRoomName).emit('playerLeave', response.generate(constants.SUCCESS_STATUS, {userId: allOnlineUsers[findIndex].userId}, "Player leave from room"));
                 
                 //////////////////////////////////////////////////
