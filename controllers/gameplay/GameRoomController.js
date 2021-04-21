@@ -1587,9 +1587,9 @@ io.on('connection', function (socket) {
             return elemt.socketId == currentSocketId
         });
         let findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
-            return elemt.socketId != currentSocketId
+            return elemt.socketId != currentSocketId && elemt.roomName==req.roomName
         });
-
+        if(findIndexOpponent != -1 ){
         console.log("findIndexOpponent"+findIndexOpponent);
 
         console.log("opponent socket"+allOnlineUsers[findIndexOpponent].socketId);
@@ -1600,6 +1600,13 @@ io.on('connection', function (socket) {
                     message:req.message,
                     message_id:notificationdetails._id
                 }, "Message sent"));
+
+    }
+    else{
+        console.log("*** No opponent found in that room");
+       io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, {}));
+
+    }
 
                     /* io.to(req.roomName).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
                     userId: req.userName,
