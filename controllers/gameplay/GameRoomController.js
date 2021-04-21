@@ -1593,14 +1593,21 @@ io.on('connection', function (socket) {
         console.log("findIndexOpponent"+findIndexOpponent);
 
         console.log("opponent socket"+allOnlineUsers[findIndexOpponent].socketId);
-        io.sockets.to(socket.id).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {message:"successfully send messages"}));
+        //io.sockets.to(socket.id).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {message:"successfully send messages"}));
 
-        io.sockets.to(allOnlineUsers[findIndexOpponent].socketId).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
+         io.to(req.roomName).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
                     userId: req.userName,
                     roomName: req.roomName,
                     message:req.message,
                     message_id:notificationdetails._id
                 }, "Message sent"));
+
+        /*io.sockets.to(allOnlineUsers[findIndexOpponent].socketId).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
+                    userId: req.userName,
+                    roomName: req.roomName,
+                    message:req.message,
+                    message_id:notificationdetails._id
+                }, "Message sent"));*/
 
     }
     else{
