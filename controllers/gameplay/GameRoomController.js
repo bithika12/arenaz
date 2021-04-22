@@ -1633,7 +1633,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('renderMessage', function (req) {
-        Notification.viewMessage({to_user_name: req.userName,seen_status:0}).then(function (result) {
+        Notification.viewMessage({to_user_name: req.userName,seen_status:0,room_name:req.roomName}).then(function (result) {
         if(result) {
             let mesageRes={
                 messageList:result

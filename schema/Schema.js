@@ -241,7 +241,11 @@ var transactionSchema      = new Schema({
 //MODEL DECLARATION
 
 var messageSchema      = new Schema({
-    seen_status : Number,
+    seen_status: {
+        type: Number,
+        default: 0
+    },
+    
     message: String,
     from_user_name: String,
     to_user_name: String,
