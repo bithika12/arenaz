@@ -1632,14 +1632,14 @@ io.on('connection', function (socket) {
 
     });
 
-    socket.on('render_message', function (req) {
+    socket.on('renderMessage', function (req) {
         Notification.viewMessage({to_user_name: req.userName,seen_status:0}).then(function (result) {
         if(result) {
             let mesageRes={
                 messageList:result
             }
 
-            io.sockets.to(socket.id).emit('renderMessage', response.generate(constants.SUCCESS_STATUS, mesageRes, "Message sent")); 
+            io.sockets.to(socket.id).emit('renderMessage', response.generate(constants.SUCCESS_STATUS, mesageRes, "Message viewed")); 
                 
         }else{
             io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, "something wrong"));
@@ -1649,13 +1649,16 @@ io.on('connection', function (socket) {
    }); 
     });
 
-    socket.on('ack_message', function (req) {
+    socket.on('ackMessage', function (req) {
         console.log("req.messageId"+req.messageId);
         Notification.acknowledgeMessage({_id: mongoose.Types.ObjectId(req.messageId)}).then(function (result) {
         if(result) {
+            let mesageRes={
+                messageList:result
+            }
             
                console.log("message acknowledged");
-            //io.sockets.to(socket.id).emit('ackMessage', response.generate(constants.SUCCESS_STATUS, mesageRes, "Message sent")); 
+            io.sockets.to(socket.id).emit('ackMessage', response.generate(constants.SUCCESS_STATUS, mesageRes, "Message acknowledged")); 
                 
         }else{
             io.sockets.to(socket.id).emit('error', response.generate(constants.ERROR_STATUS, "something wrong"));
