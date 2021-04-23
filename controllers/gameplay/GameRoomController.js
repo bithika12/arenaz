@@ -2845,7 +2845,7 @@ io.on('connection', function (socket) {
      socket.on('disconnect', function (req) {
         let currentSocketId = socket.id;
         logger.print("*** socket id while disconnecting"+ " " +currentSocketId);
-             
+         console.log("allOnlineUsers"+JSON.stringify(allOnlineUsers));    
 
         let findIndex = allOnlineUsers.findIndex(function (elemt) {
             return elemt.socketId == currentSocketId
@@ -2973,12 +2973,16 @@ io.on('connection', function (socket) {
                         user.findDetailsGame({_id:result.userId}).then((firstUserTotalCup)=>{
                         console.log("firstUserTotalCup"+firstUserTotalCup.cupNo);    
                          
-                        user.findDetailsGame({_id:result.opponentUserId}).then((secondUserTotalCup)=>{
+                        //user.findDetailsGame({_id:result.opponentUserId}).then((secondUserTotalCup)=>{
                         
-                        console.log("secondUserTotalCup"+secondUserTotalCup.cupNo); 
+                        //console.log("secondUserTotalCup"+secondUserTotalCup.cupNo); 
 
                         if (findIndexOpponent != -1 && result.isWin == 1) {
                             logger.print("opponent exists");
+                            ///new code///
+                            user.findDetailsGame({_id:result.opponentUserId}).then((secondUserTotalCup)=>{
+                            ///new code ///
+                            
                             winnerDeclare({
                                 userId: result.opponentUserId,
                                 //userId: allOnlineUsers[findIndexOpponent].userId,
@@ -3023,8 +3027,18 @@ io.on('connection', function (socket) {
                                 }, "Game is over"));
                                 logger.print("Room closed");
                             });
+                            ///new code///
+                            }).catch(secondUserTotalCupErr=>{
+                        
+                             console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                           });
+                            ///new code///
                         } else if (findIndexOpponent != -1 && result.isWin == 2) {
                             logger.print("opponent exists");
+                            ///new code///
+                            user.findDetailsGame({_id:result.opponentUserId}).then((secondUserTotalCup)=>{
+                            ///new code ///
+
                             allOnlineUsers.splice(findIndex, 1);
                             //allOnlineUsers[findIndex].roomName='';
                             if(findIndex==1)
@@ -3054,6 +3068,13 @@ io.on('connection', function (socket) {
                                // gameStatus: "Draw"
                             }, "Game is over"));
                             logger.print("Room closed");
+
+                            ///new code///
+                            }).catch(secondUserTotalCupErr=>{
+                        
+                             console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                           })
+                            ///new code///
                         } else {
                             logger.print("opponent not exists");
                            // allOnlineUsers.splice(findIndex, 1);
@@ -3079,7 +3100,8 @@ io.on('connection', function (socket) {
                                 completeStatus:0,
 
                                 firstUserTotalCup: firstUserTotalCup.cupNo,
-                                secondUserTotalCup: secondUserTotalCup.cupNo
+                                secondUserTotalCup: ""
+                                //secondUserTotalCup: secondUserTotalCup.cupNo
                                 //gameStatus: ""
                             }, "Game is over"));
                             /*io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
@@ -3097,9 +3119,9 @@ io.on('connection', function (socket) {
 
                        //if clause
 
-                       }).catch(secondUserTotalCupErr=>{
+                       /*}).catch(secondUserTotalCupErr=>{
                         console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
-                       })
+                       })*/
 
                        }).catch(firstUserTotalCupErr=>{
                         console.log("firstUserTotalCupErr"+firstUserTotalCupErr);
@@ -3128,7 +3150,7 @@ io.on('connection', function (socket) {
                        }                      
                        }).catch(secondUserTotalCupErr=>{
                         
-                        console.log("secondUserTotalCupErr"+secondUserTotalCupErr);
+                        console.log("22secondUserTotalCupErr"+secondUserTotalCupErr);
                        })
                         
 
@@ -3154,9 +3176,10 @@ io.on('connection', function (socket) {
 
             }
             else{
+                logger.print("Room not found");
                 user.userStatusUpdate({userId:allOnlineUsers[findIndex].userId,userStatus:0}).then(function(statusUpdate){
 
-                logger.print("Room not found");
+                
                 allOnlineUsers.splice(findIndex, 1);
 
                 }).catch(err => {
