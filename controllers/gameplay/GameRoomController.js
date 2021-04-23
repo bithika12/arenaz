@@ -1596,7 +1596,7 @@ io.on('connection', function (socket) {
         //io.sockets.to(socket.id).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {message:"successfully send messages"}));
 
          io.to(req.roomName).emit('sendMessage', response.generate(constants.SUCCESS_STATUS, {
-                    userId: req.userId,
+                    userId: allOnlineUsers[findIndexOpponent].userId,
                     roomName: req.roomName,
                     message:req.message,
                     message_id:notificationdetails._id
