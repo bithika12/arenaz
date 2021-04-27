@@ -236,7 +236,7 @@ room.createRoom = function(condObj){
                     });
                 }
                 else {
-                  if(responses[0].users[0]['userId'] !=condObj.userId){
+                 // if(responses[0].users[0]['userId'] !=condObj.userId){
                 updateObj = {}
                 Room.updateOne({"_id": responses[0]._id},
                     {
@@ -269,7 +269,7 @@ room.createRoom = function(condObj){
                 }).catch(err => {
                     reject(err);
                 });
-              }
+              //}
 
                 // }
               }
