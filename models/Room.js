@@ -240,6 +240,7 @@ room.createRoom = function(condObj){
                 updateObj = {}
                 Room.updateOne({"_id": responses[0]._id},
                     {
+                      status:"closed",
                         $push: {
                             users: {
                                 userId: condObj.userId,
