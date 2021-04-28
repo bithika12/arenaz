@@ -2999,17 +2999,25 @@ io.on('connection', function (socket) {
                                 //allOnlineUsers[findIndex].roomName='';
                                 console.log("2965 allOnlineUsers"+JSON.stringify(allOnlineUsers));
                                 
-                                if(findIndex==1)
+                                if(findIndex==1){
+                                    console.log("findindex ok");
                                    allOnlineUsers[findIndexOpponent].roomName='';
+                                }
+                                
                                 else
                                 {
-                                    if(!allOnlineUsers[findIndex].roomName)
+                                    console.log("findindex not ok");
+                                    if(!allOnlineUsers[findIndex].roomName){
                                       console.log("not found");
-                                    else
+
+                                     }
+                                    else{
+                                        console.log("not found1");
                                         allOnlineUsers[findIndex].roomName='';
+                                    }
                                 }
                                     
-                              
+                                console.log("gameover calling");
                                   io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                     //userId: result.userId,
                                     firstUserId: result.userId,
@@ -3032,7 +3040,7 @@ io.on('connection', function (socket) {
                                     //gameStatus: "Lose"
                                     //gameStatus: "Win"
                                 }, "Game is over"));
-                                logger.print("Room closed");
+                                logger.print("ameover called after Room closed");
                             });
                             ///new code///
                             }).catch(secondUserTotalCupErr=>{
@@ -3074,7 +3082,7 @@ io.on('connection', function (socket) {
                                 secondUserTotalCup: secondUserTotalCup.cupNo
                                // gameStatus: "Draw"
                             }, "Game is over"));
-                            logger.print("Room closed");
+                            logger.print("game over draw called Room closed");
 
                             ///new code///
                             }).catch(secondUserTotalCupErr=>{
@@ -3116,11 +3124,11 @@ io.on('connection', function (socket) {
                                 roomName: userRoomName,
                                 gameStatus: ""
                             }, "Game is over"));*/
-                            logger.print("Room closed");
+                            logger.print("game over called with no opponent exists Room closed");
                            //nes///
                           }
                         }
-                        logger.print("Room closed");
+                        logger.print("all Room closed last");
 
                        /////
 
@@ -3195,7 +3203,7 @@ io.on('connection', function (socket) {
               }
         }
         else{
-            logger.print("no socket id found");
+            logger.print("**** no socket id found");
         }
     });
 
