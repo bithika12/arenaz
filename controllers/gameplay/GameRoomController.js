@@ -2861,7 +2861,7 @@ io.on('connection', function (socket) {
             return elemt.socketId != currentSocketId
         });
          console.log("*** findIndex value"+findIndex);
-         console.log("*** allOnlineUsers[findIndex]"+allOnlineUsers[findIndex].userId);
+         //console.log("*** allOnlineUsers[findIndex]"+allOnlineUsers[findIndex].userId);
         console.log("*** allOnlineUsers"+JSON.stringify(allOnlineUsers));
 
         if (findIndex != -1) {
