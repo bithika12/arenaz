@@ -3001,6 +3001,12 @@ io.on('connection', function (socket) {
                                 if(findIndex != -1){
                                 //if(findIndex==1){
                                     console.log("findindex ok");
+
+                                    findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+                                    return elemt.roomName == req.roomName
+                                    });
+                                    console.log("*** 3008 findIndexOpponent"+findIndexOpponent);
+                                    console.log("aline"+JSON.stringify(allOnlineUsers));
                                    allOnlineUsers[findIndexOpponent].roomName='';
                                 }
                                 
@@ -3059,9 +3065,17 @@ io.on('connection', function (socket) {
                             
                              if(findIndex != -1)
                            // if(findIndex==1)
+                               {
+                                findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
+                                    return elemt.roomName == req.roomName
+                                    });
+                                    console.log("*** 3072 draw findIndexOpponent"+findIndexOpponent);
+                                    console.log("alline"+JSON.stringify(allOnlineUsers));
                                 allOnlineUsers[findIndexOpponent].roomName='';
-                            else
+                               }
+                            else{
                                 allOnlineUsers[findIndex].roomName='';
+                            }
 
                             io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 //userId: result.userId,
