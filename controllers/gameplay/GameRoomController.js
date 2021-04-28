@@ -818,13 +818,15 @@ io.on('connection', function (socket) {
     }
 
      function processGameRequest(req, callback) {
+        console.log("process game called"); 
+        console.log("req"+JSON.stringify(req));
         if (req.userId && req.userName) {
             let coinArr=[10,50,100,250,500];
             let findCoin = coinArr.findIndex(elemt => elemt === req.roomCoin);
             console.log("findCoin"+findCoin);
 
            if(findCoin==-1){
-               console.log("pl0"); 
+               console.log("no valid coin foound"); 
                io.sockets.to(socket.id).emit('invalidCoin', 
                response.generate(constants.SUCCESS_STATUS,
                 {coin: req.roomCoin
@@ -832,6 +834,7 @@ io.on('connection', function (socket) {
                callback();
             }
             else {
+                console.log("valid coin");
             user.getUserSocketDetails({userId: req.userId}).then((userDetails) => {
                 var findIndex = allOnlineUsers.findIndex(function (elemt) {
                     return elemt.userId == req.userId
@@ -843,6 +846,7 @@ io.on('connection', function (socket) {
                  //if(allOnlineUsers.length==0)
                  //if(findIndex == -1 || allOnlineUsers[findIndex].roomName != ''){
                 if(findIndex == -1 /*|| allOnlineUsers[findIndex].roomName != ''*/){
+                    console.log("no findindex found");
                     io.sockets.to(req.socketId).emit('errorJoin',response.generate( constants.ERROR_STATUS,{},"User cannot join"));
                     console.log("   connectedRoom   :"+findIndex+allOnlineUsers[findIndex].roomName,response.generate( constants.ERROR_STATUS,{},"User cannot join"))
                     callback();
@@ -852,9 +856,11 @@ io.on('connection', function (socket) {
                     io.sockets.to(req.socketId).emit('error', response.generate(constants.ERROR_STATUS, {}, "User cannot join"));
                     callback();*/
                 } else {
+                    console.log("valid findindex");
                     //if(findIndex != -1 ){
                     let userSocketId = allOnlineUsers[findIndex].socketId;
                     if (io.sockets.sockets[userSocketId] != undefined) {
+                        console.log("socket valid");
                         //update user online status
                         user.updateUserOnlineStatus({
                             userId: req.userId
@@ -925,7 +931,7 @@ io.on('connection', function (socket) {
                                         ], function (err, result) {
                                             //console.log("result print"+result.status);
                                             if (result) {
-                                                logger.print("***Done  ", result);
+                                                logger.print("***enter room Done  ", result);
                                                 io.sockets.to(socket.id).emit('userJoined', response.generate(constants.SUCCESS_STATUS, {
                                                     roomName: roomName,
                                                     users: joineeDetails.users
@@ -959,6 +965,7 @@ io.on('connection', function (socket) {
                                             
                                         ], function (err, result) {
                                             if (result) {
+                                                console.log("game start done");
 
                                                 io.sockets.to(socket.id).emit('userJoin', response.generate(constants.SUCCESS_STATUS, {
                                                     roomName: roomName,
