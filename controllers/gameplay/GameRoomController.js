@@ -2998,8 +2998,8 @@ io.on('connection', function (socket) {
                                 allOnlineUsers.splice(findIndex, 1);
                                 //allOnlineUsers[findIndex].roomName='';
                                 console.log("2965 allOnlineUsers"+JSON.stringify(allOnlineUsers));
-                                
-                                if(findIndex==1){
+                                if(findIndex != -1){
+                                //if(findIndex==1){
                                     console.log("findindex ok");
                                    allOnlineUsers[findIndexOpponent].roomName='';
                                 }
@@ -3056,7 +3056,9 @@ io.on('connection', function (socket) {
 
                             allOnlineUsers.splice(findIndex, 1);
                             //allOnlineUsers[findIndex].roomName='';
-                            if(findIndex==1)
+                            
+                             if(findIndex != -1)
+                           // if(findIndex==1)
                                 allOnlineUsers[findIndexOpponent].roomName='';
                             else
                                 allOnlineUsers[findIndex].roomName='';
@@ -3093,7 +3095,8 @@ io.on('connection', function (socket) {
                         } else {
                             logger.print("opponent not exists");
                            // allOnlineUsers.splice(findIndex, 1);
-                            if(findIndex==1)
+                           if(findIndex != -1)
+                            //if(findIndex==1)
                                 allOnlineUsers[findIndexOpponent].roomName='';
                             else {
                                 allOnlineUsers[findIndex].roomName='';
@@ -3147,7 +3150,8 @@ io.on('connection', function (socket) {
                         logger.print("***DISCONNECT ERROR ", err);
                         allOnlineUsers.splice(findIndex, 1);
                         //allOnlineUsers[findIndex].roomName='';
-                        if(findIndex==1)
+                        if(findIndex != -1)
+                        //if(findIndex==1)
                             allOnlineUsers[findIndexOpponent].roomName='';
                         else
                             allOnlineUsers[findIndex].roomName='';
