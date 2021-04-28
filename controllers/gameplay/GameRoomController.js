@@ -3108,12 +3108,12 @@ io.on('connection', function (socket) {
                             ///new code///
                         } else {
                             logger.print("opponent not exists");
-                           // allOnlineUsers.splice(findIndex, 1);
-                           if(findIndex != -1)
+                            allOnlineUsers.splice(findIndex, 1);
+                           
                             //if(findIndex==1)
-                                allOnlineUsers[findIndexOpponent].roomName='';
-                            else {
-                                allOnlineUsers[findIndex].roomName='';
+                                //allOnlineUsers[findIndexOpponent].roomName='';
+                            //else {
+                                //allOnlineUsers[findIndex].roomName='';
                                 io.to(userRoomName).emit('gameOver', response.generate(constants.SUCCESS_STATUS, {
                                 //userId: result.userId,
                                 firstUserId: result.userId,
@@ -3143,7 +3143,7 @@ io.on('connection', function (socket) {
                             }, "Game is over"));*/
                             logger.print("game over called with no opponent exists Room closed");
                            //nes///
-                          }
+                          //}
                         }
                         logger.print("all Room closed last");
 
