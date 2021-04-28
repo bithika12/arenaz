@@ -3003,7 +3003,7 @@ io.on('connection', function (socket) {
                                     console.log("findindex ok");
 
                                     findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
-                                    return elemt.roomName == req.roomName
+                                    return elemt.roomName == result.roomName
                                     });
                                     console.log("*** 3008 findIndexOpponent"+findIndexOpponent);
                                     console.log("aline"+JSON.stringify(allOnlineUsers));
@@ -3067,7 +3067,7 @@ io.on('connection', function (socket) {
                            // if(findIndex==1)
                                {
                                 findIndexOpponent = allOnlineUsers.findIndex(function (elemt) {
-                                    return elemt.roomName == req.roomName
+                                    return elemt.roomName == result.roomName
                                     });
                                     console.log("*** 3072 draw findIndexOpponent"+findIndexOpponent);
                                     console.log("alline"+JSON.stringify(allOnlineUsers));
