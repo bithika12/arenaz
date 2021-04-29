@@ -54,17 +54,20 @@ namespace ArenaZ.Manager
             Yes,
         }
 
+        
         [Header("User")]
         [SerializeField] private Image userPic;
         [SerializeField] private Image userTimerImage;
         [SerializeField] private Text userName;
         [SerializeField] private TextMeshProUGUI userScore;
-
+        [SerializeField] private GameObject userEmoji;
+        [SerializeField] public List<AudioClip> emojiAudioclip = new List<AudioClip>();
         [Header("Opponent")]
         [SerializeField] private Image opponentPic;
         [SerializeField] private Image opponentTimerImage;
         [SerializeField] private Text opponentName;
         [SerializeField] private TextMeshProUGUI opponentScore;
+        [SerializeField] private GameObject opponentEmoji;        
 
         [Header("Others")]
         [SerializeField] private int scorePopUpDuration;
@@ -118,7 +121,7 @@ namespace ArenaZ.Manager
         [SerializeField] private SpriteAnimator boardAppearAnimation;
 
         private GeneralTimer genericTimer;
-
+        AudioClip soundEmoji;
         public Action<string> setUserName;
         public Action<string, string> setUserImage;
 
@@ -147,6 +150,8 @@ namespace ArenaZ.Manager
         private bool haltProcess = false;
         private ThrowDartData throwDartData = null;
 
+
+        
         public bool InternetConnection()
         {
             if (Application.internetReachability == NetworkReachability.NotReachable)
@@ -162,7 +167,8 @@ namespace ArenaZ.Manager
         protected override void Awake()
         {
             touchBehaviour = GetComponent<TouchBehaviour>();
-            
+            opponentEmoji.SetActive(false);
+            userEmoji.SetActive(false);
 //#if UNITY_EDITOR
 //            Debug.unityLogger.logEnabled = true;
 //#else
@@ -427,7 +433,12 @@ namespace ArenaZ.Manager
                     break;
             }
         }
+        /*Update To be delete*/
 
+        //private void Update()
+        //{
+            
+        //}
         public void GetDartGameObj()
         {
             string userDartPath = GameResources.dartPrefabFolderPath + "/" + User.DartName;
@@ -438,6 +449,11 @@ namespace ArenaZ.Manager
 
         private void Update()
         {
+            if (Input.GetMouseButtonDown(1))
+            {
+                Debug.LogError("Clickeds");
+                //SocketManager.Instance.SendUserMessage("Hello World");
+            }
             if (gameStatus != EGameStatus.Playing)
                 return;
 
@@ -1195,7 +1211,40 @@ namespace ArenaZ.Manager
 
         private void OnMessageReceived(string obj)
         {
-            Debug.LogError(obj);
+
+            Debug.LogError("<color = yellow>Message : "+ obj);
+            ApiResponseFormat<ReceiveMessage> receivedMessage = JsonConvert.DeserializeObject<ApiResponseFormat<ReceiveMessage>>(obj);
+            Debug.LogError("<color = yellow>Message : " + receivedMessage.Result.Message);
+            Debug.LogError("<color = yellow>Message : " + receivedMessage.Result.UserId);
+            Debug.LogError("<color = yellow>Message : " + User.UserId);
+            for (int i=0;i<emojiAudioclip.Count;i++)
+            {
+                if (receivedMessage.Result.Message.Equals(emojiAudioclip[i].name))
+                {
+                    soundEmoji = emojiAudioclip[i];
+                }
+            }
+            if (receivedMessage.Result.UserId.Equals(User.UserId))
+            {
+                opponentEmoji.GetComponent<DisplayMessage>().ShowEmojis(receivedMessage.Result.Message, soundEmoji);
+
+            }
+            if (receivedMessage.Result.UserId.Equals(Opponent.opponentId))
+            {
+                userEmoji.GetComponent<DisplayMessage>().ShowEmojis(receivedMessage.Result.Message, soundEmoji);
+            }
+        }
+
+        public class ReceiveMessage
+        {
+            [JsonProperty("userId")]
+            public string UserId;
+            [JsonProperty("roomName")]
+            public string RoomName;
+            [JsonProperty("message")]
+            public string Message;
+            [JsonProperty("message_id")]
+            public string Message_Id;
         }
 
         private void doReJoinRequest()

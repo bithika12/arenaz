@@ -161,7 +161,7 @@ namespace ArenaZ.GameMode
         {
             UIManager.Instance.ShowScreen(Page.WalletDepositRequestPanel.ToString());
         }
-
+        
         private void PlayShinyEffect()
         {
             int t_RandIndex = UnityEngine.Random.Range(0, uiEffects.Count);

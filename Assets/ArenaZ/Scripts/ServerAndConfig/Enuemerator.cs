@@ -8,7 +8,7 @@ public enum SocketEmitEvents
     leave,
     gameRequestCancel,
     reJoin,
-    send_message,
+    sendMessage,
 }
 
 public enum SocketListenEvents

@@ -43,6 +43,7 @@ namespace ArenaZ.Manager
 
         protected override void Awake()
         {
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
             AddAllTextScreensToDictionary();
             AddAllUIScreensToDictionary();
         }

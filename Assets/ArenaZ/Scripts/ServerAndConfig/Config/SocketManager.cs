@@ -102,7 +102,7 @@ namespace RedApple
 
             };
             string SendUserMessageJsonData = DataConverter.SerializeObject(sendMessageData);
-            socket.EmitJson(SocketEmitEvents.send_message.ToString(), SendUserMessageJsonData);
+            socket.EmitJson(SocketEmitEvents.sendMessage.ToString(), SendUserMessageJsonData);
         }
 
         public void GameRequest()
