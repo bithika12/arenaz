@@ -1227,11 +1227,12 @@ namespace ArenaZ.Manager
             if (receivedMessage.Result.UserId.Equals(User.UserId))
             {
                 opponentEmoji.GetComponent<DisplayMessage>().ShowEmojis(receivedMessage.Result.Message, soundEmoji);
-
+                
             }
             if (receivedMessage.Result.UserId.Equals(Opponent.opponentId))
             {
                 userEmoji.GetComponent<DisplayMessage>().ShowEmojis(receivedMessage.Result.Message, soundEmoji);
+
             }
         }
 

@@ -60,6 +60,7 @@ public enum ERace
     Cyborg,
     CyborgSecond,
     Human,
+    HumanSecond,
     Ebot,
     KeplerSecond,
     HumanFemale,

@@ -34,7 +34,7 @@ namespace ArenaZ.Screens
         [Space(5)]
         [SerializeField] private HorizontalScrollSnap horizontalScrollSnap;
 
-        public readonly string[] raceNames = { ERace.Canines.ToString(), ERace.Kepler.ToString(), ERace.Cyborg.ToString(), ERace.CyborgSecond.ToString(), ERace.Human.ToString(), ERace.Ebot.ToString(), ERace.KeplerSecond.ToString(),ERace.HumanFemale.ToString(),ERace.HumanFemaleSecond.ToString(),ERace.HumanFemaleThird.ToString(),ERace.EbotSecond.ToString(), ERace.EbotThird.ToString(), ERace.CaninesSecond.ToString(), ERace.CaninesThird.ToString(), ERace.EbotFourth.ToString() };
+        public readonly string[] raceNames = { ERace.Canines.ToString(), ERace.Kepler.ToString(), ERace.Cyborg.ToString(), ERace.CyborgSecond.ToString(), ERace.Human.ToString(), ERace.Ebot.ToString(), ERace.KeplerSecond.ToString(),ERace.HumanFemale.ToString(),ERace.HumanFemaleSecond.ToString(),ERace.HumanFemaleThird.ToString(),ERace.EbotSecond.ToString(), ERace.EbotThird.ToString(), ERace.CaninesSecond.ToString(), ERace.CaninesThird.ToString(), ERace.EbotFourth.ToString(), ERace.HumanSecond.ToString() };
         //Public Fields
         public static Action<string> setDart;
 
