@@ -11,21 +11,35 @@ namespace ArenaZ.GameMode
         [SerializeField] private Image buttonImage;
         [SerializeField] private Sprite spriteChange1, spriteChange2;
         [SerializeField] private GameObject emojiPanel,closeButton;
-
+        bool isOpen = false;
 
         private void Awake()
         {
             emojiPanel.SetActive(false);
             closeButton.SetActive(false);
         }
+
+        public void OpenandCloseImogis()
+        {
+            if(isOpen == false)
+            {
+                OpenEmojiPanel();
+            }
+            else
+            {
+                CloseEmojiPanel();
+            }
+        }
         public void OpenEmojiPanel()
         {
+            isOpen = true;
             buttonImage.sprite = spriteChange2;
             emojiPanel.SetActive(true);
             closeButton.SetActive(true);
         }
         public void CloseEmojiPanel()
         {
+            isOpen = false;
             buttonImage.sprite = spriteChange1;
             emojiPanel.SetActive(false);
             closeButton.SetActive(false);
