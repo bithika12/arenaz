@@ -6,6 +6,8 @@ using RedApple;
 using RedApple.Utils;
 using Newtonsoft.Json;
 using ArenaZ.Manager;
+using System.Net;
+using System;
 
 public class VersionChecker : MonoBehaviour
 {

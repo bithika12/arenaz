@@ -44,6 +44,7 @@ public enum Page
     SurrenderedPopupPanel,
     ReconnectCountdownPanel,
     VersionCheckPanel,
+    IpAdressChecker,
     WalletDepositRequestPanel,
     WalletDepositConfirmPanel,
     WalletWithdrawPanel,
