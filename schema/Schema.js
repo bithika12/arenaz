@@ -55,6 +55,8 @@ var userSchema =  new Schema({
                         countryName      :  { type : String , default  : ''},
                         languageName     :  { type : String , default  : ''},
                         onlineStatus     :  {  type : Number, default  : 0},/* 0=>  offline ,1 => online */
+                        emailVerified    :  { type : String , default  : 'no'},
+                        emailVerifiedCode    :  { type : String , default  : ''},
 
                   },{
                      strict:false
