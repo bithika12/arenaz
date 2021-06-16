@@ -11,6 +11,7 @@ var constants = require("../config/constants");
 const validatmiseeInput = require('../utils/ParamsValidation');
 const response  = require('../utils/ResponseManeger');
 //const jwtTokenManage   = require('../utils/JwtTokenManage');
+const validateInput = require('../utils/ParamsValidation');
 
 const password = require('../utils/PasswordManage');
 const Joi = require('joi');
@@ -211,8 +212,7 @@ exports.registration= function(req,res) {
     }
     else {
         let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
-    
-    console.log(countryNameDetails.name);
+        console.log(countryNameDetails.name);
 }
     //res.send(ipInfo);
 
