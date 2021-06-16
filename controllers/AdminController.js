@@ -15,7 +15,7 @@ var User  = require('../models/User');
 var Transaction  = require('../models/Transaction');
 var Role  = require('../models/Role');
 const appRoot = require('app-root-path');
-const { findTransactionListUser,updateMail,updateTransaction,addMail,addTransaction,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
+const { findCountryListAdmin,findTransactionListUser,updateMail,updateTransaction,addMail,addTransaction,updateGameAdmin,addMatch,fetchMatches,fetchUserList,updateRoomAdmin,
     fetchHistoryAdmin,userValidChkAdmin,fetchCoin,addCoin,updateCoinAdmin,fetchMail,transactionList,updateTransactionStatusDelete,findTransactionListAdmin,deleteTransaction,editTransaction} = require(appRoot +'/models/FetchHistory');
 const UserController  = require('../controllers/UserController');
 const moment = require('moment');
@@ -1038,7 +1038,15 @@ exports.checkNewTransaction =  (req,res)=> {
    }
 
 
-
+exports.countrylist = function (req,res) {
+    console.log('Reached to country list');
+    findCountryListAdmin().then((countryList)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            countryList, 'Country List fetched successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to fetch country list"));
+    })
+};
 
 
 // Run game at every 30 mint.

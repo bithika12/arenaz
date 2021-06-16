@@ -23,6 +23,7 @@ const Coin = require(appRoot + '/models/Coin');
 const Match = require(appRoot + '/models/Game');
 var User1 = require('../schema/Schema').userModel; 
 const moment=require("moment");
+let Country = require(appRoot +'/schema/Schema').countryModel;
 //const Room = require(appRoot + '/models/Room');
 /**
  * @desc fetch game history
@@ -1019,7 +1020,19 @@ const chkTransactionStatus =(condObj) =>{
      });
  };
 
-module.exports = { findTransactionListUser,chkValidTransaction,updateTransactionConfirm,fetchTransaction,updateTransaction,addTransaction,editTransaction,updateVersionAdmin,fetchHistoryUser,
+ 
+ const findCountryListAdmin   =   function(){
+    
+     return  new Promise((resolve,reject) => {
+         Country.find({}).then(responses=> {         
+         return resolve(responses) 
+         }).catch(err => {
+             return reject(err);
+         });
+     });
+ };
+
+module.exports = { findCountryListAdmin,findTransactionListUser,chkValidTransaction,updateTransactionConfirm,fetchTransaction,updateTransaction,addTransaction,editTransaction,updateVersionAdmin,fetchHistoryUser,
     updateMail,addMail,fetchMail,updateGameAdmin,
     addMatch,fetchMatches,fetchUserList,
     updateCoinAdmin,updateRoomAdmin,addCoin,

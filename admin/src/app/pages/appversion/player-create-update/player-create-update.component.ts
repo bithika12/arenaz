@@ -40,6 +40,12 @@ export interface Coin {
 export class PlayerCreateUpdateComponent implements OnInit {
   user_name:any;
   selected=false;
+  selectItemsSchedule:any;
+  //gameDeactivationArr:any;
+  //emailVerificationArr:any;
+  //ipChangeVerificationArr:any;
+
+  options: string[] = ['One', 'Two', 'Three'];
 
   brands: Brand[] = [
     { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },
@@ -48,6 +54,26 @@ export class PlayerCreateUpdateComponent implements OnInit {
     { value: 'Chanel', viewValue: 'Chanel' },
   ];
 usertypeArr: any[] = [
+    { name: 'Yes' },
+    { name: 'No' }
+    
+    
+];
+
+gameDeactivationArr: any[] = [
+    { name: 'Yes' },
+    { name: 'No' }
+    
+    
+];
+emailVerificationArr: any[] = [
+    { name: 'Yes' },
+    { name: 'No' }
+    
+    
+];
+
+ipChangeVerificationArr: any[] = [
     { name: 'Yes' },
     { name: 'No' }
     
@@ -93,7 +119,7 @@ usertypeArr: any[] = [
 
   ngOnInit() {
 
-   this.coinService.getAllUserLIsts().subscribe(Roles => {
+   this.coinService.getAllCountryLists().subscribe(Roles => {
       console.log(Roles);
       //roleList: RoleList[] =Roles;
       this.rolelists = Roles["result"];
@@ -124,7 +150,10 @@ usertypeArr: any[] = [
     } else {
       this.defaults = {} as Player;
     }
+   this.selectItemsSchedule=JSON.parse(this.defaults.banned_country);
 
+   //this.selectItemsSchedule=this.defaults.banned_country
+   console.log("this selectItemsSchedule***"+this.selectItemsSchedule)
     this.form = this.fb.group({
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
@@ -151,7 +180,18 @@ usertypeArr: any[] = [
       support_email: [this.defaults.support_email || ''],
 
       market_volatility:[this.defaults.market_volatility || ''],
+
       
+      banned_country:[this.defaults.banned_country || ''],
+      
+      email_verify:[this.defaults.email_verify || ''],
+
+      game_deactivation:[this.defaults.game_deactivation || ''],
+
+      ip_verify:[this.defaults.ip_verify || ''],
+
+      auto_refill_coins:[this.defaults.auto_refill_coins || ''],
+
      _id:[this.defaults._id || ''],
     });
   }
@@ -163,7 +203,24 @@ usertypeArr: any[] = [
       this.updatePlayer();
     }
   }
-
+  onKeyUser(value:string){
+    if(value != ''){
+    console.log("val search")
+   // this.employee_pop=[];
+    let filter = value.toLowerCase();
+    for ( let i = 0 ; i < this.rolelists.length; i ++ ) {
+        console.log("ppp"+ this.rolelists[i])
+        let option = this.rolelists[i];
+        /*if ( (option.country_name.toLowerCase().indexOf(filter) >= 0) || (option.country_name.toLowerCase().indexOf(filter) >= 0)) {*/
+          this.rolelists.push( option );
+       // }
+      }
+    }
+    else
+    {
+      this.rolelists=[];
+    }
+  }
   createPlayer() {
     const coins = this.form.value;
     if (!coins.imageSrc) {
@@ -179,6 +236,8 @@ usertypeArr: any[] = [
     const editplayer = this.form.value;
 
     editplayer.id = this.defaults.id;
+
+    console.log("editplayer"+JSON.stringify(editplayer))
 
     this.coinService.editVersion(editplayer).subscribe(User => {
       //console.log(User);

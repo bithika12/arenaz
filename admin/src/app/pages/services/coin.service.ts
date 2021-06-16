@@ -96,6 +96,16 @@ export class CoinService {
 
         "market_volatility": (!editplayer.market_volatility) ? "" : editplayer.market_volatility,
 
+        "banned_country": (!editplayer.banned_country) ? "" : JSON.stringify(editplayer.banned_country),
+
+        "email_verify": (!editplayer.email_verify) ? "" : editplayer.email_verify,
+
+        "game_deactivation": (!editplayer.game_deactivation) ? "" : editplayer.game_deactivation,
+
+        "auto_refill_coins": (!editplayer.auto_refill_coins) ? "" : editplayer.auto_refill_coins,
+
+        "ip_verify": (!editplayer.ip_verify) ? "" : editplayer.ip_verify,
+
         
        
       };
@@ -149,4 +159,12 @@ export class CoinService {
       
      return this.http.post(`${environment.BASE_URL}admin/add-user-coins`,payloadObj,{headers: this.headers});
   }
+  
+    getAllCountryLists() {
+      
+      console.log(this.headers);
+       let payloadObj={
+       userEmail:localStorage.getItem('email')}
+        return this.http.post(`${environment.BASE_URL}admin/fetch/countrylist`,payloadObj,{headers: this.headers});
+    }
 }

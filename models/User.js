@@ -1126,7 +1126,7 @@ User.detailsAdmin = function(condObj){
  }
  //fetchVersion
  User.fetchVersion = function(){
-     console.log("po");
+     
      return new Promise((resolve,reject)=>{
           Appversion.find({status:"active"},{
             app_version:1,
@@ -1144,11 +1144,17 @@ User.detailsAdmin = function(condObj){
             master_message:1,
             allow_mini_account_withdrawal:1,
             support_email:1,
-            market_volatility:1
+            market_volatility:1,
+            banned_country:1,
+            email_verify:1,
+            game_deactivation:1,
+            ip_verify:1,
+            auto_refill_coins:1
+            //_id:0
           }).then(response=> {
 
          //Appversion.find({status:"active"},{app_version:1,download_link:1}).then(response=> {
-             console.log("versionres"+response);
+             //console.log("versionres"+(response));
              resolve(response)
          }).catch(err=>{
              reject(err);

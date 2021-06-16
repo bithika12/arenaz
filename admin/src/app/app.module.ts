@@ -10,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -18,6 +19,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     BrowserAnimationsModule,
     HttpClientModule,
     MatSnackBarModule,
+    MatAutocompleteModule,
+   
 
     // Vex
     VexModule

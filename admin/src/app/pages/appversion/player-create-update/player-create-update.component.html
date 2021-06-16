@@ -152,6 +152,61 @@
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
+     <mat-form-field>
+      <mat-label>Banned Country</mat-label>
+      <mat-select formControlName="banned_country"  multiple="true" [(ngModel)]="selectItemsSchedule" required>
+                    
+
+            <mat-option *ngFor="let sub of rolelists" [value]="sub.country_name">
+              {{sub.country_name}}
+            </mat-option>
+          </mat-select>
+    </mat-form-field>
+
+
+    <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Game Deactivation </mat-label>
+
+        <mat-select formControlName="game_deactivation" required>
+            <mat-option *ngFor="let sub of gameDeactivationArr" [value]="sub.name">
+              {{sub.name}}
+            </mat-option>
+          </mat-select>
+
+          <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+
+          <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Email Verification </mat-label>
+
+        <mat-select formControlName="email_verify" required>
+            <mat-option *ngFor="let sub of emailVerificationArr" [value]="sub.name">
+              {{sub.name}}
+            </mat-option>
+          </mat-select>
+        <!--<input cdkFocusInitial formControlName="type" matInput placeholder="Deposit,Withdrawal">-->
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>IP Change Verification </mat-label>
+
+        <mat-select formControlName="ip_verify" required>
+            <mat-option *ngFor="let sub of ipChangeVerificationArr" [value]="sub.name">
+              {{sub.name}}
+            </mat-option>
+          </mat-select>
+        <!--<input cdkFocusInitial formControlName="type" matInput placeholder="Deposit,Withdrawal">-->
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+      
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Auto-Refill Coins</mat-label>
+        <input cdkFocusInitial formControlName="auto_refill_coins" matInput >
+
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
     
   </mat-dialog-content>
 

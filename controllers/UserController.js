@@ -8,7 +8,7 @@ var Role  = require('../models/Role');
 var constants = require("../config/constants");
 
 /* UTILS PACKAGE*/
-const validateInput = require('../utils/ParamsValidation');
+const validatmiseeInput = require('../utils/ParamsValidation');
 const response  = require('../utils/ResponseManeger');
 //const jwtTokenManage   = require('../utils/JwtTokenManage');
 
@@ -175,6 +175,28 @@ function updateLogIn(user,callback) {
         callback (err,null);
     });
 }
+function checkValid(user,callback) {
+    User.fetchVersion().then(responses => {
+        //console.log("responses.banned_country"+responses[0].banned_country)
+       // user.responses[0].banned_country=responses[0].banned_country;
+      //user["banned_country"]=responses[0].banned_country;
+      //user.key3="kyuu"
+      //console.log("users"+user)
+      let obj={
+          users:user,
+          country:responses[0].banned_country,
+          email_verify:(responses[0].email_verify==="Yes") ? 0 :1,
+          game_deactivation:(responses[0].game_deactivation==="Yes") ? 0 :1,
+          ip_verify:(responses[0].ip_verify==="Yes") ? 0 :1,
+          auto_refill_coins:responses[0].auto_refill_coins
+      }
+
+        callback (null,obj);
+    }).catch(err => {
+        callback (err,null);
+    });
+}
+
 /*
    * This function is used for user registration
    * @params
@@ -304,6 +326,20 @@ exports.login= function(req,res) {
    /*
      * Joi is used for validation
     */
+    const ipInfo = req.ipInfo;
+    let cName;
+    //console.log("pl"+ipInfo.country);
+    //console.log("pl12"+JSON.stringify(ipInfo));
+    if(!ipInfo.country){
+        console.log("nn");
+        ipInfo.country="IN";
+        cName="India";
+    }
+    else {
+        let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
+        cName=countryNameDetails.name;
+    console.log(countryNameDetails.name);
+}
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
         //email: Joi.string().max(254).regex(/^(?:[A-Z\d][A-Z\d_-]{5,10}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})$/i).trim().required(),
@@ -333,12 +369,36 @@ exports.login= function(req,res) {
             async.waterfall([
                     getUserDetails(userObj),
                     updateToken,
-                    updateLogIn
+                    updateLogIn,
+                    checkValid
 
                 ],
                 function (err, result) {
                     if (result) {
+                        console.log("result"+JSON.stringify(result))
+                        let resuser=result.users;
+                        let countryres=JSON.parse(result.country);
+                        
+                        let bannedStatus=countryres.filter((item)=>{
+                            return item===cName
+                        });
+                         
                         res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
+                            "userId": resuser._id,
+                            "userName": resuser.userName,
+                            email: resuser.email,
+                            score: resuser.score,
+                            "accessToken": resuser.get('accessToken'),
+                            "userCoin":resuser.startCoin,
+                            "userCup":resuser.cupNo,                                                        
+                            "bannedStatus":bannedStatus.length,
+                            "email_verify":result.email_verify,
+                            "game_deactivation":result.game_deactivation,
+                            "ip_verify":result.ip_verify,
+                            "auto_refill_coins":result.auto_refill_coins,
+                        }, 'User login successfully !!'));
+
+                        /*res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
                             "userId": result._id,
                             "userName": result.userName,
                             email: result.email,
@@ -346,7 +406,7 @@ exports.login= function(req,res) {
                             "accessToken": result.get('accessToken'),
                             "userCoin":result.startCoin,
                             "userCup":result.cupNo
-                        }, 'User login successfully !!'));
+                        }, 'User login successfully !!'));*/
                     } else {
                         //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Invalid password!!"));
                         res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "The email address and password you entered is incorrect. Please try again."));

@@ -99,6 +99,8 @@ export class AppversionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     { label: 'Display Text  ', property: 'market_volatility', type: 'text', visible: true },
 
+    { label: 'Banned Country', property: 'banned_country', type: 'text', visible: true },
+
     
     
     

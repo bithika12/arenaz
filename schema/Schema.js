@@ -206,7 +206,13 @@ var versionSchema      = new Schema({
     master_message:String,
     allow_mini_account_withdrawal:String,
     support_email:String,
-    market_volatility:String
+    market_volatility:String,
+    banned_country:String,
+
+    email_verify:String,
+    game_deactivation:String,
+    ip_verify:String,
+    auto_refill_coins:String
     
 });
 
@@ -263,6 +269,12 @@ var messageSchema      = new Schema({
     
 });
 
+var countrySchema      = new Schema({
+    country_code : String,   
+    country_name:String    
+    
+});
+
 schema.roleModel   = mongoose.model('roles'  , roleSchema);
 schema.moduleModel = mongoose.model('modules', modulesSchema);
 schema.avatarModel = mongoose.model('avatar' , avatarSchema);
@@ -277,5 +289,7 @@ schema.userCoinModel   = mongoose.model('user_coins'  , userCoinSchema);
 schema.userTransactionModel   = mongoose.model('user_transactions'  , transactionSchema);
 //messageSchema
 schema.messageModel   = mongoose.model('messages'  , messageSchema);
+
+schema.countryModel   = mongoose.model('countrylists'  , countrySchema);
 
 module.exports = schema;

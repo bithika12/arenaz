@@ -329,6 +329,8 @@ exports.updatePassword = function (req,res){
      else {
      User.fetchVersion().then((versionDetails) => {
          if (versionDetails) {
+            console.log("versionDetails.banned_country"+(versionDetails.market_volatility))
+            //versionDetails.banned_country=JSON.parse(versionDetails.banned_country)
              //res.send(userDetails);
              res.send(response.generate(constants.SUCCESS_STATUS,versionDetails, 'Version details fetched successfully !!'));
          }
@@ -369,6 +371,8 @@ exports.updatePassword = function (req,res){
 
   exports.updateVersion = function (req,res) {
 
+    console.log("req.body"+JSON.stringify(req.body))
+
      if(!req.body.versionId || !req.body.userEmail){
         return res.send(response.error(constants.PARAMMISSING_STATUS,{},"Parameter Missing!"));
     }
@@ -388,7 +392,13 @@ exports.updatePassword = function (req,res){
         master_message : req.body.master_message,
         allow_mini_account_withdrawal : req.body.allow_mini_account_withdrawal,
         support_email : req.body.support_email,
-        market_volatility:req.body.market_volatility
+        market_volatility:req.body.market_volatility,
+        banned_country:req.body.banned_country,
+
+        email_verify:req.body.email_verify,
+        game_deactivation:req.body.game_deactivation,
+        ip_verify:req.body.ip_verify,
+        auto_refill_coins:req.body.auto_refill_coins
     };
     console.log("updateObj"+updateObj)
      userValidChkAdmin(req.body.userEmail)
