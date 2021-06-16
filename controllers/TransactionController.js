@@ -47,17 +47,22 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
                          let api_url=appList.wallet_api_link+appList.wallet_key+
                          "&type=Deposit&transid="+resTransV1+"&amt="+userObj.coinAmount
 
-                         
+                         console.log("api_url"+api_url)
 
                          axios.get(api_url)
                          .then(function (response) {
                             // handle success
 
-                            
+                            console.log("axios response"+response)
                             
                             let lastPart = response.data.split("-->").pop();
                             
+                            let responsePart = lastPart.split(',')[0];
+                            let transactionPart=lastPart.split(',')[1];
 
+                            console.log("responsePart"+responsePart);
+
+                            console.log("transactionPart"+transactionPart);
                             //save it to transaction
                             if(lastPart=="Error!"){
                                //delete transaction record
@@ -83,12 +88,14 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
                             
                             var transactionObj = {
                               //user_name : userObj.user_name,
-                              user_confirmation : lastPart,
+                              //user_confirmation : lastPart,
+                              user_confirmation : responsePart,
                               //amount : userObj.coinAmount,
                               //amount_usd : userObj.amount_usd,
                               transaction_key : lastPart,
                               //status : "New",
-                              expired_at : expired_at,                                
+                              expired_at : expired_at,
+                              transaction_id:transactionPart                                
                               //type : "Deposit"
                             }
 
@@ -1057,7 +1064,10 @@ exports.requestWithdrawRunning = function (req,res) {
   function apiCheckTransactionStatusUpdate(userObj,callback){
     console.log("userObj"+JSON.stringify(userObj));
     Transaction.details().then((appList) => {
-      let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
+      let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj.transaction_id;
+      //let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
+
+
         axios.get(api_url).then(function (response) {
           // handle success
           //console.log("ok"+(response.data));

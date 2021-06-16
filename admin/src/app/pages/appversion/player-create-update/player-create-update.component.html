@@ -207,6 +207,18 @@
 
         <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
+
+      <mat-form-field class="mt-6" fxFlex>
+        <mat-label>Free Coin Incentive </mat-label>
+
+        <mat-select formControlName="free_coin_incentive" required>
+            <mat-option *ngFor="let sub of freeCoinArr" [value]="sub.value">
+              {{sub.value}}
+            </mat-option>
+          </mat-select>
+
+          <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
     
   </mat-dialog-content>
 

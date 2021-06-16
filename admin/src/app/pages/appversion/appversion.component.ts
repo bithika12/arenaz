@@ -101,6 +101,16 @@ export class AppversionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     { label: 'Banned Country', property: 'banned_country', type: 'text', visible: true },
 
+     { label: 'Email Verify', property: 'email_verify', type: 'text', visible: true },
+
+      { label: 'Game Deactivation', property: 'game_deactivation', type: 'text', visible: true },
+
+       { label: 'Ip Verify', property: 'ip_verify', type: 'text', visible: true },
+
+        { label: 'Auto Refill Coins', property: 'auto_refill_coins', type: 'text', visible: true },
+
+         { label: 'Free Coin Incentive', property: 'free_coin_incentive', type: 'text', visible: true },
+
     
     
     

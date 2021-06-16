@@ -106,6 +106,8 @@ export class CoinService {
 
         "ip_verify": (!editplayer.ip_verify) ? "" : editplayer.ip_verify,
 
+        "free_coin_incentive": (!editplayer.free_coin_incentive) ? "" : editplayer.free_coin_incentive,
+
         
        
       };

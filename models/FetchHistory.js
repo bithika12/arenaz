@@ -937,7 +937,8 @@ const chkTransactionStatus =(condObj) =>{
                   expire_in_minute : duration,           
                   expire_at_inSecond : duration_inSecond,
                   created_at:transactiondetails.created_at,           
-                  user_confirmation:transactiondetails.user_confirmation
+                  user_confirmation:transactiondetails.user_confirmation,
+                  transaction_id:(!transactiondetails.transaction_id) ? "" : transactiondetails.transaction_id
               });
         }).catch(err => {
             return reject(err);

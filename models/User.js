@@ -1149,7 +1149,8 @@ User.detailsAdmin = function(condObj){
             email_verify:1,
             game_deactivation:1,
             ip_verify:1,
-            auto_refill_coins:1
+            auto_refill_coins:1,
+            free_coin_incentive:1
             //_id:0
           }).then(response=> {
 

@@ -8,7 +8,6 @@ var Role  = require('../models/Role');
 var constants = require("../config/constants");
 
 /* UTILS PACKAGE*/
-const validatmiseeInput = require('../utils/ParamsValidation');
 const response  = require('../utils/ResponseManeger');
 //const jwtTokenManage   = require('../utils/JwtTokenManage');
 const validateInput = require('../utils/ParamsValidation');
@@ -17,6 +16,9 @@ const password = require('../utils/PasswordManage');
 const Joi = require('joi');
 let Notification  = require(appRoot +'/models/Notification');
 const CountryCodes = require('country-code-info');
+
+let ForgotPass  = require(appRoot +'/models/ForgotPassword');
+
 
 /* Async function*/
 
@@ -186,7 +188,7 @@ function checkValid(user,callback) {
       let obj={
           users:user,
           country:responses[0].banned_country,
-          email_verify:(responses[0].email_verify==="Yes") ? 0 :1,
+          email_verify:responses[0].email_verify,
           game_deactivation:(responses[0].game_deactivation==="Yes") ? 0 :1,
           ip_verify:(responses[0].ip_verify==="Yes") ? 0 :1,
           auto_refill_coins:responses[0].auto_refill_coins
@@ -197,7 +199,14 @@ function checkValid(user,callback) {
         callback (err,null);
     });
 }
-
+function sendMail(user,callback) {
+    console.log("user.users"+JSON.stringify(user.users))
+    ForgotPass.callEmailSendLogin(user.users).then(responses => {
+      callback (null,user);
+    }).catch(err => {
+        callback (err,null);
+    });
+}
 /*
    * This function is used for user registration
    * @params
@@ -339,7 +348,7 @@ exports.login= function(req,res) {
         let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
         cName=countryNameDetails.name;
     console.log(countryNameDetails.name);
-}
+    }
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
         //email: Joi.string().max(254).regex(/^(?:[A-Z\d][A-Z\d_-]{5,10}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})$/i).trim().required(),
@@ -370,7 +379,8 @@ exports.login= function(req,res) {
                     getUserDetails(userObj),
                     updateToken,
                     updateLogIn,
-                    checkValid
+                    checkValid,
+                    sendMail
 
                 ],
                 function (err, result) {
@@ -386,6 +396,7 @@ exports.login= function(req,res) {
                         res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
                             "userId": resuser._id,
                             "userName": resuser.userName,
+                            "userEmailVerified": resuser.emailVerified,
                             email: resuser.email,
                             score: resuser.score,
                             "accessToken": resuser.get('accessToken'),

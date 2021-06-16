@@ -14,6 +14,8 @@ var async = require('async');
 const validateInput = require('../utils/ParamsValidation');
 const response     = require('../utils/ResponseManeger');
 
+const CountryCodes = require('country-code-info');
+
  const { updateVersionAdmin,fetchHistoryAdmin,userValidChkAdmin,updateProfileAdmin,modifyProfileDetails,fetchRoleName} = require(appRoot +'/models/FetchHistory');
 /** Route function **/
 
@@ -398,7 +400,8 @@ exports.updatePassword = function (req,res){
         email_verify:req.body.email_verify,
         game_deactivation:req.body.game_deactivation,
         ip_verify:req.body.ip_verify,
-        auto_refill_coins:req.body.auto_refill_coins
+        auto_refill_coins:req.body.auto_refill_coins,
+        free_coin_incentive:req.body.free_coin_incentive
     };
     console.log("updateObj"+updateObj)
      userValidChkAdmin(req.body.userEmail)
@@ -438,10 +441,29 @@ exports.updatePassword = function (req,res){
          return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
      }
      else {
+     const ipInfo = req.ipInfo;
+     let cName;
+    //console.log("pl"+ipInfo.country);
+    //console.log("pl12"+JSON.stringify(ipInfo));
+    if(!ipInfo.country){
+        console.log("nn");
+        ipInfo.country="IN";
+        cName="India";
+    }
+    else {
+        let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
+        cName=countryNameDetails.name;
+        console.log(countryNameDetails.name);
+    }   
      User.fetchVersion().then((versionDetails) => {
          if (versionDetails) {
             console.log("versionDetails"+versionDetails[0].download_link);
              //res.send(userDetails);
+             let countryres=JSON.parse(versionDetails[0].banned_country);
+             let bannedStatus=countryres.filter((item)=>{
+                            return item===cName
+             });
+
              let flag=false;
              if(versionDetails[0].app_version==req.body.app_version){
                  flag=true;
@@ -449,6 +471,8 @@ exports.updatePassword = function (req,res){
              }
                 let versionObj={
                     status:flag,
+                    bannedStatus:bannedStatus.length,
+                    game_deactivation:versionDetails[0].game_deactivation,
                     download_link:versionDetails[0].download_link
                 }
 

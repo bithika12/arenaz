@@ -79,6 +79,13 @@ ipChangeVerificationArr: any[] = [
     
     
 ];
+freeCoinArr: any[] = [
+    { value: 5 },
+    { value: 10 }
+
+    
+    
+];
   coins: Coin[] = [
     { value: 50},
     { value: 100},
@@ -191,6 +198,8 @@ ipChangeVerificationArr: any[] = [
       ip_verify:[this.defaults.ip_verify || ''],
 
       auto_refill_coins:[this.defaults.auto_refill_coins || ''],
+
+      free_coin_incentive:[this.defaults.free_coin_incentive || ''],
 
      _id:[this.defaults._id || ''],
     });

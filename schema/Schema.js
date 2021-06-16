@@ -56,7 +56,8 @@ var userSchema =  new Schema({
                         languageName     :  { type : String , default  : ''},
                         onlineStatus     :  {  type : Number, default  : 0},/* 0=>  offline ,1 => online */
                         emailVerified    :  { type : String , default  : 'no'},
-                        emailVerifiedCode    :  { type : String , default  : ''},
+                        emailVerifiedCode  :  { type : String , default  : ''},
+                        gameCount :  { type : Number , default  : 0}
 
                   },{
                      strict:false
@@ -214,7 +215,8 @@ var versionSchema      = new Schema({
     email_verify:String,
     game_deactivation:String,
     ip_verify:String,
-    auto_refill_coins:String
+    auto_refill_coins:String,
+    free_coin_incentive:Number
     
 });
 
@@ -243,7 +245,8 @@ var transactionSchema      = new Schema({
         type: Date,
         default: Date.now
     },  
-    type :  {  type : String , enum: ['Deposit','deposit','Withdraw','withdraw','Lost','Won'] , default : 'Deposit'}
+    type :  {  type : String , enum: ['Deposit','deposit','Withdraw','withdraw','Lost','Won'] , default : 'Deposit'},
+    transaction_id: String
     
 });
 //MODEL DECLARATION

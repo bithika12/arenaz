@@ -116,5 +116,51 @@ const callEmailChkByEmail = email => {
     });
 };
 
+const callEmailSendLogin = (userdetails) => {
 
-module.exports = { callEmailChkByUserName,callEmailUpdatePassword,callEmailSend,callEmailChkByEmail };
+    return new Promise((resolve, reject) => {
+
+        // mail send /////////////////////////////////////////////////////////
+        let readHTMLFile = function(path, callback) {
+            fs.readFile(path, {encoding: 'utf-8'}, function (err, html) {
+                if (err) {
+                    throw err;
+                    callback(err);
+                }
+                else {
+                    callback(null, html);
+                }
+            });
+        };
+        readHTMLFile(appRoot  + '/views/email/verifyemail.jade', function(err, html) {
+            let template = handlebars.compile(html);
+            let code1= Math.floor((Math.random() * 90) + 1);
+            let replacements = {
+                code: code1
+               
+            };
+            let htmlToSend = template(replacements);
+            let mailOptions = {
+                from: 'bithikamahato88@gmail.com',
+                to : userdetails.email,
+                //to : 'bithikamahato88@gmail.com',
+                subject : 'Arena-Z Verify Email',
+                html : htmlToSend
+            };
+            Constants.TRANSPORTER.sendMail(mailOptions, function (error, response) {
+                if (error) {
+                    console.log(error);
+                    callback(error);
+                }
+                else{
+                    resolve(true);
+                }
+            });
+        });
+
+        ///////////////////mail send ///////////////////////////////////////////////////////////////
+    });
+};
+
+
+module.exports = { callEmailSendLogin,callEmailChkByUserName,callEmailUpdatePassword,callEmailSend,callEmailChkByEmail };
