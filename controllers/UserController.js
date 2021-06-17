@@ -231,7 +231,7 @@ function checkValid(user,callback) {
 }
 function sendMail(user,callback) {
     console.log("user123"+JSON.stringify(user.users.get('verifyCode')))
-    if(user.users.emailVerified==="no"){
+   // if(user.users.emailVerified==="no"){
 
     setTimeout(function () {
 
@@ -245,7 +245,7 @@ function sendMail(user,callback) {
         });
    }, 100)
    
-   }
+   //}
     callback (null,user);
 
     /*console.log("user.users"+JSON.stringify(user.users))
