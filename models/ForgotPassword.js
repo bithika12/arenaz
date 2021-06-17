@@ -116,7 +116,9 @@ const callEmailChkByEmail = email => {
     });
 };
 
-const callEmailSendLogin = (userdetails) => {
+const callEmailSendLogin = (email,verifyCode) => {
+
+    console.log("userdetails "+(verifyCode))
 
     return new Promise((resolve, reject) => {
 
@@ -136,13 +138,13 @@ const callEmailSendLogin = (userdetails) => {
             let template = handlebars.compile(html);
             let code1= Math.floor((Math.random() * 90) + 1);
             let replacements = {
-                code: code1
+                code: verifyCode
                
             };
             let htmlToSend = template(replacements);
             let mailOptions = {
-                from: 'bithikamahato88@gmail.com',
-                to : userdetails.email,
+                from: email,
+                to : email,
                 //to : 'bithikamahato88@gmail.com',
                 subject : 'Arena-Z Verify Email',
                 html : htmlToSend

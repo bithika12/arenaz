@@ -18,6 +18,7 @@ let Notification  = require(appRoot +'/models/Notification');
 const CountryCodes = require('country-code-info');
 
 let ForgotPass  = require(appRoot +'/models/ForgotPassword');
+let randomstring = require("randomstring");
 
 
 /* Async function*/
@@ -91,6 +92,19 @@ function getUserDetails(reqObj){
   }
 }
 
+function getUserCodeDetails(reqObj){
+  return function(callback){
+    User.findDetailsGame(reqObj).then((userDetails)=>{
+       if(userDetails){
+            callback (null,userDetails);
+       }else{
+            callback(err,null)
+       }
+    }).catch(err=>{
+         callback(err,null);
+    })
+  }
+}
 function checkRole(reqObj,callback){
     Role.details({ slug : reqObj.userType
 }).then((roleDetails) => {
@@ -163,16 +177,32 @@ function createUpdateUser(reqObj){
 // }
   
 function updateToken(user,callback){
+    //let verifyCode=randomstring.generate(7);
    User.updateToken({_id :user._id},{}).then((tokenDetails) => {
       user.set('accessToken', tokenDetails[0].accessToken)
+      
       callback (null,user);
     }).catch(err => {
         callback (err,null);
     });
 
 }
+
+function updateVerification(user,callback){
+    //let verifyCode=randomstring.generate(7);
+   User.updateOne({_id: user._id}, {$set: {"emailVerified": "yes"}}).then(responses => {
+        callback (null,user);
+    }).catch(err => {
+        callback (err,null);
+    });
+
+}
 function updateLogIn(user,callback) {
-    User.updateOne({_id: user._id}, {$set: {"loggedIn": 1}}).then(responses => {
+    let verifyCode=Math.floor(100000 + Math.random() * 900000)
+    user.verifyCode=verifyCode;
+    user.set('verifyCode', verifyCode)
+
+    User.updateOne({_id: user._id}, {$set: {"loggedIn": 1,"emailVerifiedCode":verifyCode,"onlineStatus":1}}).then(responses => {
         callback (null,user);
     }).catch(err => {
         callback (err,null);
@@ -200,12 +230,30 @@ function checkValid(user,callback) {
     });
 }
 function sendMail(user,callback) {
-    console.log("user.users"+JSON.stringify(user.users))
+    console.log("user123"+JSON.stringify(user.users.get('verifyCode')))
+    if(user.users.emailVerified==="no"){
+
+    setTimeout(function () {
+
+       console.log('done'+user.users)
+       
+       //console.log("user.users"+JSON.stringify(user.users))
+        ForgotPass.callEmailSendLogin(user.users.email,user.users.get('verifyCode')).then(responses => {
+          console.log("email send done");
+        }).catch(err => {
+            console.log("error occured in sending mail")
+        });
+   }, 100)
+   
+   }
+    callback (null,user);
+
+    /*console.log("user.users"+JSON.stringify(user.users))
     ForgotPass.callEmailSendLogin(user.users).then(responses => {
       callback (null,user);
     }).catch(err => {
         callback (err,null);
-    });
+    });*/
 }
 /*
    * This function is used for user registration
@@ -217,7 +265,7 @@ exports.registration= function(req,res) {
     //console.log("pl"+ipInfo.country);
     //console.log("pl12"+JSON.stringify(ipInfo));
     if(!ipInfo.country){
-        console.log("nn")
+        console.log("no country found")
     }
     else {
         let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
@@ -340,14 +388,14 @@ exports.login= function(req,res) {
     //console.log("pl"+ipInfo.country);
     //console.log("pl12"+JSON.stringify(ipInfo));
     if(!ipInfo.country){
-        console.log("nn");
+        console.log("no country found");
         ipInfo.country="IN";
         cName="India";
     }
     else {
         let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
         cName=countryNameDetails.name;
-    console.log(countryNameDetails.name);
+        console.log(countryNameDetails.name);
     }
     let schema = Joi.object().keys({
         email: Joi.string().max(254).trim().required(),
@@ -385,6 +433,8 @@ exports.login= function(req,res) {
                 ],
                 function (err, result) {
                     if (result) {
+                        let loginIpStatus="no";
+                        let ipStatus=1;
                         console.log("result"+JSON.stringify(result))
                         let resuser=result.users;
                         let countryres=JSON.parse(result.country);
@@ -392,7 +442,24 @@ exports.login= function(req,res) {
                         let bannedStatus=countryres.filter((item)=>{
                             return item===cName
                         });
-                         
+                        let loginIp=(!ipInfo.ip) ? "" : ipInfo.ip;
+                        console.log("loginIp"+loginIp);
+                        console.log("resuser.loginIp"+resuser.loginIp)
+                        if(loginIp !=resuser.loginIp){
+                            console.log("ip changed")
+                            loginIpStatus="yes";
+                        }
+                        console.log("result.ip_verify"+result.ip_verify)
+                        if((result.ip_verify ===0 && loginIpStatus ==="yes")
+                            ||
+
+                            (resuser.emailVerified==="no" && result.email_verify==="Yes" )
+                            ){
+                            ipStatus=0;
+                        }
+
+                       
+
                         res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
                             "userId": resuser._id,
                             "userName": resuser.userName,
@@ -403,9 +470,9 @@ exports.login= function(req,res) {
                             "userCoin":resuser.startCoin,
                             "userCup":resuser.cupNo,                                                        
                             "bannedStatus":bannedStatus.length,
-                            "email_verify":result.email_verify,
+                            //"email_verify":result.email_verify,
                             "game_deactivation":result.game_deactivation,
-                            "ip_verify":result.ip_verify,
+                            "ip_verify":ipStatus,
                             "auto_refill_coins":result.auto_refill_coins,
                         }, 'User login successfully !!'));
 
@@ -510,4 +577,77 @@ exports.deleteAccount = function (req,res) {
         res.status(constants.BAD_REQUEST_STATUS).send({"status":constants.ERROR_STATUS,"result":err,"message":"Something went Wrong!!"});
     });
 };
+//verifyCode findDetailsGame
+exports.verifyCode = function (req,res) {
+    const ipInfo = req.ipInfo;
 
+    let schema = Joi.object().keys({
+        email: Joi.string().max(254).trim().required(),
+        verifyCode: Joi.string().trim().required()
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = { status: 422, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+
+        if (!req.body.email || !req.body.verifyCode) {
+            //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+            return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and verifyCode you entered is incorrect. Please try again."));
+        }
+        
+            var userObj = {email: req.body.email, emailVerifiedCode: req.body.verifyCode}
+            async.waterfall([
+                    getUserCodeDetails(userObj),
+                    updateVerification
+                    
+
+                ],
+                function (err, result) {
+                    if (result) {
+                        let loginIp=(!ipInfo.ip) ? "" : ipInfo.ip
+                        User.updateOne({email: req.body.email}, {$set: {"loginIp": loginIp}}).then(responses => {
+                        res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, result, 'Email verified successfully !!'));
+                        }).catch(err => {
+                        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "The email address and verify code you entered is incorrect. Please try again."));
+
+                    });
+                       } else {
+                        //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Invalid password!!"));
+                        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "The email address and verify code you entered is incorrect. Please try again."));
+
+                    }
+                });
+            //}
+       // })
+
+       }
+   
+};
+
+
+exports.resendMail = function (req,res) {
+    let verifyCode=Math.floor(100000 + Math.random() * 900000);
+     setTimeout(function () {
+
+       
+       //console.log("user.users"+JSON.stringify(user.users))
+        ForgotPass.callEmailSendLogin(req.body.email,verifyCode).then(responses => {
+          console.log("email send done");
+        }).catch(err => {
+            console.log("error occured in sending mail")
+        });
+   }, 100)
+    
+    User.updateOne({email: req.body.email}, {$set: {"emailVerifiedCode":verifyCode}}).then(responses => {
+      res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, responses, 'Email send successfully !!'));
+
+    }).catch(err => {
+       res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Email sending error. Please try again."));
+    });
+
+};

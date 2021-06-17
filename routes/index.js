@@ -72,6 +72,10 @@ router.post('/game/allgames'/*authetication.authChecker*/,fetchGameHistory.games
 
 router.post('/transaction-list-user',adminController.transactionListUser);
 
+router.post('/verify/code',userController.verifyCode);
+
+router.post('/resend/mail',userController.resendMail);
+
 
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD
