@@ -144,6 +144,15 @@
           </mat-select>
      
     </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Country</mat-label>
+      <mat-select formControlName="countryName"   [(ngModel)]="selectItemsSchedule" required>
+            <mat-option *ngFor="let sub of countrylists" [value]="sub.country_code">
+              {{sub.country_name}}
+            </mat-option>
+          </mat-select>
+    </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">

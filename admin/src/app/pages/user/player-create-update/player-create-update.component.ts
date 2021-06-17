@@ -24,7 +24,7 @@ import { Location } from '@angular/common';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-
+import { CoinService } from '../../../../app/pages/services/coin.service';
 export interface Brand {
   value: string;
   viewValue: string;
@@ -67,6 +67,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
   subject$: ReplaySubject<Player[]> = new ReplaySubject<Player[]>(1);
   data$: Observable<Player[]> = this.subject$.asObservable();
   rolelists= [];
+  countrylists= [];
   Coin=[];
   coinList=[];
   form: FormGroup;
@@ -74,6 +75,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
   dataSource: MatTableDataSource<Player> | null;
   icMoreVert = icMoreVert;
   icClose = icClose;
+  selectItemsSchedule:any;
 
   icPrint = icPrint;
   icDownload = icDownload;
@@ -91,19 +93,18 @@ export class PlayerCreateUpdateComponent implements OnInit {
               private userService:UserService,
               private router: Router,
               private location: Location,
-              private snackbar: MatSnackBar
+              private snackbar: MatSnackBar,
+              private coinService :CoinService
 
               ) {
   }
 
   ngOnInit() {
-
+    this.loadCountry()
     this.userService.getAllRoles().subscribe(Roles => {
-      console.log(Roles);
-      //roleList: RoleList[] =Roles;
+      console.log(Roles);      
       this.rolelists = Roles["result"];
-
-      //this.subject$.next(this.rolelists);
+      
     })
     this.coinList = [
       { value: 10},
@@ -123,7 +124,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
       this.defaults = {} as Player;
 
     }
-
+    this.selectItemsSchedule=this.defaults.countryName;
     this.form = this.fb.group({
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
@@ -138,10 +139,35 @@ export class PlayerCreateUpdateComponent implements OnInit {
       username:[this.defaults.userName || ''],
       useremail:[this.defaults.email || ''],
       password:[this.defaults.password || ''],
-      status:[this.defaults.status || '']
+      status:[this.defaults.status || ''],
+      countryName:[this.defaults.countryName || '']
     });
   }
+  loadCountry(){
+    this.coinService.getAllCountryLists().subscribe(Country => {      
+      this.countrylists = Country["result"];
+      
+    }) 
+  }
 
+  onKeyUser(value:string){
+    if(value != ''){
+    console.log("val search")
+   
+    let filter = value.toLowerCase();
+    for ( let i = 0 ; i < this.countrylists.length; i ++ ) {
+        
+        let option = this.countrylists[i];
+        
+          this.countrylists.push( option );
+       
+      }
+    }
+    else
+    {
+      this.countrylists=[];
+    }
+  }
   save() {
     if (this.mode === 'create') {
       this.createPlayer();

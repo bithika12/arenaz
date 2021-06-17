@@ -72,6 +72,10 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Player Status', property: 'status', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
     { label: 'Player Ip', property: 'ip', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
     { label: 'Player Rank', property: 'userRank', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
+
+    { label: 'Country Name', property: 'countryName', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
+
+    
     { label: 'Actions', property: 'actions', type: 'button', visible: true }
   ];
   pageSize = 10;

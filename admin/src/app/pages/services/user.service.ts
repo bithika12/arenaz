@@ -43,7 +43,9 @@ export class UserService {
         "userEmail":editplayer.useremail,
         "roleName":editplayer.roleid,
         "roleId":editplayer.roleid,
-        "status":editplayer.status
+        "status":editplayer.status,
+        "countryName":editplayer.countryName,
+
       };
       //payloadObj
       console.log(editplayer);

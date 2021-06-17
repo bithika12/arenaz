@@ -270,7 +270,7 @@ exports.registration= function(req,res) {
     else {
         let countryNameDetails = CountryCodes.findCountry({'gec': ipInfo.country});
         console.log(countryNameDetails.name);
-}
+    }
     //res.send(ipInfo);
 
     let schema = Joi.object().keys({
@@ -334,6 +334,26 @@ exports.registration= function(req,res) {
                 User.coinDetails({ status : "active"
                 }).then((coinDetails) => {
                    //console.log("coinnumber"+coinDetails[0].number);
+                   let ipStatus=0;
+                   let verifyCode=Math.floor(100000 + Math.random() * 900000);
+                      setTimeout(function () {
+                               //console.log("user.users"+JSON.stringify(user.users))
+                                ForgotPass.callEmailSendLogin(result.email,verifyCode).then(responses => {
+                                  //console.log("email send done");
+                                   User.updateOne({email: result.email}, {$set: {"emailVerifiedCode": verifyCode}}).then(responses => {
+                                    //res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, result, 'Email verified successfully !!'));
+                                    console.log("mail send in registration")
+
+                                    }).catch(err => {
+                                     console.log("error occured in mail send")
+                                });
+
+                                }).catch(err => {
+                                    console.log("error occured in sending mail")
+                                });
+                      }, 100)
+
+
                    res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
                     "userId": result._id,
                     "userName": result.userName,
@@ -342,11 +362,12 @@ exports.registration= function(req,res) {
                     "accessToken": result.deviceDetails[0].accessToken,
                     "userCoin":result.startCoin,
                     "new_account_gift_coins":result.startCoin,
-                    "userCup":3000
+                    "userCup":3000,
+                    "ip_verify":ipStatus
                     //"userCoin":3000,
                     //"userCup":0
                 }, 'You have successfully registered. You will be logged in.')); 
-
+          
                 }).catch(err => {
                   res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
 

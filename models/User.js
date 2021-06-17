@@ -818,7 +818,8 @@ User.resetPassword = function(condObj,updateObj){
                          userRank:key+1,
                          cupNumber:entry1.cupNo,
                          status:entry1.status,
-                         ip:entry1.loginIp
+                         ip:entry1.loginIp,
+                         countryName:entry1.countryName
 
                      });
                      if(key===responses.length-1){

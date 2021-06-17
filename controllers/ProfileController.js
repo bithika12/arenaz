@@ -116,7 +116,8 @@ exports.updateProfileImage = function(req,res){
          roleName:  Joi.string().required(),
          userEmail:  Joi.string().required(),
          roleId:    Joi.string().required(),
-         status:    Joi.string().optional()
+         status:    Joi.string().optional(),
+         countryName:    Joi.string().optional()
 
      });
      //const {value, error} = result;
@@ -135,7 +136,8 @@ exports.updateProfileImage = function(req,res){
              lastName:req.body.lastName,
              //startCoin:req.body.coinNumber,
              roleId:id1,
-             status:req.body.status
+             status:req.body.status,
+             countryName:req.body.countryName
 
          };
          modifyProfileDetails({email:req.body.userEmail},updateObj)
