@@ -230,7 +230,7 @@ function checkValid(user,callback) {
     });
 }
 function sendMail(user,callback) {
-    console.log("user123"+JSON.stringify(user.users.get('verifyCode')))
+    console.log("send mail"+JSON.stringify(user.users.get('verifyCode')))
    // if(user.users.emailVerified==="no"){
 
     setTimeout(function () {
@@ -427,8 +427,8 @@ exports.login= function(req,res) {
                     getUserDetails(userObj),
                     updateToken,
                     updateLogIn,
-                    checkValid,
-                    sendMail
+                    checkValid
+                    //sendMail
 
                 ],
                 function (err, result) {
@@ -455,7 +455,20 @@ exports.login= function(req,res) {
 
                             (resuser.emailVerified==="no" && result.email_verify==="Yes" )
                             ){
-                            ipStatus=0;
+                               ipStatus=0;
+
+                              setTimeout(function () {
+
+                               
+                               
+                               //console.log("user.users"+JSON.stringify(user.users))
+                                ForgotPass.callEmailSendLogin(resuser.email,resuser.verifyCode).then(responses => {
+                                  console.log("email send done");
+                                }).catch(err => {
+                                    console.log("error occured in sending mail")
+                                });
+                             }, 100)
+
                         }
 
                        
