@@ -269,40 +269,48 @@ namespace ArenaZ.Screens
 
         public void OnClickArena(GameType type)
         {
-            switch (type)
+            Debug.Log("Enter into Arena bttn Click");
+            if (User.IPVerify == 0)
             {
-                case GameType.normal:
-                    GameManager.Instance.SetGameplayMode(GameManager.EGamePlayMode.Multiplayer);
-                    enterArenaMode();
-                    User.DartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
-                    User.UserRace = raceNames[horizontalScrollSnap._currentPage];
-                    Debug.Log($"DartName: {User.DartName}, UserRace: {User.UserRace}");
+                UIManager.Instance.ShowScreen(Page.EmailVerificationPanel.ToString());
+            }
+            else
+            {
+                switch (type)
+                {
+                    case GameType.normal:
+                        GameManager.Instance.SetGameplayMode(GameManager.EGamePlayMode.Multiplayer);
+                        enterArenaMode();
+                        User.DartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
+                        User.UserRace = raceNames[horizontalScrollSnap._currentPage];
+                        Debug.Log($"DartName: {User.DartName}, UserRace: {User.UserRace}");
 
-                    FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
-                    FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[horizontalScrollSnap._currentPage]);
+                        FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
+                        FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[horizontalScrollSnap._currentPage]);
 
-                    SaveUserData();
+                        SaveUserData();
 
-                    setDart?.Invoke(User.DartName);
-                    SetProfilePicOnClick();
-                    LevelSelection.Instance.OnSelectionGameplayType(type);
-                    SocketManager.Instance.ColRequest();
-                    break;
-                case GameType.training:
-                    GameManager.Instance.SetGameplayMode(GameManager.EGamePlayMode.Training);
-                    User.DartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
-                    User.UserRace = raceNames[horizontalScrollSnap._currentPage];
-                    Debug.Log($"DartName: {User.DartName}, UserRace: {User.UserRace}");
+                        setDart?.Invoke(User.DartName);
+                        SetProfilePicOnClick();
+                        LevelSelection.Instance.OnSelectionGameplayType(type);
+                        SocketManager.Instance.ColRequest();
+                        break;
+                    case GameType.training:
+                        GameManager.Instance.SetGameplayMode(GameManager.EGamePlayMode.Training);
+                        User.DartName = ConstantStrings.dart + GetTruncatedString(horizontalScrollSnap.CurrentPageObject().name);
+                        User.UserRace = raceNames[horizontalScrollSnap._currentPage];
+                        Debug.Log($"DartName: {User.DartName}, UserRace: {User.UserRace}");
 
-                    FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
-                    FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[horizontalScrollSnap._currentPage]);
+                        FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedCharacter.ToString(), horizontalScrollSnap._currentPage.ToString());
+                        FileHandler.SaveToPlayerPrefs(PlayerPrefsValue.SelectedRace.ToString(), raceNames[horizontalScrollSnap._currentPage]);
 
-                    SaveUserData();
+                        SaveUserData();
 
-                    setDart?.Invoke(User.DartName);
-                    SetProfilePicOnClick();
-                    GameManager.Instance.StartTraining();
-                    break;
+                        setDart?.Invoke(User.DartName);
+                        SetProfilePicOnClick();
+                        GameManager.Instance.StartTraining();
+                        break;
+                }
             }
         }
 

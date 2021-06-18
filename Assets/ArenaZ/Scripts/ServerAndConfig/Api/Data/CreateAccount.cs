@@ -17,6 +17,8 @@ namespace RedApple.Api.Data
         public int UserCoin { get; set; }        
         [JsonProperty("userCup")]
         public int UserCup { get; set; }
+        [JsonProperty("ip_verify")]
+        public int IPVerify { get; set; }
     }
 
     public class UserSelectionDetails

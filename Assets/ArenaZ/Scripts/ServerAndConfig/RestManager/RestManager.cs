@@ -223,7 +223,40 @@ namespace RedApple
 
             sendWebRequest(webRqstBuilder, onCompletionLogin, restError);
         }
+        public static void EmailVerification(string verifyCode, string email, Action<EmailVerifyCheckResponse> OnEmailVerifyComplete, Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.EMAIL_VERIFY))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.VERIFY_CODE, verifyCode)
+                .FormData(Attributes.EMAIL_ID, email);
 
+            sendWebRequest(webRqstBuilder, OnEmailVerifyComplete, restError);
+        }
+        public static void ResendEmail(string email, Action<ResendMailVerificationResponse> OnResendEmailComplete, Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.RESEND_EMAIL))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.EMAIL_ID, email);
+
+            sendWebRequest(webRqstBuilder, OnResendEmailComplete, restError);
+        }
+        public static void AddUserCoins (string userName,string coin,Action OnAddUserCoinComplete, Action<RestError> restError)
+        {
+            WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
+                .Url(getApiUrl(Urls.ADD_USER_COIN))
+                .Verb(Verbs.POST)
+                .ContentType(ContentTypes.FORM)
+                .FormData(Attributes.NAME, userName)
+                .FormData(Attributes.TYPE, "Deposit")
+                .FormData(Attributes.COIN, coin)
+                .FormData(Attributes.REFERENCE, "auto_refill");
+
+            sendWebRequest(webRqstBuilder, OnAddUserCoinComplete, restError);
+        }
         //public static void WalletDetails(WalletDetailsRequest a_RequestObj, Action<WalletDetailsResponse> a_OnComplete, Action<RestError> a_OnError)
         //{
         //    IDictionary<string, string> t_ClassData = null;

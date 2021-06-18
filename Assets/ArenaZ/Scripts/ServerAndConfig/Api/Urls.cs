@@ -77,5 +77,8 @@
         public const string WALLET_CONFIRM_DEPOSIT = "confirm/deposit";
         public const string WALLET_CHECK_TRANSACTION_STATUS = "check/transaction/status";
         public const string WALLET_HISTORY = "transaction-list-user";
+        public const string EMAIL_VERIFY = "verify/code";
+        public const string RESEND_EMAIL = "resend/mail";
+        public const string ADD_USER_COIN = "admin/add-user-coins";
     }
 }

@@ -16,5 +16,10 @@ namespace RedApple.Api.Data
         public int UserCoin { get; set; }
         [JsonProperty("userCup")]
         public int UserCup { get; set; }
+        [JsonProperty("ip_verify")]
+        public int IPVerify { get; set; }
+        [JsonProperty("auto_refill_coins")]
+        public int Auto_Refill_Coins { get; set; }
+
     }
 }

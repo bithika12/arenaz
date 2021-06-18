@@ -117,9 +117,10 @@ namespace ArenaZ.LoginUser
             FileHandler.SaveToFile<UserData>(userData, ConstantStrings.USER_SAVE_FILE_KEY);
 
             storeUserData(loggedinProfile);
+
+            Debug.Log("The userEmailVerified"+ loggedinProfile.IPVerify);
             AccountAccess.Instance.TasksAfterLogin(loggedinProfile.UserName, AccountAccessType.Login, false);
             OnClickLoginPopUpClose();
-
             mapHandlerRef.GetGames();
             walletHandlerRef.GetWalletDetails();
         }
@@ -132,6 +133,8 @@ namespace ArenaZ.LoginUser
             User.UserAccessToken = userLogin.AccessToken;
             User.UserCoin = userLogin.UserCoin;
             User.UserCup = userLogin.UserCup;
+            User.IPVerify = userLogin.IPVerify;
+            User.AutoRefill = userLogin.Auto_Refill_Coins;
         }
 
         private void OnErrorLogin(RestUtil.RestCallError restError)

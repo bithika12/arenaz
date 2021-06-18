@@ -11,6 +11,9 @@ using System;
 
 public class VersionChecker : MonoBehaviour
 {
+    public GameObject gameDeactivationPopup;
+    public GameObject versionCheck;
+    public GameObject bannedStatusPopup;
     private VersionCheckerResponse response;
 
     private void Start()
@@ -29,14 +32,32 @@ public class VersionChecker : MonoBehaviour
         response = a_Response;
         if (a_Response != null)
         {
+            Debug.Log("Enter into the Null Response............");
             DownloadUrl.url = a_Response.DownloadLink;
             if (!a_Response.Status)
             {
                 UIManager.Instance.ShowScreen(Page.VersionCheckPanel.ToString());
+                versionCheck.SetActive(true);
+            }
+            else if(a_Response.BannedStatus == 1)
+            {
+                Debug.Log("Enter into the Banned Status............");
+                UIManager.Instance.ShowScreen(Page.VersionCheckPanel.ToString());
+                bannedStatusPopup.SetActive(true);
+            }
+            else if(a_Response.GameDeactivation.Equals("Yes"))
+            {
+                Debug.Log("Enter into the Game Deactivation............");
+                UIManager.Instance.ShowScreen(Page.VersionCheckPanel.ToString());
+                gameDeactivationPopup.SetActive(true);
             }
         }
     }
-
+    public void OkayBttnClick()
+    {
+        Debug.Log("Enter on the Okay Bttn");
+        Application.Quit();
+    }
     private void OnErrorVersionCheck(RestUtil.RestCallError a_ErrorObj)
     {
         Debug.LogError("Error On VersionCheck: " + a_ErrorObj.Description);
@@ -58,5 +79,9 @@ public class VersionCheckerResponse
     public bool Status;
     [JsonProperty("download_link")]
     public string DownloadLink;
+    [JsonProperty("bannedStatus")]
+    public int BannedStatus;
+    [JsonProperty("game_deactivation")]
+    public string GameDeactivation;
 }
 

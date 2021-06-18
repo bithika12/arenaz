@@ -67,5 +67,10 @@
 
         public const string NOTIFICATION_ID = "notificationId";
         public const string APP_VERSION = "app_version";
+
+        public const string VERIFY_CODE = "verifyCode";
+        public const string TYPE = "type";
+        public const string REFERENCE = "reference";
+        public const string COIN = "coin";
     }
 }

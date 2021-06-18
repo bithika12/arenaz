@@ -139,6 +139,7 @@ namespace ArenaZ.RegistrationUser
             User.UserAccessToken = userDetails.AccessToken;
             User.UserCoin = userDetails.UserCoin;
             User.UserCup = userDetails.UserCup;
+            User.IPVerify = userDetails.IPVerify;
         }
 
         private void OnErrorRegistration(RestUtil.RestCallError obj)

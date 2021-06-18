@@ -51,6 +51,8 @@ namespace ArenaZ.GameMode
         public Action<string, string, string> setOpponentImage;
         public Action<string, string> setCupCount;
 
+        [SerializeField] public AutoRefillCoins autoRefillCoins;
+
         private void Start()
         {
             //Debug.LogError("Shooting Range Start");
@@ -287,6 +289,7 @@ namespace ArenaZ.GameMode
         {
             if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Multiplayer)
             {
+                Debug.Log("The User Coin Value........................"+ User.UserCoin + "The AutoRefill Coin..........."+ User.AutoRefill);
                 if (!GameManager.Instance.InternetConnection())
                 {
                     //UIManager.Instance.ShowScreen(Page.InternetConnectionLostPanel.ToString());
@@ -301,7 +304,17 @@ namespace ArenaZ.GameMode
                     SocketManager.Instance.GameRequest();
                 }
                 else
-                    UIManager.Instance.ShowScreen(Page.NotEnoughCoinOverlay.ToString());
+                {
+                    if (User.AutoRefill > 0)
+                    {
+                        UIManager.Instance.ShowScreen(Page.AutoRefillCheckPanel.ToString());
+                        autoRefillCoins.autoRefillText.text = "You have less than 10 coins.We’ve giving you " + User.AutoRefill.ToString() + " coins to fight your wars!";
+                    }
+                    else
+                    {
+                        UIManager.Instance.ShowScreen(Page.NotEnoughCoinOverlay.ToString());
+                    }
+                }
             }
             //else if (GameManager.Instance.GetGameplayMode() == GameManager.EGamePlayMode.Training)
             //{

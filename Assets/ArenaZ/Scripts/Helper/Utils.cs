@@ -44,7 +44,8 @@ public enum Page
     SurrenderedPopupPanel,
     ReconnectCountdownPanel,
     VersionCheckPanel,
-    IpAdressChecker,
+    EmailVerificationPanel,
+    AutoRefillCheckPanel,
     WalletDepositRequestPanel,
     WalletDepositConfirmPanel,
     WalletWithdrawPanel,
@@ -252,6 +253,8 @@ public static class User
     public static int UserCup;
     public static string UserSelectedGame;
     public static string SupportEmailAddress;
+    public static int IPVerify;
+    public static int AutoRefill;
 }
 
 public static class SettingData
