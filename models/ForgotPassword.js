@@ -134,7 +134,9 @@ const callEmailSendLogin = (email,verifyCode) => {
                 }
             });
         };
-        readHTMLFile(appRoot  + '/views/email/verifyemail.jade', function(err, html) {
+       readHTMLFile(appRoot  + '/views/email/verifyemail.jade', function(err, html) {
+
+        //readHTMLFile(appRoot  + '/views/email/forgotpasswordemail.jade', function(err, html) {
             let template = handlebars.compile(html);
             let code1= Math.floor((Math.random() * 90) + 1);
             let replacements = {

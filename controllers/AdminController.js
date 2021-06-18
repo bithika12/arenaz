@@ -183,7 +183,9 @@ exports.addUser= function(req,res) {
         roleId: Joi.string().trim().required(),
         coinNumber: Joi.number().required(),
         firstName:Joi.string().trim().required(),
-        lastName:Joi.string().trim().required()
+        lastName:Joi.string().trim().required(),
+        countryName:req.body.countryName,
+        emailVerified:req.body.emailVerified
         //password with special character
         //password: Joi.string().min(8).regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).trim().required()
     });
@@ -222,7 +224,9 @@ exports.addUser= function(req,res) {
             countryName:ipInfo.country,
             loginIp:ipInfo.ip,
             cupNo:3000,
-            userScore : 3000
+            userScore : 3000,
+            countryName:req.body.countryName,
+            emailVerified:req.body.emailVerified
             //userType: "registered-game-user"
         }
         async.waterfall([

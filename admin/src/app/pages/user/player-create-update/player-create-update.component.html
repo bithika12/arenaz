@@ -153,6 +153,15 @@
             </mat-option>
           </mat-select>
     </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Email Verification</mat-label>
+      <mat-select formControlName="emailVerified"   required [(ngModel)]="selectItemsemail">
+            <mat-option *ngFor="let sub of usertEmailVerifyArr" [value]="sub.value">
+              {{sub.name}}
+            </mat-option>
+          </mat-select>
+    </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">

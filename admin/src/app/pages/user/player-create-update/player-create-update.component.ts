@@ -50,6 +50,12 @@ export class PlayerCreateUpdateComponent implements OnInit {
     { name: 'Duplicate',value:'Duplicate' }
   ];
 
+  usertEmailVerifyArr: any[] = [
+    { name: 'Yes',value:'yes' },
+    { name: 'No',value:'no' }
+    
+  ];
+
   brands: Brand[] = [
     { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },
     { value: 'Gucci', viewValue: 'Gucci' },
@@ -76,6 +82,7 @@ export class PlayerCreateUpdateComponent implements OnInit {
   icMoreVert = icMoreVert;
   icClose = icClose;
   selectItemsSchedule:any;
+  selectItemsemail:any;
 
   icPrint = icPrint;
   icDownload = icDownload;
@@ -125,6 +132,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
 
     }
     this.selectItemsSchedule=this.defaults.countryName;
+
+    this.selectItemsemail=this.defaults.emailVerified;
     this.form = this.fb.group({
       id: this.defaults.id,
       //imageSrc: this.defaults.imageSrc,
@@ -140,7 +149,8 @@ export class PlayerCreateUpdateComponent implements OnInit {
       useremail:[this.defaults.email || ''],
       password:[this.defaults.password || ''],
       status:[this.defaults.status || ''],
-      countryName:[this.defaults.countryName || '']
+      countryName:[this.defaults.countryName || ''],
+      emailVerified:[this.defaults.emailVerified || '']
     });
   }
   loadCountry(){

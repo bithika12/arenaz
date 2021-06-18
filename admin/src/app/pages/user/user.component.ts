@@ -75,6 +75,8 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
 
     { label: 'Country Name', property: 'countryName', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
 
+    { label: 'Email Verified', property: 'emailVerified', type: 'text', visible: true, cssClasses: ['text-secondary', 'font-medium'] },
+
     
     { label: 'Actions', property: 'actions', type: 'button', visible: true }
   ];

@@ -45,6 +45,7 @@ export class UserService {
         "roleId":editplayer.roleid,
         "status":editplayer.status,
         "countryName":editplayer.countryName,
+        "emailVerified":editplayer.emailVerified
 
       };
       //payloadObj
@@ -86,7 +87,9 @@ export class UserService {
         //"roleName":addPlayer.roleid,
         "roleId":addPlayer.roleid,
         "coinNumber":addPlayer.coin,
-        "password":addPlayer.password
+        "password":addPlayer.password,
+        "emailVerified":addPlayer.emailVerified,
+        "countryName":addPlayer.countryName,
       };
     //payloadObj
     console.log(addPlayer);

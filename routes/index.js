@@ -76,6 +76,7 @@ router.post('/verify/code',userController.verifyCode);
 
 router.post('/resend/mail',userController.resendMail);
 
+router.post('/free/coin/status',userController.freeCoinStatus);
 
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD

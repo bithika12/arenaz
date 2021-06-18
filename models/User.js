@@ -262,11 +262,24 @@ User.updateUserDetails =function(condObj,updateObj){
              let total_no_win=parseInt(responses.total_no_win)+parseInt(1);
              console.log("total_no_win12"+total_no_win);
              let userScore=parseInt(responses.userScore)+parseInt(updateObj.userScore);
-             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win,userScore:userScore} }).then(updatedResponses=> {
+             //for gamecount capturing
+             let gameCount=parseInt(responses.gameCount)+1;
+             User.updateOne({_id:condObj.userId},             
+              { $set :{startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win,userScore:userScore,gameCount:gameCount}}
+              
+              ).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });   
+
+
+             /*User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,total_no_win:total_no_win,userScore:userScore} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
                  return reject(updatedResponsesErr);
              });
+             */
          }).catch(err => {
              return reject(err);
          });
@@ -292,9 +305,11 @@ User.updateUserDetails =function(condObj,updateObj){
              /*if(updatedCoin ==0){
                  updatedCoin=500;
              }*/
+            let gameCount=parseInt(responses.gameCount)+1;
+
              console.log("opponent cup"+updatedCup);
              console.log("opponent coin"+updatedCoin);
-             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,userScore:userScore} }).then(updatedResponses=> {
+             User.updateOne({_id:condObj.userId},{ $set : {startCoin:updatedCoin,cupNo:updatedCup,userScore:userScore,gameCount:gameCount} }).then(updatedResponses=> {
                  return resolve(updatedResponses);
              }).catch(updatedResponsesErr => {
                  return reject(updatedResponsesErr);
@@ -819,7 +834,8 @@ User.resetPassword = function(condObj,updateObj){
                          cupNumber:entry1.cupNo,
                          status:entry1.status,
                          ip:entry1.loginIp,
-                         countryName:entry1.countryName
+                         countryName:entry1.countryName,
+                         emailVerified:entry1.emailVerified
 
                      });
                      if(key===responses.length-1){
@@ -1204,6 +1220,7 @@ User.detailsUserCoin = function(condObj){
  //addUserCoin
  User.addUserCoin = function(reqObj){
      return new Promise((resolve,reject)=>{
+          console.log("reqObj.coin"+typeof(reqObj.coin))
           let updatedCoin;
           let usercoins={
                       user_name:reqObj.userName,

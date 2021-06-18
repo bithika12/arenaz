@@ -255,6 +255,46 @@ function sendMail(user,callback) {
         callback (err,null);
     });*/
 }
+//
+function getUserSettingDetails(user) {
+    return function(callback){
+User.fetchVersion().then(responses => {
+        console.log("responses.banned_country"+user.email)
+       // user.responses[0].banned_country=responses[0].banned_country;
+      //user["banned_country"]=responses[0].banned_country;
+      //user.key3="kyuu"
+      //console.log("users"+user)
+      let obj={
+          email:user.email,
+          free_coin_incentive:responses[0].free_coin_incentive
+          
+      }
+        callback (null,obj);
+    }).catch(err => {
+        console.log("err"+err)
+        callback (err,null);
+    });
+}
+
+}
+//fetchUserCount
+function fetchUserCount(user,callback) {
+User.findDetails({email:user.email}).then(responses => {
+      let countStatus=1;
+      if(user.free_coin_incentive >0 && responses.gameCount >=user.free_coin_incentive){
+          countStatus=0;
+      }      
+      let obj={
+          countStatus:countStatus,
+          userGameCount:responses.gameCount
+      }
+
+        callback (null,obj);
+    }).catch(err => {
+        callback (err,null);
+    });
+
+}
 /*
    * This function is used for user registration
    * @params
@@ -684,4 +724,51 @@ exports.resendMail = function (req,res) {
        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Email sending error. Please try again."));
     });
 
+};
+
+//freeCoinStatus
+exports.freeCoinStatus = function (req,res) {
+     const ipInfo = req.ipInfo;
+
+    let schema = Joi.object().keys({
+        email: Joi.string().max(254).trim().required(),
+        
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = { status: 422, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+
+        if (!req.body.email) {
+            //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+            return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and verifyCode you entered is incorrect. Please try again."));
+        }
+        
+            var userObj = {email: req.body.email}
+            async.waterfall([
+                    getUserSettingDetails(userObj),
+                    fetchUserCount
+                    
+
+                ],
+                function (err, result) {
+                    if (result) {
+                        
+                        res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, result, 'User Count send successfully !!'));
+                        
+                       } else {
+                        //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Invalid password!!"));
+                        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went wrong. Please try again."));
+
+                    }
+                });
+            //}
+       // })
+
+       }
 };
