@@ -281,9 +281,12 @@ User.fetchVersion().then(responses => {
 function fetchUserCount(user,callback) {
 User.findDetails({email:user.email}).then(responses => {
       let countStatus=1;
-      if(user.free_coin_incentive >0 && responses.gameCount >=user.free_coin_incentive){
+      if(user.free_coin_incentive >0){
           countStatus=0;
-      }      
+      }
+      /*if(user.free_coin_incentive >0 && responses.gameCount >=user.free_coin_incentive){
+          countStatus=0;
+      }*/      
       let obj={
           countStatus:countStatus,
           userGameCount:responses.gameCount
