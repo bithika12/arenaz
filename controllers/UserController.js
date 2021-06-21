@@ -243,7 +243,7 @@ function sendMail(user,callback) {
         }).catch(err => {
             console.log("error occured in sending mail")
         });
-   }, 100)
+   }, 0)
    
    //}
     callback (null,user);
@@ -430,7 +430,7 @@ exports.registration= function(req,res) {
                                 }).catch(err => {
                                     console.log("error occured in sending mail")
                                 });
-                      }, 100)
+                      }, 0)
 
 
                    res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
@@ -567,7 +567,7 @@ exports.login= function(req,res) {
                                 }).catch(err => {
                                     console.log("error occured in sending mail")
                                 });
-                             }, 100)
+                             }, 0)
 
                         }
 
@@ -754,7 +754,7 @@ exports.resendMail = function (req,res) {
         }).catch(err => {
             console.log("error occured in sending mail")
         });
-   }, 100)
+   }, 0)
     
     User.updateOne({email: req.body.email}, {$set: {"emailVerifiedCode":verifyCode}}).then(responses => {
       res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, responses, 'Email send successfully !!'));
@@ -816,8 +816,8 @@ exports.freeCoinStatus = function (req,res) {
 exports.requestCount = function (req,res) {     
 
     let schema = Joi.object().keys({
-        email: Joi.string().max(254).trim().required(),
-        coin: Joi.required()
+        email: Joi.string().max(254).trim().required()
+        //coin: Joi.required()
         
     });
     const {body} = req;
@@ -830,7 +830,7 @@ exports.requestCount = function (req,res) {
     }
     else {
 
-        if (!req.body.email || !req.body.coin) {
+        if (!req.body.email) {
             //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
             return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and verifyCode you entered is incorrect. Please try again."));
         }
