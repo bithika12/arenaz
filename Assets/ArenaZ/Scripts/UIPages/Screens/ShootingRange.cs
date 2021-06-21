@@ -53,6 +53,12 @@ namespace ArenaZ.GameMode
 
         [SerializeField] public AutoRefillCoins autoRefillCoins;
 
+        public GameObject[] total_ten;
+        public GameObject[] total_fifty;
+        public GameObject[] total_hundred;
+        public GameObject[] total_two_fifty;
+        public GameObject[] total_five_hundred;
+
         private void Start()
         {
             //Debug.LogError("Shooting Range Start");
@@ -63,7 +69,32 @@ namespace ArenaZ.GameMode
             UIManager.Instance.showProfilePic += SetUserProfileImage;
             UIManager.Instance.setCoinAndCup += refreshData;
         }
-
+        public void DisableAllGlow(GameObject[] _array)
+        {
+            for(int i = 0;i<_array.Length;i++)
+            {
+                _array[i].SetActive(false);
+            }
+        }
+        public void EnableDisableCoin(int coinRequestStatus,GameObject[] _array)
+        {
+            Debug.Log("The CoinRequest..................."+coinRequestStatus+"The array................"+_array);
+            if (coinRequestStatus == 1)
+            {
+                _array[0].SetActive(true);
+            }
+            else if(coinRequestStatus == 2)
+            {
+                _array[0].SetActive(true);
+                _array[1].SetActive(true);
+            }
+            else if(coinRequestStatus >= 3)
+            {
+                _array[0].SetActive(true);
+                _array[1].SetActive(true);
+                _array[2].SetActive(true);
+            }
+        }
         private void OnEnable()
         {
             dartImage.transform.DOLocalMoveY(-630.0f, 1.0f).SetEase(Ease.InSine).SetLoops(-1, LoopType.Yoyo);

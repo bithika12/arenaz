@@ -46,6 +46,7 @@ public enum Page
     VersionCheckPanel,
     EmailVerificationPanel,
     AutoRefillCheckPanel,
+    FreeTokenPanel,
     WalletDepositRequestPanel,
     WalletDepositConfirmPanel,
     WalletWithdrawPanel,
@@ -255,6 +256,9 @@ public static class User
     public static string SupportEmailAddress;
     public static int IPVerify;
     public static int AutoRefill;
+    public static int UserGameCount;
+    public static int CountStatus;
+    public static int GameCountType;
 }
 
 public static class SettingData

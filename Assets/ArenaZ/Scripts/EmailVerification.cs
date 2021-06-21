@@ -34,6 +34,7 @@ public class EmailVerification : MonoBehaviour
             if (a_Response.Status.Equals("active"))
             {
                 User.IPVerify = 1;
+                verificationCode.text = "";
                 characterSelection.OnClickArena(GameType.normal);
                 emailVerificationbPanel.SetActive(false);
             }

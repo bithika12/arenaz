@@ -93,16 +93,19 @@ namespace ArenaZ.LoginUser
 
             if (string.IsNullOrEmpty(emailID) || string.IsNullOrWhiteSpace(emailID))
             {
+                Debug.Log("Enter into If the Email Id..................");
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), ConstantStrings.emptyFieldWarning, PopUpduration);
                 return;
             }
             else if (GetMessageWhenFaultCheckOnLogin(password, Checking.Password) != null)
             {
+                Debug.Log("Enter into Else If the Email Id..................");
                 UIManager.Instance.ShowPopWithText(Page.PopUpTextAccountAccess.ToString(), GetMessageWhenFaultCheckOnLogin(password, Checking.Password), PopUpduration);
                 return;
             }
             else
             {
+                Debug.Log("Enter into Else..................");
                 this.password = password;
                 RestManager.LoginProfile(emailID, password, OnCompleteLogin, OnErrorLogin);
             }

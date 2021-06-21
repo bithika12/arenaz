@@ -80,5 +80,9 @@
         public const string EMAIL_VERIFY = "verify/code";
         public const string RESEND_EMAIL = "resend/mail";
         public const string ADD_USER_COIN = "admin/add-user-coins";
+
+        public const string FREE_COIN_STATUS = "free/coin/status";
+        public const string ADD_USER_FREE_COIN = "add-user-coins";
+        public const string REQUEST_COUNT = "request/count";
     }
 }
