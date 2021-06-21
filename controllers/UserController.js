@@ -20,7 +20,7 @@ const CountryCodes = require('country-code-info');
 let ForgotPass  = require(appRoot +'/models/ForgotPassword');
 let randomstring = require("randomstring");
 
-
+var Room  = require('../models/Room');
 /* Async function*/
 
 
@@ -289,7 +289,8 @@ User.findDetails({email:user.email}).then(responses => {
       }*/      
       let obj={
           countStatus:countStatus,
-          userGameCount:responses.gameCount
+          userGameCount:responses.gameCount,
+          free_coin_incentive:user.free_coin_incentive
       }
 
         callback (null,obj);
@@ -298,6 +299,40 @@ User.findDetails({email:user.email}).then(responses => {
     });
 
 }
+function getUser(reqObj){
+  return function(callback){
+    User.findDetails({email:reqObj.email}).then((userDetails)=>{
+       let obj={
+         _id:userDetails._id,
+         coin:reqObj.coin
+       }
+       callback (null,obj);
+       
+    }).catch(err=>{
+         callback(err,null);
+    })
+  }
+}
+function fetchRequest(user,callback) {
+Room.findRequest({userId:user._id,coin:user.coin}).then(responses => {
+      
+      /*if(user.free_coin_incentive >0 && responses.gameCount >=user.free_coin_incentive){
+          countStatus=0;
+      }*/      
+      let obj={
+          countStatus:responses,
+          //userGameCount:responses.gameCount
+      }
+
+        callback (null,obj);
+    }).catch(err => {
+        callback (err,null);
+    });
+
+}
+
+
+
 /*
    * This function is used for user registration
    * @params
@@ -756,6 +791,53 @@ exports.freeCoinStatus = function (req,res) {
             async.waterfall([
                     getUserSettingDetails(userObj),
                     fetchUserCount
+                    
+
+                ],
+                function (err, result) {
+                    if (result) {
+                        
+                        res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, result, 'User Count send successfully !!'));
+                        
+                       } else {
+                        //res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Invalid password!!"));
+                        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went wrong. Please try again."));
+
+                    }
+                });
+            //}
+       // })
+
+       }
+};
+
+//requestCount
+exports.requestCount = function (req,res) {     
+
+    let schema = Joi.object().keys({
+        email: Joi.string().max(254).trim().required(),
+        coin: Joi.required()
+        
+    });
+    const {body} = req;
+    let result = Joi.validate(body, schema);
+    const {value, error} = result;
+    const valid = error == null;
+    if (!valid) {
+        let data = { status: 422, result: result.error.name, message: result.error.details[0].message.replace(new RegExp('"', "g"), '') };
+        return res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(data);
+    }
+    else {
+
+        if (!req.body.email || !req.body.coin) {
+            //return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "Parameter Missing!"));
+            return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and verifyCode you entered is incorrect. Please try again."));
+        }
+        
+            var userObj = {email: req.body.email,coin:req.body.coin}
+            async.waterfall([
+                    getUser(userObj),
+                    fetchRequest
                     
 
                 ],

@@ -80,6 +80,7 @@ ipChangeVerificationArr: any[] = [
     
 ];
 freeCoinArr: any[] = [
+    { value: 0 },
     { value: 5 },
     { value: 10 }
 

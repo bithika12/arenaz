@@ -78,6 +78,8 @@ router.post('/resend/mail',userController.resendMail);
 
 router.post('/free/coin/status',userController.freeCoinStatus);
 
+router.post('/request/count',userController.requestCount);
+
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD
   //router.post('/forget-password-generate-otp',resetPasswordController.sendResetOtp);
