@@ -1394,6 +1394,53 @@ User.updateUserCoinTransactionWithDraw =function(condObj,updateObj){
 
      });
  }
+
+ User.addUserFreeCoin = function(reqObj){
+     return new Promise((resolve,reject)=>{
+          console.log("reqObj.coin"+typeof(reqObj.coin))
+          let updatedCoin;
+          let usercoins={
+                      user_name:reqObj.userName,
+                      type:reqObj.type,
+                      coins:reqObj.coin,
+                      reference:reqObj.reference
+                    }
+         userCoin.create(usercoins).then(response=> {
+
+          User.findOne({userName: reqObj.userName},{deviceDetails:0,resetOtp:0}).then(responses12=> {
+
+           if(reqObj.type=="Withdrawal" || reqObj.type=="Withdrawl" || reqObj.type=="withdrawl") {
+             updatedCoin=parseInt(responses12.startCoin)-parseInt(reqObj.coin);
+
+           }
+           else{
+             updatedCoin=parseInt(responses12.startCoin)+parseInt(reqObj.coin);
+
+
+           }
+           if(updatedCoin <0){
+              updatedCoin=0;
+           }
+
+             User.updateOne({userName:reqObj.userName},{ $set : {startCoin:updatedCoin,gameCount:0} }).then(updatedResponses=> {
+                 return resolve(updatedResponses);
+             }).catch(updatedResponsesErr => {
+                 return reject(updatedResponsesErr);
+             });
+
+
+          ////update user 
+
+             }).catch(err=>{
+             reject(err);
+         })
+
+             //resolve(response)
+         }).catch(err=>{
+             reject(err);
+         })
+     })
+ }
 module.exports= User;
 
 

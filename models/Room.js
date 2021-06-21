@@ -776,7 +776,7 @@ room.findHistoryAdmin = function(userId){
     })
  }
 
-  room.findRequest = function(obj){
+  room.findRequest1 = function(obj){
      //{game_time: {$gte : 0},status:"closed"}
     //console.log(" fetch game history  ",obj)
     return new Promise((resolve,reject) => {
@@ -798,6 +798,131 @@ room.findHistoryAdmin = function(userId){
        //console.log("responses1"+responses[0]);
         //Room.find({game_time: {$gte : 0},status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1,colorName:1,raceName:1,roomCoin:1,created_at:1}).sort({"created_at":-1}).limit(50).then(responses=> {
             return resolve(responses.length );
+        }).catch(err => {
+            return reject(err);
+        });
+    })
+ }
+ room.findRequest = function(obj){
+     //{game_time: {$gte : 0},status:"closed"}
+    //console.log(" fetch game history  ",obj)
+    return new Promise((resolve,reject) => {
+    let userid=mongoose.Types.ObjectId(obj.userId);
+    //let userid=obj.userId;
+    console.log("pl0"+userid);
+
+   Room.aggregate( [
+
+   {
+     $lookup:
+       {
+          from: "rooms",
+           
+          pipeline: [
+             { "$match": { 
+    'users.userId': mongoose.Types.ObjectId(obj.userId),
+    'users.roomCoin': 10,
+    status : "closed"} 
+    },
+              
+           ], 
+         
+         as: "regis"
+       }
+  },
+  
+  {
+     $lookup:
+       {
+          from: "rooms",
+           
+          pipeline: [
+             { "$match": { 
+    'users.userId': mongoose.Types.ObjectId(obj.userId),
+    'users.roomCoin': 50,
+    status : "closed"} 
+    },
+              
+           ], 
+         
+         as: "regis1"
+       }
+  },
+  
+  {
+     $lookup:
+       {
+          from: "rooms",
+           
+          pipeline: [
+             { "$match": { 
+    'users.userId': mongoose.Types.ObjectId(obj.userId),
+    'users.roomCoin': 100,
+    status : "closed"} 
+    },
+              
+           ], 
+         
+         as: "regis2"
+       }
+  },
+  {
+     $lookup:
+       {
+          from: "rooms",
+           
+          pipeline: [
+             { "$match": { 
+    'users.userId': mongoose.Types.ObjectId(obj.userId),
+    'users.roomCoin': 250,
+    status : "closed"} 
+    },
+              
+           ], 
+         
+         as: "regis3"
+       }
+  },
+  {
+     $lookup:
+       {
+          from: "rooms",
+           
+          pipeline: [
+             { "$match": { 
+    'users.userId': mongoose.Types.ObjectId(obj.userId),
+    'users.roomCoin': 500,
+    status : "closed"} 
+    },
+              
+           ], 
+         
+         as: "regis4"
+       }
+  },
+ {
+         $project:{
+             
+            
+              total_ten: {$size: "$regis"},
+              total_fifty: {$size: "$regis1"},
+              total_hundred :{$size: "$regis2"},
+              total_two_fifty :{$size: "$regis3"},
+              total_five_hundred :{$size: "$regis4"},
+             
+             
+           
+         }
+   
+     }
+    
+      
+] ).then(responses=> {   
+      console.log("len"+ JSON.stringify( responses[0] ) );
+       
+       //console.log("responses1"+responses[0]);
+        //Room.find({game_time: {$gte : 0},status:"closed",'users.userId': userId}, {_id: 1, name:1, users:1, game_time:1,updated_at:1,colorName:1,raceName:1,roomCoin:1,created_at:1}).sort({"created_at":-1}).limit(50).then(responses=> {
+            return resolve(responses[0] );
         }).catch(err => {
             return reject(err);
         });

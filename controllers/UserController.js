@@ -303,8 +303,8 @@ function getUser(reqObj){
   return function(callback){
     User.findDetails({email:reqObj.email}).then((userDetails)=>{
        let obj={
-         _id:userDetails._id,
-         coin:reqObj.coin
+         _id:userDetails._id
+         //coin:reqObj.coin
        }
        callback (null,obj);
        
@@ -314,17 +314,18 @@ function getUser(reqObj){
   }
 }
 function fetchRequest(user,callback) {
-Room.findRequest({userId:user._id,coin:user.coin}).then(responses => {
+Room.findRequest({userId:user._id/*,coin:user.coin*/}).then(responses => {
       
       /*if(user.free_coin_incentive >0 && responses.gameCount >=user.free_coin_incentive){
           countStatus=0;
-      }*/      
+      }*/   
+      delete responses._id;   
       let obj={
           countStatus:responses,
           //userGameCount:responses.gameCount
       }
 
-        callback (null,obj);
+        callback (null,responses);
     }).catch(err => {
         callback (err,null);
     });
@@ -834,7 +835,7 @@ exports.requestCount = function (req,res) {
             return res.status(constants.BAD_REQUEST_STATUS).send(response.error(constants.PARAMMISSING_STATUS, {}, "The email address and verifyCode you entered is incorrect. Please try again."));
         }
         
-            var userObj = {email: req.body.email,coin:req.body.coin}
+            var userObj = {email: req.body.email/*,coin:req.body.coin*/}
             async.waterfall([
                     getUser(userObj),
                     fetchRequest
@@ -856,4 +857,15 @@ exports.requestCount = function (req,res) {
        // })
 
        }
+};
+
+exports.addUserFreeCoins = function (req,res) {
+    console.log("ok")
+    let formData=req.body;
+    User.addUserFreeCoin(formData).then((coindetails)=>{
+        res.send(response.generate(constants.SUCCESS_STATUS,
+            coindetails, 'User Coin List added successfully !!'));
+    }).catch(err=>{
+        res.send(response.error(constants.ERROR_STATUS,err,"Unable to add coin"));
+    })
 };

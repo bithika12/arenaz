@@ -80,6 +80,8 @@ router.post('/free/coin/status',userController.freeCoinStatus);
 
 router.post('/request/count',userController.requestCount);
 
+router.post('/add-user-coins'/*authetication.authChecker*/,userController.addUserFreeCoins);
+//addUserFreeCoins
  /* FORGET PASSWORD RESET PASSWORD*/
   //RESET PASSWORD
   //router.post('/forget-password-generate-otp',resetPasswordController.sendResetOtp);
