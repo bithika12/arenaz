@@ -415,12 +415,14 @@ exports.registration= function(req,res) {
                    //console.log("coinnumber"+coinDetails[0].number);
                    let ipStatus=0;
                    let verifyCode=Math.floor(100000 + Math.random() * 900000);
-                      setTimeout(function () {
-                               //console.log("user.users"+JSON.stringify(user.users))
+                      
+                       User.updateOne({email: result.email}, {$set: {"emailVerifiedCode": verifyCode}}).then(responses => {
+                      /*setTimeout(function () {
+                               
                                 ForgotPass.callEmailSendLogin(result.email,verifyCode).then(responses => {
-                                  //console.log("email send done");
+                                  
                                    User.updateOne({email: result.email}, {$set: {"emailVerifiedCode": verifyCode}}).then(responses => {
-                                    //res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, result, 'Email verified successfully !!'));
+                                    
                                     console.log("mail send in registration")
 
                                     }).catch(err => {
@@ -430,7 +432,7 @@ exports.registration= function(req,res) {
                                 }).catch(err => {
                                     console.log("error occured in sending mail")
                                 });
-                      }, 0)
+                      }, 0)*/
 
 
                    res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, {
@@ -446,7 +448,10 @@ exports.registration= function(req,res) {
                     //"userCoin":3000,
                     //"userCup":0
                 }, 'You have successfully registered. You will be logged in.')); 
-          
+                 }).catch(err => {
+                                     console.log("error occured in mail send")
+                                });
+                 
                 }).catch(err => {
                   res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Something went Wrong!!"));
 
@@ -557,17 +562,16 @@ exports.login= function(req,res) {
                             ){
                                ipStatus=0;
 
-                              setTimeout(function () {
+                              /*setTimeout(function () {
 
                                
                                
-                               //console.log("user.users"+JSON.stringify(user.users))
                                 ForgotPass.callEmailSendLogin(resuser.email,resuser.verifyCode).then(responses => {
                                   console.log("email send done");
                                 }).catch(err => {
                                     console.log("error occured in sending mail")
                                 });
-                             }, 0)
+                             }, 0)*/
 
                         }
 
@@ -745,20 +749,23 @@ exports.verifyCode = function (req,res) {
 
 exports.resendMail = function (req,res) {
     let verifyCode=Math.floor(100000 + Math.random() * 900000);
-     setTimeout(function () {
-
-       
-       //console.log("user.users"+JSON.stringify(user.users))
+     /*setTimeout(function () {
         ForgotPass.callEmailSendLogin(req.body.email,verifyCode).then(responses => {
           console.log("email send done");
         }).catch(err => {
             console.log("error occured in sending mail")
         });
-   }, 0)
+   }, 0)*/
     
     User.updateOne({email: req.body.email}, {$set: {"emailVerifiedCode":verifyCode}}).then(responses => {
-      res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, responses, 'Email send successfully !!'));
+      //res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, responses, 'Email send successfully !!'));
+       ForgotPass.callEmailSendLogin(req.body.email,verifyCode).then(responses => {
+          res.status(constants.HTTP_OK_STATUS).send(response.generate(constants.SUCCESS_STATUS, responses, 'Email send successfully !!'));
+        }).catch(err => {
+            console.log("error occured in sending mail")
+           res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Email sending error. Please try again."));
 
+        });
     }).catch(err => {
        res.status(constants.UNAUTHERIZED_HTTP_STATUS).send(response.error(constants.ERROR_STATUS, err, "Email sending error. Please try again."));
     });
