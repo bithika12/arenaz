@@ -49,6 +49,7 @@ namespace ArenaZ.Screens
 
         private List<string> allColors = new List<string>();
         private bool gotInitialize = false;
+        public EmailVerification emailVerification;
 
         private void Start()
         {
@@ -266,26 +267,12 @@ namespace ArenaZ.Screens
         {
             UIManager.Instance.ShowCharacterName(raceNames[pageNo]);
         }
-        private void OnResendMailComplete(ResendMailVerificationResponse a_Response)
-        {
-            if (a_Response != null)
-            {
-                if (a_Response.Status == 1)
-                {
-
-                }
-            }
-        }
-        private void OnResendEmailError(RestUtil.RestCallError a_ErrorObj)
-        {
-            Debug.LogError("Error On resend email: " + a_ErrorObj.Description);
-        }
         public void OnClickArena(GameType type)
         {
             Debug.Log("Enter into Arena bttn Click");
             if (User.IPVerify == 0)
             {
-                RestManager.ResendEmail(User.UserEmailId, OnResendMailComplete, OnResendEmailError);
+                emailVerification.ResendBttnClick();
                 UIManager.Instance.ShowScreen(Page.EmailVerificationPanel.ToString());
             }
             else

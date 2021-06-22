@@ -234,7 +234,7 @@ namespace RedApple
 
             sendWebRequest(webRqstBuilder, OnEmailVerifyComplete, restError);
         }
-        public static void ResendEmail(string email, Action<ResendMailVerificationResponse> OnResendEmailComplete, Action<RestError> restError)
+        public static void ResendEmail(string email, Action OnResendEmailComplete, Action<RestError> restError)
         {
             WebRequestBuilder webRqstBuilder = new WebRequestBuilder()
                 .Url(getApiUrl(Urls.RESEND_EMAIL))

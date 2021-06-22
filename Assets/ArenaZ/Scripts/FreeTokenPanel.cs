@@ -17,12 +17,34 @@ public class FreeTokenPanel : MonoBehaviour
     [SerializeField] private Sprite[] claimBttnSprite;
     [SerializeField] private GameObject[] gameCountTypeObj;
     [SerializeField] private ShootingRange shootingRange;
+    [SerializeField] private Sprite[] chestOpenBox;
+    [SerializeField] private GameObject chestImageAnim;
+    [SerializeField] private GameObject defaultChestImage;
 
     public void HideFreeTokenPanel()
     {
         freeTokenObj.SetActive(false);
     }
 
+    private void PlayChestAnimation()
+    {
+        defaultChestImage.SetActive(false);
+        chestImageAnim.SetActive(true);
+        StopCoroutine("ChestAnimation");
+        StartCoroutine("ChestAnimation");
+    }
+    private IEnumerator ChestAnimation()
+    {
+        for (int i = 0; i < chestOpenBox.Length; i++)
+        {
+            yield return new WaitForSeconds(0.1f);
+            chestImageAnim.GetComponent<Image>().sprite = chestOpenBox[i];
+        }
+        yield return new WaitForSeconds(0.5f);
+        defaultChestImage.SetActive(true);
+        chestImageAnim.SetActive(false);
+        freeTokenObj.SetActive(false);
+    }
     public void EnableFreeTokenPanel()
     {
         EnableTickMark(User.UserGameCount);
@@ -50,7 +72,7 @@ public class FreeTokenPanel : MonoBehaviour
             }
             else
             {
-                claimBttn.interactable = false;
+                claimBttn.interactable = true;
                 claimBttn.GetComponent<Image>().sprite = claimBttnSprite[1];
             }
         }
@@ -63,7 +85,7 @@ public class FreeTokenPanel : MonoBehaviour
             }
             else
             {
-                claimBttn.interactable = false;
+                claimBttn.interactable = true;
                 claimBttn.GetComponent<Image>().sprite = claimBttnSprite[1];
             }
         }
@@ -71,11 +93,12 @@ public class FreeTokenPanel : MonoBehaviour
     public void ClaimBttnClick()
     {
         RestManager.AddUserFreeCoinIncentive(User.UserName, "1", OnAddUserCoin, OnAddUserCoinError);
+        PlayChestAnimation();
     }
     public void OnAddUserCoin()
     {
         shootingRange.Refresh();
-        freeTokenObj.SetActive(false);
+        //freeTokenObj.SetActive(false);
     }
     public void OnAddUserCoinError(RestUtil.RestCallError a_ErrorObj)
     {

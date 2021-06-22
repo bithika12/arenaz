@@ -12,17 +12,26 @@ public class EmailVerification : MonoBehaviour
 {
     [SerializeField] private InputField verificationCode;
     [SerializeField] private GameObject alertPopup;
+    [SerializeField] private GameObject blankPopup;
     [SerializeField] private CharacterSelection characterSelection;
     [SerializeField] private GameObject emailVerificationbPanel;
 
     public void ResendBttnClick()
     {
+        verificationCode.text = "";
         RestManager.ResendEmail(User.UserEmailId, OnResendMailComplete, OnResendEmailError);
     }
 
     public void VerifyBttnClick()
     {
-        RestManager.EmailVerification(verificationCode.text, User.UserEmailId, OnEmailVerificationCheckComplete, OnErrorEmailVerificationCheck);
+        if(verificationCode.text == "")
+        {
+            blankPopup.SetActive(true);
+        }
+        else
+        {
+            RestManager.EmailVerification(verificationCode.text, User.UserEmailId, OnEmailVerificationCheckComplete, OnErrorEmailVerificationCheck);
+        }
     }
 
     private void OnEmailVerificationCheckComplete(EmailVerifyCheckResponse a_Response)
@@ -52,16 +61,13 @@ public class EmailVerification : MonoBehaviour
             alertPopup.SetActive(true);
         }
     }
-
-    private void OnResendMailComplete(ResendMailVerificationResponse a_Response)
+    public void CloseBttnClick()
     {
-        if (a_Response != null)
-        {
-            if (a_Response.Status == 1)
-            {
-
-            }
-        }
+        verificationCode.text = "";
+    }
+    private void OnResendMailComplete()
+    {
+ 
     }
     private void OnResendEmailError(RestUtil.RestCallError a_ErrorObj)
     {
@@ -72,9 +78,4 @@ public class EmailVerifyCheckResponse
 {
     [JsonProperty("status")]
     public string Status;
-}
-public class ResendMailVerificationResponse
-{
-    [JsonProperty("status")]
-    public int Status;
 }
