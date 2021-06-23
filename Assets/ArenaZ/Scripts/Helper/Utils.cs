@@ -259,6 +259,7 @@ public static class User
     public static int UserGameCount;
     public static int CountStatus;
     public static int GameCountType;
+    public static int ShowFreeTokenPanel = 1;
 }
 
 public static class SettingData

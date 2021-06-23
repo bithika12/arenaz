@@ -480,6 +480,7 @@ namespace ArenaZ.Manager
 
         public void LeaveRoom()
         {
+            User.ShowFreeTokenPanel = 0;
             if (gamePlayMode == EGamePlayMode.Training)
                 return;
 
@@ -560,6 +561,8 @@ namespace ArenaZ.Manager
 
         private void onGameOver(string data)
         {
+            User.ShowFreeTokenPanel = 0;
+            Debug.Log("The Game Over ShowFree TokenPanel................."+ User.ShowFreeTokenPanel);
             StopRecconectCountdown();
             gameStatus = EGameStatus.None;
             firstTime = true;

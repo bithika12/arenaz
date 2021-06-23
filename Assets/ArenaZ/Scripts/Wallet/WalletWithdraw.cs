@@ -26,7 +26,10 @@ namespace ArenaZ.Wallet
         private bool allowMiniAccountWithdrawal = false;
         private int withdrawAmount = 0;
         private int minimumWithdrawlAmount = 0;
-        
+
+        [SerializeField] private TextMeshProUGUI countdownTimerText;
+        [SerializeField] private CountdownTimer countdownTimer;
+
         private Sequence warningSequence;
 
         private void Start()
@@ -34,6 +37,11 @@ namespace ArenaZ.Wallet
             enableRequestButton(false);
             walletHandlerRef.SubscribeToEvent(this, true);
             amountField.onValueChanged.AddListener(onAmountValueChange);
+            countdownTimer.StartCountdown(86400, false, (t) => countdownTimerText.text = t, () =>
+            {
+                //countdownTimerText.DOKill();
+                countdownTimerText.color = Color.yellow;
+            },true);
         }
 
         private void onAmountValueChange(string a_Value)

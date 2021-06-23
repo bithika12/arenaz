@@ -65,7 +65,7 @@ public class FreeTokenPanel : MonoBehaviour
         }
         if(User.GameCountType == 5)
         {
-            if(_tickMarkCount == 5)
+            if(_tickMarkCount >= 5)
             {
                 claimBttn.interactable = true;
                 claimBttn.GetComponent<Image>().sprite = claimBttnSprite[0];
@@ -78,7 +78,7 @@ public class FreeTokenPanel : MonoBehaviour
         }
         if(User.GameCountType == 10)
         {
-            if (_tickMarkCount == 10)
+            if (_tickMarkCount >= 10)
             {
                 claimBttn.interactable = true;
                 claimBttn.GetComponent<Image>().sprite = claimBttnSprite[0];

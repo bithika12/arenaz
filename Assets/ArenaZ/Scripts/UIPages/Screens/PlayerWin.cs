@@ -139,6 +139,7 @@ namespace ArenaZ.Screens
 
         private void onClickClose()
         {
+            User.ShowFreeTokenPanel = 1;
             UIManager.Instance.ClearOpenPagesContainer();
             //UIManager.Instance.HideScreen(Page.TopAndBottomBarPanel.ToString());
             UIManager.Instance.HideScreen(Page.PlayerWinPanel.ToString());
