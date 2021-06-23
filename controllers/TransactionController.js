@@ -43,9 +43,12 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
 
 
     Transaction.details().then((appList) => {
-                         //let api_url="https://www.qqxm.com/arz/wallet.cfm?key=dhsDJDKkdhjsjatSTYI3ks&userid=123456789&amt=550";
-                         let api_url=appList.wallet_api_link+appList.wallet_key+
+                         
+                         /*let api_url=appList.wallet_api_link+appList.wallet_key+
                          "&type=Deposit&transid="+resTransV1+"&amt="+userObj.coinAmount
+                         */
+                         let api_url=appList.wallet_api_link+appList.wallet_key+
+                         "&type=Deposit&amt="+userObj.coinAmount
 
                          console.log("api_url"+api_url)
 
@@ -102,7 +105,8 @@ let Transaction1 = require(appRoot +'/schema/Schema').userTransactionModel;
 
                             AddTrans.updateTransactionConfirm({_id:mongoose.Types.ObjectId(resTransV1)},transactionObj).then((resTrans) => { 
                              let responseObj={
-                               address_part:lastPart,
+                               //address_part:lastPart,
+                               address_part:responsePart,
                                expired_at:expired_at,
                                //expired_at_inMinute:duration,
                                expired_at_inSecond:duration_second,
@@ -1066,7 +1070,7 @@ exports.requestWithdrawRunning = function (req,res) {
     Transaction.details().then((appList) => {
       let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj.transaction_id;
       //let api_url=appList.wallet_api_link+appList.wallet_key+"&type=Check&transid="+userObj._id;
-
+        console.log("api_url in checktransaction *****"+api_url)
 
         axios.get(api_url).then(function (response) {
           // handle success
@@ -1280,7 +1284,24 @@ function saveWithdrawRequest(userObj){
     ],
     function (err, result) {
       if(result){
+
         console.log("result"+JSON.stringify(result));
+          /*var travelTime = moment().add(appList.api_expiration_time, 'minutes').format('hh:mm A');
+          console.log("travelTime"+travelTime);
+          let curtime= moment().format('hh:mm A');
+          console.log("curtime"+curtime);
+          let curdate= moment().format('YYYY-MM-DD');
+          console.log("curdate"+curdate);
+          let expired_at=curdate+" "+travelTime;
+
+          let a=moment().format('YYYY-MM-DD hh:mm:ss');
+
+          
+          let b=moment().utc().format('YYYY-MM-DD hh:mm:ss')
+            */
+          
+          
+
         let res1={
           master_message:result.master_message,
           allow_mini_account_withdrawal:result.allow_mini_account_withdrawal,
