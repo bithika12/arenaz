@@ -44,8 +44,10 @@ export class PlayerCreateUpdateComponent implements OnInit {
   //gameDeactivationArr:any;
   //emailVerificationArr:any;
   //ipChangeVerificationArr:any;
+  selectedQuantity:any;
+  options= [0,5,10];
 
-  options: string[] = ['One', 'Two', 'Three'];
+  //options: string[] = ['One', 'Two', 'Three'];
 
   brands: Brand[] = [
     { value: 'Louis Vuitton', viewValue: 'Louis Vuitton' },
@@ -80,9 +82,9 @@ ipChangeVerificationArr: any[] = [
     
 ];
 freeCoinArr: any[] = [
-    { value: 0 },
-    { value: 5 },
-    { value: 10 }
+    { value: "0" },
+    { value: "5" },
+    { value: "10" }
 
     
     
@@ -159,7 +161,7 @@ freeCoinArr: any[] = [
       this.defaults = {} as Player;
     }
    this.selectItemsSchedule=JSON.parse(this.defaults.banned_country);
-
+    this.selectedQuantity=this.defaults.free_coin_incentive;
    //this.selectItemsSchedule=this.defaults.banned_country
    console.log("this selectItemsSchedule***"+this.selectItemsSchedule)
     this.form = this.fb.group({

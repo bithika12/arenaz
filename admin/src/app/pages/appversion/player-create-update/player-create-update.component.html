@@ -211,15 +211,24 @@
       <mat-form-field class="mt-6" fxFlex>
         <mat-label>Free Coin Incentive </mat-label>
 
-        <mat-select formControlName="free_coin_incentive" required>
-            <mat-option *ngFor="let sub of freeCoinArr" [value]="sub.value">
-              {{sub.value}}
+<mat-select formControlName="free_coin_incentive" required [ngModel]="selectedQuantity">
+            <mat-option *ngFor="let sub of options" [value]="sub">
+              {{sub}}
             </mat-option>
           </mat-select>
 
+
+        <!--<mat-select formControlName="free_coin_incentive" required [(ngModel)]="selectedQuantity">
+            <mat-option *ngFor="let sub of freeCoinArr" [value]="sub.value">
+              {{sub.value}}
+            </mat-option>
+          </mat-select>-->
+
           <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
       </mat-form-field>
-    
+    <!--<select name="free_coin_incentive" id="free_coin_incentive" class="form-control" [ngModel]=10 >
+                <option *ngFor="let option of options" [value]="option">{{option}}</option> 
+              </select>-->
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
