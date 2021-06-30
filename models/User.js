@@ -58,18 +58,32 @@ User.fetchFreeCoin =function(reqObj){
 }
 //CREATE
 User.createUser = function(reqObj,version){
-    console.log("reqObj.new_account_gift_coins"+version.new_account_gift_coins);
+    
       return new Promise((resolve,reject)=>{
-      /*let msg="Welcome to Arena Z!\
-In the Arena you can test your skills and wage a war against other players.\
-It will take some time for each game to be fully tested and launched. You can enjoy the games we currently have available for all players. Before playing go to training and find out how the game is played.\
-In order to fill your account with game coins click the “+” by the coins at the bottom or top of the page and purchase coins. You can also request to receive the coins you have available back for a small transaction fee.\
-It is time to Pick & Play!\
-Enjoy… \
-Arena Z Team" ; */
+      
 
  var msg="Welcome to Arena Z! \n";
-msg+="In the Arena you can test your skills and wage a war against other players.We will launch new games in the Arena every 6 months. \n"
+ msg+="In the ultimate arena you can test your skills and wage a war against other players. \n";
+ msg+=" \n";
+ msg+="Before playing go to the training section and find out how to play each of Arena Z games. After you are ready pick your character and start playing. \n"
+ msg+="If you run out of coins you can buy more coins and continue playing. \n";
+ msg+="You can also take your winning coins and enter a daily prize draw. You can receive prizes or their matched value right in your personal wallet. \n";
+ msg+=" \n";
+ msg+="It is time to Pick & Play! \n";
+ msg+=" \n";
+ msg+="Enjoy… \n";
+ msg+=" \n";
+ msg+="Arena Z";
+
+
+
+
+
+
+
+
+
+/*msg+="In the Arena you can test your skills and wage a war against other players.We will launch new games in the Arena every 6 months. \n"
 
 msg+="Before playing go to training and find out how the game is played.\
 In order to fill your account with game coins click the “+” by the coins at the bottom or top of the page and follow the instructions on how to purchase coins. \n";
@@ -78,7 +92,7 @@ msg+="You can also request to receive the coins you have.  \n";
 
 msg+="It is time to Pick & Play!  \n";
 msg+="Enjoy… \n";
-msg+="Arena Z Team";
+msg+="Arena Z Team";*/
 
 
       reqObj.password  =  password.hashPassword(reqObj.password);
@@ -125,7 +139,7 @@ msg+="Arena Z Team";
                           reject(err);
                      })
                      ////usercoin
-                      //resolve(response);
+                     
                   }).catch(err => {
                       reject(err);
                   });
